@@ -238,7 +238,7 @@ void SearchManager::onData(const u_int8_t* buf, int aLen, const string& address)
 			file, hubName, hubIpPort, address);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
-	} else if(x.compare(1, 4, "RES ")) {
+	} else if(x.compare(1, 4, "RES ") == 0) {
 		Command c(x);
 		if(c.getParameters().empty())
 			return;
