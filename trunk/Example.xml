@@ -455,6 +455,7 @@
 		<String Name="PopupOnHubstatus">Show popup on hub status messages such as disconnected</String>
 		<String Name="HubframeConfirmation">Confirm hub exit</String>
 		<String Name="QueueRemoveConfirmation">Confirm removal of files from download queue</String>
+		<String Name="FavoritesRemoveConfirmation">Confirm removal of favorites hub entries</String>
 		<String Name="Copy">Copy</String>
 		<String Name="AddEmpty">Can't add an empty string</String>
 		<String Name="BadRegexp">Badly formatted regular expression</String>

@@ -38,10 +38,6 @@ TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t 
 	return root;
 }
 
-bool HashManager::getTree(const string& aFileName, TigerTree& tt) {
-	Lock l(cs);
-	return store.getTree(aFileName, tt);
-}
 TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize) {
 	Lock l(cs);
 	TTHValue* root = store.getTTH(aFileName, aSize);
@@ -52,6 +48,11 @@ TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize) {
 	return root;
 }
 
+bool HashManager::getTree(const string& aFileName, TigerTree& tt) {
+	Lock l(cs);
+	return store.getTree(aFileName, tt);
+}
+
 void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_t speed) {
 	TTHValue* root = NULL;
 	{
@@ -59,12 +60,13 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 		store.addFile(aFileName, tth, true);
 		root = store.getTTH(aFileName, tth.getFileSize(), tth.getTimeStamp());
 	}
+	
+	bool done = false;
 
 	if(root != NULL && speed > -1) {
 		fire(HashManagerListener::TTHDone(), aFileName, root);
 		
 		//don't want to hold a lock when firing the message
-		bool done = false;
 		{
 			Lock l(cs);
 			if( --fileCount == 0)
@@ -84,9 +86,11 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 	}
 	if(speed > 0) {
 		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn + " (" + Util::formatBytes(speed) + "/s)");
-	} else if(speed == 0) {
-		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn);
 	}
+	
+	if(done)
+		LogManager::getInstance()->message(STRING(HASHING_FINISHED));
+	
 }
 
 void HashManager::HashStore::addFile(const string& aFileName, const TigerTree& tth, bool aUsed) {

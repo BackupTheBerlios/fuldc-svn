@@ -387,6 +387,10 @@ void HubFrame::addAsFavorite() {
 	aEntry.setName(client->getName());
 	aEntry.setConnect(TRUE);
 	aEntry.setNick(client->getNick());
+	aEntry.setShowJoins(showJoins);
+	aEntry.setShowUserlist(showUserList);
+	aEntry.setStripIsp(stripIsp);
+
 	HubManager::getInstance()->addFavorite(aEntry);
 	addClientLine(STRING(FAVORITE_HUB_ADDED));
 }

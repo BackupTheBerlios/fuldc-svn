@@ -131,6 +131,11 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 
 LRESULT FavoriteHubsFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
+	if(BOOLSETTING(FAVORITES_REMOVE_CONFIRMATION)) {
+		if(IDNO == MessageBox(CSTRING(CONFIRM_REMOVE), CSTRING(CONFIRM_CAPTION), MB_OK | MB_ICONQUESTION))
+			return 0;
+	}
+
 	while( (i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		HubManager::getInstance()->removeFavorite((FavoriteHubEntry*)ctrlHubs.GetItemData(i));
 	}
@@ -161,6 +166,10 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 {
 	FavoriteHubEntry e;
 	FavHubProperties dlg(&e);
+
+	e.setShowJoins(BOOLSETTING(SHOW_JOINS));
+	e.setStripIsp(BOOLSETTING(STRIP_ISP));
+	e.setShowUserlist(true);
 
 	if(dlg.DoModal((HWND)*this) == IDOK)
 		HubManager::getInstance()->addFavorite(e);

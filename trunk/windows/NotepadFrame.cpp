@@ -33,7 +33,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.SetFont(WinUtil::font);
 	ctrlPad.SetBackgroundColor(WinUtil::bgColor);
 	ctrlPad.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB | CFulEditCtrl::STRIP_ISP |
-		CFulEditCtrl::HANDLE_SCROLL);
+		CFulEditCtrl::HANDLE_SCROLL | CFulEditCtrl::HANDLE_URLS);
 
 	string tmp;
 	try {

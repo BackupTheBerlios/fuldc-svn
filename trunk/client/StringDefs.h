@@ -459,6 +459,7 @@ enum Strings { // @DontAdd
 	POPUP_ON_HUBSTATUS, // "Show popup on hub status messages such as disconnected"
 	HUBFRAME_CONFIRMATION, // "Confirm hub exit"
 	QUEUE_REMOVE_CONFIRMATION, // "Confirm removal of files from download queue"
+	FAVORITES_REMOVE_CONFIRMATION, // "Confirm removal of favorites hub entries"
 	COPY, // "Copy"
 	ADD_EMPTY, // "Can't add an empty string"
 	BAD_REGEXP, // "Badly formatted regular expression"

@@ -67,7 +67,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="0"
 				OmitFramePointers="TRUE"
-				OptimizeForProcessor="2"
+				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"

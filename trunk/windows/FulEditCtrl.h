@@ -24,7 +24,8 @@ public:
 		HANDLE_SCROLL	= 0x02, //Determines if the richedit will handle scrolling
 		POPUP			= 0x04, //if not set, will not popup messages on matches
 		SOUND			= 0x08, //if not set, will not play sound on matches
-		TAB				= 0x10  //if not set, will not color the tab on matches
+		TAB				= 0x10, //if not set, will not color the tab on matches
+		HANDLE_URLS		= 0x20  //if not set, will not handle urls on LButtonDown
 	};
 
 	bool	AddLine(const string & line, bool timeStamps = false);

@@ -30,7 +30,7 @@ CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyString), 
 	urls.push_back("mms://");
 	urls.push_back("dchub://");
 
-	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND);
+	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | HANDLE_URLS);
 
 }
 CFulEditCtrl::~CFulEditCtrl(void)
@@ -405,29 +405,35 @@ LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		ScrollToEnd();
 			
 	bHandled = FALSE;
-	return FALSE;
+	return 0;
 }
 
 LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	if(!isSet(HANDLE_URLS)){
+		bHandled = FALSE;
+		return 0;
+	}
+
 	POINT mousePT = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
 	int ch = CharFromPos(mousePT);
 	POINT charPT = PosFromChar(ch);
 
 	//since CharFromPos returns the last character even if the pointer is past the end of text
 	//we have to check if the pointer was actually above the last char
-	//if(pt.x > pt2.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font) || pt.y > pt2.y){
-	//	bHandled = FALSE;
-	//	return 0;
-	//}
+
+	//check xpos
 	if(mousePT.x < charPT.x || mousePT.x > (charPT.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font))) {
 		bHandled == FALSE;
 		return 0;
 	}
 
+	//check ypos
 	if(mousePT.y < charPT.y || mousePT.y > (charPT.y + WinUtil::getTextHeight(m_hWnd, WinUtil::font))) {
 		bHandled = FALSE;
 		return 0;
 	}
+
+
 	FINDTEXT ft;
 	ft.chrg.cpMin = ch;
 	ft.chrg.cpMax = -1;
