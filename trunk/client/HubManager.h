@@ -55,13 +55,13 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0), showUserlist(true), showJoins(false) { };
+	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0), showUserlist(true), showJoins(false), stripIsp(false) { };
 	
-	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0), showUserlist(true), showJoins(false) { };
+	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0), showUserlist(true), showJoins(false), stripIsp(false) { };
 	
 	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), 
 		password(rhs.getPassword()), connect(rhs.getConnect()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), showUserlist(rhs.getShowUserlist()),
-		showJoins(rhs.getShowJoins()) { };
+		showJoins(rhs.getShowJoins()), stripIsp(rhs.getStripIsp()) { };
 
 	~FavoriteHubEntry() throw() { }	
 	

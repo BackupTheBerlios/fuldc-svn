@@ -136,7 +136,7 @@ enum Strings { // @DontAdd
 	JOINS, // "Joins: "
 	JOIN_SHOWING_OFF, // "Join/part showing off"
 	JOIN_SHOWING_ON, // "Join/part showing on"
-	KB, // "kiB"
+	KB, // "KiB"
 	KBPS, // "kiB/s"
 	KICK_USER, // "Kick user(s)"
 	LARGER_TARGET_FILE_EXISTS, // "A file of equal or larger size already exists at the target location"

@@ -132,7 +132,7 @@
 		<String Name="Joins">Joins: </String>
 		<String Name="JoinShowingOff">Join/part showing off</String>
 		<String Name="JoinShowingOn">Join/part showing on</String>
-		<String Name="Kb">kiB</String>
+		<String Name="Kb">KiB</String>
 		<String Name="Kbps">kiB/s</String>
 		<String Name="KickUser">Kick user(s)</String>
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>

@@ -70,7 +70,7 @@ public:
 			SetDlgItemText(IDC_RATIO, buf);
 		}
 
-		string time = Util::formatSeconds(GET_TIME() - WinUtil::startTime);
+		string time = Util::formatTime(GET_TIME() - WinUtil::startTime);
 		SetDlgItemText(IDC_UPTIME, time.c_str());
 
 		CenterWindow(GetParent());

@@ -133,7 +133,7 @@ string ResourceManager::strings[] = {
 "Joins: ", 
 "Join/part showing off", 
 "Join/part showing on", 
-"kiB", 
+"KiB", 
 "kiB/s", 
 "Kick user(s)", 
 "A file of equal or larger size already exists at the target location", 

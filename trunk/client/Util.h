@@ -277,6 +277,14 @@ public:
 
 	static string formatParams(const string& msg, StringMap& params);
 	static string formatTime(const string &msg, const time_t t);
+	static string formatTime(int64_t aSec, bool shortString = true) {
+		char buf[128];
+		if(shortString)
+			sprintf(buf, "%01d:%02d:%02d:%02d", (int)(aSec /(60*60*24)), (int)((aSec / (60*60)) % 24), (int)((aSec / 60) % 60), (int)(aSec % 60));
+		else
+			sprintf(buf, "%01d days %01d hours %01d minutes %01d seconds", (int)(aSec /(60*60*24)), (int)((aSec / (60*60)) % 24), (int)((aSec / 60) % 60), (int)(aSec % 60));
+		return buf;
+	}
 
 	static string formatNumber(int64_t aNumber) {
 		char buf[64];

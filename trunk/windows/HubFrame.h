@@ -28,6 +28,7 @@
 #include "FulEditCtrl.h"
 
 #include "../client/Client.h"
+#include "../client/NmdcHub.h"
 #include "../client/User.h"
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
@@ -189,7 +190,7 @@ public:
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(client->isConnected()) {
 			clearUserList();
-			//client->refreshUserList();
+			((NmdcHub*)client)->refreshUserList();
 		}
 		return 0;
 	}
@@ -345,6 +346,7 @@ private:
 		tabList.push_back("/topics");
 		tabList.push_back("/ts");
 		tabList.push_back("/unshare");
+		tabList.push_back("/uptime");
 	}
 
 	~HubFrame() {

@@ -534,7 +534,7 @@ BEGIN
     PUSHBUTTON      "TextColor",IDC_TEXTCOLOR,181,174,50,14
     GROUPBOX        "Minislots",IDC_STATIC,14,14,245,46
     LTEXT           "Free slots file extensions",IDC_STATIC,22,24,134,8
-    LTEXT           "Free slots file size in kiB",IDC_STATIC,178,24,76,8
+    LTEXT           "Free slots file size in KiB",IDC_STATIC,178,24,76,8
     GROUPBOX        "Static ""download to"" directories",IDC_STATIC,14,66,
                     245,43
     LTEXT           "Separate paths with |",IDC_STATIC,24,77,176,14

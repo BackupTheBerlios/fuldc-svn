@@ -518,6 +518,8 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		} 
 	}else if(Util::stricmp(cmd.c_str(), "fuldc") == 0) {
 		message = "http://paxi.myftp.org <fulDC " + string(FULVERSIONSTRING) + ">";
+	} else if(Util::stricmp(cmd.c_str(), "uptime") == 0) {
+		message = "fulDC uptime: " + Util::formatTime(GET_TIME() - WinUtil::startTime, false);
 	} else if(WebShortcuts::getInstance()->getShortcutByKey(cmd) != NULL) {
 		WinUtil::SearchSite(WebShortcuts::getInstance()->getShortcutByKey(cmd), param);
 	} else if(Util::stricmp(cmd.c_str(), "rebuild") == 0) {
