@@ -694,6 +694,7 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		rc.SetRect(0,0,0,0);
 		ctrlSearchBox.MoveWindow(rc);
+		ctrlFilterBox.MoveWindow(rc);
 		ctrlMode.MoveWindow(rc);
 		ctrlSize.MoveWindow(rc);
 		ctrlSizeMode.MoveWindow(rc);
