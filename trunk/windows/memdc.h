@@ -101,13 +101,16 @@ public:
 
 		managed = true;
 	}
-	
-	~CMemDC()	
-	{		
+
+	//Do not attempt to use an CMemDC object after calling Paint
+	void Paint(){
+		if(m_pDC == NULL)
+			return;
+
 		// Copy the offscreen bitmap onto the screen.
 		m_pDC->BitBlt(m_rect.left, m_rect.top, m_rect.Width(), m_rect.Height(),
 			*this, m_rect.left, m_rect.top, SRCCOPY);			
-			
+
 		//Swap back the original bitmap.
 		SelectBitmap(m_oldBitmap);	
 
@@ -115,6 +118,13 @@ public:
 			m_pDC->Detach();
 			delete m_pDC;
 		}
+
+		m_pDC = NULL;
+	}
+	
+	~CMemDC()	
+	{		
+		Paint();	
 	}
 };
 

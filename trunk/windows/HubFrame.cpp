@@ -1453,6 +1453,7 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 void HubFrame::updateUserList() {
 	Lock l(updateCS);
 
+	ctrlUsers.SetRedraw(FALSE);
 	ctrlUsers.DeleteAllItems();
 
 	if(filter.empty()) {
@@ -1461,6 +1462,7 @@ void HubFrame::updateUserList() {
 			if(i->second != NULL)
 				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
 		}
+		ctrlUsers.SetRedraw(TRUE);
 		return;
 	}
 	
@@ -1473,6 +1475,8 @@ void HubFrame::updateUserList() {
 				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
 		}
 	}
+
+	ctrlUsers.SetRedraw(TRUE);
 }
 
 LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

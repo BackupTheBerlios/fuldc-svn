@@ -437,6 +437,7 @@ public:
 			}
 			memDC.SelectPen(oldpen);
 			memDC.SelectFont(oldfont);
+			memDC.Paint();
 		}
 		return 0;
 	}
