@@ -195,6 +195,7 @@ private:
 
 		void toNmdc(string& nmdc, string& indent, string& tmp2);
 		void toXml(SimpleXML* xml, bool recurse);
+		void filesToXml(SimpleXML* xml);
 		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 
 		File::Iter findFile(const string& aFile) { return find_if(files.begin(), files.end(), Directory::File::StringComp(aFile)); }

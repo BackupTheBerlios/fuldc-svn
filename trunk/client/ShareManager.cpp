@@ -901,7 +901,11 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 			i->second->toXml(xml, recurse);
 		}
 	} else {
-		StringList l = StringTokenizer<string>(dir, '/').getTokens();
+		StringList l;
+		if(dir[0] =='/')
+			l = StringTokenizer<string>(dir.substr(1), '/').getTokens();
+		else
+			l = StringTokenizer<string>(dir, '/').getTokens();
 
 		for(StringPairIter i = virtualMap.begin(); i != virtualMap.end(); ++i) {
 			if(Util::stricmp(i->first, l[0]) == 0) {
@@ -928,6 +932,7 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 					for(j = m->second->directories.begin(); j != m->second->directories.end(); ++j) {
 						j->second->toXml(xml, recurse);
 					}
+					m->second->filesToXml(xml);
 				}
 			}
 		}
@@ -938,6 +943,11 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 		string tmp = SimpleXML::utf8Header;
 		StringOutputStream sos(tmp);
 		xml->toXML(&sos);
+		try {
+			File f(Util::getAppPath() + "test.xml", File::WRITE, File::CREATE | File::TRUNCATE);
+			f.write(tmp);
+		} catch (const Exception&) {
+		}
 		mis = new MemoryInputStream(tmp);
 	}
 	
@@ -1036,16 +1046,24 @@ void ShareManager::Directory::toXml(SimpleXML* xml, bool recurse) {
 		xml->addTag("Directory");
 		xml->forceEndTag();
 		xml->addChildAttrib("Name", name);
+		if(!recurse && (!directories.empty() || !files.empty()))
+			xml->addChildAttrib("Incomplete", 1);
 	}
 
-	xml->stepIn();
-
 	if(recurse) {
+		xml->stepIn();
+
 		for(MapIter i = directories.begin(); i != directories.end(); ++i) {
 			i->second->toXml(xml, recurse);
 		}
-	}
 
+		filesToXml(xml);
+
+		xml->stepOut();
+	}
+}
+
+void ShareManager::Directory::filesToXml(SimpleXML* xml) {
 	for(Directory::File::Iter i = files.begin(); i != files.end(); ++i) {
 		const Directory::File& f = *i;
 
@@ -1054,9 +1072,6 @@ void ShareManager::Directory::toXml(SimpleXML* xml, bool recurse) {
 		xml->addChildAttrib("Size", f.getSize() );
 		xml->addChildAttrib("TTH", f.getTTH().toBase32() );
 	}
-
-	xml->stepOut();
-		
 }
 
 // These ones we can look up as ints (4 bytes...)...
