@@ -174,7 +174,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		itemI->user->getParams(tmp);
 		itemI->user->clientEscapeParams(tmp);
-		itemI->user->send(Util::formatParams(uc.getCommand(), tmp));
+		itemI->user->send(Text::utf8ToAcp(Util::formatParams(uc.getCommand(), tmp)));
 	}
 	return;
 };

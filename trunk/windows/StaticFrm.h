@@ -44,6 +44,7 @@ public:
 			} else {
 				frame->SendMessage(WM_MDIACTIVATE, (WPARAM)frame->m_hWnd, 0);
 				::SetWindowPos(frame->m_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+				::SendMessage(WinUtil::mainWnd, WM_USER, ID, TRUE );
 				
 			}
 		}

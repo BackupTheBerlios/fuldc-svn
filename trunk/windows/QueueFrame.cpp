@@ -1228,7 +1228,7 @@ LRESULT QueueFrame::onSetPriority(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		search = dlg.GetSearch();
 
 		int count = QueueManager::getInstance()->changePriority(Text::fromT(search), prio);
-		tstring tmp = _T("Changed priority for ") + Util::toStringW(count) + _T(" files");
+		tstring tmp = TSTRING(CHANGED_PRIORITY) + _T(" ") + Util::toStringW(count) + _T(" ") + TSTRING(FILES);
 		ctrlStatus.SetText(1, tmp.c_str());
 	}
 	

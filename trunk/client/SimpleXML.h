@@ -93,8 +93,8 @@ public:
 		addTag(aName, Util::toString(aData));
 	}
 
-	void addTag(const string& aName, bool force) {
-		addTag(aName);
+	void forceEndTag(bool force = true) {
+		checkChildSelected();
 		(*currentChild)->forceEndTag = force;
 	}
 

@@ -1362,21 +1362,27 @@ int QueueManager::changePriority(const string& search, int priority) {
 	string s;
 	bool useRegexp = false;
 
+	PME reg;
+
 	if(Util::strnicmp(search.c_str(), "$Re:", 4) == 0) {
 		useRegexp = true;
+		if(search.length() <= 4)
+			return 0;
+
+		reg.Init(Text::utf8ToAcp(search.substr(4)), "i");
 	}
 
-	PME reg(search.substr(4), "i");
-	
 	QueueItem::StringMap::iterator i;
 	QueueItem* q;
+
+	Lock l(cs);
 
 	for(i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
 		q = i->second;
 
 		//get the first source to get the path
 		if(useRegexp){
-			if(reg.match(q->getTarget()) > 0) {
+			if(reg.match(Text::utf8ToAcp(q->getTarget())) > 0) {
 				setPriority(q->getTarget(), (QueueItem::Priority)priority);
 				++count;
 			}

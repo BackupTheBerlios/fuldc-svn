@@ -780,7 +780,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		sr->getUser()->getParams(tmp);
 		sr->getUser()->clientEscapeParams(tmp);
-		sr->getUser()->send(Util::formatParams(uc.getCommand(), tmp));
+		sr->getUser()->send(Text::utf8ToAcp(Util::formatParams(uc.getCommand(), tmp)));
 	}
 	return;
 };

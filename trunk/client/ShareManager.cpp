@@ -430,6 +430,7 @@ public:
 			::FindClose(handle);
 			handle = INVALID_HANDLE_VALUE;
 		}
+		
 		return *this;
 	}
 	bool operator!=(const FileFindIter& rhs) const { return handle != rhs.handle; }
@@ -721,15 +722,14 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 
 		try {
 			SimpleXML *xml = new SimpleXML();
-			string tmp2;
-
+			
 			xml->addTag("FileListing");
 			xml->addChildAttrib("Version", 1);
 			xml->addChildAttrib("Generator", string(APPNAME " " VERSIONSTRING));
 			xml->stepIn();
 
 			for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-				i->second->toXml(xml, tmp2);
+				i->second->toXml(xml);
 			}
 			
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
@@ -840,7 +840,7 @@ void ShareManager::Directory::toNmdc(string& nmdc, string& indent, string& tmp2)
 	indent.erase(indent.length()-1);
 }
 
-void ShareManager::Directory::toXml(SimpleXML* xml, string& tmp2) {
+void ShareManager::Directory::toXml(SimpleXML* xml) {
 	bool create = true;
 	xml->resetCurrentChild();
 
@@ -852,14 +852,15 @@ void ShareManager::Directory::toXml(SimpleXML* xml, string& tmp2) {
 	}
 
 	if(create) {
-		xml->addTag("Directory", true);
+		xml->addTag("Directory");
+		xml->forceEndTag();
 		xml->addChildAttrib("Name", name);
 	}
 
 	xml->stepIn();
 
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		i->second->toXml(xml, tmp2);
+		i->second->toXml(xml);
 	}
 
 	for(Directory::File::Iter i = files.begin(); i != files.end(); ++i) {

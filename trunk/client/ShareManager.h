@@ -166,7 +166,7 @@ private:
 		void search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw();
 
 		void toNmdc(string& nmdc, string& indent, string& tmp2);
-		void toXml(SimpleXML* xml, string& tmp2);
+		void toXml(SimpleXML* xml);
 		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 
 		GETSET(string, name, Name);

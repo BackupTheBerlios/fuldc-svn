@@ -409,7 +409,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 	user->getParams(ucParams);
 	user->clientEscapeParams(ucParams);
 
-	user->send(Util::formatParams(uc.getCommand(), ucParams));
+	user->send(Text::utf8ToAcp(Util::formatParams(uc.getCommand(), ucParams)));
 	return;
 };
 
