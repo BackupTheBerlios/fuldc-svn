@@ -199,7 +199,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_FONT, "MS Shell Dlg,-11,400,0");
 	setDefault(POPUP_TEXTCOLOR, RGB(0, 0, 0));
 	setDefault(FREE_SLOTS_EXTENSIONS, "*.nfo|*.sfv");
-	setDefault(FREE_SLOTS_SIZE, 32);
+	setDefault(FREE_SLOTS_SIZE, 64);
 	setDefault(SKIPLIST_SHARE, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
 	setDefault(SKIPLIST_DOWNLOAD, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
 	setDefault(TAB_SHOW_ICONS, true);

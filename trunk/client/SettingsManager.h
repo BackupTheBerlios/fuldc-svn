@@ -120,7 +120,7 @@ public:
 		if((key == SLOTS) && (value <= 0)) {
 			value = 1;
 		} else if((key == FREE_SLOTS_SIZE) && (value < 64)) {
-			value = 32;
+			value = 64;
 		}
 		
 		intSettings[key - INT_FIRST] = value;

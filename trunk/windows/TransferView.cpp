@@ -663,15 +663,22 @@ LRESULT TransferView::onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	resolveBuffer = new char[MAXGETHOSTSTRUCT];
 	unsigned long l = inet_addr(ctrlTransfers.getItemData(i)->getText(COLUMN_IP).c_str());
 
-	WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT);
-
+	if( 0 == WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT)) {
+		delete[] resolveBuffer;
+		resolveBuffer = NULL;
+	}
 
 	return 0;
 }
 
-LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/){
+LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
 	if(resolveBuffer == NULL)
 		return 0;
+	if(HIWORD(lParam) != 0) {
+		delete[] resolveBuffer;
+		resolveBuffer = NULL;
+		return 0;
+	}
 	
 	hostent *h = (hostent*)resolveBuffer;
 	in_addr a;
