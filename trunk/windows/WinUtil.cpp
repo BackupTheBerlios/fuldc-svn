@@ -505,15 +505,14 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			//	if(!ShareManager::getInstance()->refresh(param))
 					status = TSTRING(DIRECTORY_NOT_FOUND);
 			} else {
-			//	ShareManager::getInstance()->refresh(true);
+				ShareManager::getInstance()->refresh(true);
 			}
 		} catch(const ShareException& e) {
 			status = Text::toT(e.getError());
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("refreshi")) == 0) {
 		try {
-			//ShareManager::getInstance()->setDirty();
-			//ShareManager::getInstance()->refresh(false, true, false, true);
+			ShareManager::getInstance()->refresh(false, true, false, true);
 		} catch( const ShareException& e) {
 			status = Text::toT(e.getError());
 		}

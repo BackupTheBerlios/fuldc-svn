@@ -147,6 +147,17 @@ bool HashManager::HashStore::getTree(const string& aFileName, TigerTree& tth) {
 	return true;
 }
 
+bool HashManager::HashStore::checkTree(const string& aFileName, const TigerTree& tth) {
+    TTHIter i = indexTTH.find(aFileName);
+	if ( i == indexTTH.end() )
+		return false;
+
+	if( !( i->second->getRoot() == tth.getRoot() ) )
+		return false;
+
+	return true;
+}
+
 void HashManager::HashStore::rebuild() {
 	int64_t maxPos = sizeof(maxPos);
 	try {
@@ -546,7 +557,7 @@ int HashManager::Hasher::run() {
 				VirtualFree(buf, 0, MEM_RELEASE);
 #endif
 			} else {
-				delete[] buf;
+				delete buf;
 			}
 			buf = NULL;
 			total = 0;

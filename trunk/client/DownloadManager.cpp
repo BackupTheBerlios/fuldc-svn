@@ -207,7 +207,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(firstTry && !d->getTreeValid() && 
 		!d->isSet(Download::FLAG_USER_LIST) && d->getTTH() != NULL)
 	{
-		if(HashManager::getInstance()->getTree(d->getTarget(), d->getTigerTree())) {
+		if( HashManager::getInstance()->checkTree( d->getDownloadTarget(), d->getTigerTree() ) ) {
 			d->setTreeValid(true);
 		} else if(!d->isSet(Download::FLAG_TREE_TRIED) && 
 			aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL)) 

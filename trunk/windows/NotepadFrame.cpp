@@ -31,6 +31,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
+	ctrlPad.SetTextColor(WinUtil::textColor);
 	ctrlPad.SetBackgroundColor(WinUtil::bgColor);
 	ctrlPad.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB | CFulEditCtrl::STRIP_ISP |
 		CFulEditCtrl::HANDLE_SCROLL | CFulEditCtrl::HANDLE_URLS);
@@ -50,7 +51,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		}
 	}
 
-	ctrlPad.SetWindowText(Text::toT(tmp).c_str());
+	ctrlPad.SetWindowText( Text::acpToWide( tmp ).c_str() );
 	ctrlPad.EmptyUndoBuffer();
 	
 	WinUtil::SetIcon(m_hWnd, _T("notepad.ico"));
@@ -66,7 +67,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {
-			string tmp(Text::fromT(tstring(buf, ctrlPad.GetWindowTextLength())));
+			string tmp( Text::wideToAcp(  tstring( buf, ctrlPad.GetWindowTextLength() ) ) );
 			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
 		} catch(const FileException&) {
 			// Oops...

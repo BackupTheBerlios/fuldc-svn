@@ -47,7 +47,7 @@ class HashManager : public Singleton<HashManager>, public Speaker<HashManagerLis
 	private TimerManagerListener 
 {
 public:
-	HashManager(): fileCount(0) {
+	HashManager() {
 		TimerManager::getInstance()->addListener(this);
 	}
 	virtual ~HashManager() {
@@ -71,6 +71,10 @@ public:
 	TTHValue* getTTH(const string& aFileName);
 
 	bool getTree(const string& aFileName, TigerTree& tt);
+
+	bool checkTree(const string& aFileName, const TigerTree& tth) {
+		return store.checkTree(aFileName, tth);
+	}
 
 	void addTree(const string& aFileName, const TigerTree& tt) {
 		hashDone(aFileName, tt, -1);
@@ -202,6 +206,7 @@ private:
 		}
 
 		bool getTree(const string& aFileName, TigerTree& tth);
+		bool checkTree(const string& aFileName, const TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
@@ -240,8 +245,6 @@ private:
 
 	Hasher hasher;
 	HashStore store;
-
-	int fileCount;
 
 	CriticalSection cs;
 
