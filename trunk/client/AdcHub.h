@@ -72,7 +72,7 @@ private:
 
 	User::NickMap nickMap;
 	User::Ptr hub;
-	string lastInfo;
+	StringMap lastInfoMap;
 
 	string salt;
 

@@ -151,12 +151,16 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	bHandled = FALSE;
 	client->connect();
 	
-	tstring tmp = Text::toT(client->getNick());
-	tstring nick;
+	tstring nick = Text::toT(client->getNick());
 	if(stripIsp) {
-		int pos = nick.find(_T("]"));
-		if(pos != tstring::npos)
-			nick = nick.substr(pos+1);
+		tstring::size_type pos = nick.find(_T("["));
+		if( pos != tstring::npos ) {
+			tstring::size_type rpos = nick.rfind(_T("]"));
+			if( rpos == nick.length() -1 && rpos > 0 ) // this user has a stupid fucking nick bah ugly hate it
+				rpos = nick.rfind(_T("]"), rpos-1);
+			if(rpos != tstring::npos) 
+				nick = nick.substr(rpos+1);
+		}
 	}
 
 	ctrlClient.SetNick(nick);
