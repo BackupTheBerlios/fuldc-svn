@@ -57,6 +57,7 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
+		MESSAGE_HANDLER(WM_NOTIFYFORMAT, onNotifyFormat)
 		MESSAGE_HANDLER(WM_APP, onResolvedIP)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
@@ -110,6 +111,14 @@ public:
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlTransfers.forEach(&ItemInfo::deleteSelf);
 		return 0;
+	}
+
+	LRESULT onNotifyFormat(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+#ifdef _UNICODE
+		return NFR_UNICODE;
+#else
+		return NFR_ANSI;
+#endif		
 	}
 
 private:
