@@ -432,6 +432,7 @@ private:
 	bool updateUser(const User::Ptr& u);
 	void removeUser(const User::Ptr& u);
 	void updateUserList();
+	bool parseFilter(int& mode, int64_t& size);
 	void addAsFavorite();
 
 	void clearUserList() {

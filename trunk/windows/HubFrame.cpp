@@ -1459,11 +1459,85 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
+bool HubFrame::parseFilter(int& mode, int64_t& size) {
+	size_t start = tstring::npos;
+	size_t end = tstring::npos;
+	int64_t multiplier = 1;
+	
+	if(Util::strnicmp(filter.c_str(), _T(">="), 2) == 0) {
+		mode = 1;
+		start = 2;
+	} else if(Util::strnicmp(filter.c_str(), _T("<="), 2) == 0) {
+		mode = 2;
+		start = 2;
+	} else if(Util::strnicmp(filter.c_str(), _T("=="), 2) == 0) {
+		mode = 0;
+		start = 2;
+	} else if(Util::strnicmp(filter.c_str(), _T("!="), 2) == 0) {
+		mode = 5;
+		start = 2;
+	} else if(Util::strnicmp(filter.c_str(), _T("<"), 1) == 0) {
+		mode = 4;
+		start = 1;
+	} else if(Util::strnicmp(filter.c_str(), _T(">"), 1) == 0) {
+		mode = 3;
+		start = 1;
+	}
+
+	if(start == tstring::npos)
+		return false;
+	if(filter.length() <= start)
+		return false;
+
+	if((end = Util::findSubString(filter, _T("TiB"))) != tstring::npos) {
+		//hmms ugly but vs complains about integral constant overflow otherwise
+		multiplier = int64_t(1024*1024*1024)*1024;
+	} else if((end = Util::findSubString(filter, _T("GiB"))) != tstring::npos) {
+		multiplier = 1024*1024*1024;
+	} else if((end = Util::findSubString(filter, _T("MiB"))) != tstring::npos) {
+		multiplier = 1024*1024;
+	} else if((end = Util::findSubString(filter, _T("KiB"))) != tstring::npos) {
+		multiplier = 1024;
+	} else if((end = Util::findSubString(filter, _T("TB"))) != tstring::npos) {
+		//hmms ugly but vs complains about integral constant overflow otherwise
+		multiplier = int64_t(1000*1000*1000)*1000;
+	} else if((end = Util::findSubString(filter, _T("GB"))) != tstring::npos) {
+		multiplier = 1000*1000*1000;
+	} else if((end = Util::findSubString(filter, _T("MB"))) != tstring::npos) {
+		multiplier = 1000*1000;
+	} else if((end = Util::findSubString(filter, _T("kB"))) != tstring::npos) {
+		multiplier = 1000;
+	}
+
+	if(end == tstring::npos) {
+		end = filter.length();
+	}
+	
+	tstring tmpSize = filter.substr(start, end-start);
+	size = static_cast<int64_t>(Util::toDouble(Text::fromT(tmpSize)) * multiplier);
+	
+	return true;
+}
+
 void HubFrame::updateUserList() {
 	Lock l(updateCS);
 
 	ctrlUsers.SetRedraw(FALSE);
 	ctrlUsers.DeleteAllItems();
+
+	int64_t size = -1;
+
+	//0 - ==
+	//1 - >=
+	//2 - <=
+	//3 - >
+	//4 - <
+	//5 - !=
+	int mode = -1;
+
+	int sel = ctrlFilterSel.GetCurSel();
+
+	bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
 
 	if(filter.empty()) {
 		for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
@@ -1474,12 +1548,27 @@ void HubFrame::updateUserList() {
 		return;
 	}
 	
-	int sel = ctrlFilterSel.GetCurSel();
-
 	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
 		if( i->second != NULL ) {
-			if(Util::findSubString(i->second->getText(sel), filter) != string::npos)
+			bool insert = false;
+
+			if(doSizeCompare) {
+				switch(mode) {
+					case 0: insert = (size == i->second->user->getBytesShared()); break;
+					case 1: insert = (size <=  i->second->user->getBytesShared()); break;
+					case 2: insert = (size >=  i->second->user->getBytesShared()); break;
+					case 3: insert = (size < i->second->user->getBytesShared()); break;
+					case 4: insert = (size > i->second->user->getBytesShared()); break;
+					case 5: insert = (size != i->second->user->getBytesShared()); break;
+				}
+			} else {
+				if(Util::findSubString(i->second->getText(sel), filter) != string::npos)
+					insert = true;
+			}
+
+			if(insert) {
 				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
+			}
 		}
 	}
 
