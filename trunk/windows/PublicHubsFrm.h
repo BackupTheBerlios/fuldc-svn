@@ -33,7 +33,7 @@
 
 #define SERVER_MESSAGE_MAP 7
 #define FILTER_MESSAGE_MAP 8
-class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS>, 
+class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS, ID_FILE_CONNECT>, 
 	private HubManagerListener
 {
 public:
@@ -117,6 +117,7 @@ public:
 		} else {
 			WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::PUBLICHUBSFRAME_ORDER,
 				SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+			checkButton(false);
 			MDIDestroy(m_hWnd);
 			return 0;
 		}

@@ -28,7 +28,7 @@
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
 
-class StatsFrame : public MDITabChildWindowImpl<StatsFrame>, public StaticFrame<StatsFrame, ResourceManager::NETWORK_STATISTICS>
+class StatsFrame : public MDITabChildWindowImpl<StatsFrame>, public StaticFrame<StatsFrame, ResourceManager::NETWORK_STATISTICS, IDC_NET_STATS>
 {
 public:
 	StatsFrame() : width(0), height(0), timerId(0), twidth(0), lastTick(GET_TICK()), scrollTick(0),

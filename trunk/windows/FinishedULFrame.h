@@ -30,7 +30,7 @@
 
 #define SERVER_MESSAGE_MAP 7
 
-class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, public StaticFrame<FinishedULFrame, ResourceManager::FINISHED_UPLOADS>,
+class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, public StaticFrame<FinishedULFrame, ResourceManager::FINISHED_UPLOADS, IDC_FINISHED_UL>,
 	private FinishedManagerListener
 {
 public:

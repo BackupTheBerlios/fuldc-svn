@@ -205,12 +205,11 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
 	}
 
-	PopupManager::getInstance()->SetHwnd(m_hWnd);
-
 	WinUtil::SetIcon(m_hWnd, "DCPlusPlus.ico", true);
-	// We want to pass this one on to the splitter...hope it get's there...
 	//EmoticonManager::newInstance();
 	//EmoticonManager::getInstance()->load(m_hWnd);
+
+	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
 	return 0;
 }
@@ -484,26 +483,19 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 }
 
 LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int ret = 0;
 	switch(wID){
-		case ID_FILE_CONNECT:		ret = PublicHubsFrame::openWindow(); break;
-		case IDC_FAVORITES:			ret = FavoriteHubsFrame::openWindow(); break;
-		case IDC_FAVUSERS:			ret = UsersFrame::openWindow(); break;
-		case IDC_QUEUE:				ret = QueueFrame::openWindow(); break;
-		case IDC_FINISHED:			ret = FinishedFrame::openWindow(); break;
-		case IDC_FINISHED_UL:		ret = FinishedULFrame::openWindow(); break;
-		case ID_FILE_SEARCH:			  SearchFrame::openWindow(); break;
-		case IDC_FILE_ADL_SEARCH:	ret = ADLSearchFrame::openWindow(); break;
-		case IDC_SEARCH_SPY:		ret = SpyFrame::openWindow(); break;
-		case IDC_NOTEPAD:			ret = NotepadFrame::openWindow(); break;
-		case IDC_NET_STATS:			ret = StatsFrame::openWindow(); break;
+		case ID_FILE_CONNECT:		PublicHubsFrame::openWindow(); break;
+		case IDC_FAVORITES:			FavoriteHubsFrame::openWindow(); break;
+		case IDC_FAVUSERS:			UsersFrame::openWindow(); break;
+		case IDC_QUEUE:				QueueFrame::openWindow(); break;
+		case IDC_FINISHED:			FinishedFrame::openWindow(); break;
+		case IDC_FINISHED_UL:		FinishedULFrame::openWindow(); break;
+		case ID_FILE_SEARCH:		SearchFrame::openWindow(); break;
+		case IDC_FILE_ADL_SEARCH:	ADLSearchFrame::openWindow(); break;
+		case IDC_SEARCH_SPY:		SpyFrame::openWindow(); break;
+		case IDC_NOTEPAD:			NotepadFrame::openWindow(); break;
+		case IDC_NET_STATS:			StatsFrame::openWindow(); break;
 	}
-	if(ret == 1)
-		ctrlToolBar.CheckButton(wID, TRUE);
-	else if(ret == -1)
-		ctrlToolBar.CheckButton(wID, FALSE);
-
-
 	return 0;
 }
 
@@ -1000,6 +992,7 @@ LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	StringList l = ShareManager::getInstance()->getDirectories();
 	dropMenu.CreatePopupMenu();
 	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, CSTRING(SETTINGS_ST_REFRESH_INCOMING));
+	dropMenu.AppendMenu(MF_SEPARATOR, 0, "");
 	int j = 1;
 	for(StringIter i = l.begin(); i != l.end(); ++i, ++j)
 		dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU+j, (*i).c_str());
@@ -1029,6 +1022,37 @@ LRESULT MainFrame::onRefreshMenu(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 	}
 
 	return 0;
+}
+
+LRESULT MainFrame::onAppCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled){
+	bHandled = TRUE;
+	int ret = TRUE;
+	HWND wnd;
+
+	switch(GET_APPCOMMAND_LPARAM(lParam)){
+		case APPCOMMAND_BROWSER_FORWARD:
+			ctrlTab.SwitchTo();
+			break;
+		case APPCOMMAND_BROWSER_BACKWARD:
+			ctrlTab.SwitchTo(false);
+			break;
+		case APPCOMMAND_BROWSER_SEARCH:
+			::PostMessage(m_hWnd, WM_COMMAND, ID_FILE_SEARCH, 0);
+			break;
+		case APPCOMMAND_FIND:
+			wnd = (HWND)::SendMessage(m_hWnd, WM_MDIGETACTIVE, 0, 0);
+			::PostMessage(wnd, WM_COMMAND, IDC_FIND, 0);
+			break;
+		case APPCOMMAND_CLOSE:
+			wnd = (HWND)::SendMessage(m_hWnd, WM_MDIGETACTIVE, 0, 0);
+			::PostMessage(wnd, WM_CLOSE, 0, 0);
+		default:
+			bHandled = FALSE;
+			ret = FALSE;
+			break;
+	}
+
+	return ret;
 }
 /**
  * @file

@@ -97,6 +97,7 @@ public:
 		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
 		MESSAGE_HANDLER(SERVER_SOCKET_MESSAGE, onServerSocket)
 		MESSAGE_HANDLER(WM_APPCOMMAND, onAppCommand)
+		MESSAGE_HANDLER(WM_USER, onCheckButton)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, onStaticFrame)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -141,7 +142,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_DIR_LIST, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
-		COMMAND_RANGE_HANDLER(IDC_REFRESH_MENU, IDC_REFRESH_MENU + ShareManager::getInstance()->getDirectories().size(), onRefreshMenu)
+		COMMAND_RANGE_HANDLER(IDC_REFRESH_MENU, IDC_REFRESH_MENU + ShareManager::getInstance()->getNrDirectories(), onRefreshMenu)
 		COMMAND_RANGE_HANDLER(IDC_SWITCH_WINDOW_1, IDC_SWITCH_WINDOW_0, onSwitchWindow)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, onDropDown)
@@ -180,40 +181,16 @@ public:
 	LRESULT onStaticFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDropDown(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT onRefreshMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		
+	LRESULT onAppCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const string& cmdLine);
 
-	LRESULT onAppCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled){
-		bHandled = TRUE;
-		int ret = TRUE;
-		HWND wnd;
+	LRESULT MainFrame::onCheckButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/){
+		ctrlToolBar.CheckButton(wParam, lParam);
 
-		switch(GET_APPCOMMAND_LPARAM(lParam)){
-		case APPCOMMAND_BROWSER_FORWARD:
-			ctrlTab.SwitchTo();
-			break;
-		case APPCOMMAND_BROWSER_BACKWARD:
-			ctrlTab.SwitchTo(false);
-			break;
-		case APPCOMMAND_BROWSER_SEARCH:
-			::PostMessage(m_hWnd, WM_COMMAND, ID_FILE_SEARCH, 0);
-			break;
-		case APPCOMMAND_FIND:
-			wnd = (HWND)::SendMessage(m_hWnd, WM_MDIGETACTIVE, 0, 0);
-			::PostMessage(wnd, WM_COMMAND, IDC_FIND, 0);
-			break;
-		case APPCOMMAND_CLOSE:
-			wnd = (HWND)::SendMessage(m_hWnd, WM_MDIGETACTIVE, 0, 0);
-			::PostMessage(wnd, WM_CLOSE, 0, 0);
-		default:
-			bHandled = FALSE;
-			ret = FALSE;
-			break;
-		}
-
-		return ret;
+		return 0;
 	}
 
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {

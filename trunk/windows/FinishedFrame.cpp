@@ -156,6 +156,8 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	} else {
 		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::FINISHED_ORDER, 
 			SettingsManager::FINISHED_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		
+		checkButton(false);
 
 		MDIDestroy(m_hWnd);
 		return 0;

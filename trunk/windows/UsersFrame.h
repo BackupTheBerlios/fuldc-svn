@@ -30,7 +30,7 @@
 #include "../client/ClientManager.h"
 #include "../client/HubManager.h"
 
-class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS>,
+class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS, IDC_FAVUSERS>,
 	private HubManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	

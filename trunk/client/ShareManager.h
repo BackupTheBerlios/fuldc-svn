@@ -57,6 +57,7 @@ public:
 	bool isIncoming(const string & dir);
 	void removeIncoming(const string& dir);
 	void setDirty() { dirty = true; };
+	int getNrDirectories() { return directories.size(); }
 	
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);

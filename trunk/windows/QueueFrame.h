@@ -36,7 +36,7 @@
 	#define STATUS_MESSAGE_MAP   13
 #endif
 
-class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<QueueFrame, ResourceManager::DOWNLOAD_QUEUE>,
+class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<QueueFrame, ResourceManager::DOWNLOAD_QUEUE, IDC_DOWNLOADS>,
 	private QueueManagerListener, public CSplitterImpl<QueueFrame>
 {
 public:

@@ -26,7 +26,7 @@
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
 
-class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, public StaticFrame<NotepadFrame, ResourceManager::NOTEPAD>
+class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, public StaticFrame<NotepadFrame, ResourceManager::NOTEPAD, IDC_NOTEPAD>
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX("NotepadFrame", 0, 0, COLOR_3DFACE);

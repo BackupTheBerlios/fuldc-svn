@@ -26,32 +26,35 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 
-template<class T, int title>
+template<class T, int title, int ID>
 class StaticFrame {
 public:
 	~StaticFrame() { frame = NULL; };
 
 	static T* frame;
-	static int openWindow() {
+	static void openWindow() {
 		if(frame == NULL) {
 			frame = new T();
 			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, ResourceManager::getInstance()->getString(ResourceManager::Strings(title)).c_str());
-			return 1;
+			::SendMessage(WinUtil::mainWnd, WM_USER, ID, true);
 		} else {
 			
 			if( (HWND)::SendMessage(WinUtil::mdiClient, WM_MDIGETACTIVE, 0, 0) == frame->m_hWnd){
 				frame->PostMessage(WM_CLOSE);
-				return -1;
 			} else {
 				frame->SendMessage(WM_MDIACTIVATE, (WPARAM)frame->m_hWnd, 0);
 				::SetWindowPos(frame->m_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-				return 0;
+				
 			}
 		}
 	}
+
+	void checkButton(bool check = true){
+		::SendMessage(WinUtil::mainWnd, WM_USER, ID, check);
+	}
 };
 
-template<class T, int title>
-T* StaticFrame<T, title>::frame = NULL;
+template<class T, int title, int ID>
+T* StaticFrame<T, title, ID>::frame = NULL;
 
 #endif

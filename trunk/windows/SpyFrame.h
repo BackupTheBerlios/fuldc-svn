@@ -29,7 +29,7 @@
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 
-class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, public StaticFrame<SpyFrame, ResourceManager::SEARCH_SPY>,
+class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, public StaticFrame<SpyFrame, ResourceManager::SEARCH_SPY, IDC_SEARCH_SPY>,
 	private ClientManagerListener, private TimerManagerListener
 {
 public:
@@ -79,6 +79,7 @@ public:
 			PostMessage(WM_CLOSE);
 			return 0;
 		} else {
+			checkButton(false);	
 			MDIDestroy(m_hWnd);
 			return 0;
 		}

@@ -14,6 +14,7 @@
 #include "../client/CriticalSection.h"
 
 #include "PopupDlg.h"
+#include "WinUtil.h"
 
 #define DOWNLOAD_COMPLETE 6
 
@@ -41,10 +42,6 @@ public:
 		::DeleteObject(hBitmap);
 	}
 	
-	void SetHwnd(HWND &hWnd) {
-		this->hWnd = hWnd;
-	}
-
 	//performs some formatting of the string, strips <nick>
 	void ShowPm(const string& nick, const string& msg);
 	
@@ -86,9 +83,6 @@ private:
 	//keep track of where the new one will be displayed
 	u_int16_t offset;
 	
-	//store handle to mainframe window
-	HWND hWnd;
-
 	//used for thread safety
 	CriticalSection cs;
 

@@ -36,13 +36,13 @@ void PopupManager::Show(const string& aMsg ) {
 		return;
 	
 	//get the handle of the window that has focus
-	HWND gotFocus = ::SetFocus(hWnd);
+	HWND gotFocus = ::SetFocus(WinUtil::mainWnd);
 	
 	//compute the window position
 	CRect rc(screenWidth - width , screenHeight - height - offset, screenWidth, screenHeight - offset);
 	
 	//Create a new popup
-	PopupWnd *p = new PopupWnd(hWnd, aMsg, rc, hBitmap);
+	PopupWnd *p = new PopupWnd(aMsg, rc, hBitmap);
 			
 	//move the window to the top of the z-order and display it
 	p->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
@@ -90,7 +90,7 @@ void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t tick) {
 void PopupManager::on(QueueManagerListener::ReleaseDone, string msg) {
 	//we can't create the window in this thread, then the client will crash
 	//so post a message and let the main window thread create it
-	::PostMessage(hWnd, WM_SPEAKER, DOWNLOAD_COMPLETE, (LPARAM)new string(msg));
+	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, DOWNLOAD_COMPLETE, (LPARAM)new string(msg));
 }
 
 void PopupManager::Remove(int pos) {

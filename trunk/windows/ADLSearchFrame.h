@@ -41,7 +41,7 @@
 //	Class that represent an ADL search manager interface
 //
 ///////////////////////////////////////////////////////////////////////////////
-class ADLSearchFrame : public MDITabChildWindowImpl<ADLSearchFrame>, public StaticFrame<ADLSearchFrame, ResourceManager::ADL_SEARCH>
+class ADLSearchFrame : public MDITabChildWindowImpl<ADLSearchFrame>, public StaticFrame<ADLSearchFrame, ResourceManager::ADL_SEARCH, IDC_FILE_ADL_SEARCH>
 {
 public:
 

@@ -41,7 +41,6 @@
 #define IDR_MDICHILD                    129
 #define IDC_TOOLBAR                     129
 #define IDC_PUBLIST                     130
-#define IDC_REFRESH_MENU                130
 #define IDC_HUBLIST                     131
 #define IDR_MDIDIRECTORY                132
 #define IDC_SERVER                      133
@@ -62,6 +61,7 @@
 #define IDC_STRING                      148
 #define IDC_UPDATE                      149
 #define IDC_COPY                        150
+#define IDC_REFRESH_MENU                151
 #define IDD_SETTINGS                    201
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209

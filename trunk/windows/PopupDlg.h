@@ -22,7 +22,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 	END_MSG_MAP()
 
-	PopupWnd(HWND hWnd, const string& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
+	PopupWnd(const string& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
 		if(int(aMsg.length()) > SETTING(MAX_MSG_LENGTH)){
 			msg = aMsg.substr(0, SETTING(MAX_MSG_LENGTH)-3);
 			msg += "...";
@@ -31,8 +31,6 @@ public:
 			msg = aMsg;
 
 		bmp = hBmp;
-
-		parent = hWnd;
 
 		if(bmp == NULL)
 			Create(NULL, rc, NULL, WS_CAPTION | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_TOOLWINDOW );
@@ -51,7 +49,7 @@ public:
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/){
 		CRect rc;
 		GetWindowRect(rc);
-		::PostMessage(parent, WM_SPEAKER, WM_CLOSE, (LPARAM)rc.bottom);
+		::PostMessage(WinUtil::mainWnd, WM_SPEAKER, WM_CLOSE, (LPARAM)rc.bottom);
 		return 0;
 	}
 
@@ -143,8 +141,6 @@ private:
 	HBITMAP bmp;
 	LOGFONT logFont;
 	HFONT   font;
-	HWND	parent;
-
 };
 
 
