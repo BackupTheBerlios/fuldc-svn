@@ -209,7 +209,6 @@ private:
 	void updateTitle() {
 		if(user->isOnline()) {
 			SetWindowText(user->getFullNick().c_str());
-			setTabColor(RGB(0, 255, 255));
 			setDisconnected(false);
 		} else {
 			if(user->getClientName() == STRING(OFFLINE)) {
@@ -217,7 +216,6 @@ private:
 			} else {
 				SetWindowText((user->getFullNick() + " [" + STRING(OFFLINE) + "]").c_str());
 			}
-			setTabColor(RGB(255, 0, 0));
 			setDisconnected(true);
 		}
 	}

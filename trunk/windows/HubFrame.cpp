@@ -507,11 +507,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
 		clearUserList();
-		setTabColor(RGB(255, 0, 0));
 		setDisconnected(true);
 	} else if(wParam == CONNECTED) {
 		addClientLine(STRING(CONNECTED));
-		setTabColor(RGB(0, 255, 0));
 		setDisconnected(false);
 	} else if(wParam == ADD_CHAT_LINE) {
 		string* x = (string*)lParam;
@@ -964,16 +962,10 @@ void HubFrame::onTab() {
 		for(int j = 0; j < tabList.size(); ++j){
 			//make sure we're not outside the list
 			if(i == tabList.end()){
-				if(up){
-					if(i == tabList.begin()){
-						i = tabList.end();
-					}
-					--i;
-				} else
-					i = tabList.begin();
+				i = tabList.begin();
 			}
-			
-			if(Util::strnicmp(*i, complete, complete.length()) == 0 ){
+						
+			if(i->find(complete) == 0 ){
 				ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
 				ctrlMessage.ReplaceSel((*i).c_str());
 				return;
@@ -982,9 +974,8 @@ void HubFrame::onTab() {
 			//if we didn't find a match, move the iterator and make sure
 			//we're not outside the list
 			if(up){
-				if(i == tabList.begin()){
+				if(i == tabList.begin())
 					i = tabList.end();
-				}
 				--i;
 			} else
 				++i;
@@ -1001,22 +992,17 @@ void HubFrame::onTab() {
 	bool found = false;
 
 	for(int i = 0; i < end; ++i){
-		if(curUser == usermap.end()){
-			if(up)		{
-				curUser = usermap.end();
-				--curUser;
-			} else
-				curUser = usermap.begin();
+		if(curUser == usermap.end())
+			curUser = usermap.begin();
+		
+		if( curUser->first.find(complete) == 0 ){
+				found = true;
+				break;
 		}
-
-		if(Util::strnicmp(curUser->first.c_str(), complete.c_str(), complete.length()) == 0){
-			found = true;
-			break;
-		}
+		
 		if(up){
-			if(curUser == usermap.begin()){
+			if(curUser == usermap.begin())
 				curUser = usermap.end();
-			}
 			--curUser;
 		} else
 			++curUser;
@@ -1027,13 +1013,13 @@ void HubFrame::onTab() {
 		int pos = -1;
 		while((pos = ctrlUsers.findItem(stripIsp ? u->user->getShortNick(): u->user->getNick(), pos)) != -1){
 			UserInfo* ui = ctrlUsers.getItemData(pos);
-			if(Util::stricmp(curUser->second->user->getNick(), ui->user->getNick()) == 0){
+			if(Util::stricmp(u->user->getNick(), ui->user->getNick()) == 0){
 				ctrlUsers.SetItemState(pos, LVNI_FOCUSED | LVNI_SELECTED, LVNI_FOCUSED | LVNI_SELECTED);
 				ctrlUsers.EnsureVisible(pos, false);
 			}
 		}
 		ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
-		string tmp = curUser->second->user->getNick();
+		string tmp = curUser->first;
 		if(tmp[0] == '['){
 			int pos = tmp.find_last_of("]");
 			tmp = tmp.substr(pos+1);
@@ -1041,9 +1027,8 @@ void HubFrame::onTab() {
 		ctrlMessage.ReplaceSel(tmp.c_str());
 
 		if(up){
-			if(curUser == usermap.begin()){
+			if(curUser == usermap.begin())
 				curUser = usermap.end();
-			}
 			--curUser;
 		} else
 			++curUser;

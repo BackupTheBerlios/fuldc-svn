@@ -64,8 +64,8 @@ public:
 		viewOrder.push_back(hWnd);
 		nextTab = --viewOrder.end();
 		active = i;
-		calcRows(false);
 		update();
+		calcRows(false);
 		Invalidate();		
 	}
 
@@ -80,6 +80,8 @@ public:
 		TabInfo* ti = *i;
 		if(active == ti)
 			active = NULL;
+		if(moving == ti)
+			moving = NULL;
 		delete ti;
 		tabs.erase(i);
 		dcassert(find(viewOrder.begin(), viewOrder.end(), aWnd) != viewOrder.end());
@@ -88,8 +90,8 @@ public:
 		if(!viewOrder.empty())
 			--nextTab;
 
-		calcRows(false);
 		update();
+		calcRows(false);
 		Invalidate();
 	}
 
@@ -158,15 +160,6 @@ public:
 
 		if(inval) {
 			calcRows(false);
-			Invalidate();
-		}
-	}
-
-	void setColor(HWND aWnd, COLORREF color) {
-		TabInfo* ti = getTabInfo(aWnd);
-		if(ti != NULL) {
-			ti->pen.DeleteObject();
-			ti->pen.CreatePen(PS_SOLID, 1, color);
 			Invalidate();
 		}
 	}
@@ -241,7 +234,7 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					if(t->hWnd == moving->hWnd) 
+					if(t == moving) 
 						::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
 					else{
 						//check if the pointer is on the left or right half of the tab
@@ -485,8 +478,11 @@ public:
 	void update(){
 		TabInfo::ListIter i = tabs.begin();
 		int j = 1;
-		for(; i != tabs.end() && j <= 10; ++i, ++j){
-			(*i)->wCode = j % 10;
+		for(; i != tabs.end(); ++i, ++j){
+			if(j <= 10)
+				(*i)->wCode = j % 10;
+			else
+				(*i)->wCode = -1;
 		}
 	}
 
@@ -501,7 +497,6 @@ private:
 
 		TabInfo(HWND aWnd, COLORREF c, HICON icon) : hWnd(aWnd), len(0), xpos(0), row(0), 
 			dirty(false), hIcon(icon), disconnected(false), notification(false), wCode(-1) { 
-			pen.CreatePen(PS_SOLID, 1, c);
 			memset(&size, 0, sizeof(size));
 			memset(&boldSize, 0, sizeof(boldSize));
 			name[0] = 0;
@@ -509,7 +504,6 @@ private:
 		};
 
 		HWND hWnd;
-		CPen pen;
 		char name[MAX_LENGTH];
 		int len;
 		SIZE size;
@@ -580,10 +574,13 @@ private:
 	};
 
 	void moveTabs(TabInfo* aTab, bool after){
+		if(moving == NULL)
+			return;
+
 		TabInfo::ListIter i, j;
 		//remove the tab we're moving
 		for(j = tabs.begin(); j != tabs.end(); ++j){
-			if((*j)->hWnd == moving->hWnd){
+			if((*j) == moving){
 				tabs.erase(j);
 				break;
 			}
@@ -591,7 +588,7 @@ private:
 
 		//find the tab we're going to insert before or after
 		for(i = tabs.begin(); i != tabs.end(); ++i){
-			if((*i)->hWnd == aTab->hWnd){
+			if((*i) == aTab){
 				if(after)
 					++i;
 				break;
@@ -601,8 +598,8 @@ private:
 		tabs.insert(i, moving);
 		moving = NULL;
 		
-		calcRows(false);
 		update();
+		calcRows(false);
 		Invalidate();	
 	}
 
@@ -904,11 +901,7 @@ public:
 		dcassert(getTab());
 		getTab()->setDirty(m_hWnd);
 	}
-	void setTabColor(COLORREF color) {
-		dcassert(getTab());
-		getTab()->setColor(m_hWnd, color);
-	}
-
+	
 	void setDisconnected(bool dis = false) {
 		dcassert(getTab());
 		getTab()->setDisconnected(m_hWnd, dis);
