@@ -83,6 +83,8 @@ DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
 
 	dl = new DirectoryListing(aUser);
 
+	downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
+
 	lists.insert(make_pair(aUser, this));
 }
 
@@ -102,8 +104,6 @@ void DirectoryListingFrame::loadFile(const tstring& name) {
 		mylist = true;
 
 	initStatus();
-
-	downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
 }
 
 void DirectoryListingFrame::loadXML(const string& txt) {

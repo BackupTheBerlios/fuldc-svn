@@ -30,6 +30,7 @@
 #include "TransferView.h"
 #include "LineDlg.h"
 #include "memdc.h"
+#include "SearchFrm.h"
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_TOTALTIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75 };
@@ -102,6 +103,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)openMenu, CTSTRING(OPEN));
 	transferMenu.AppendMenu(MF_SEPARATOR);
+	transferMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	transferMenu.AppendMenu(MF_STRING, IDC_RESOLVE_IP, CTSTRING(RESOLVE_IP));
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR);
@@ -177,8 +179,17 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 					userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
 					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
 				}
+
+				
+				//check that we have a filename and that it's not a file list
+				if(!ii->getText(COLUMN_FILE).empty() && !ii->fileList) {
+					transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
+				} else {
+					transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
+				}
 			}
 		} else {
+			transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
 			userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
 			userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 		}
@@ -464,6 +475,7 @@ void TransferView::ItemInfo::update() {
 		}
 	}
 	if(colMask & MASK_FILE) {
+		fileList = (Util::stricmp(Text::toT(user->getNick()), file) == 0);
 		columns[COLUMN_FILE] = file;
 	}
 	if(colMask & MASK_SIZE) {
@@ -804,6 +816,37 @@ LRESULT TransferView::onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo *ii = ctrlTransfers.getItemData(i);
 		QueueManager::getInstance()->remove(Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE)));
+	}
+
+	return 0;
+}
+
+LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+
+	if(i != -1) {
+		ItemInfo *ii = ctrlTransfers.getItemData(i);
+
+		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
+
+		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
+		QueueItem::StringIter qi = queue.find(&tmp);
+
+		TTHValue *val = NULL;
+		if(qi != queue.end() && qi->second->getTTH()) {
+			val = new TTHValue(*qi->second->getTTH());
+		}
+
+		QueueManager::getInstance()->unlockQueue();
+
+		if(val) {
+			WinUtil::searchHash(val);
+			delete val;
+		} else {
+			SearchFrame::openWindow(ii->getText(COLUMN_FILE), Util::toInt64(Text::fromT(ii->getText(COLUMN_SIZE)))-1, SearchManager::SIZE_ATLEAST);
+		}
+
+		
 	}
 
 	return 0;

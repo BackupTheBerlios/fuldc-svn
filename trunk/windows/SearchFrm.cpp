@@ -339,7 +339,8 @@ void SearchFrame::onEnter() {
 	// Add new searches to the last-search dropdown list
 	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
 	{
-		int i = SETTING(SEARCH_HISTORY)-1;
+		int i = max(SETTING(SEARCH_HISTORY)-1, 0);
+
 		if(ctrlSearchBox.GetCount() > i) 
 			ctrlSearchBox.DeleteString(i);
 		ctrlSearchBox.InsertString(0, s.c_str());

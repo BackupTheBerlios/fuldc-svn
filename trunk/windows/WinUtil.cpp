@@ -72,6 +72,8 @@ HHOOK WinUtil::hook = NULL;
 tstring WinUtil::tth;
 StringPairList WinUtil::initialDirs;
 DWORD WinUtil::helpCookie = 0;
+bool WinUtil::urlDcADCRegistered = false;
+bool WinUtil::urlMagnetRegistered = false;
 HWND WinUtil::findDialog = NULL;
 const time_t WinUtil::startTime = GET_TIME();
 DWORD WinUtil::comCtlVersion = 0;
@@ -315,7 +317,8 @@ void WinUtil::init(HWND hWnd) {
 	if(BOOLSETTING(URL_HANDLER)) {
 		registerDchubHandler();
 		registerADChubHandler();
-	}
+		urlDcADCRegistered = true;
+	} 
 
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
 
@@ -711,6 +714,10 @@ void WinUtil::searchHash(const TTHValue* aHash) {
 	}
 }
 
+ void WinUtil::unRegisterDchubHandler() {
+	SHDeleteKey(HKEY_CLASSES_ROOT, _T("dchub"));
+ }
+
  void WinUtil::registerADChubHandler() {
 	 HKEY hk;
 	 TCHAR Buf[512];
@@ -742,6 +749,9 @@ void WinUtil::searchHash(const TTHValue* aHash) {
 	 }
  }
 
+ void WinUtil::unRegisterADChubHandler() {
+	SHDeleteKey(HKEY_CLASSES_ROOT, _T("adc"));
+ }
 
 void WinUtil::openLink(const tstring& url) {
 	CRegKey key;

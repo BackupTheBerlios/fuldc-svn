@@ -67,6 +67,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpen)
 		COMMAND_ID_HANDLER(IDC_RESOLVE_IP, onResolveIP)
 		COMMAND_ID_HANDLER(IDC_REMOVE_FILE, onRemoveFile)
+		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY + COLUMN_LAST, onCopy)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
@@ -84,6 +85,7 @@ public:
 	LRESULT onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	void runUserCommand(UserCommand& uc);
 
@@ -169,7 +171,7 @@ private:
 		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
 			int64_t p = 0, int64_t sz = 0, int st = 0, int a = 0) : UserInfoBase(u), type(t), 
 			status(s), pos(p), size(sz), start(st), actual(a), speed(0), timeLeft(0),
-			updateMask((u_int32_t)-1), totalTimeLeft(0) { update(); };
+			updateMask((u_int32_t)-1), totalTimeLeft(0), fileList(false) { update(); };
 
 		Types type;
 		Status status;
@@ -185,6 +187,7 @@ private:
 		tstring path;
 		tstring IP;
 		tstring country;
+		bool fileList;
 
 		enum {
 			MASK_USER = 1 << COLUMN_USER,
