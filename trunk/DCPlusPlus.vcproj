@@ -362,6 +362,12 @@
 			</File>
 			<File
 				RelativePath="windows\TransferView.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						GeneratePreprocessedFile="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="windows\TreePropertySheet.cpp">

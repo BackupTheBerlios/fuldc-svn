@@ -51,7 +51,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="SubWCRev.exe . client/versiontemplate.h client/version.h"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
