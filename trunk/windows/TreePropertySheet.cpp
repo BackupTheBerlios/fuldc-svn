@@ -34,6 +34,13 @@ int TreePropertySheet::PropSheetProc(HWND hwndDlg, UINT uMsg, LPARAM lParam) {
 LRESULT TreePropertySheet::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
 	hideTab();
 	addTree();
+
+	CImageList img;
+	hasIcons = img.CreateFromImage(iconPath.c_str(), 16, 18, CLR_DEFAULT, IMAGE_BITMAP, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+	if(hasIcons) {
+		ctrlTree.SetImageList(img, TVSIL_NORMAL);
+	}
+
 	fillTree();
 	return 0;
 }
@@ -111,6 +118,11 @@ HTREEITEM TreePropertySheet::createTree(const tstring& str, HTREEITEM parent, in
 		if(item == NULL) {
 			// Doesn't exist, add
 			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
+			if(hasIcons) {
+				tvi.item.mask |= TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+				tvi.item.iImage = page;
+				tvi.item.iSelectedImage = page;
+			}
 			tvi.item.pszText = const_cast<LPTSTR>(str.c_str());
 			tvi.item.lParam = page;
 			item = ctrlTree.InsertItem(&tvi);
@@ -128,6 +140,11 @@ HTREEITEM TreePropertySheet::createTree(const tstring& str, HTREEITEM parent, in
 		if(item == NULL) {
 			// Doesn't exist, add...
 			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
+			if(hasIcons) {
+				tvi.item.mask |= TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+				tvi.item.iImage = page;
+				tvi.item.iSelectedImage = page;
+			}
 			tvi.item.lParam = -1;
 			tvi.item.pszText = const_cast<LPTSTR>(name.c_str());
 			item = ctrlTree.InsertItem(&tvi);

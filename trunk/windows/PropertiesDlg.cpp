@@ -41,7 +41,8 @@
 #include "FulPopupsPage.h"
 #include "FulIgnorePage.h"
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
+PropertiesDlg::PropertiesDlg(SettingsManager *s) : 
+TreePropertySheet(_T("icons\\settings_tree.bmp"), CTSTRING(SETTINGS))
 {
 	pages[0]  = new GeneralPage(s);
 	pages[1]  = new NetworkPage(s);
@@ -53,10 +54,10 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[7]  = new AdvancedPage(s);
 	pages[8]  = new Advanced3Page(s);
 	pages[9]  = new UCPage(s);
-	pages[10] = new FulDownloadPage(s);
-	pages[11] = new FulSharePage(s);
-	pages[12] = new FulIgnorePage(s);
-	pages[13] = new FulAdvancedPage(s);
+	pages[10] = new FulAdvancedPage(s);
+	pages[11] = new FulDownloadPage(s);
+	pages[12] = new FulSharePage(s);
+	pages[13] = new FulIgnorePage(s);
 	pages[14] = new FulAppearancePage(s);
 	pages[15] = new FulHighlightPage(s);
 	pages[16] = new FulPopupsPage(s);

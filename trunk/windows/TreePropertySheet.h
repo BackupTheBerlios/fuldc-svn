@@ -29,14 +29,14 @@ class TreePropertySheet : public CPropertySheetImpl<TreePropertySheet> {
 public:
 	enum { WM_USER_INITDIALOG = WM_APP + 501 };
 	enum { TAB_MESSAGE_MAP = 13 };
-	TreePropertySheet(ATL::_U_STRINGorID title = (LPCTSTR)NULL, UINT uStartPage = 0, HWND hWndParent = NULL) :
-		CPropertySheetImpl<TreePropertySheet>(title, uStartPage, hWndParent), tabContainer(WC_TABCONTROL, this, TAB_MESSAGE_MAP) {
-
+	TreePropertySheet(tstring icons, ATL::_U_STRINGorID title = (LPCTSTR)NULL, UINT uStartPage = 0, HWND hWndParent = NULL) :
+		CPropertySheetImpl<TreePropertySheet>(title, uStartPage, hWndParent), tabContainer(WC_TABCONTROL, this, TAB_MESSAGE_MAP),
+		iconPath(icons)
+	{
 		m_psh.pfnCallback = &PropSheetProc;
-
 	}
-	
-	typedef CPropertySheetImpl<TreePropertySheet> baseClass;
+
+    typedef CPropertySheetImpl<TreePropertySheet> baseClass;
 	BEGIN_MSG_MAP(TreePropertySheet)
 		MESSAGE_HANDLER(WM_COMMAND, baseClass::OnCommand)
 		MESSAGE_HANDLER(WM_USER_INITDIALOG, onInitDialog)
@@ -69,7 +69,7 @@ private:
 		SPACE_BOTTOM = 10,
 		SPACE_LEFT = 7,
 		SPACE_RIGHT = 7,
-		TREE_WIDTH = 156,
+		TREE_WIDTH = 176,
 	};
 
 	enum {
@@ -86,6 +86,8 @@ private:
 
 	CTreeViewCtrl ctrlTree;
 	CContainedWindow tabContainer;
+	tstring iconPath;
+	BOOL hasIcons;
 
 };
 
