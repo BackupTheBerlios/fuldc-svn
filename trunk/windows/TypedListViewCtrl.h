@@ -58,8 +58,6 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
-		MESSAGE_HANDLER(WM_LBUTTONUP, onButton)
-		MESSAGE_HANDLER(WM_RBUTTONUP, onButton)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -292,10 +290,6 @@ public:
 		headerMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	}
 
-	/////////////////////////////////////////////////////////////////
-	//this is a beginning of an owner drawn flicker free list control
-	//doesn't work yet, i'll see if it's worth finishing one day
-	/////////////////////////////////////////////////////////////////
 	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		if(!ownerDraw) {
 			bHandled = FALSE;
@@ -305,220 +299,34 @@ public:
 		return 0;
 	}
 
-	LRESULT onButton(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		bHandled = FALSE;
-		if(GetItemCount > 0)
-		//::InvalidateRect(m_hWnd, NULL, FALSE);
-		return 1;
-	}
-	
-	LRESULT onPaint(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onPaint(UINT msg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		if(!ownerDraw) {
 			bHandled = FALSE;
 			return 1;
 		}
 
-		state = 0;
-		
 		CRect updateRect;
 		CRect crc;
 		GetClientRect(&crc);
 		if(GetUpdateRect(updateRect, FALSE)){
 			CPaintDC dc(m_hWnd);
+			int oldDCSettings = dc.SaveDC();
 			dc.SetBkColor(WinUtil::bgColor);
 			CMemDC memDC(&dc, &crc);
 
-			memDC.SetBkMode(TRANSPARENT);
-			memDC.SelectFont(WinUtil::font);
-			memDC.SetMapMode(MM_TEXT);
-
-			DRAWITEMSTRUCT dd;
-			dd.hwndItem = m_hWnd;
-			dd.hDC = memDC.m_hDC;
+			//yay it seems like the default paint method actually
+			//uses the HDC it's passed, saves me a lot of work =)
+			LRESULT ret = DefWindowProc(msg, (WPARAM)memDC.m_hDC, NULL);
 			
-			int vertPos = GetScrollPos(SB_VERT);
-
-			//////////////////////////
-			//stuff for NM_CUSTOMDRAW
-			/////////////////////////
-			NMLVCUSTOMDRAW customDraw;
-			customDraw.nmcd.dwDrawStage = CDDS_PREPAINT;
-			customDraw.nmcd.hdc = memDC.m_hDC;
-			customDraw.nmcd.uItemState = CDIS_DEFAULT;
-			
-			customDraw.nmcd.hdr.hwndFrom = m_hWnd;
-			customDraw.nmcd.hdr.code = NM_CUSTOMDRAW;
-			customDraw.nmcd.hdr.idFrom = ctrlId;
-
-			customDraw.clrText = ::GetTextColor(memDC.m_hDC);
-			customDraw.clrTextBk = ::GetBkColor(memDC.m_hDC);
-			customDraw.iSubItem = 0;
-			customDraw.dwItemType = LVCDI_ITEM;
-
-			state = ::SendMessage(GetParent(), WM_NOTIFY, ctrlId, (LPARAM)&customDraw);
-
-			CRect itemRect;
-			int count = 0;
-
-			if(GetItemRect(0, &itemRect, LVIR_BOUNDS) != 0){
-				count = min(crc.Height() / itemRect.Height(), GetItemCount());
-			}
-
-			for(int i = 0; i < count; ++i) {
-				dd.itemID = i + vertPos;
-				DrawItem(&dd, &customDraw);
-			}
-
+			//make sure to paint before CPaintDC goes out of scope and destroys our hdc
 			memDC.Paint();
+
+			dc.RestoreDC(oldDCSettings);
+
+			return ret;
 		}
 
 		return 0;
-	}
-
-	void DrawItem(DRAWITEMSTRUCT* ld, NMLVCUSTOMDRAW* customDraw) 
-	{
-		bool hasFocus = m_hWnd == ::GetFocus();
-		int nCols = GetHeader().GetItemCount( );
-		CRect rc;
-
-		T* item = (T*)GetItemData(ld->itemID);
-
-		if(!item)
-			return;
-
-		LVITEM lvItem;
-		lvItem.iItem = ld->itemID;
-		lvItem.iSubItem = 0;
-		lvItem.mask = LVIF_IMAGE | LVIF_STATE;
-		lvItem.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-		GetItem(&lvItem);
-
-		if(ld->itemID == 0) {
-			dcdebug("item 0: ");
-			if(lvItem.state & LVIS_FOCUSED)
-				dcdebug(" har focus ");
-			if(lvItem.state & LVIS_SELECTED)
-				dcdebug(" har sel");
-
-			dcdebug("\n");
-		}
-
-		COLORREF oldTextColor = 0;
-
-		//send a message before we start painting, should implement handling
-		//of changed fonts and skip default but it's not needed to work
-		//with transferview so it'll have to wait =)
-		if(state & CDRF_NOTIFYITEMDRAW) {
-			customDraw->nmcd.lItemlParam = reinterpret_cast<LPARAM>(item);
-
-			customDraw->nmcd.dwDrawStage = CDDS_ITEMPREPAINT;
-			customDraw->iSubItem = 0;
-			customDraw->nmcd.hdc = ld->hDC;
-			state = ::SendMessage(GetParent(), WM_NOTIFY, ctrlId, (LPARAM)customDraw);
-		}
-		
-		if(lvItem.state & LVIS_SELECTED) {
-			CRect itemRect;
-
-			GetItemRect(ld->itemID, &itemRect, LVIR_BOUNDS);
-
-             ::FillRect(ld->hDC, &itemRect, ::GetSysColorBrush(hasFocus ? COLOR_HIGHLIGHT : COLOR_3DFACE));
-
-			if(lvItem.state & LVIS_FOCUSED && hasFocus) {
-				::DrawFocusRect(ld->hDC, &itemRect);
-			}
-		}
-
-		for(int nIndex=0; nIndex < nCols; ++nIndex) 
-		{
-
-			//send a NM_CUSTOMDRAW message so transferview can 
-			//paint that pretty status bar =)
-			if(state & CDRF_NOTIFYSUBITEMDRAW){
-				customDraw->nmcd.dwDrawStage = CDDS_ITEMPREPAINT | CDDS_SUBITEM;
-				customDraw->iSubItem = nIndex;
-				customDraw->nmcd.dwItemSpec = ld->itemID;
-				customDraw->nmcd.hdc = ld->hDC;
-				if(CDRF_SKIPDEFAULT == ::SendMessage(GetParent(), WM_NOTIFY, ctrlId, (LPARAM)customDraw)) {
-					continue;
-				}
-			}
-			
-			//hmm the docs says that the index is one based
-			//but the rect gets messed up if i use it, maybe i'm
-			//doing something wrong
-			GetSubItemRect(ld->itemID, nIndex, LVIR_LABEL , rc);
-			
-			//first column always has the icons
-			if(nIndex == 0){
-				HIMAGELIST imageList = (HIMAGELIST)::SendMessage(m_hWnd, LVM_GETIMAGELIST, LVSIL_SMALL, 0);
-				if(imageList) {
-					//let's find out where to paint it
-					//and draw the background to avoid having 
-					//the selection color as background
-					CRect iconRect;
-					GetSubItemRect(ld->itemID, nIndex, LVIR_ICON, iconRect);
-
-					//we don't need to paint the background if the item's not selected
-					//since it will already have the right color
-					if(lvItem.state & LVIS_SELECTED) {
-						HBRUSH brush = (HBRUSH)::SendMessage(GetParent(), WM_CTLCOLORLISTBOX, (WPARAM)ld->hDC, (LPARAM)m_hWnd);
-						if(brush) {
-							//remove 4 pixels to repaint the offset between the
-							//column border and the icon.
-							iconRect.left -= 4;
-							::FillRect(ld->hDC, &iconRect, brush);
-
-							//have to add them back otherwise the icon will be painted
-							//in the wrong place
-							iconRect.left += 4;
-						}
-					}
-					ImageList_Draw(imageList, lvItem.iImage, ld->hDC, iconRect.left, iconRect.top, ILD_TRANSPARENT);
-				}
-			}
-
-			//get the text alignment for the current column so we
-			//know how to draw the text.
-			LVCOLUMN lvColumn;
-			lvColumn.mask = LVCF_FMT;
-			GetColumn(nIndex, &lvColumn);
-
-			int justify = DT_LEFT;
-
-			switch(lvColumn.fmt & LVCFMT_JUSTIFYMASK){
-				case LVCFMT_CENTER: justify = DT_CENTER; break;
-				case LVCFMT_RIGHT:	justify = DT_RIGHT;	 break;
-				case LVCFMT_LEFT:   justify = DT_LEFT;   break;
-			}
-
-			//remove 2 pixels from the edges to add a little room between the columns
-			if(justify == DT_RIGHT)
-				rc.DeflateRect(2, 0, 6, 0);
-			else
-				rc.DeflateRect(2, 0, 2, 0);
-
-
-			//find the correct column, the col id might not
-			//map to the correct column if some of them are hidden.
-			//We use this to get the correct text to draw.
-			int col = findColumn(nIndex);
-
-			
-			//for some reason it doesn't work to put SetTextColor outside of the loop
-			//it keeps changing back before drawing the text.
-			if(lvItem.state & LVIS_SELECTED && hasFocus) {
-				oldTextColor = ::SetTextColor(ld->hDC, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
-
-				::DrawText(ld->hDC, item->getText(col).c_str(), item->getText(col).length(), &rc, DT_SINGLELINE | DT_NOPREFIX | DT_NOCLIP |
-					DT_VCENTER | DT_END_ELLIPSIS | justify);
-
-				::SetTextColor(ld->hDC, oldTextColor);
-			} else {
-				::DrawText(ld->hDC, item->getText(col).c_str(), item->getText(col).length(), &rc, DT_SINGLELINE | DT_NOPREFIX | DT_NOCLIP |
-					DT_VCENTER | DT_END_ELLIPSIS | justify);
-			}
-		}// end for
 	}
 
 	LRESULT onHeaderMenu(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {

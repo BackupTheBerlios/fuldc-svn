@@ -389,6 +389,15 @@ int64_t ShareManager::getShareSize() throw() {
 	return tmp;
 }
 
+size_t ShareManager::getSharedFiles() throw() {
+	RLock<> l(cs);
+	size_t tmp = 0;
+	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+		tmp += i->second->countFiles();
+	}
+	return tmp;
+}
+
 
 string ShareManager::Directory::getADCPath() const throw() {
 	if(parent == NULL)

@@ -134,10 +134,10 @@ public:
 		delete root;
 	};
 
-	void loadFile(const string& name, bool doAdl);
+	void loadFile(const string& name);
 
-	void load(const string& i, bool doAdl);
-	void loadXML(const string& xml, bool doAdl);
+	void load(const string& i);
+	void loadXML(const string& xml);
 
 	void download(const string& aDir, const string& aTarget, bool highPrio);
 	void download(Directory* aDir, const string& aTarget, bool highPrio);

@@ -846,7 +846,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 	if(!fname.empty()) {
 		DirectoryListing dirList(up);
 		try {
-			dirList.loadFile(fname, false);
+			dirList.loadFile(fname);
 		} catch(const Exception&) {
 			addList(up, flag);
 			return;

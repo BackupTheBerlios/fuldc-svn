@@ -151,9 +151,7 @@ void AdcHub::handle(Command::GPA, Command& c) throw() {
 }
 
 void AdcHub::handle(Command::QUI, Command& c) throw() {
-	if(c.getFrom().isZero())
-		return;
-	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
+	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParam(0)), false);
 	if(!p)
 		return;
 	ClientManager::getInstance()->putUserOffline(p);
@@ -179,7 +177,7 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 	}
 	string token;
 	c.getParam("TO", 2, token);
-	ConnectionManager::getInstance()->connect(p->getIp(), (short)Util::toInt(c.getParameters()[1]), getMe()->getCID(), token);
+	ConnectionManager::getInstance()->adcConnect(p->getIp(), (short)Util::toInt(c.getParameters()[1]), token);
 }
 
 void AdcHub::handle(Command::RCM, Command& c) throw() {
@@ -260,7 +258,7 @@ void AdcHub::password(const string& pwd) {
 		u_int8_t buf[SALT_SIZE];
 		Encoder::fromBase32(salt.c_str(), buf, SALT_SIZE);
 		TigerHash th;
-		th.update(getMe()->getCID().getData(), CID::SIZE);
+		th.update(SETTING(CLIENT_ID).c_str(), SETTING(CLIENT_ID).length());
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, SALT_SIZE);
 		send(Command(Command::PAS(), Command::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
@@ -302,12 +300,14 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("DE", getDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
 	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
+	ADDPARAM("SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
+	ADDPARAM("EM", SETTING(EMAIL));
 	ADDPARAM("HN", Util::toString(counts.normal));
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
-	ADDPARAM("VE", "++\\ " VERSIONSTRING);
-	ADDPARAM("I4", "0.0.0.0");
+	ADDPARAM("VE", "++ " VERSIONSTRING);
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+		ADDPARAM("I4", "0.0.0.0");
 		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
 	} else {
 		ADDPARAM("U4", "");

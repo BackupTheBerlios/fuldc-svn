@@ -329,7 +329,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->connect(server, (short)Util::toInt(port), getNick()); 
+		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getNick()); 
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::ConnectToMe(), this, server, (short)Util::toInt(port));
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_CONNECTED) {

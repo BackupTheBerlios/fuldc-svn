@@ -328,7 +328,7 @@ void SettingsManager::load(string const& aFileName)
 			set(UDP_PORT, SETTING(IN_PORT));
 		}
 
-		if(SETTING(CLIENT_ID).empty())
+		if(CID(SETTING(CLIENT_ID)).isZero())
 			set(CLIENT_ID, CID::generate().toBase32());
 
 #ifdef _DEBUG

@@ -162,7 +162,12 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 	}
 }
 
-void ConnectionManager::putUploadConnection(UserConnection* aSource) {
+/** @todo fixme */
+void ConnectionManager::putUploadConnection(UserConnection* aSource, bool ntd) {
+	if(ntd) {
+		// We should pass it to the download manager...
+
+	}
 	{
 		Lock l(cs);
 		dcassert(find(active.begin(), active.end(), aSource->getCQI()) != active.end());
@@ -346,7 +351,7 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	}
 }
 
-void ConnectionManager::connect(const string& aServer, short aPort, const string& aNick) {
+void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick) {
 	if(shuttingDown)
 		return;
 
@@ -355,6 +360,7 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 		uc = getConnection(true);
 		uc->setNick(aNick);
 		uc->setState(UserConnection::STATE_CONNECT);
+		uc->setFlag(UserConnection::FLAG_NMDC);
 		uc->connect(aServer, aPort);
 	} catch(const SocketException&) {
 		if(uc)
@@ -362,14 +368,13 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 	}
 }
 
-void ConnectionManager::connect(const string& aServer, short aPort, const CID& aCID, const string& aToken) {
+void ConnectionManager::adcConnect(const string& aServer, short aPort, const string& aToken) {
 	if(shuttingDown)
 		return;
 
 	UserConnection* uc = NULL;
 	try {
 		uc = getConnection(false);
-		uc->setCID(aCID);
 		uc->setToken(aToken);
 		uc->setState(UserConnection::STATE_CONNECT);
 		uc->connect(aServer, aPort);
@@ -600,7 +605,6 @@ void ConnectionManager::on(Command::INF, UserConnection* aSource, const Command&
 	}
 
 	aSource->setUser(ClientManager::getInstance()->getUser(cmd.getFrom(), false));
-	aSource->setCID(cmd.getFrom());
 
 	if(!aSource->getUser()) {
 		dcdebug("CM::onINF: User not found");

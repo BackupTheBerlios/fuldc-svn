@@ -73,6 +73,8 @@ public:
 	int64_t getShareSize() throw();
 	int64_t getShareSize(const string& aDir) throw();
 
+	size_t getSharedFiles() throw();
+
 	string getShareSizeString() { return Util::toString(getShareSize()); };
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
 	
@@ -173,20 +175,17 @@ private:
 		string getFullName() const throw(); 
 
 		int64_t getSize() {
-			/*int64_t tmp = size;
-			for(MapIter i = directories.begin(); i != directories.end(); ++i) {
+			int64_t tmp = size;
+			for(MapIter i = directories.begin(); i != directories.end(); ++i)
 				tmp+=i->second->getSize();
-			}
-			return tmp;*/
-
-			int64_t tmp = 0;
-			for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-				tmp+=i->second->getSize();
-			}
-			for(File::Iter i = files.begin(); i != files.end(); ++i){
-				tmp += i->getSize();
-			}
 			return tmp;
+		}
+
+		size_t countFiles() {
+			size_t tmp = files.size();
+			for(MapIter i = directories.begin(); i != directories.end(); ++i)
+				tmp+=i->second->countFiles();
+			return tmp;			
 		}
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
