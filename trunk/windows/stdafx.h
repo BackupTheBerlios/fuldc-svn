@@ -52,6 +52,7 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlsplit.h>
 #include <Shellapi.h>
+#include <HtmlHelp.h>
 #endif // _WIN32
 
 #define WM_SPEAKER (WM_APP + 500)

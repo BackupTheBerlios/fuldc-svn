@@ -96,6 +96,8 @@ public:
 		MESSAGE_HANDLER(WM_COPYDATA, onCopyData)
 		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
 		MESSAGE_HANDLER(SERVER_SOCKET_MESSAGE, onServerSocket)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
+		COMMAND_ID_HANDLER(IDC_HELP_CONTENTS, onMenuHelp)
 		MESSAGE_HANDLER(WM_APPCOMMAND, onAppCommand)
 		MESSAGE_HANDLER(WM_USER, onCheckButton)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onRefreshMenu)
@@ -180,6 +182,8 @@ public:
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onMenuHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSwitchWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

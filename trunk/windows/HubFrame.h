@@ -303,7 +303,6 @@ private:
 			client->setDescription(Text::fromT(aDescription));
 		client->setPassword(Text::fromT(aPassword));
 		client->addListener(this);
-
 		timeStamps = BOOLSETTING(TIME_STAMPS);
 		
 		tabList.push_back(_T("/away"));

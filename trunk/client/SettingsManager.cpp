@@ -160,7 +160,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_FAVORITE_HUBS, false);
 	setDefault(OPEN_FINISHED_DOWNLOADS, false);
 	setDefault(HUB_USER_COMMANDS, true);
-	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
+	setDefault(AUTO_SEARCH_AUTO_MATCH, false);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, true);

@@ -44,10 +44,12 @@ Section "DC++ (required)"
 no_backup:
   ; Put file there
   File "/oname=DCPlusPlus.exe" "App\DCPlusPlus.exe"
+  File "/oname=DCPlusPlus.chm" "App\DCPlusPlus.chm"
   File "Readme.txt"
   File "ChangeLog.txt"
   File "Example.xml"
   File "License.txt"
+  File "License-GeoIP.txt"
   File "Magnet.exe"
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\DC++ "Install_Dir" "$INSTDIR"
@@ -89,8 +91,10 @@ Section "un.Uninstall"
   DeleteRegKey HKLM SOFTWARE\DC++
   ; remove files
   Delete "$INSTDIR\DCPlusPlus.exe"
+  Delete "$INSTDIR\DCPlusPlus.chm"
   Delete "$INSTDIR\dbghelp.dll"
   Delete "$INSTDIR\DCPlusPlus.pdb"
+  Delete "License-GeoIP.txt"
   Delete "$INSTDIR\License.txt"
   Delete "$INSTDIR\ChangeLog.txt"
   Delete "$INSTDIR\ReadMe.txt"

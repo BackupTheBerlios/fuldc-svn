@@ -186,6 +186,7 @@
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuAbout">About DC++...</String>
 		<String Name="MenuChangelog">Change Log</String>
+		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
 		<String Name="MenuDonate">Donate €€€/$$$ (paypal)</String>
 		<String Name="MenuHelpDownloads">Downloads</String>
@@ -286,6 +287,7 @@
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search String</String>
 		<String Name="SearchingFor">Searching for </String>
+		<String Name="SeekBeyondEnd">Request to seek beyond the end of data</String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Separator">Separator</String>
 		<String Name="Server">Server</String>

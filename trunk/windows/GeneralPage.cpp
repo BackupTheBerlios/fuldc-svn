@@ -25,12 +25,6 @@
 #include "../client/Socket.h"
 #include "WinUtil.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_PERSONAL_INFORMATION, ResourceManager::SETTINGS_PERSONAL_INFORMATION },
 	{ IDC_SETTINGS_NICK, ResourceManager::NICK },
@@ -197,6 +191,16 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 	}
 
 	return TRUE;
+}
+
+LRESULT GeneralPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
+	return 0;
+}
+
+LRESULT GeneralPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
+	return 0;
 }
 
 /**

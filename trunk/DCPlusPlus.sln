@@ -30,6 +30,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Regex", "Regex.vcproj", "{6
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup.vdproj", "{A1DDAB4C-B606-4928-B934-727AC4AFD33F}"
 	ProjectSection(ProjectDependencies) = postProject
+		{9011F311-1280-4C2D-888C-B3202DC2A6ED} = {9011F311-1280-4C2D-888C-B3202DC2A6ED}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "help", "help\help.vcproj", "{9011F311-1280-4C2D-888C-B3202DC2A6ED}"
+	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Global
@@ -65,6 +70,10 @@ Global
 		{6B5E1154-D1FC-460A-B5F4-78ACB1E96349}.Release.Build.0 = Release|Win32
 		{A1DDAB4C-B606-4928-B934-727AC4AFD33F}.Debug.ActiveCfg = Debug
 		{A1DDAB4C-B606-4928-B934-727AC4AFD33F}.Release.ActiveCfg = Release
+		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Debug.ActiveCfg = Release|Win32
+		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Debug.Build.0 = Release|Win32
+		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Release.ActiveCfg = Release|Win32
+		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

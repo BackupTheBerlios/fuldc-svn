@@ -24,12 +24,6 @@
 #include "../client/SettingsManager.h"
 #include "WinUtil.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem Advanced2Page::texts[] = {
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
 	{ IDC_SETTINGS_LOG_DIR, ResourceManager::DIRECTORY},
@@ -116,6 +110,16 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		
 		SetDlgItemText(IDC_LOG_DIRECTORY, dir.c_str());
 	}
+	return 0;
+}
+
+LRESULT Advanced2Page::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED2PAGE);
+	return 0;
+}
+
+LRESULT Advanced2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED2PAGE);
 	return 0;
 }
 

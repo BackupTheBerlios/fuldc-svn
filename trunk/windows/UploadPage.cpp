@@ -29,20 +29,14 @@
 #include "../client/ShareManager.h"
 #include "../client/SettingsManager.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
-	{ IDC_SETTINGS_SHARE_SIZE, ResourceManager::SETTINGS_SHARE_SIZE }, 
+	{ IDC_SETTINGS_SHARE_SIZE, ResourceManager::SETTINGS_SHARE_SIZE },
 	{ IDC_SHAREHIDDEN, ResourceManager::SETTINGS_SHARE_HIDDEN },
 	{ IDC_REMOVE, ResourceManager::REMOVE },
 	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
 	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, ResourceManager::SETTINGS_UPLOADS_MIN_SPEED },
-	{ IDC_SETTINGS_KBPS, ResourceManager::KBPS }, 
+	{ IDC_SETTINGS_KBPS, ResourceManager::KBPS },
 	{ IDC_SETTINGS_UPLOADS_SLOTS, ResourceManager::SETTINGS_UPLOADS_SLOTS },
 	{ IDC_SETTINGS_ONLY_HASHED, ResourceManager::SETTINGS_ONLY_HASHED },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
@@ -108,7 +102,6 @@ LRESULT UploadPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	return 0;
 }
 
-
 void UploadPage::write()
 {
 	PropPage::write((HWND)*this, items);
@@ -163,7 +156,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		ctrlDirectories.GetItem(&item);
 		string t = Text::fromT(buf);
 		ShareManager::getInstance()->removeDirectory( t );
-		HashManager::getInstance()->remove( t );
+		HashManager::getInstance()->stopHashing( t );
 		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		ctrlDirectories.DeleteItem(i);
 	}
@@ -198,6 +191,16 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 	// Display the new total share size
 	ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
+	return 0;
+}
+
+LRESULT UploadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UPLOADPAGE);
+	return 0;
+}
+
+LRESULT UploadPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UPLOADPAGE);
 	return 0;
 }
 

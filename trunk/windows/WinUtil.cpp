@@ -67,6 +67,7 @@ FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
 tstring WinUtil::tth;
 StringPairList WinUtil::initialDirs;
+DWORD WinUtil::helpCookie = 0;
 HWND WinUtil::findDialog = NULL;
 const time_t WinUtil::startTime = GET_TIME();
 DWORD WinUtil::comCtlVersion = 0;
@@ -238,6 +239,8 @@ void WinUtil::init(HWND hWnd) {
 	CMenuHandle help;
 	help.CreatePopupMenu();
 
+	help.AppendMenu(MF_STRING, IDC_HELP_CONTENTS, CTSTRING(MENU_CONTENTS));
+	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	help.AppendMenu(MF_STRING, IDC_HELP_README, CTSTRING(MENU_README));
 	help.AppendMenu(MF_STRING, IDC_HELP_CHANGELOG, CTSTRING(MENU_CHANGELOG));
 	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CTSTRING(MENU_ABOUT));
@@ -299,9 +302,13 @@ void WinUtil::init(HWND hWnd) {
 	}
 
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
+
+	HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
 }
 
 void WinUtil::uninit() {
+	HtmlHelp(NULL, NULL, HH_UNINITIALIZE, helpCookie);
+
 	fileImages.Destroy();
 	userImages.Destroy();
 	::DeleteObject(font);
@@ -531,7 +538,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		if(!param.empty()){
 			string t = Text::fromT(param);
 			ShareManager::getInstance()->removeDirectory( t );
-			HashManager::getInstance()->remove( t );
+			HashManager::getInstance()->stopHashing( t );
 			status = TSTRING(REMOVED) + _T(" ") + param;
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
@@ -593,7 +600,6 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		WinUtil::SearchSite(WebShortcuts::getInstance()->getShortcutByKey(cmd), param);
 	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
 		HashManager::getInstance()->rebuild();
-		status = TSTRING(HASH_REBUILT);
 	} else {
 		return false;
 	}

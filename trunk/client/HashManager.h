@@ -64,6 +64,13 @@ public:
 	//aren't availible
 	void checkTTH(const string& aFileName, int64_t aSize);
 
+	void stopHashing(const string& baseDir) {
+		hasher.stopHashing(baseDir);
+	}
+
+	void setPriority(Thread::Priority p) {
+		hasher.setThreadPriority(p);
+	}
 	/**
 	 * Retrieves TTH root or queue's file for hashing.
 	 * @return TTH root if available, otherwise NULL
@@ -84,8 +91,7 @@ public:
 	 * Rebuild hash data file
 	 */
 	void rebuild() {
-		Lock l(cs);
-		store.rebuild();
+		hasher.scheduleRebuild();
 	}
 
 	void startup() {
@@ -100,23 +106,30 @@ public:
 		store.save();
 	}
 
-	void remove( const string& aPath ){
-		Lock l(cs);
-		hasher.remove( aPath );
-	}
-
 private:
 
 	class Hasher : public Thread {
 	public:
 		enum { MIN_BLOCK_SIZE = 64*1024 };
-		Hasher() : stop(false), running(false), total(0) { }
+		Hasher() : stop(false), running(false), total(0), rebuild(false) { }
 
 		void hashFile(const string& fileName, int64_t size) {
 			Lock l(cs);
-			if(w.insert(fileName).second) {
+			if(w.insert(make_pair(fileName, size)).second) {
 				s.signal();
 				total += size;
+			}
+		}
+
+		void stopHashing(const string& baseDir) {
+			Lock l(cs);
+			for(WorkIter i = w.begin(); i != w.end(); ) {
+				if(Util::strnicmp(baseDir, i->first, baseDir.length()) == 0) {
+					total -= i->second;
+					w.erase(i++);
+				} else {
+					++i;
+				}
 			}
 		}
 
@@ -130,27 +143,33 @@ private:
 			filesLeft = w.size();
 			if(running)
 				filesLeft++;
+			// Just in case...
+			if(total < 0)
+				total = 0;
 			bytesLeft = total;
 		}
 		void shutdown() {
 			stop = true;
 			s.signal();
 		}
-
-		void remove( const string & aPath );
+		void scheduleRebuild() {
+			rebuild = true;
+			s.signal();
+		}
 
 	private:
 		// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless.
 		// set because it's sorted (to avoid random hash order that would create quite strange shares while hashing)
-		typedef set<string> WorkSet;	
-		typedef WorkSet::iterator WorkIter;
+		typedef map<string, int64_t> WorkMap;	
+		typedef WorkMap::iterator WorkIter;
 
-		WorkSet w;
+		WorkMap w;
 		CriticalSection cs;
 		Semaphore s;
 
 		bool stop;
 		bool running;
+		bool rebuild;
 		int64_t total;
 		string file;
 	};

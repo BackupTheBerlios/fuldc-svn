@@ -183,6 +183,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D989F593BE1F4EFFB97A181157B18B0E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E41060A496A94748ADFE4393AA7E35E4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -791,6 +797,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_D989F593BE1F4EFFB97A181157B18B0E"
+            {
+            "SourcePath" = "8:app\\DCPlusPlus.chm"
+            "TargetName" = "8:DCPlusPlus.chm"
+            "Tag" = "8:"
+            "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{A582A373-4685-4296-BEFE-614B80A702C3}:_E41060A496A94748ADFE4393AA7E35E4"
             {
             "SourcePath" = "8:res\\FavoriteUser.ico"
@@ -1019,6 +1045,20 @@
         }
         "Shortcut"
         {
+            "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_D5C60746E9414CF78EA481324580B41E"
+            {
+            "Name" = "8:Help"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_D989F593BE1F4EFFB97A181157B18B0E"
+            "Folder" = "8:_6A3A3E6E96A7422C8E04510A8FEA186D"
+            "WorkingFolder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
             "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_ED7F61E93AFF4447A937C083004CF7AB"
             {
             "Name" = "8:Changelog.txt"

@@ -437,20 +437,6 @@ cleanup:
 }
 #endif
 
-void HashManager::Hasher::remove( const string & aPath ){
-	Lock l(cs);
-	WorkIter i; //i is the actual iterator, j is temp
-	
-	i = w.begin();
-
-	while( i != w.end() ){
-		if(Util::strnicmp(aPath, *i, aPath.length()) == 0){
-			w.erase(i++);
-		} else {
-			i++;
-		}
-	}
-}
 int HashManager::Hasher::run() {
 	setThreadPriority(Thread::IDLE);
 
@@ -463,10 +449,17 @@ int HashManager::Hasher::run() {
 		s.wait();
 		if(stop)
 			break;
+		if(rebuild) {
+			Lock l(cs);
+			HashManager::getInstance()->store.rebuild();
+			rebuild = false;
+			LogManager::getInstance()->message(STRING(HASH_REBUILT));
+			continue;
+		}
 		{
 			Lock l(cs);
 			if(!w.empty()) {
-				file = fname = *w.begin();
+				file = fname = w.begin()->first;
 				w.erase(w.begin());
 				last = w.empty();
 			} else {
@@ -508,7 +501,6 @@ int HashManager::Hasher::run() {
 #endif
 					do {
 						size_t bufSize = BUF_SIZE;
-#ifdef _WIN32
 						if(SETTING(MAX_HASH_SPEED) > 0) {
 							u_int32_t now = GET_TICK();
 							u_int32_t minTime = n * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
@@ -516,9 +508,6 @@ int HashManager::Hasher::run() {
 								Thread::sleep(minTime - (now - lastRead));
 							}
 						}
-#else
-#warning FIXME - Add speed measurement and throttling for non WIN32 platforms
-#endif
 						n = f.read(buf, bufSize);
 						tth->update(buf, n);
 

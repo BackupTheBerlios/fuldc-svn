@@ -26,12 +26,6 @@
 
 #include "WinUtil.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_COLORS, ResourceManager::SETTINGS_COLORS },
 	{ IDC_SELWINCOLOR, ResourceManager::SETTINGS_SELECT_WINDOW_COLOR },
@@ -190,6 +184,16 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 			break;
 	};
 	return true;
+}
+
+LRESULT AppearancePage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCEPAGE);
+	return 0;
+}
+
+LRESULT AppearancePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCEPAGE);
+	return 0;
 }
 
 /**

@@ -79,6 +79,7 @@ public:
 	static HHOOK hook;
 	static tstring tth;
 	static StringPairList initialDirs;
+	static DWORD helpCookie;
 	static HWND findDialog;
 	static const time_t startTime;
 	static DWORD comCtlVersion;
@@ -145,6 +146,9 @@ public:
 
 	static void addLastDir(const tstring& dir);
 
+	static tstring getHelpFile() {
+		return Text::toT(Util::getAppPath() + "DCPlusPlus.chm");
+	}
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
