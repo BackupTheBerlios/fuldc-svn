@@ -50,8 +50,8 @@ void ResourceManager::loadLanguage(const string& aFile) {
 					if(j != h.end()) {
 						strings[j->second] = xml.getChildData();
 					}
-					createWide();
 				}
+				createWide();
 			}
 		}
 	} catch(const Exception&) {

@@ -1105,7 +1105,7 @@ void QueueManager::saveQueue() throw() {
 
 class QueueLoader : public SimpleXMLReader::CallBack {
 public:
-	QueueLoader() : cur(NULL), queueVersion(0), inDownloads(false) { };
+	QueueLoader() : cur(NULL), inDownloads(false) { };
 	virtual ~QueueLoader() { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
@@ -1113,10 +1113,7 @@ private:
 	string target;
 
 	QueueItem* cur;
-	float queueVersion;
 	bool inDownloads;
-	
-
 };
 
 void QueueManager::loadQueue() throw() {
@@ -1148,7 +1145,6 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 	QueueManager* qm = QueueManager::getInstance();
 	if(!inDownloads && name == "Downloads") {
 		inDownloads = true;
-		queueVersion = Util::toFloat(getAttrib(attribs, "Version", 0));
 	} else if(inDownloads) {
 		if(cur == NULL && name == sDownload) {
 			int flags = QueueItem::FLAG_RESUME;
@@ -1157,12 +1153,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				return;
 			try {
 				const string& tgt = getAttrib(attribs, sTarget, 0);
-				// Old queues saved in ACP...
-				if(queueVersion <= 0.4032) {
-					target = QueueManager::checkTarget(Text::acpToUtf8(tgt), size, flags);
-				} else {
-					target = QueueManager::checkTarget(tgt, size, flags);
-				}
+				target = QueueManager::checkTarget(tgt, size, flags);
 				if(target.empty())
 					return;
 			} catch(const Exception&) {
@@ -1170,9 +1161,6 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			}
 			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority, 3));
 			string tempTarget = getAttrib(attribs, sTempTarget, 4);
-			if(queueVersion <= 0.4032) {
-				tempTarget = Text::acpToUtf8(tempTarget);				
-			}
 			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded, 5));
 			const string& tthRoot = getAttrib(attribs, sTTH, 6);
 			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded, 6));

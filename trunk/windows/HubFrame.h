@@ -248,8 +248,8 @@ private:
 					return 1;
 				}
 			}
-			if(col == COLUMN_SHARED){
-				return a->user->getBytesShared() > b->user->getBytesShared() ? 1 : -1;
+			if(col == COLUMN_SHARED) {
+				return compare(a->user->getBytesShared(), b->user->getBytesShared());
 			}
 			return Util::stricmp(a->columns[col], b->columns[col]);	
 		}

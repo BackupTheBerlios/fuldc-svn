@@ -97,40 +97,6 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	}
 
 	HubManager::getInstance()->load();
-	
-	double v = Util::toDouble(SETTING(CONFIG_VERSION));
-	if(v <= 0.22) {
-		// Disable automatic public hublist opening
-		SettingsManager::getInstance()->set(SettingsManager::OPEN_PUBLIC, false);
-	}
-	if(v <= 0.251) {
-		StringTokenizer<string> st(SETTING(HUBLIST_SERVERS), ';');
-		StringList& sl = st.getTokens();
-		StringList sl2;
-		bool defFound = false;
-		StringIter si;
-		for(si = sl.begin(); si != sl.end(); ++si) {
-			if((si->find("http://dcplusplus.sourceforge.net") != string::npos) ||
-				(si->find("http://dcpp.lichlord.org") != string::npos))
-			{
-				if(!defFound) {
-					sl2.push_back("http://www.hublist.org/PublicHubList.config.bz2");
-					defFound = true;
-				}
-			} else {
-				sl2.push_back(*si);
-			}
-		}
-		string tmp;
-		for(si = sl2.begin(); si != sl2.end(); ++si) {
-			tmp += *si + ';';
-		}
-
-		if(!tmp.empty()) {
-			tmp.erase(tmp.length()-1);
-			SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
-		}
-	}
 
 	if(f != NULL)
 		(*f)(p, tku[index], STRING(HASH_DATABASE));

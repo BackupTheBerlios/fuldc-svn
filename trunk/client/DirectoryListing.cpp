@@ -247,7 +247,7 @@ string DirectoryListing::getPath(Directory* d) {
 }
 
 static inline const string& escaper(const string& n, string& tmp, bool utf8) {
-	return utf8 ? n : tmp.clear(), Text::acpToUtf8(n, tmp);
+	return utf8 ? n : (tmp.clear(), Text::acpToUtf8(n, tmp));
 }
 
 void DirectoryListing::download(Directory* aDir, const string& aTarget) {

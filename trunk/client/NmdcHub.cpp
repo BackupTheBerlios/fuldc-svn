@@ -241,11 +241,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$MyINFO") {
 		string::size_type i, j;
 		i = 5;
-		string nick;
 		j = param.find(' ', i);
 		if( (j == string::npos) || (j == i) )
 			return;
-		nick = fromNmdc(param.substr(i, j-i));
+		string nick = fromNmdc(param.substr(i, j-i));
 		i = j + 1;
 		User::Ptr u;
 		dcassert(nick.size() > 0);
