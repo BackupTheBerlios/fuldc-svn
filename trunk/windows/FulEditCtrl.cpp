@@ -3,6 +3,7 @@
 #include "Resource.h"
 #include "../client/highlightmanager.h"
 #include "../client/LogManager.h"
+#include "../client/ResourceManager.h"
 
 #include "../regex/pme.h"
 
@@ -233,9 +234,9 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 
 	//do we want to highlight the timestamps
 	if( cs->getTimestamps() ) {
-		index = line.find("[");
-		if( index != 0 )
+		if( line[0] != '[' )
 			return string::npos;
+		index = 0;
 	} else if( cs->getUsers() ) {
 		index = line.find("<");
 	}else{
@@ -281,8 +282,12 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 	begin = lineIndex;
 		
 	if( cs->getTimestamps() ) {
+		string::size_type pos = line.find("]");
+		if( pos == string::npos ) 
+			return string::npos;  //hmm no ]? this can't be right, return
+		
 		begin += index +1;
-		end = begin + 8;
+		end = begin + pos -1;
 	} else if( cs->getUsers() ) {
 		end = begin + line.find(">");
 		begin += index +1;
@@ -482,7 +487,7 @@ LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 		//if we find the end of the document, notify the user and return
 		int result = (int)SendMessage(EM_FINDTEXT, (WPARAM)flags, (LPARAM)&ft);
 		if(-1 == result){
-			//MessageBox(CSTRING(FINISHED_SEARCHING), "fulDC", MB_OK | MB_ICONINFORMATION);
+			MessageBox(CSTRING(FINISHED_SEARCHING), "fulDC", MB_OK | MB_ICONINFORMATION);
 			curFindPos = 0;
 			return 0;
 		}

@@ -114,14 +114,11 @@ public:
 		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
-		TimerManager::getInstance()->addListener(this);
 		StringTokenizer token(SETTING(DOWNLOAD_TO_PATHS), "|");
 		downloadPaths = token.getTokens();
 	}
 
-	virtual ~SearchFrame() {
-		TimerManager::getInstance()->removeListener(this);
-	}
+	virtual ~SearchFrame() {}
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);

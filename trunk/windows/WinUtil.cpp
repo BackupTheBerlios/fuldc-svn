@@ -495,9 +495,13 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		}
 	} else if(Util::stricmp(cmd.c_str(), "share") == 0){
 		if(!param.empty()){
-			ShareManager::getInstance()->addDirectory(param);
-			status = STRING(ADDED) + " " + param;
-		}
+			try{
+				ShareManager::getInstance()->addDirectory(param);
+				status = STRING(ADDED) + " " + param;
+			}catch(ShareException &se){
+				status = se.getError();
+			}
+		}	
 	} else if(Util::stricmp(cmd.c_str(), "unshare") == 0) {
 		if(!param.empty()){
 			ShareManager::getInstance()->removeDirectory(param);

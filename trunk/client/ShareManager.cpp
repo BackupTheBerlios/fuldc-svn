@@ -413,6 +413,8 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 		}
 	}
 	dirty = true;
+
+	HashManager::getInstance()->remove( d );
 }
 
 void ShareManager::addFinishedFile(Directory* aParent, const string& aName, int64_t aSize) {
@@ -643,6 +645,9 @@ int ShareManager::run() {
 
 	string tmp, tmp2;
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
+	
+	//pause the hashmanager so we don't get any "broken" directories in the file list
+	HashManager::getInstance()->pause();
 	{
 		WLock l(cs);
 	
@@ -672,7 +677,7 @@ int ShareManager::run() {
 			StringList dirs = getDirectories();
 			for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
 				removeDirectory(*k);
-				}
+			}
 			bloom.clear();
             for(StringIter l = dirs.begin(); l != dirs.end(); ++l) {
 				try {
@@ -746,6 +751,10 @@ int ShareManager::run() {
 	}
 
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
+
+	//restart the hashmanager
+	HashManager::getInstance()->resume();
+
 	if(update) {
 		ClientManager::getInstance()->infoUpdated();
 	}

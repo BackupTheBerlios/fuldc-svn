@@ -79,7 +79,6 @@ public:
 		string::size_type pos = aNick.find("[");
 		if( pos != string::npos ) {
 			string::size_type rpos = aNick.rfind("]");
-			dcdebug("rpos=%d aNick.length()=%d", rpos, aNick.length());
 			if( rpos == aNick.length() -1 && rpos > 0 ) // this user has a stupid fucking nick bah ugly hate it
 				rpos = aNick.rfind("]", rpos-1);
 			if(rpos != string::npos) {

@@ -440,6 +440,21 @@ cleanup:
 }
 #endif
 
+void HashManager::Hasher::remove( const string & aPath ){
+	Lock l(cs);
+	WorkIter i,j; //i is the actual iterator, j is temp
+	
+	i = w.begin();
+
+	while( i != w.end() ){
+		if(Util::strnicmp(aPath, *i, aPath.length()) == 0){
+			j = i++;
+			w.erase(j);
+		} else {
+			i++;
+		}
+	}
+}
 int HashManager::Hasher::run() {
 	setThreadPriority(Thread::IDLE);
 
@@ -453,6 +468,9 @@ int HashManager::Hasher::run() {
 		s.wait();
 		if(stop)
 			break;
+		if(bPause)
+			p.wait();
+
 		{
 			Lock l(cs);
 			if(!w.empty()) {

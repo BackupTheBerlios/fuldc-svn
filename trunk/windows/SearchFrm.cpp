@@ -238,6 +238,9 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	WinUtil::SetIcon(m_hWnd, "search.ico");
 
+	//add this here to avoid getting messages before m_hWnd is created
+	TimerManager::getInstance()->addListener(this);
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -563,6 +566,7 @@ LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL
 LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if(!closed) {
+		TimerManager::getInstance()->removeListener(this);
 		SearchManager::getInstance()->removeListener(this);
  		ClientManager* clientMgr = ClientManager::getInstance();
  		clientMgr->removeListener(this);

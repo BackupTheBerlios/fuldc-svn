@@ -384,9 +384,6 @@ public:
 		dc.SelectFont(oldfont);
 		::ReleaseDC(m_hWnd, dc);
 
-		//Set the background brush, easier than processing WM_ERASEBKGND =)
-		::SetClassLongPtr(m_hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)::CreateSolidBrush(SETTING(TAB_INACTIVE_BG)));
-		
 		return 0;
 	}
 
@@ -425,10 +422,14 @@ public:
 					}
 				}
 			}
-			HPEN oldpen = memDC.SelectPen(black);
-			for(int r = 0; r < rows; r++) {
-				memDC.MoveTo(rc.left, r*getTabHeight());
-				memDC.LineTo(rc.right, r*getTabHeight());
+			
+			if(rows > 1){
+				HPEN oldpen = memDC.SelectPen(::CreatePen(PS_SOLID, 1, SETTING(TAB_INACTIVE_BORDER)));
+				for(int r = 0; r < rows; r++) {
+					memDC.MoveTo(rc.left, r*getTabHeight());
+					memDC.LineTo(rc.right, r*getTabHeight());
+				}
+				::DeleteObject(memDC.SelectPen(oldpen));
 			}
 
 			if(drawActive) {
@@ -440,7 +441,6 @@ public:
 				memDC.LineTo(active->xpos + active->getWidth(), y);
 				DeleteObject(memDC.SelectPen(pen));
 			}
-			memDC.SelectPen(oldpen);
 			memDC.SelectFont(oldfont);
 			memDC.Paint();
 		}

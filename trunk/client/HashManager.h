@@ -89,12 +89,24 @@ public:
 		store.save();
 	}
 
+	void pause(){
+		hasher.pause();
+	}
+
+	void resume() {
+		hasher.resume();
+	}
+
+	void remove( const string& aPath ){
+		hasher.remove( aPath );
+	}
+
 private:
 
 	class Hasher : public Thread {
 	public:
 		enum { MIN_BLOCK_SIZE = 64*1024 };
-		Hasher() : stop(false) { }
+		Hasher() : stop(false), bPause(false) { }
 
 		void hashFile(const string& fileName) {
 			Lock l(cs);
@@ -107,6 +119,17 @@ private:
 			s.signal();
 		}
 
+		void pause(){
+			bPause = true;
+		}
+
+		void resume() {
+			bPause = false;
+			p.signal();
+		}
+
+		void remove( const string & aPath );
+
 	private:
 		typedef set<string, noCaseStringLess> WorkSet;
 		typedef WorkSet::iterator WorkIter;
@@ -114,8 +137,10 @@ private:
 		WorkSet w;
 		CriticalSection cs;
 		Semaphore s;
+		Semaphore p; //used to pause execution
 
 		bool stop;
+		bool bPause;
 
 	};
 
