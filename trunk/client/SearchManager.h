@@ -81,6 +81,9 @@ public:
 	int getFreeSlots() const { return freeSlots; }
 	const string& getIP() const { return IP; }
 	TTHValue* getTTH() const { return tth; }
+	
+	//will be false if it's a nmdc result
+	//true if it's an ADC result
 	bool getUtf8() const { return utf8; }
 
 	void incRef() { Thread::safeInc(ref); }
@@ -108,6 +111,8 @@ private:
 	string IP;
 	TTHValue* tth;
 	
+	//will be false if it's a nmdc result
+	//true if it's an ADC result
 	bool utf8;
 	volatile long ref;
 
