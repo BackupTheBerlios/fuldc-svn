@@ -74,7 +74,7 @@ void ClientManager::infoUpdated() {
 	Lock l(cs);
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 		if((*i)->isConnected()) {
-			(*i)->info();
+			(*i)->info(false);
 		}
 	}
 }
@@ -119,14 +119,11 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 				Util::decodeUrl(aSeeker, ip, port, file);
 				ip = Socket::resolve(ip);
 				if(port == 0) port = 412;
-				
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					s.writeTo(ip, port, sr->toSR());	
+					s.writeTo(ip, port, sr->toSR());
 					sr->decRef();
 				}
-				
-
 			} catch(const SocketException& /* e */) {
 				dcdebug("Search caught error\n");
 			}
@@ -310,7 +307,7 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 
 	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
-		(*j)->info();
+		(*j)->info(false);
 	}
 }
 

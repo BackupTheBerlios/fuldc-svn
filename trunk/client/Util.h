@@ -56,13 +56,10 @@ private:
 
 template<class T>
 struct PointerHash {
-#if _MSC_VER < 1300 
-	enum {bucket_size = 4}; 
-	enum {min_buckets = 8}; 
-#else 
+#if _MSC_VER >= 1300 
 	static const size_t bucket_size = 4; 
 	static const size_t min_buckets = 8; 
-#endif // _MSC_VER == 1200
+#endif 
 	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); };
 	bool operator()(const T* a, const T* b) { return a < b; };
 };

@@ -1,5 +1,5 @@
 /* 
-  * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,13 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.666"
-#define VERSIONFLOAT 0.666
+#define VERSIONSTRING "0.6665"
+#define VERSIONFLOAT 0.6665
 
 #define FULDC "fulDC"
-#ifdef _DEBUG
-#define FULVERSIONSTRING "6.54 svn$WCREV$"
-#else
-#define FULVERSIONSTRING "6.54"
+#define FULVERSIONSTRING "6.55 Beta 1 svn$WCREV$"
+#ifdef _DEBUG 
+#define FULVERSIONSTRING "6.55 Beta 1"
 #endif
 
 /* Update the .rc file as well... */

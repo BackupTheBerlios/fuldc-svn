@@ -38,7 +38,7 @@ public:
 	virtual void sendUserCmd(const string& aUserCmd) { send(aUserCmd); }
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
 	virtual void password(const string& pwd);
-	virtual void info();
+	virtual void info(bool alwaysSend);
 	virtual string checkNick(const string& nick);
 	virtual string getHubURL();
 

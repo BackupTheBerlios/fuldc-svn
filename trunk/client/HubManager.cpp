@@ -176,7 +176,7 @@ void HubManager::onHttpFinished() throw() {
 
 	{
 		Lock l(cs);
-		publicHubs.clear();
+		publicListMatrix[publicListServer].clear();
 
 		if(x->compare(0, 5, "<?xml") == 0) {
 			loadXmlList(*x);
@@ -196,7 +196,7 @@ void HubManager::onHttpFinished() throw() {
 				const string& server = *k++;
 				const string& desc = *k++;
 				const string& usersOnline = *k++;
-				publicHubs.push_back(HubEntry(name, server, desc, usersOnline));
+				publicListMatrix[publicListServer].push_back(HubEntry(name, server, desc, usersOnline));
 			}
 		}
 	}
@@ -233,7 +233,7 @@ private:
 
 void HubManager::loadXmlList(const string& xml) {
 	try {
-		XmlListLoader loader(publicHubs);
+		XmlListLoader loader(publicListMatrix[publicListServer]);
 		SimpleXMLReader(&loader).fromXML(xml);
 	} catch(const SimpleXMLException&) {
 
@@ -454,26 +454,41 @@ void HubManager::load(SimpleXML* aXml) {
 	dontSave = false;
 }
 
+StringList HubManager::getHubLists() {
+	StringTokenizer<string> lists(SETTING(HUBLIST_SERVERS), ';');
+	return lists.getTokens();
+}
+
+bool HubManager::setHubList(int aHubList) {
+	if(!running) {
+		lastServer = aHubList;
+		StringList sl = getHubLists();
+		publicListServer = sl[(lastServer) % sl.size()];
+		return true;
+	}
+	return false;
+}
+
 void HubManager::refresh() {
-	StringList sl = StringTokenizer<string>(SETTING(HUBLIST_SERVERS), ';').getTokens();
+	StringList sl = getHubLists();
 	if(sl.empty())
 		return;
-	const string& server = sl[(lastServer) % sl.size()];
-	if(Util::strnicmp(server.c_str(), "http://", 7) != 0) {
+	publicListServer = sl[(lastServer) % sl.size()];
+	if(Util::strnicmp(publicListServer.c_str(), "http://", 7) != 0) {
 		lastServer++;
 		return;
 	}
 
-	fire(HubManagerListener::DownloadStarting(), server);
+	fire(HubManagerListener::DownloadStarting(), publicListServer);
 	if(!running) {
 		if(!c)
 			c = new HttpConnection();
 		{
 			Lock l(cs);
-			publicHubs.clear();
+			publicListMatrix[publicListServer].clear();
 		}
 		c->addListener(this);
-		c->downloadFile(server);
+		c->downloadFile(publicListServer);
 		running = true;
 	}
 }

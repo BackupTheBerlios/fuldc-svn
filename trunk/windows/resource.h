@@ -134,6 +134,17 @@
 #define IDC_FH_USER_DESC                272
 #define IDC_USER_CMD_PREVIEW            273
 #define IDC_USER_CMD_OPEN_HELP          274
+#define IDC_PUB_LIST_CONFIG             275
+#define IDC_PUB_LIST_DROPDOWN           276
+#define IDC_SETTINGS_LIST_CONFIG        277
+#define IDD_HUB_LIST                    278
+#define IDC_LIST_ADD                    279
+#define IDC_LIST_DESC                   280
+#define IDC_LIST_DOWN					281
+#define IDC_LIST_EDIT                   282
+#define IDC_LIST_LIST                   283
+#define IDC_LIST_REMOVE                 284
+#define IDC_LIST_UP                     285
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002

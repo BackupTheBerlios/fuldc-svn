@@ -178,7 +178,7 @@ void AdcHub::handle(Command::SUP, Command& c) throw() {
 		return;
 	}
 	state = STATE_IDENTIFY;
-	info();
+	info(true);
 }
 
 void AdcHub::handle(Command::MSG, Command& c) throw() {
@@ -315,7 +315,7 @@ void AdcHub::password(const string& pwd) {
 	}
 }
 
-void AdcHub::info() {
+void AdcHub::info(bool /*alwaysSend*/) {
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 		return;
 	if(!getMe())

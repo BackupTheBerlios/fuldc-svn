@@ -125,7 +125,7 @@ public:
 	}
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
 	virtual void password(const string& aPass) { send("$MyPass " + toNmdc(aPass) + "|"); }
-	virtual void info() { myInfo(); }
+	virtual void info(bool alwaysSend) { myInfo(alwaysSend); }
 	
 	virtual size_t getUserCount() const {  Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
@@ -142,7 +142,7 @@ public:
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
 	void disconnect() throw();
-	void myInfo();
+	void myInfo(bool alwaysSend);
 	
 	void refreshUserList(bool unknownOnly = false);
 

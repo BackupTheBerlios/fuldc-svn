@@ -111,7 +111,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		copyMenu.AppendMenu(MF_STRING, IDC_COPY + i, CTSTRING_I(columnNames[i]));
 
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
-	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
 	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)browseMenu, CTSTRING(GET_FILE_LIST));
@@ -875,34 +874,24 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		
-		tstring searchString = Text::toT(SearchManager::clean(Text::fromT(ii->getTargetFileName())));
-		
-		if(!searchString.empty()) {
-			bool bigFile = (ii->getSize() > 10*1024*1024);
-			if(bigFile) {
-				SearchFrame::openWindow(searchString, ii->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
-			} else {
-				SearchFrame::openWindow(searchString, ii->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
+		if( ii->getTTH() != NULL ) {
+			WinUtil::searchHash(ii->getTTH());
+		} else {
+			tstring searchString = Text::toT(SearchManager::clean(Text::fromT(ii->getTargetFileName())));
+			
+			if(!searchString.empty()) {
+				bool bigFile = (ii->getSize() > 10*1024*1024);
+				if(bigFile) {
+					SearchFrame::openWindow(searchString, ii->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
+				} else {
+					SearchFrame::openWindow(searchString, ii->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
+				}
 			}
 		}
-	} 
+	}
 	
 	return 0;
 }
-
-LRESULT QueueFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-
-		if(ii->getTTH() != NULL) {
-			WinUtil::searchHash(ii->getTTH());
-		}
-	} 
-	return 0;
-}
-
 
 LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	

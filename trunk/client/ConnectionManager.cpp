@@ -181,7 +181,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 			pendingAdd.clear();
 		}
 
-		bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloads() >= (size_t)SETTING(DOWNLOAD_SLOTS));
+		bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
 		bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
 		
 		bool startDown = !tooMany && !tooFast;
@@ -217,7 +217,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 
 				// Always start high-priority downloads unless we have 3 more than maxdownslots already...
 				if(!startDown) {
-					bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (DownloadManager::getInstance()->getDownloads() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
+					bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (DownloadManager::getInstance()->getDownloadCount() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
 					startDown = !extraFull && QueueManager::getInstance()->hasDownload(cqi->getUser(), QueueItem::HIGHEST);
 				}
 				if(cqi->getState() == ConnectionQueueItem::WAITING) {

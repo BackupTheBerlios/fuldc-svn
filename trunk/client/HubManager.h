@@ -150,15 +150,30 @@ class HubManager : public Speaker<HubManagerListener>, private HttpConnectionLis
 	private SettingsManagerListener
 {
 public:
-	
+// Public Hubs
+	enum HubTypes {
+		TYPE_NORMAL,
+		TYPE_BZIP2
+	};
+	StringList getHubLists();
+	bool setHubList(int /*aHubList*/);
+	int getSelectedHubList() { return lastServer; };
 	void refresh();
+	HubTypes getHubListType() { return listType; };
+	HubEntry::List getPublicHubs() {
+		Lock l(cs);
+		return publicListMatrix[publicListServer];
+	}
+	bool isDownloading() { return running; };
 
-	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
-
+// Favorite Users
 	User::List& getFavoriteUsers() { return users; };
 	
 	void addFavoriteUser(User::Ptr& aUser);
 	void removeFavoriteUser(User::Ptr& aUser);
+
+// Favorite Hubs
+	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
 
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
@@ -173,11 +188,7 @@ public:
 		return NULL;
 	}
 
-	HubEntry::List getPublicHubs() {
-		Lock l(cs);
-		return publicHubs;
-	}
-
+// User Commands
 	UserCommand addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub);
 	bool getUserCommand(int cid, UserCommand& uc);
 	bool moveUserCommand(int cid, int pos);
@@ -189,34 +200,34 @@ public:
 	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; };
 	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
 
-	bool isDownloading() { return running; };
-
 	void load();
 	void save();
-private:
 	
-	enum {
-		TYPE_NORMAL,
-		TYPE_BZIP2
-	} listType;
-
-	HubEntry::List publicHubs;
+private:
 	FavoriteHubEntry::List favoriteHubs;
 	UserCommand::List userCommands;
+	int lastId;
+
 	User::List users;
 
 	CriticalSection cs;
+
+	// Public Hubs
+	typedef map<string, HubEntry::List> PubListMap;
+	PubListMap publicListMatrix;
+	string publicListServer;
 	bool running;
 	HttpConnection* c;
 	int lastServer;
-	int lastId;
-
+	HubTypes listType;
+	string downloadBuf;
+	
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
 	friend class Singleton<HubManager>;
 	
-	HubManager() : running(false), c(NULL), lastServer(0), lastId(0), dontSave(false) {
+	HubManager() : running(false), c(NULL), lastServer(0), lastId(0), dontSave(false), listType(TYPE_NORMAL) {
 		SettingsManager::getInstance()->addListener(this);
 	}
 
@@ -230,8 +241,6 @@ private:
 		
 		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction<FavoriteHubEntry*>());
 	}
-	
-	string downloadBuf;
 	
 	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
