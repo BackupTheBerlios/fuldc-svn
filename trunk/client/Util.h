@@ -258,7 +258,7 @@ public:
 		if(_tm == NULL) {
 			strcpy(buf, "xx:xx:xx");
 		} else {
-		        strftime(buf, 64, "%X", _tm);
+			strftime(buf, 64, "%X", _tm);
 		}
 		return buf;
 	}
@@ -453,7 +453,7 @@ public:
 	/* Table-driven versions of strnicmp and stricmp */
 	static int stricmp(const char* a, const char* b) {
 		// return ::stricmp(a, b);
-        while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
+		while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			a++; b++;
 		}
 		return cmpi[(u_int8_t)*a][(u_int8_t)*b];

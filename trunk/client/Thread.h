@@ -37,7 +37,8 @@ class Thread
 public:
 #ifdef _WIN32
 	enum Priority {
-		LOW = THREAD_PRIORITY_IDLE,
+		IDLE = THREAD_PRIORITY_IDLE,
+		LOW = THREAD_PRIORITY_LOWEST,
 		NORMAL = THREAD_PRIORITY_NORMAL,
 		HIGH = THREAD_PRIORITY_HIGHEST
 	};
@@ -61,7 +62,7 @@ public:
 
 	void setThreadPriority(Priority p) { ::SetThreadPriority(threadHandle, p); };
 	
-	static void sleep(u_int32_t millis) {::Sleep(millis); };
+	static void sleep(u_int32_t millis) { ::Sleep(millis); };
 	static void yield() { ::Sleep(0); };
 	static long safeInc(long* v) { return InterlockedIncrement(v); };
 	static long safeDec(long* v) { return InterlockedDecrement(v); };
@@ -70,6 +71,7 @@ public:
 #else
 
 	enum Priority {
+		IDLE = 1,
 		LOW = 1,
 		NORMAL = 0,
 		HIGH = -1

@@ -112,7 +112,7 @@ private:
 
 	friend class Singleton<ConnectionManager>;
 	ConnectionManager();
-	
+
 	virtual ~ConnectionManager() { shutdown(); };
 	
 	UserConnection* getConnection() throw(SocketException) {

@@ -146,7 +146,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
-	client->connect(server);
+	client->connect();
 	
 	string nick;
 	if(!stripIsp)
@@ -228,7 +228,7 @@ void HubFrame::onEnter() {
 			string status;
 			if(WinUtil::checkCommand(cmd, param, message, status)) {
 				if(!message.empty()) {
-					client->sendMessage(message);
+					client->hubMessage(message);
 				}
 				if(!status.empty()) {
 					addClientLine(status);
@@ -333,7 +333,8 @@ void HubFrame::onEnter() {
 							if (BOOLSETTING(POPUP_PMS) ) {
 								PrivateFrame::openWindow(ui->user, param.substr(j+1));
 							} else {
-								client->privateMessage(ui->user->getNick(), "<" + client->getNick() + "> " + param.substr(j+1));
+								//client->privateMessage((User*)ui->user, "<" + client->getNick() + "> " + param.substr(j+1));
+								ui->user->privateMessage("<" + client->getNick() + "> " + param.substr(j+1));
 							}
 
 						else
@@ -374,13 +375,13 @@ void HubFrame::onEnter() {
 				delete str;
 			} else {
 				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
-					client->sendMessage(s);
+					client->hubMessage(s);
 				} else {
 					addClientLine(STRING(UNKNOWN_COMMAND) + cmd);
 				}
 			}
 		} else {
-			client->sendMessage(s);
+			client->hubMessage(s);
 		}
 		ctrlMessage.SetWindowText("");
 	} else {
@@ -556,16 +557,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete x;
 	} else if(wParam == STATS) {
 		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
-		if(client->getUserInfo()){
-			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
-			if(client->getUserCount() > 0)
-				ctrlStatus.SetText(3, (Util::formatBytes(client->getAvailable() / client->getUserCount()) + "/" + CSTRING(USER)).c_str());
-			else
-				ctrlStatus.SetText(3, "");
-		} else {
-			ctrlStatus.SetText(2, "");
+		ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
+		if(client->getUserCount() > 0)
+			ctrlStatus.SetText(3, (Util::formatBytes(client->getAvailable() / client->getUserCount()) + "/" + CSTRING(USER)).c_str());
+		else
 			ctrlStatus.SetText(3, "");
-		}
 	} else if(wParam == GET_PASSWORD) {
 		if(client->getPassword().size() > 0) {
 			client->password(client->getPassword());
@@ -1217,7 +1213,7 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		// else keep current settings
 
 		client->addListener(this);
-		client->connect(redirect);
+		//client->connect(redirect);
 	}
 	return 0;
 }
@@ -1309,7 +1305,7 @@ void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 		case ClientListener::HUB_NAME:
 			speak(SET_WINDOW_TITLE, Util::validateMessage(client->getName(), true, false) + " (" + client->getAddressPort() + ")");
 			break;
-		case ClientListener::VALIDATE_DENIED:
+		case ClientListener::NICK_TAKEN:
 			speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
 			speak(DISCONNECTED);
 			break;
@@ -1356,22 +1352,19 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const st
 
 void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) throw() {
 	switch(type) {
-		case ClientListener::MY_INFO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
-		case ClientListener::QUIT: if(client->getUserInfo()) speak(REMOVE_USER, user); break;
-		case ClientListener::HELLO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
+		case ClientListener::USER_UPDATED: if(getUserInfo() && !user->isSet(User::HIDDEN)) speak(UPDATE_USER, user); break;
+		case ClientListener::USER_REMOVED: if(getUserInfo()) speak(REMOVE_USER, user); break;
 	}
 }
 
 void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) throw() {
 	switch(type) {
-		case ClientListener::OP_LIST: 
-			extraSort = true;
-			// Fall through
-		case ClientListener::NICK_LIST: 
+		case ClientListener::USERS_UPDATED: 
 			{
 				Lock l(updateCS);
 				updateList.reserve(aList.size());
 				for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+					if(!(*i)->isSet(User::HIDDEN))
 					updateList.push_back(make_pair(*i, UPDATE_USERS));
 				}
 				if(!updateList.empty()) {

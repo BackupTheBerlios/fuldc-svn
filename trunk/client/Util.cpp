@@ -33,6 +33,8 @@
 #include <ctype.h>
 #endif
 
+#include "CID.h"
+
 #include "FastAlloc.h"
 
 FastCriticalSection FastAllocBase::cs;
@@ -219,14 +221,19 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 
 	if( (k=url.find(':', i)) != string::npos) {
 		// Port
-		if(k < j)
+		if(j == string::npos) {
+			aPort = (short)Util::toInt(url.substr(k+1));
+		} else if(k < j) {
 			aPort = (short)Util::toInt(url.substr(k+1, j-k-1));
+		}
 	} else {
 		k = j;
 	}
 
-	// Only the server should be left now...
-	aServer = url.substr(i, k-i);
+	if(k == string::npos)
+		aServer = url;
+	else
+		aServer = url.substr(i, k-i);
 }
 
 string Util::getAwayMessage() { 
@@ -360,7 +367,7 @@ string& Util::toUtf8(string& str) {
 
 	wtmp.resize(sz);
 	str.clear();
-	for(string::size_type i = 0; i < wtmp.length(); ++i) {
+    for(string::size_type i = 0; i < wtmp.length(); ++i) {
 		cToUtf8(wtmp[i], str);
 	}
 	return str;
@@ -403,13 +410,13 @@ string& Util::toAcp(string& str) {
 }
 
 /**
-* This function takes a string and a set of parameters and transforms them according to
-* a simple formatting rule, similar to strftime. In the message, every parameter should be
-* represented by %[name]. It will then be replaced by the corresponding item in 
-* the params stringmap. After that, the string is passed through strftime with the current
-* date/time and then finally written to the log file. If the parameter is not present at all,
-* it is removed from the string completely...
-*/
+ * This function takes a string and a set of parameters and transforms them according to
+ * a simple formatting rule, similar to strftime. In the message, every parameter should be
+ * represented by %[name]. It will then be replaced by the corresponding item in 
+ * the params stringmap. After that, the string is passed through strftime with the current
+ * date/time and then finally written to the log file. If the parameter is not present at all,
+ * it is removed from the string completely...
+ */
 string Util::formatParams(const string& msg, StringMap& params) {
 	string result = msg;
 
@@ -458,9 +465,9 @@ string Util::formatTime(const string &msg, const time_t t) {
 		AutoArray<char> buf(new char[bufsize]);
 
 		while(!strftime(buf, bufsize-1, msg.c_str(), loc)) {
-		bufsize+=64;
-		buf = new char[bufsize];
-	}
+			bufsize+=64;
+			buf = new char[bufsize];
+		}
 
 		return string(buf);
 	}

@@ -189,7 +189,7 @@ public:
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(client->isConnected()) {
 			clearUserList();
-			client->refreshUserList();
+			//client->refreshUserList();
 		}
 		return 0;
 	}
@@ -197,7 +197,7 @@ public:
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		clearUserList();
 		client->addListener(this);
-		client->connect(server);
+		client->connect();
 		return 0;
 	}
 
@@ -309,8 +309,7 @@ private:
 		ctrlFilterSelContainer("COMBOBOX", this, FILTER_MESSAGE_MAP)
 	{
 		stripIsp = aNick.empty() ? BOOLSETTING(STRIP_ISP) : aStripIsp;
-		client = ClientManager::getInstance()->getClient();
-		client->setUserInfo(true);
+		client = ClientManager::getInstance()->getClient(aServer);
 		client->setNick(aNick.empty() ? SETTING(NICK) : aNick);
         if (!aDescription.empty())
 			client->setDescription(aDescription);
@@ -435,6 +434,8 @@ private:
 	void removeUser(const User::Ptr& u);
 	void updateUserList();
 	void addAsFavorite();
+
+	bool getUserInfo() { return ctrlShowUsers.GetCheck() == BST_CHECKED; }
 
 	void clearUserList() {
 		{

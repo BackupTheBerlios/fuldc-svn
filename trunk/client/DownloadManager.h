@@ -80,7 +80,6 @@ public:
 	GETSETREF(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-
 	int64_t bytesLeft;
 private:
 	Download();

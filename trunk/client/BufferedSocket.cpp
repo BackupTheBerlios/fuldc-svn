@@ -46,21 +46,21 @@ bool BufferedSocket::threadSendFile() {
 	dcassert(file != NULL);
 	try {
 		for(;;) {
-				{
-					Lock l(cs);
-					if(!tasks.empty())
-						return false;
-				}
+			{
+				Lock l(cs);
+				if(!tasks.empty())
+					return false;
+			}
 			size_t s = (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize);
 			size_t valid = file->read(inbuf, s);
 			if(valid > 0) {
 				Socket::write((char*)inbuf, valid);
 				fire(BufferedSocketListener::BYTES_SENT, s, valid);
 			} else {
-					fire(BufferedSocketListener::TRANSMIT_DONE);
-					return true;
-				}
+				fire(BufferedSocketListener::TRANSMIT_DONE);
+				return true;
 			}
+		}
 	} catch(const Exception& e) {
 		fail(e.getError());
 		return true;

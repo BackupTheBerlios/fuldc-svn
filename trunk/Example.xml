@@ -305,7 +305,7 @@
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
-		<String Name="SettingsListDupes">Include duplicate files in your file list (duplicates never count towards your share size)</String>
+		<String Name="SettingsListDupes">Keep duplicate files in your file list (duplicates never count towards your share size)</String>
 		<String Name="SettingsLogDownloads">Log downloads</String>
 		<String Name="SettingsLogFilelistTransfers">Log filelist transfers</String>
 		<String Name="SettingsLogMainChat">Log main chat</String>
@@ -396,6 +396,7 @@
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
 		<String Name="TimestampsEnabled">Timestamps enabled</String>
 		<String Name="Total">Total: </String>
+		<String Name="TthInconsistency">TTH inconsistency</String>
 		<String Name="TthRoot">TTH Root</String>
 		<String Name="Type">Type</String>
 		<String Name="UnableToCreateThread">Unable to create thread</String>
@@ -488,5 +489,6 @@
 		<String Name="ShowTopic">Show topic in hub column in transfer view</String>
 		<String Name="TotalTimeLeft">Total Time Left</String>
 		<String Name="MenuOpenMyList">Open my file list</String>
+		<String Name="ResolveIp">Resolve IP</String>
 	</Strings>
 </Language>

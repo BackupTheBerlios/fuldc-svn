@@ -19,7 +19,9 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
+#include "SettingsManager.h"
 #include "ResourceManager.h"
+#include "TimerManager.h"
 
 #include "User.h"
 
@@ -33,11 +35,7 @@ User::~User() throw() {
 void User::connect() {
 	RLock l(cs);
 	if(client) {
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			client->connectToMe(this);
-		} else {
-			client->revConnectToMe(this);
-		}
+		client->connect(this);
 	}
 }
 
@@ -60,7 +58,16 @@ void User::updated(User::Ptr& aUser) {
 const string& User::getClientName(bool topic) const {
 	RLock l(cs);
 	if(client) {
-		return client->getName(topic);
+		if(topic){
+			return client->getName();
+		} else {
+			string tmp = client->getName();
+			int i = 0;
+			if( (i = tmp.find(" - ")) != string::npos)
+				return tmp.substr(0, i);
+			else
+				return tmp;
+		}
 	} else if(!getLastHubName().empty()) {
 		return getLastHubName();
 	} else {
@@ -109,21 +116,22 @@ void User::send(const string& aMsg) {
 void User::redirect(const string& aTarget, const string& aReason) {
 	RLock l(cs);
 	if(client) {
-		client->opForceMove(this, aTarget, aReason);
+		client->redirect(this, aTarget, aReason);
 	}
 }
 
 void User::clientMessage(const string& aMsg) {
 	RLock l(cs);
 	if(client) {
-		client->sendMessage(aMsg);
+		client->hubMessage(aMsg);
 	}
 }
 
 void User::clientPM(const string& aTo, const string& aMsg) {
 	RLock l(cs);
 	if(client) {
-		client->privateMessage(aTo, aMsg);
+		//client->privateMessage(aTo, aMsg);
+		dcassert(0);
 	}
 }
 

@@ -26,6 +26,7 @@
 #include "Util.h"
 #include "Pointer.h"
 #include "CriticalSection.h"
+#include "CID.h"
 
 class Client;
 class FavoriteUser;
@@ -41,7 +42,10 @@ public:
 		ONLINE_BIT,
 		DCPLUSPLUS_BIT,
 		PASSIVE_BIT,
-		QUIT_HUB_BIT
+		QUIT_HUB_BIT,
+		HIDDEN_BIT,
+		HUB_BIT,
+		BOT_BIT
 	};
 
 	enum {
@@ -49,7 +53,10 @@ public:
 		ONLINE = 1<<ONLINE_BIT,
 		DCPLUSPLUS = 1<<DCPLUSPLUS_BIT,
 		PASSIVE = 1<<PASSIVE_BIT,
-		QUIT_HUB = 1<<QUIT_HUB_BIT
+		QUIT_HUB = 1<<QUIT_HUB_BIT,
+		HIDDEN = 1<<HIDDEN_BIT,
+		HUB = 1<<HUB_BIT,
+		BOT = 1<<BOT_BIT,
 	};
 
 	typedef Pointer<User> Ptr;
@@ -57,6 +64,8 @@ public:
 	typedef List::iterator Iter;
 	typedef HASH_MAP<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
+	typedef HASH_MAP_X(CID, Ptr, CID::Hash, equal_to<CID>, less<CID>) CIDMap;
+	typedef CIDMap::iterator CIDIter;
 
 	struct HashFunction {
 		static const size_t bucket_size = 4;
@@ -65,6 +74,7 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); };
 	};
 
+	User(const CID& aCID) : cid(aCID), bytesShared(0), client(NULL), favoriteUser(NULL) { }
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL), favoriteUser(NULL) { 
 		if( aNick[0] == '[' ) {
 			shortNick = aNick.substr(aNick.find("]")+1);
@@ -101,9 +111,9 @@ public:
 
 	bool isOnline() const { return isSet(ONLINE); };
 	bool isClient(Client* aClient) const { return client == aClient; };
-
-	void getParams(StringMap& ucParams);
 	
+	void getParams(StringMap& ucParams);
+
 	// favorite user stuff
 	void setFavoriteUser(FavoriteUser* aUser);
 	bool isFavoriteUser() const;
@@ -126,10 +136,11 @@ public:
 	GETSETREF(string, lastHubAddress, LastHubAddress);
 	GETSETREF(string, lastHubName, LastHubName);
 	GETSETREF(string, ip, Ip);
+	GETSETREF(CID, cid, CID);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
 	mutable RWLock cs;
-	
+
 	User(const User&);
 	User& operator=(const User&);
 
@@ -143,4 +154,3 @@ private:
  * @file
  * $Id: User.h,v 1.5 2004/02/14 13:26:18 trem Exp $
  */
-

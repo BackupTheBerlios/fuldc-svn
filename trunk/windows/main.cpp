@@ -29,8 +29,10 @@
 CAppModule _Module;
 
 CriticalSection cs;
-enum { DEBUG_BUFSIZE = 2048 };
-char buf[DEBUG_BUFSIZE];
+enum { DEBUG_BUFSIZE = 4096 };
+static char guard[DEBUG_BUFSIZE];
+static int recursion = 0;
+static char buf[DEBUG_BUFSIZE];
 
 #ifndef _DEBUG
 
@@ -44,6 +46,9 @@ FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
 LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 {
 	Lock l(cs);
+
+	if(recursion++ > 30)
+		exit(-1);
 
 #ifndef _DEBUG
 #if _MSC_VER == 1200
@@ -63,7 +68,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
-	
+
 	sprintf(buf, "\r\nUnhandled Exception\r\n  Code: %x\r\nVersion: %s\r\nfulDC: %s\r\nOs: %s\r\n", 
 		exceptionCode, VERSIONSTRING, FULVERSIONSTRING, Util::getOsVersion().c_str() );
 
@@ -294,7 +299,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
-
 #endif
 	
 	HRESULT hRes = ::CoInitialize(NULL);

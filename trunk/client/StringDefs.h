@@ -309,7 +309,7 @@ enum Strings { // @DontAdd
 	SETTINGS_IP, // "IP"
 	SETTINGS_KEEP_LISTS, // "Don't delete file lists when exiting"
 	SETTINGS_LANGUAGE_FILE, // "Language file"
-	SETTINGS_LIST_DUPES, // "Include duplicate files in your file list (duplicates never count towards your share size)"
+	SETTINGS_LIST_DUPES, // "Keep duplicate files in your file list (duplicates never count towards your share size)"
 	SETTINGS_LOG_DOWNLOADS, // "Log downloads"
 	SETTINGS_LOG_FILELIST_TRANSFERS, // "Log filelist transfers"
 	SETTINGS_LOG_MAIN_CHAT, // "Log main chat"
@@ -400,6 +400,7 @@ enum Strings { // @DontAdd
 	TIMESTAMPS_DISABLED, // "Timestamps disabled"
 	TIMESTAMPS_ENABLED, // "Timestamps enabled"
 	TOTAL, // "Total: "
+	TTH_INCONSISTENCY, // "TTH inconsistency"
 	TTH_ROOT, // "TTH Root"
 	TYPE, // "Type"
 	UNABLE_TO_CREATE_THREAD, // "Unable to create thread"
@@ -492,5 +493,6 @@ enum Strings { // @DontAdd
 	SHOW_TOPIC, // "Show topic in hub column in transfer view"
 	TOTAL_TIME_LEFT, // "Total Time Left"
 	MENU_OPEN_MY_LIST, // "Open my file list"
+	RESOLVE_IP, // "Resolve IP"
 	LAST // @DontAdd
 };

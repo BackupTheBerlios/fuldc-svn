@@ -86,7 +86,7 @@ private:
 	
 	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { };
 	virtual ~CryptoManager() { };
-	
+
 	class Leaf : public FastAlloc<Leaf> {
 	public:
 		int chr;
@@ -108,7 +108,7 @@ private:
 			delete right;
 		}
 	};
-
+	
 	const string lock;
 	const string pk;
 

@@ -61,7 +61,7 @@ public:
 	};
 
 	virtual void onAction(Types, UserConnection*) throw() { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
-	virtual void onAction(Types, UserConnection*, u_int32_t, u_int32_t) throw() { };				// BYTES_SENT
+	virtual void onAction(Types, UserConnection*, u_int32_t, u_int32_t) throw() { };	// BYTES_SENT
 	virtual void onAction(Types, UserConnection*, const string&) throw() { };			// MY_NICK, FAILED, FILE_LENGTH, KEY, SUPPORTS
 	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) throw() { };	// DATA
 	virtual void onAction(Types, UserConnection*, const string&, const string&) throw() { };	// DIRECTION, LOCK

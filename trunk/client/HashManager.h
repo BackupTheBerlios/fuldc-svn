@@ -66,6 +66,8 @@ public:
 	TTHValue* getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 	TTHValue* getTTH(const string& aFileName, int64_t aSize);
 
+	bool getTree(const string& aFileName, TigerTree& tmp);
+
 	/**
 	 * Rebuild hash data file
 	 */
@@ -157,7 +159,7 @@ private:
 			return NULL;
 		}
 
-		//bool getTTH(const string& aFileName, TigerTree& tth);
+		bool getTree(const string& aFileName, TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {

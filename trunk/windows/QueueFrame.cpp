@@ -407,7 +407,7 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 			j = dir.find('\\', i);
 			if(j == string::npos)
 				break;
-			if(Util::strnicmp(dir.c_str() + i, rootStr->c_str() + i, j - i) != 0)
+			if(Util::strnicmp(dir.c_str() + i, rootStr->c_str() + i, j - i + 1) != 0)
 				break;
 			i = j + 1;
 		}
@@ -1004,7 +1004,7 @@ LRESULT QueueFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 
 		if(ii->getTTH() != NULL) {
-			SearchFrame::openWindow(ii->getTTH()->toBase32(), 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_HASH);
+			SearchFrame::openWindow(ii->getTTH()->toBase32(), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
 		}
 	} 
 

@@ -19,8 +19,8 @@
 #ifdef _WIN32
 // Change these values to use different versions...don't know what happens though...=)
 #define _WIN32_WINNT	0x0500
-#define WINVER			0x0500
-#define _WIN32_IE		0x0500
+#define WINVER		0x0500
+#define _WIN32_IE	0x0500
 #define _RICHEDIT_VER	0x0200
 
 #pragma warning(disable: 4711) // function 'xxx' selected for automatic inline expansion
@@ -97,7 +97,7 @@ typedef unsigned long u_int32_t;
 typedef unsigned __int64 u_int64_t;
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define _LL(x) x##I64
 #define I64_FMT "%I64d"
 #else

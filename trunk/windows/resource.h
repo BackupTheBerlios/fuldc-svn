@@ -33,6 +33,7 @@
 #define IDC_HEADER_MENU                 122
 #define IDC_SEARCH_BY_TTH               123
 #define IDC_RESOLVE_IP                  125
+#define IDC_RESOLVED_IP                 126
 #define IDC_SEARCH_RELEASEALTERNATES    127
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
@@ -426,6 +427,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1263
-#define _APS_NEXT_SYMED_VALUE           126
+#define _APS_NEXT_SYMED_VALUE           127
 #endif
 #endif

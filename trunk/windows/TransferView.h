@@ -39,6 +39,7 @@ class TransferView : public CWindowImpl<TransferView>, private DownloadManagerLi
 public:
 	TransferView() {
 		headerBuf = new char[128];
+		resolveBuffer = NULL;
 	};
 	~TransferView(void);
 
@@ -56,6 +57,7 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
+		MESSAGE_HANDLER(WM_APP, onResolvedIP)
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
@@ -63,6 +65,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_PM_DOWN, onPmAll)
 		COMMAND_ID_HANDLER(IDC_OPEN, onOpen)
 		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpen)
+		COMMAND_ID_HANDLER(IDC_RESOLVE_IP, onResolveIP)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
 	END_MSG_MAP()
@@ -75,6 +78,8 @@ public:
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onPmAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	void runUserCommand(UserCommand& uc);
 
@@ -239,6 +244,8 @@ private:
 
 	CImageList arrows;
 
+	char *resolveBuffer;
+
 	void onConnectionAdded(ConnectionQueueItem* aCqi);
 	void onConnectionConnected(ConnectionQueueItem* /*aCqi*/) { };
 	void onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason);
@@ -268,6 +275,7 @@ private:
 	// UploadManagerListener
 	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) throw();
 	virtual void onAction(UploadManagerListener::Types type, const Upload::List& ul) throw();
+
 };
 
 #endif // __TRANSFERVIEW_H

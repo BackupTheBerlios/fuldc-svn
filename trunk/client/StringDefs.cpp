@@ -306,7 +306,7 @@ string ResourceManager::strings[] = {
 "IP", 
 "Don't delete file lists when exiting", 
 "Language file", 
-"Include duplicate files in your file list (duplicates never count towards your share size)", 
+"Keep duplicate files in your file list (duplicates never count towards your share size)", 
 "Log downloads", 
 "Log filelist transfers", 
 "Log main chat", 
@@ -397,6 +397,7 @@ string ResourceManager::strings[] = {
 "Timestamps disabled", 
 "Timestamps enabled", 
 "Total: ", 
+"TTH inconsistency", 
 "TTH Root", 
 "Type", 
 "Unable to create thread", 
@@ -489,6 +490,7 @@ string ResourceManager::strings[] = {
 "Show topic in hub column in transfer view", 
 "Total Time Left", 
 "Open my file list", 
+"Resolve IP", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -886,6 +888,7 @@ string ResourceManager::names[] = {
 "TimestampsDisabled", 
 "TimestampsEnabled", 
 "Total", 
+"TthInconsistency", 
 "TthRoot", 
 "Type", 
 "UnableToCreateThread", 
@@ -978,4 +981,5 @@ string ResourceManager::names[] = {
 "ShowTopic", 
 "TotalTimeLeft", 
 "MenuOpenMyList", 
+"ResolveIp", 
 };

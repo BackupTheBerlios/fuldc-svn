@@ -166,7 +166,7 @@ void Socket::connect(const string& aAddr, short aPort) throw(SocketException) {
 			checksockerr(SOCKET_ERROR);
 		}
 	}
-		connected = true;
+	connected = true;
 }
 
 /**

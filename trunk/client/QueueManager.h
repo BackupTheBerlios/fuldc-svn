@@ -117,7 +117,11 @@ public:
 
 	void getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw() {
 		Lock l(cs);
-		fileQueue.find(sl, aSize, suffix);
+		QueueItem::List ql;
+		fileQueue.find(ql, aSize, suffix);
+		for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
+			sl.push_back((*i)->getTarget());
+		}
 	}
 
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
@@ -186,7 +190,7 @@ private:
 	u_int32_t lastSearchAlternates;
 	
 	/** All queue items by target */
-	class FileQueue{
+	class FileQueue {
 	public:
 		FileQueue() : lastInsert(queue.end()) { };
 		~FileQueue() {
@@ -197,8 +201,11 @@ private:
 		QueueItem* add(const string& aTarget, int64_t aSize, const string& aSearchString, 
 			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
 			u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException);
+
 		QueueItem* find(const string& target);
-		void find(StringList& sl, int64_t aSize, const string& ext);
+		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
+		void find(QueueItem::List& ql, TTHValue* tth);
+
 		QueueItem* findAutoSearch(StringList& recent);
 		size_t getSize() { return queue.size(); };
 		QueueItem::StringMap& getQueue() { return queue; };

@@ -46,6 +46,7 @@ public:
 	typedef vector<MerkleValue> MerkleList;
 	typedef typename MerkleList::iterator MerkleIter;
 
+	MerkleTree() : fileSize(0), timeStamp(0), blockSize(baseBlockSize) { }
 	MerkleTree(size_t aBlockSize, u_int32_t aTimeStamp = 0) : fileSize(0), timeStamp(aTimeStamp), blockSize(aBlockSize) {
 	}
 
@@ -126,9 +127,9 @@ public:
 	MerkleValue& getRoot() { return root; }
 	MerkleList& getLeaves() { return leaves; }
 
-	size_t getBlockSize() { return blockSize; }
-	int64_t getFileSize() { return fileSize; }
-	u_int32_t getTimeStamp() { return timeStamp; }
+	size_t getBlockSize() const { return blockSize; }
+	int64_t getFileSize() const { return fileSize; }
+	u_int32_t getTimeStamp() const { return timeStamp; }
 
 	bool verifyRoot(const u_int8_t* aRoot) {
 		return memcmp(aRoot, getRoot().data(), Hasher::HASH_SIZE) == 0;
@@ -199,6 +200,14 @@ private:
 
 typedef MerkleTree<TigerHash> TigerTree;
 typedef TigerTree::MerkleValue TTHValue;
+
+struct TTFilter {
+	TTFilter(size_t aBlockSize, u_int32_t aTimeStamp = 0) : tt(aBlockSize, aTimeStamp) { };
+	void operator()(const void* data, size_t len) { tt.update(data, len); }
+	TigerTree& getTree() { tt.finalize(); return tt; }
+private:
+	TigerTree tt;
+};
 
 #endif // _MERKLE_TREE
 

@@ -87,6 +87,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	transferMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)openMenu, CSTRING(OPEN));
+	transferMenu.AppendMenu(MF_STRING, IDC_RESOLVE_IP, CSTRING(RESOLVE_IP));
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
@@ -97,9 +98,9 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
 #if 0
-	ItemInfo* ii = new ItemInfo(ClientManager::getInstance()->getUser("test"), 
+	ItemInfo* ii = new ItemInfo(NULL, 
 		ItemInfo::TYPE_DOWNLOAD, ItemInfo::STATUS_RUNNING, 75, 100, 25, 50);
-	ctrlTransfers.insert(0, string("Test"), 0, (LPARAM)ii);
+	ctrlTransfers.insertItem(ii, 0);
 #endif
 	return 0;
 }
@@ -303,8 +304,10 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 }
 
 LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-    NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-	ctrlTransfers.getItemData(item->iItem)->pm();
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+	if (item->iItem != -1 ) {
+		ctrlTransfers.getItemData(item->iItem)->pm();
+	}
 	return 0;
 }
 
@@ -356,13 +359,24 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_STATUS] = statusString;
 	}
 	if(colMask & MASK_TIMELEFT) {
-		columns[COLUMN_TIMELEFT] = Util::formatSeconds(timeLeft);
+		if (status == STATUS_RUNNING) {
+			columns[COLUMN_TIMELEFT] = Util::formatSeconds(timeLeft);
+		} else {
+			columns[COLUMN_TIMELEFT] = Util::emptyString;
+		}
 	}
 	if(colMask & MASK_TOTALTIMELEFT) {
-		columns[COLUMN_TOTALTIMELEFT] = Util::formatSeconds(totalTimeLeft);
+		if(status == STATUS_RUNNING)
+			columns[COLUMN_TOTALTIMELEFT] = Util::formatSeconds(totalTimeLeft);
+		else
+			columns[COLUMN_TOTALTIMELEFT] = Util::emptyString;
 	}
 	if(colMask & MASK_SPEED) {
-		columns[COLUMN_SPEED] = Util::formatBytes(speed) + "/s";
+		if (status == STATUS_RUNNING) {
+			columns[COLUMN_SPEED] = Util::formatBytes(speed) + "/s";
+		} else {
+			columns[COLUMN_SPEED] = Util::emptyString;
+		}
 	}
 	if(colMask & MASK_FILE) {
 		columns[COLUMN_FILE] = file;
@@ -683,6 +697,33 @@ LRESULT TransferView::onOpen(WORD , WORD wID, HWND , BOOL& ) {
 	return 0;
 }
 
+LRESULT TransferView::onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+	if(resolveBuffer != NULL)
+		return 0;
+
+	int i;
+	if((i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED)) == -1)
+		return 0;
+
+	resolveBuffer = new char[MAXGETHOSTSTRUCT];
+	unsigned long l = inet_addr(ctrlTransfers.getItemData(i)->getText(COLUMN_IP).c_str());
+
+	WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT);
+
+
+	return 0;
+}
+
+LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/){
+	if(resolveBuffer == NULL)
+		return 0;
+	
+	::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new string(((hostent*)resolveBuffer)->h_name));
+	delete[] resolveBuffer;
+	resolveBuffer = NULL;
+
+	return 0;
+}
 /**
  * @file
  * $Id: TransferView.cpp,v 1.8 2004/02/21 10:46:10 trem Exp $

@@ -37,7 +37,7 @@ const string SettingsManager::settingTags[] =
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
-	"FinishedULWidths", "FinishedULOrder",
+	"FinishedULWidths", "FinishedULOrder", "CID",
 	"DownloadSkiplist", "ShareSkiplist", "WebShortcuts", "PopupFont", "FreeSlotsExtentions",
 	"DownloadToPaths", "HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
 	"QueueFrameVisible", 

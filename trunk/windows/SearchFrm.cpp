@@ -181,7 +181,6 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 
 	ctrlResults.setColumnOrderArray(COLUMN_LAST, columnIndexes);
-	ctrlResults.setSortColumn(COLUMN_FILENAME);
 	ctrlResults.setVisible(SETTING(SEARCHFRAME_VISIBLE));
 
 	ctrlResults.SetBkColor(WinUtil::bgColor);
@@ -218,18 +217,16 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, "Copy");
 	resultsMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 
+	UpdateLayout();
+
 	if(!initialString.empty()) {
-		search = StringTokenizer(initialString, ' ').getTokens();
 		lastSearches.push_back(initialString);
 		ctrlSearchBox.InsertString(0, initialString.c_str());
 		ctrlSearchBox.SetCurSel(0);
 		ctrlMode.SetCurSel(initialMode);
 		ctrlSize.SetWindowText(Util::toString(initialSize).c_str());
 		ctrlFiletype.SetCurSel(initialType);
-		isHash = (initialType == SearchManager::TYPE_HASH);
-		SearchManager::getInstance()->search(initialString, initialSize, initialType, initialMode);
-		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + initialString + "...").c_str());
-		SetWindowText((STRING(SEARCH) + " - " + initialString).c_str());
+		onEnter();
 	} else {
 		SetWindowText(CSTRING(SEARCH));
 	}

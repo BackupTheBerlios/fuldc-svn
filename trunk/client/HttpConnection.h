@@ -81,7 +81,7 @@ private:
 
 	void onConnected(); 
 	void onLine(const string& aLine);
-
+	
 };
 
 #endif // !defined(AFX_HTTPCONNECTION_H__47AE2649_8D90_4C38_B048_69B3C26B3954__INCLUDED_)

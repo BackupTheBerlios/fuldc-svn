@@ -133,6 +133,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\client\AdcHub.cpp">
+			</File>
+			<File
 				RelativePath="client\ADLSearch.cpp">
 			</File>
 			<File
@@ -182,6 +185,9 @@
 			</File>
 			<File
 				RelativePath=".\client\LogManager.cpp">
+			</File>
+			<File
+				RelativePath=".\client\NmdcHub.cpp">
 			</File>
 			<File
 				RelativePath=".\client\QueueManager.cpp">
@@ -266,6 +272,12 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\client\AdcCommand.h">
+			</File>
+			<File
+				RelativePath=".\client\AdcHub.h">
+			</File>
+			<File
 				RelativePath="client\ADLSearch.h">
 			</File>
 			<File
@@ -282,6 +294,9 @@
 			</File>
 			<File
 				RelativePath=".\client\BZUtils.h">
+			</File>
+			<File
+				RelativePath=".\client\CID.h">
 			</File>
 			<File
 				RelativePath=".\client\Client.h">
@@ -360,6 +375,9 @@
 			</File>
 			<File
 				RelativePath=".\client\MerkleTree.h">
+			</File>
+			<File
+				RelativePath=".\client\NmdcHub.h">
 			</File>
 			<File
 				RelativePath=".\client\OXMLLib.h">
