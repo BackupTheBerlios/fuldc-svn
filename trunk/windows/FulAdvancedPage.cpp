@@ -55,6 +55,7 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::QUEUE_BOLD_TABS, ResourceManager::QUEUE_BOLD_TABS },
 	{ SettingsManager::POPUNDER_PM, ResourceManager::POPUNDER_PM },
 	{ SettingsManager::POPUNDER_DIRLIST, ResourceManager::POPUNDER_DIRLIST }, 
+	{ SettingsManager::TAB_SHOW_ICONS, ResourceManager::TAB_SHOW_ICONS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

@@ -47,7 +47,6 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	ctrlMatchType.SetCurSel(1);
 
-
 	return TRUE;
 }
 
@@ -83,8 +82,9 @@ LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	//add the string to the listview
 	ctrlStrings.insert( ctrlStrings.GetItemCount(), cs->getMatch(), 0, (LPARAM)cs );
 	ctrlStrings.SelectItem(ctrlStrings.GetItemCount()-1);
-	
-	
+
+	clear();
+		
 	return TRUE;
 }
 
@@ -183,6 +183,11 @@ void HighlightPage::clear() {
 	fgColor = WinUtil::textColor;
 
 	soundFile.clear();
+
+	BOOL t;
+	onClickedBox(0, IDC_HAS_BG_COLOR, NULL, t);
+	onClickedBox(0, IDC_HAS_FG_COLOR, NULL, t);
+	onClickedBox(0, IDC_SELECT_SOUND, NULL, t);
 }
 
 HighlightPage::~HighlightPage() {
@@ -205,9 +210,10 @@ void HighlightPage::getValues(ColorSettings* cs){
 	cs->setWholeWord(	  IsDlgButtonChecked(IDC_WHOLEWORD)		 );
 	cs->setPopup(		  IsDlgButtonChecked(IDC_POPUP)			 );
 	cs->setTab(			  IsDlgButtonChecked(IDC_TABCOLOR)		 );
-
-	cs->setHasBgColor( bgColor != WinUtil::bgColor );
-	cs->setHasFgColor( fgColor != WinUtil::textColor );
+	cs->setPlaySound(	  IsDlgButtonChecked(IDC_SOUND)			 );
+	cs->setHasBgColor(	  IsDlgButtonChecked(IDC_HAS_BG_COLOR)	 );
+    cs->setHasFgColor(	  IsDlgButtonChecked(IDC_HAS_FG_COLOR)	 );
+	
 	cs->setBgColor( bgColor );
 	cs->setFgColor( fgColor );
 
@@ -242,11 +248,37 @@ LRESULT HighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*b
 	CheckDlgButton(IDC_POPUP		, cs->getPopup()		 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_TABCOLOR		, cs->getTab()			 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_SOUND		, cs->getPlaySound()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_HAS_BG_COLOR , cs->getHasBgColor()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_HAS_FG_COLOR , cs->getHasFgColor()	 ? BST_CHECKED : BST_UNCHECKED);
 
-	bgColor = cs->getBgColor();
-	fgColor = cs->getFgColor();
+	if(cs->getHasBgColor())
+		bgColor = cs->getBgColor();
+	if(cs->getHasFgColor())
+		fgColor = cs->getFgColor();
 
-	soundFile = cs->getSoundFile();
+	if(cs->getPlaySound())
+		soundFile = cs->getSoundFile();
+
+	BOOL t;
+	onClickedBox(0, IDC_HAS_BG_COLOR, NULL, t);
+	onClickedBox(0, IDC_HAS_FG_COLOR, NULL, t);
+	onClickedBox(0, IDC_SOUND, NULL, t);
 	
+	return TRUE;
+}
+
+LRESULT HighlightPage::onClickedBox(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+	int button = 0;
+	switch(wID) {
+	case IDC_SOUND:		   button = IDC_SELECT_SOUND; break;
+	case IDC_HAS_BG_COLOR: button = IDC_BGCOLOR;	  break;
+	case IDC_HAS_FG_COLOR: button = IDC_FGCOLOR;	  break;
+	}
+
+	bool enabled = IsDlgButtonChecked(wID);
+	ctrlButton.Attach(GetDlgItem(button));
+	ctrlButton.EnableWindow(enabled);
+	ctrlButton.Detach();
+
 	return TRUE;
 }

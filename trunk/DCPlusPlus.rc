@@ -484,27 +484,32 @@ BEGIN
     CONTROL         "Include Nick",IDC_INCLUDENICK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,86,121,54,10
     CONTROL         "Whole Line",IDC_WHOLELINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,133,51,10
+                    WS_TABSTOP,86,133,54,10
     CONTROL         "Case Sensitive",IDC_CASESENSITIVE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,86,145,63,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,86,145,54,10
     CONTROL         "Entire word",IDC_WHOLEWORD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,157,53,10
+                    WS_TABSTOP,86,157,54,10
     CONTROL         "Change Tabcolor",IDC_TABCOLOR,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,86,169,70,10
-    LTEXT           "Match Type",IDC_STATIC,164,114,58,8
-    COMBOBOX        IDC_MATCHTYPE,162,125,66,30,CBS_DROPDOWNLIST | 
+    LTEXT           "Match Type",IDC_STATIC,179,114,58,8
+    COMBOBOX        IDC_MATCHTYPE,177,125,66,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Background Color",IDC_BGCOLOR,162,142,66,14
-    PUSHBUTTON      "Text Color",IDC_FGCOLOR,162,160,66,14
-    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,162,178,66,14
-    EDITTEXT        IDC_STRING,21,197,207,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Background Color",IDC_BGCOLOR,177,142,66,14,WS_DISABLED
+    PUSHBUTTON      "Text Color",IDC_FGCOLOR,177,160,66,14,WS_DISABLED
+    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,177,178,66,14,
+                    WS_DISABLED
+    EDITTEXT        IDC_STRING,22,197,221,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Add",IDC_ADD,215,17,50,14
     PUSHBUTTON      "Update",IDC_UPDATE,215,35,50,14
     PUSHBUTTON      "Delete",IDC_DELETE,215,53,50,14
     PUSHBUTTON      "Move Up",IDC_MOVEUP,215,71,50,14
     PUSHBUTTON      "Move Down",IDC_MOVEDOWN,215,89,50,14
-    GROUPBOX        "Settings",IDC_STATIC,14,108,224,109
+    GROUPBOX        "Settings",IDC_STATIC,14,108,239,109
     GROUPBOX        "Highlight Settings",IDC_STATIC,7,7,264,219
+    CONTROL         "",IDC_HAS_BG_COLOR,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,163,145,10,10
+    CONTROL         "",IDC_HAS_FG_COLOR,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,163,163,10,10
 END
 
 IDD_FULPAGE2 DIALOGEX 0, 0, 275, 225
@@ -677,7 +682,9 @@ BEGIN
 
     IDD_HIGHLIGHTPAGE, DIALOG
     BEGIN
-        VERTGUIDE, 228
+        VERTGUIDE, 22
+        VERTGUIDE, 173
+        VERTGUIDE, 243
         HORZGUIDE, 116
     END
 

@@ -352,20 +352,11 @@ void PrivateFrame::addLine(const string& aLine) {
 			BOOL maxi =  FALSE;
 			
 			maxi = ::IsZoomed(active);
-			//CreateEx(WinUtil::mdiClient, rcDefault, NULL, WS_OVERLAPPEDWINDOW | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_MDICHILD, NULL);	
 			CreateEx(WinUtil::mdiClient);
-			//move the window to the bottom of the z-order
-			//::SetWindowPos(m_hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE /*| SWP_NOACTIVATE  | SWP_SHOWWINDOW */);
-			//restore focus and activate the previous active window
-			//if(maxi){
-			//	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
-			//} else
-			//	::ShowWindow(m_hWnd, SW_SHOWNA);
-
+			
 			::SetWindowPos(active, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 			::SendMessage(active, WM_MDIACTIVATE, (WPARAM)m_hWnd, (LPARAM)active);
-			//::SetWindowPos(active, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-			//::ShowWindow(active, SW_MAXIMIZE);
+			
 			::SetFocus(focus);
 		} else {
 			CreateEx(WinUtil::mdiClient);

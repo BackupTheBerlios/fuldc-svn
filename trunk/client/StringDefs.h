@@ -462,6 +462,7 @@ enum Strings { // @DontAdd
 	TAB_ACTIVE_TEXT, // "Active text color"
 	TAB_ACTIVE_BORDER, // "Active border color"
 	TAB_INACTIVE_BG, // "Inactive background color"
+	TAB_SHOW_ICONS, // "Show icons in tabs"
 	TAB_INACTIVE_BG_DISCONNECTED, // "Disconnected/Offline PM color"
 	TAB_INACTIVE_TEXT, // "Inactive text color"
 	TAB_INACTIVE_BORDER, // "Inactive border color"

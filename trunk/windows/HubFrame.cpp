@@ -172,8 +172,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	if(fhe != NULL){
 		showJoins = fhe->getShowJoins();
 		showUserList = fhe->getShowUserlist();
-		ctrlShowUsers.SetCheck(showUserList);
-		UpdateLayout(FALSE);
+		ctrlShowUsers.SetCheck(showUserList ? BST_CHECKED : BST_UNCHECKED);
+		
 
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
@@ -671,16 +671,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			//Get position of window
 			GetWindowRect(rc);
 
-			//first position is relative to screen so we need to convert it
-			//get position of main window
-			HWND parent = GetParent();
-			::GetWindowRect(parent, rc2);
-
 			//convert the position so it's relative to main window
-			rc.bottom -= rc2.top;
-			rc.top -= rc2.top;
-			rc.left -= rc2.left;
-			rc.right -= rc2.left;
+			ScreenToClient(rc);
 
 			//save the position
 			fhe->setBottom(rc.bottom > 0 ? rc.bottom : 0);
@@ -1046,13 +1038,13 @@ void HubFrame::onTab() {
 }
 
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN && !(GetKeyState(VK_SHIFT) & 0x8000)){
+	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN){
 		complete.clear();
 		curUser = usermap.begin();
 	}
 
 	if (uMsg != WM_KEYDOWN) {
-	switch(wParam) {
+		switch(wParam) {
 			case VK_RETURN:
 				if( (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ) {
 					bHandled = FALSE;
@@ -1151,7 +1143,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
 
-	if(wParam == BST_CHECKED && !showUserList)
+	if(wParam == BST_CHECKED)
 		showUserList = true;
 	else
 		showUserList = false;

@@ -569,7 +569,7 @@ private:
 		};
 
 		int getWidth() {
-			return (dirty ? boldSize.cx : size.cx) + ((wCode == -1) ? FT_EXTRA_SPACE -7: FT_EXTRA_SPACE);
+			return (dirty ? boldSize.cx : size.cx) + ((wCode == -1) ? FT_EXTRA_SPACE -7: FT_EXTRA_SPACE) - (BOOLSETTING(TAB_SHOW_ICONS) ? 0 : 16);
 		}
 	};
 
@@ -706,20 +706,19 @@ private:
 		oldTextColor = dc.SetTextColor(aActive ? SETTING(TAB_ACTIVE_TEXT) : SETTING(TAB_INACTIVE_TEXT));
 	
 		//Draw the icon
-		if(tab->hIcon != NULL) {
+		if(tab->hIcon != NULL && BOOLSETTING(TAB_SHOW_ICONS)) {
 			int mapMode = dc.SetMapMode(MM_TEXT);
 			dc.DrawIconEx(pos+3, ypos + (getTabHeight() / 2) - 8 , tab->hIcon, 16, 16, 0, NULL, DI_NORMAL | DI_COMPAT);
 			dc.SetMapMode(mapMode);
 		}
 		
-		int spacing = 20;
+		int spacing = BOOLSETTING(TAB_SHOW_ICONS) ? 20 : 2;
 		if(tab->wCode != -1){
-			spacing += WinUtil::getTextWidth(m_hWnd, WinUtil::tabFont) + 2;
-		}
-		if(spacing != 20){
 			HFONT f = dc.SelectFont(WinUtil::tabFont);
-			dc.TextOut(pos + 20, ypos +3, Util::toString(tab->wCode).c_str(), 1);
+			dc.TextOut(pos + spacing, ypos +3, Util::toString(tab->wCode).c_str(), 1);
 			dc.SelectFont(f);
+
+			spacing += WinUtil::getTextWidth(m_hWnd, WinUtil::tabFont) + 2;
 		}
 
 		if(tab->dirty) {

@@ -357,8 +357,10 @@
 #define IDC_FREE_SLOTS_EXTENSIONS       1247
 #define IDC_FREE_SLOTS_SIZE             1249
 #define IDC_CHECK2                      1250
-#define IDC_BUTTON3                     1251
+#define IDC_HAS_BG_COLOR                1250
 #define IDC_MOVEDOWN                    1251
+#define IDC_HAS_FG_COLOR2               1252
+#define IDC_HAS_FG_COLOR                1252
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1252"?>
+<?xml version="1.0" encoding="windows-1252" standalone="yes"?>
 <Language Name="Example Language">
 	<Strings>
 		<String Name="Active">Active</String>
@@ -458,6 +458,7 @@
 		<String Name="TabActiveText">Active text color</String>
 		<String Name="TabActiveBorder">Active border color</String>
 		<String Name="TabInactiveBg">Inactive background color</String>
+		<String Name="TabShowIcons">Show icons in tabs</String>
 		<String Name="TabInactiveBgDisconnected">Disconnected/Offline PM color</String>
 		<String Name="TabInactiveText">Inactive text color</String>
 		<String Name="TabInactiveBorder">Inactive border color</String>

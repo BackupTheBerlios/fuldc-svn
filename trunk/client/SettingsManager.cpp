@@ -57,7 +57,7 @@ const string SettingsManager::settingTags[] =
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "QueueBoldTabs", "HighPrioSample",
 	"RotateLogs", "PopupTimeout", "PopupAway", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation", "QueueRemoveConfirmation", "PopunderPm", "PopunderDirlist",
-	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", 
+	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"PopupTextColor", "FreeSlotsSize", "ShowStatusbar", "ShowToolbar", "ShowTransferView",
 	"SENTRY",
@@ -194,6 +194,7 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_STATUSBAR, true);
 	setDefault(SHOW_TOOLBAR, true);
 	setDefault(SHOW_TRANSFERVIEW, true);
+	setDefault(TAB_SHOW_ICONS, true);
 	
 	
 	
