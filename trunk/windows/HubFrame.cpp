@@ -93,8 +93,15 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.SetCheck(showUserList ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
-	WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(HUBFRAME_WIDTHS), COLUMN_LAST);
+	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+
+	if(fhe) {
+		WinUtil::splitTokens(columnIndexes, fhe->getHeaderOrder(), COLUMN_LAST);
+		WinUtil::splitTokens(columnSizes, fhe->getHeaderWidths(), COLUMN_LAST);
+	} else {
+		WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
+		WinUtil::splitTokens(columnSizes, SETTING(HUBFRAME_WIDTHS), COLUMN_LAST);
+	}
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_SHARED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
@@ -102,7 +109,12 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	}
 	
 	ctrlUsers.setColumnOrderArray(COLUMN_LAST, columnIndexes);
-	ctrlUsers.setVisible(SETTING(HUBFRAME_VISIBLE));
+
+	if(fhe) {
+		ctrlUsers.setVisible(fhe->getHeaderVisible());
+	} else {
+		ctrlUsers.setVisible(SETTING(HUBFRAME_VISIBLE));
+	}
 	
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextBkColor(WinUtil::bgColor);
@@ -162,7 +174,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	if(stripIsp)
 		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
 	
-	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 	if(fhe != NULL){
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
@@ -671,8 +682,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
 		HubManager::getInstance()->removeUserCommand(Text::fromT(server));
 
-		ctrlUsers.saveHeaderOrder(SettingsManager::HUBFRAME_ORDER, SettingsManager::HUBFRAME_WIDTHS,
-			SettingsManager::HUBFRAME_VISIBLE);
+		string tmp, tmp2, tmp3;
+		ctrlUsers.saveHeaderOrder(tmp, tmp2, tmp3);
 
 		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 		if(fhe != NULL){
@@ -696,8 +707,16 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			fhe->setShowJoins(showJoins);
 			fhe->setShowUserlist(showUserList);
 			fhe->setLogMainChat(logMainChat);
+			fhe->setHeaderOrder(tmp);
+			fhe->setHeaderWidths(tmp2);
+			fhe->setHeaderVisible(tmp3);
+			
 
 			HubManager::getInstance()->setDirty();
+		} else {
+			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, tmp);
+			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, tmp2);
+			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_VISIBLE, tmp3);
 		}
 
 		bHandled = FALSE;

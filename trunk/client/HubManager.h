@@ -105,6 +105,9 @@ public:
 	GETSET(string, server, Server);
 	GETSET(string, description, Description);
 	GETSET(string, password, Password);
+	GETSET(string, headerOrder, HeaderOrder);
+	GETSET(string, headerWidths, HeaderWidths);
+	GETSET(string, headerVisible, HeaderVisible);
 	GETSET(bool, connect, Connect);
 	GETSET(bool, stripIsp, StripIsp);
 	GETSET(bool, showJoins, ShowJoins);

@@ -272,6 +272,9 @@ void HubManager::save() {
 			xml.addChildAttrib("Top",				Util::toString((*i)->getTop()));
 			xml.addChildAttrib("Right",				Util::toString((*i)->getRight()));
 			xml.addChildAttrib("Left",				Util::toString((*i)->getLeft()));
+			xml.addChildAttrib("HeaderOrder",		(*i)->getHeaderOrder());
+			xml.addChildAttrib("HeaderWidths",		(*i)->getHeaderWidths());
+			xml.addChildAttrib("HeaderVisible",		(*i)->getHeaderVisible());
 		}
 		xml.stepOut();
 		xml.addTag("Users");
@@ -422,6 +425,9 @@ void HubManager::load(SimpleXML* aXml) {
 			e->setTop((u_int16_t)	aXml->getIntChildAttrib("Top"));
 			e->setRight((u_int16_t)	aXml->getIntChildAttrib("Right"));
 			e->setLeft((u_int16_t)	aXml->getIntChildAttrib("Left"));
+			e->setHeaderOrder(		aXml->getChildAttrib("HeaderOrder", SETTING(HUBFRAME_ORDER)));
+			e->setHeaderWidths(		aXml->getChildAttrib("HeaderWidths", SETTING(HUBFRAME_WIDTHS)));
+			e->setHeaderVisible(	aXml->getChildAttrib("HeaderVisible", SETTING(HUBFRAME_VISIBLE)));
 			favoriteHubs.push_back(e);
 		}
 		aXml->stepOut();

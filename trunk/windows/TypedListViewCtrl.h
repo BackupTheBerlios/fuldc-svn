@@ -353,9 +353,16 @@ public:
 		return 0;
 	}
 
-	void saveHeaderOrder(SettingsManager::StrSetting order, SettingsManager::StrSetting widths, 
-		SettingsManager::StrSetting visible) throw() {
-		string tmp, tmp2, tmp3;
+	void saveHeaderOrder(SettingsManager::StrSetting order, SettingsManager::StrSetting widths,
+		SettingsManager::StrSetting visible) {
+			string tmp, tmp2, tmp3;
+			saveHeaderOrder(tmp, tmp2, tmp3);
+			SettingsManager::getInstance()->set(order, tmp);
+			SettingsManager::getInstance()->set(widths, tmp2);
+			SettingsManager::getInstance()->set(visible, tmp3);
+	}
+
+	void saveHeaderOrder(string& order, string& widths, string& visible) throw() {
 		TCHAR *buf = new TCHAR[128];
 		int size = GetHeader().GetItemCount();
 		for(int i = 0; i < size; ++i){
@@ -376,25 +383,22 @@ public:
 			ColumnInfo* ci = *i;
 
 			if(ci->visible){
-				tmp3 += "1,";
+				visible += "1,";
 			} else {
 				ci->pos = size++;
-				tmp3 += "0,";
+				visible += "0,";
 			}
 
-			tmp += Util::toString(ci->pos);
-			tmp += ',';
+			order += Util::toString(ci->pos);
+			order += ',';
 
-			tmp2 += Util::toString(ci->width);
-			tmp2 += ',';
+			widths += Util::toString(ci->width);
+			widths += ',';
 		}
 
-		tmp.erase(tmp.size()-1, 1);
-		tmp2.erase(tmp2.size()-1, 1);
-		tmp3.erase(tmp3.size()-1, 1);
-		SettingsManager::getInstance()->set(order, tmp);
-		SettingsManager::getInstance()->set(widths, tmp2);
-		SettingsManager::getInstance()->set(visible, tmp3);
+		order.erase(order.size()-1, 1);
+		widths.erase(widths.size()-1, 1);
+		visible.erase(visible.size()-1, 1);
 
 	}
 
