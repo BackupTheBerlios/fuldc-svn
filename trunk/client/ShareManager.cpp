@@ -121,10 +121,10 @@ ShareManager::Directory::~Directory() {
 
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	RLock<> l(cs);
-	if(aFile == "MyList.DcLst") {
+	if(aFile == "/MyList.DcLst") {
 		generateNmdcList();
 		return getListFile();
-	} else if(aFile == "files.xml.bz2") {
+	} else if(aFile == "/files.xml.bz2") {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {
@@ -153,8 +153,8 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 			throw ShareException("File Not Available");
 		
 		RLock<> l(cs);
+		string aDir = file.substr(1, i-1);
 		file = file.substr(i+1);
-		string aDir = file.substr(0, i);
 		bool found = false;
 		Directory::File::Iter it;
 
