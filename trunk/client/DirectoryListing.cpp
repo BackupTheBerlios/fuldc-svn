@@ -82,7 +82,6 @@ void DirectoryListing::load(const string& in) {
 	pADLSearch->setBreakOnFirst(BOOLSETTING(ADLS_BREAK_ON_FIRST));
 
 	Directory* cur = root;
-	Directory* tmp = NULL;
 	string fullPath;
 	
 	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) 
@@ -122,11 +121,11 @@ void DirectoryListing::load(const string& in) {
 			if(di != cur->directories.end()) {
 				cur = *di;
 			} else {
-				tmp = new Directory(cur, name);
-				cur->directories.push_back(tmp);
-				cur = tmp;
-				pADLSearch->MatchesDirectory(destDirs, cur, fullPath);
+				Directory* d = new Directory(cur, name);
+				cur->directories.push_back(d);
+				cur = d;
 			}
+				pADLSearch->MatchesDirectory(destDirs, cur, fullPath);
 			indent++;
 		}
 	}
@@ -218,6 +217,7 @@ void ListLoader::endTag(const string& name, const string&) {
 		} else if(name == sFileListing) {
 			// cur should be root now...
 			ADLSearchManager::getInstance()->FinalizeDestinationDirectories(destDirs, cur);
+			inListing = false;
 		}
 	}
 }
@@ -236,12 +236,8 @@ string DirectoryListing::getPath(Directory* d) {
 	return dir;
 }
 
-static const string& escaper(const string& s, string& tmp, bool utf8) {
-	if(utf8 && Util::needsAcp(s)) {
-		tmp = s;
-		return Util::toAcp(tmp);
-	}
-	return s;
+static inline const string& escaper(const string& n, string& tmp, bool utf8) {
+	return utf8 ? Util::toAcp(n, tmp) : n;
 }
 
 void DirectoryListing::download(Directory* aDir, const string& aTarget) {

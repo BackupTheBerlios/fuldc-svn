@@ -124,6 +124,7 @@
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>
 		<String Name="Ip">Ip: </String>
+		<String Name="IpBare">Ip</String>
 		<String Name="Items">Items</String>
 		<String Name="Joins">Joins: </String>
 		<String Name="JoinShowingOff">Join/part showing off</String>
@@ -442,6 +443,7 @@
 		<String Name="PopupsActivated">Popups turned on</String>
 		<String Name="PopupsDeactivated">Popups turned off</String>
 		<String Name="ShowLog">View Log</String>
+		<String Name="OpenLogDir">Open Log Directory</String>
 		<String Name="SettingsFulAdvanced">FulDC\Advanced</String>
 		<String Name="SettingsFulHighlight">FulDC\Highlight</String>
 		<String Name="SettingsFulMore">FulDC\More</String>

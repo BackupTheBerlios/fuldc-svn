@@ -160,6 +160,11 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		}
 
 		d->bytesLeft = d->getSize() - d->getPos();
+		if (d->bytesLeft <= 0) {
+			d->bytesLeft = d->getSize();
+			d->setPos(0);
+		}
+
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && (aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) || aConn->isSet(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK)) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
@@ -218,7 +223,7 @@ public:
 	virtual size_t write(const void* b, size_t len) throw(FileException) {
 		u_int8_t* wb = (u_int8_t*)b;
 		if(buf != NULL) {
-			size_t n = len < bufSize ? bufSize - len : bufSize;
+			size_t n = len < (bufSize - pos) ? len : bufSize - pos;
 
 			if(memcmp(buf + pos, wb, n) != 0) {
 				throw FileException(STRING(ROLLBACK_INCONSISTENCY));
@@ -524,6 +529,9 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 	if(d->getFile()) {
 		try {
 			d->getFile()->flush();
+		} catch(const Exception&) {
+			finished = false;
+		}
 			delete d->getFile();
 			d->setFile(NULL);
 			d->setCrcCalc(NULL);
@@ -532,10 +540,6 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 				// Ok, set the pos to whereever it was last writing and hope for the best...
 				d->unsetFlag(Download::FLAG_ANTI_FRAG);
 			} 
-		} catch(const Exception&) {
-			finished = false;
-		}
-
 	}
 
 	{

@@ -56,7 +56,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.SetTextColor(WinUtil::textColor);
 	clientContainer.SubclassWindow(ctrlClient.m_hWnd);
 	
-	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VSCROLL |
 		ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
@@ -124,6 +124,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
 
 	tabMenu = CreatePopupMenu();
+	tabMenu.AppendMenu(MF_STRING, IDC_SHOW_HUB_LOG, CSTRING(SHOW_LOG));
+	tabMenu.AppendMenu(MF_STRING, IDC_OPEN_LOG_DIR, CSTRING(OPEN_LOG_DIR));
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
 
@@ -406,7 +408,6 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		if(!nicks.empty()) {
 			// remove last space
 			nicks.erase(nicks.length() - 1);
-
 			WinUtil::copyToClipboard(nicks);
 		}
 	}
@@ -487,7 +488,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				case UPDATE_USER:
 					if(updateUser(u, true)) {
 						if(showJoins)
-							addLine("*** " + STRING(JOINS) + u->getNick());
+							addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
 					} else {
 						userUpdated = true;
 					}
@@ -1420,9 +1421,17 @@ void HubFrame::removeUser(const User::Ptr& u) {
 	UserMap::iterator i = usermap.begin();
 	for(; i != usermap.end(); ++i) {
 		if(Util::stricmp(i->second->user->getNick(), u->getNick()) == 0){
+			bool change = false;
+			if(curUser != usermap.end()){
+				if(Util::stricmp(i->second->user->getNick(), curUser->second->user->getNick()) == 0) 
+					change = true;
+			}
+			
 			delete i->second;
 			i->second = NULL;
 			usermap.erase(i);
+			if(change)
+				curUser = usermap.begin();
 			break;
 		}
 	}
@@ -1481,6 +1490,26 @@ void HubFrame::updateUserList() {
 				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
 		}
 	}
+}
+
+LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	string path = SETTING(LOG_DIRECTORY);
+	if(BOOLSETTING(ROTATE_LOG))
+		path += server;
+	if(wID == IDC_SHOW_HUB_LOG){
+		path += "\\";
+		if(BOOLSETTING(ROTATE_LOG)){
+			char buf[20];
+			time_t now = time(NULL);
+			strftime(buf, 20, "%Y-%m-%d ", localtime(&now));
+			path += buf;
+		}
+		path += server + ".log";
+	}
+	
+	ShellExecute(NULL, "open", Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
+	
+	return 0;
 }
 
 

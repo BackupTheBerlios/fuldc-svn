@@ -598,11 +598,12 @@ int ShareManager::run() {
 			for(StringIter m = loadDirs.begin(); m != loadDirs.end(); ++m) {
 				try {
 					addDirectory(*m);
-				} catch(...) {}
+				} catch(...) {
+				}
+
 			}
 			refreshDirs = false;
-		} 
-		if(refreshInit && !refreshDirs && !refreshDir && !refreshIncoming) {
+		} if(refreshInit && !refreshDirs && !refreshDir && !refreshIncoming) {
 			for(StringIter l = loadDirs.begin(); l != loadDirs.end(); ++l) {
 				try {
 					addDirectory(*l);
@@ -722,8 +723,9 @@ void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, strin
 		xmlFile->write(LITERAL("\" Size=\""));
 		xmlFile->write(Util::toString(j->getSize()));
 		if(j->getTTH()) {
-				xmlFile->write(LITERAL("\" TTH=\""));
-			xmlFile->write(j->getTTH()->toBase32());
+			tmp2.clear();
+			xmlFile->write(LITERAL("\" TTH=\""));
+			xmlFile->write(j->getTTH()->toBase32(tmp2));
 		}
 		xmlFile->write(LITERAL("\"/>\r\n"));
 

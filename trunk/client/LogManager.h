@@ -67,9 +67,9 @@ public:
 		char buf[20];
 		time_t now = time(NULL);
 		strftime(buf, 20, "%Y-%m-%d ", localtime(&now));
-		if(!log(area + "\\" + buf + " " + area, msg)) {
+		if(!log(area + "\\" + buf + area, msg)) {
 			::CreateDirectory(Util::validateFileName(SETTING(LOG_DIRECTORY) + area).c_str(), NULL);
-			log(area + "\\" + buf + " " + area, msg);
+			log(area + "\\" + buf + area, msg);
 		}
 	}
 	void message(const string& m) {

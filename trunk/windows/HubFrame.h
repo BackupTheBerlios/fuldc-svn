@@ -75,6 +75,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_COPY, onCopy)
 		COMMAND_ID_HANDLER(IDC_FIND, onFind)
 		COMMAND_ID_HANDLER(IDC_SHOWLOG, onShowLog)
+		COMMAND_ID_HANDLER(IDC_SHOW_HUB_LOG, onShowHubLog)
+		COMMAND_ID_HANDLER(IDC_OPEN_LOG_DIR, onShowHubLog)
 		COMMAND_RANGE_HANDLER(IDC_SEARCH, IDC_SEARCH + 15, onSearch)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
@@ -116,6 +118,7 @@ public:
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	
 	
@@ -329,6 +332,7 @@ private:
 		tabList.push_back("/lastseen");
 		tabList.push_back("/pm");
 		tabList.push_back("/popups");
+		tabList.push_back("/rebuild");
 		tabList.push_back("/refresh");
 		tabList.push_back("/search");
 		tabList.push_back("/share");

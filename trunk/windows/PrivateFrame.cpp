@@ -64,9 +64,13 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	tabMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
 	tabMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	tabMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
+	tabMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CSTRING(SHOW_LOG));
+
 
 	userMenu.CreatePopupMenu();
 	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	userMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
 	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
@@ -504,10 +508,8 @@ LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam,
 
 		// kontrollera ifall musen var över nicket
 		string::size_type end = tmp.find_first_of(" >\t", start+1);
-		//if(end != string::npos && end != start+1) {
 		if (end != string::npos && end != start+1 && tmp[start-1] == '<') {
-			userNick = tmp.substr(start, end-start);
-
+			
 			// konvertera tillbaka positionen för musen så menyn hamnar rätt
 			ctrlClient.ClientToScreen(&pt);
 			userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -573,13 +575,13 @@ LRESULT PrivateFrame::onSearch(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 }
 
 LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	WinUtil::copyToClipboard(userNick);
+	WinUtil::copyToClipboard(user->getNick());
 
 	return 0;
 }
 
 LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	string path = SETTING(LOG_DIRECTORY) + userNick + ".log";
+	string path = SETTING(LOG_DIRECTORY) + user->getNick() + ".log";
 	ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return 0;
 }

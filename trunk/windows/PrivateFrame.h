@@ -209,8 +209,7 @@ private:
 	CMenu searchMenu;
 
 	string searchTerm;
-	string userNick;
-
+	
 	void updateTitle() {
 		if(user->isOnline()) {
 			SetWindowText(user->getFullNick().c_str());

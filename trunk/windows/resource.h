@@ -28,6 +28,8 @@
 #define IDC_DELETE                      116
 #define IDC_CLOSE_ALL_DIR_LIST          116
 #define IDC_COPY_TTH                    117
+#define IDC_SHOW_HUB_LOG                119
+#define IDC_OPEN_LOG_DIR                120
 #define IDC_SEARCH_RELEASEALTERNATES    127
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
@@ -174,7 +176,6 @@
 #define IDC_LATEST                      1071
 #define IDC_PRIVATE_MESSAGE_BEEP        1072
 #define IDC_USE_SYSTEM_ICONS            1072
-#define IDC_LATEST2                     1072
 #define IDC_UPTIME                      1072
 #define IDC_PRIVATE_MESSAGE_BEEP_OPEN   1073
 #define IDC_POPUP_PMS                   1073
@@ -413,6 +414,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1255
-#define _APS_NEXT_SYMED_VALUE           119
+#define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

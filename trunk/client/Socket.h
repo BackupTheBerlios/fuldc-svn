@@ -220,6 +220,8 @@ public:
 	/** When socks settings are updated, this has to be called... */
 	static void socksUpdated();
 
+	string getRemoteIp() const;
+
 	GETSETREF(string, ip, Ip);
 
 	GETSET(bool, noproxy, Noproxy);

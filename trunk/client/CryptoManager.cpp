@@ -340,9 +340,9 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	}
 
 	nodes.sort(greaterNode());
-	dcdebug("\n");
 #ifdef _DEBUG
 	for(list<Node*>::iterator it = nodes.begin(); it != nodes.end(); ++it) dcdebug("%.02x:%d, ", (*it)->chr, (*it)->weight);
+	dcdebug("\n");
 #endif
 	
 	walkTree(nodes);
@@ -384,7 +384,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 		}
 	}
 	
-	dcdebug("\nu_int8_ts: %d", os.size());
+	dcdebug("u_int8_ts: %d\n", os.size());
 	bos.skipToByte();
 
 	for(string::size_type j=0; j<is.size(); j++) {

@@ -231,8 +231,7 @@ void WinUtil::init(HWND hWnd) {
 
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
-		fileImages.Create(16, 16, ILC_COLOR8, 16, 16);
-		fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
+		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
 		::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
 		::DestroyIcon(fi.hIcon);
