@@ -234,7 +234,6 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	resultsMenu.AppendMenu(MF_SEPARATOR);
 	appendUserItems(resultsMenu);
-	resultsMenu.AppendMenu(MF_SEPARATOR);
 	resultsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 	resultsMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY));
 	resultsMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
@@ -982,13 +981,11 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 }
 
 LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
-	if ((HWND)wParam == ctrlResults && ctrlResults.GetSelectedCount() > 0) {
+	if (reinterpret_cast<HWND>(wParam) == ctrlResults && ctrlResults.GetSelectedCount() > 0) {
 		if(pt.x == -1 && pt.y == -1) {
-			pt.x = pt.y = 0;
-			ctrlResults.ClientToScreen(&pt);
+			WinUtil::getContextMenuPos(ctrlResults, pt);
 		}
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);

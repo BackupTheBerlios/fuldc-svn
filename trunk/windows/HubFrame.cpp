@@ -812,16 +812,16 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	return TRUE;
 }
 
-LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	RECT rc; 
-	POINT pt; 
-	GetCursorPos(&pt);			//need cursor pos
-	ctrlClient.GetWindowRect(&rc);
+LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) }; 
 
 	bool doMenu = false;
 	bool doMcMenu = false;
 
-	if (PtInRect(&rc, pt)) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlClient) {
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlClient, pt);
+		}
 		tstring x;
 		ctrlClient.ScreenToClient(&pt);
 		string::size_type start = (string::size_type)ctrlClient.TextUnderCursor(pt, x);
@@ -860,18 +860,16 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		} else {
 			doMcMenu = true;
 		}
+	} else if(reinterpret_cast<HWND>(wParam) == ctrlUsers && ctrlUsers.GetSelectedCount() > 0) {
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlUsers, pt);
+		}
+		doMenu = true;
 	} else {
-		// Get the bounding rectangle of the client area. 
-		ctrlUsers.GetWindowRect(&rc);
-		
-		if (PtInRect(&rc, pt)) { 
-			doMenu = true;
-		}else{
-			bHandled = FALSE; //needed to popup context menu under userlist
-		} 
-	} 
-		
-	if((doMenu || ((HWND)wParam == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {
+		bHandled = FALSE;
+	}
+			
+	if(doMenu) {
 		if(ctrlUsers.GetSelectedCount() == 1) {
 			int pos = ctrlUsers.GetNextItem(-1, LVNI_SELECTED);
 			if(pos != -1) {

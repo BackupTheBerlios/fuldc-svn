@@ -528,29 +528,22 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 }
 
-LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	RECT rc;
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+LRESULT PrivateFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlClient) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 	
-	if( pt.x == -1 && pt.y == -1 )
-		pt.x = pt.y = 0;
+		if( pt.x == -1 && pt.y == -1 )
+			WinUtil::getContextMenuPos(ctrlClient, pt);
 
-	ctrlClient.GetClientRect(&rc);
-	if (uMsg == WM_CONTEXTMENU)
 		ctrlClient.ScreenToClient(&pt);
-
-	if(PtInRect(&rc, pt)) {
-		//hämta raden som vi klickade på
 		tstring tmp;
 		tstring::size_type start = ctrlClient.TextUnderCursor(pt, tmp);
+		ctrlClient.ClientToScreen(&pt);
 
-		// kontrollera ifall musen var över nicket
+		//did we hit a nick?
 		tstring::size_type end = tmp.find_first_of(_T(" >\t"), start+1);
 		if (end != tstring::npos && end != start+1 && tmp[start-1] == _T('<')) {
 			
-			// konvertera tillbaka positionen för musen så menyn hamnar rätt
-			ctrlClient.ClientToScreen(&pt);
-
 			if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
 				tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
 				tabMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
@@ -561,23 +554,7 @@ LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam,
 
 			tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		}else {
-			RECT rc2;
-			POINT pt2 = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) }; // location of mouse click 
-			ctrlClient.ClientToScreen(&pt);
-			ctrlClient.GetWindowRect(&rc);
-			ctrlMessage.GetWindowRect(&rc2);
-			ctrlMessage.ClientToScreen(&pt2);
-
-			// Not in client area. In message are. Not both at the same time
-			if (!PtInRect(&rc, pt2) && PtInRect(&rc2, pt2) && pt2.y > rc.bottom) {
-				// In message box
-				bHandled = FALSE;
-				return FALSE;
-			} else {
-				ctrlClient.ShowMenu(m_hWnd, pt);
-				bHandled = TRUE;
-				return TRUE;
-			}
+			ctrlClient.ShowMenu(m_hWnd, pt);
 		}
 	}else {
 		bHandled = FALSE;

@@ -131,11 +131,10 @@ void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
 
 LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 
-	if((HWND)wParam == ctrlHubs) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlHubs) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		if(pt.x == -1 && pt.y == -1) {
-			pt.x = pt.y = 0;
-			ctrlHubs.ClientToScreen(&pt);
+			WinUtil::getContextMenuPos(ctrlHubs, pt);
 		}
 
 		int status = ctrlHubs.GetSelectedCount() > 0 ? MF_ENABLED : MF_GRAYED;

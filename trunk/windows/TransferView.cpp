@@ -142,16 +142,10 @@ LRESULT TransferView::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	RECT rc, rc2;                    // client area of window 
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-
-	// Get the bounding rectangle of the client area. 
-	ctrlTransfers.GetWindowRect(&rc);
-
-	if ((HWND)wParam == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) { 
+	if (reinterpret_cast<HWND>(wParam) == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) { 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 		if(pt.x == -1 && pt.y == -1) {
-			pt.x = pt.y = 0;
-			ctrlTransfers.ClientToScreen(&pt);
+			WinUtil::getContextMenuPos(ctrlTransfers, pt);
 		}
 		int i = -1;
 		ItemInfo* itemI;

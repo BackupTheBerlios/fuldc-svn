@@ -1390,6 +1390,39 @@ bool WinUtil::flashWindow() {
 	return false;
 }
 
+void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {
+	int pos = aList.GetNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
+	if(pos >= 0) {
+		CRect lrc;
+		aList.GetItemRect(pos, &lrc, LVIR_LABEL);
+		aPt.x = lrc.left;
+		aPt.y = lrc.top + (lrc.Height() / 2);
+	} else {
+		aPt.x = aPt.y = 0;
+	}
+	aList.ClientToScreen(&aPt);
+}
+
+void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
+	CRect trc;
+	HTREEITEM ht = aTree.GetSelectedItem();
+	if(ht) {
+		aTree.GetItemRect(ht, &trc, TRUE);
+		aPt.x = trc.left;
+		aPt.y = trc.top + (trc.Height() / 2);
+	} else {
+		aPt.x = aPt.y = 0;
+	}
+	aTree.ClientToScreen(&aPt);
+}
+void WinUtil::getContextMenuPos(CFulEditCtrl& aEdit, POINT& aPt) {
+	CRect erc;
+	aEdit.GetRect(&erc);
+	aPt.x = erc.Width() / 2;
+	aPt.y = erc.Height() / 2;
+	aEdit.ClientToScreen(&aPt);
+}
+
 /**
  * @file
  * $Id: WinUtil.cpp,v 1.21 2004/02/21 15:43:54 trem Exp $

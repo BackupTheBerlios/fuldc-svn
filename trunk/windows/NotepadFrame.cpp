@@ -84,19 +84,13 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 }
 
-LRESULT NotepadFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	RECT rc;
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+LRESULT NotepadFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlPad) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 
-	if( pt.x == -1 && pt.y == -1 )
-		pt.x = pt.y = 0;
+		if( pt.x == -1 && pt.y == -1 )
+			WinUtil::getContextMenuPos(ctrlPad, pt);
 
-	ctrlPad.GetClientRect(&rc);
-	
-	ctrlPad.ScreenToClient(&pt);
-
-	if(PtInRect(&rc, pt)) {
-		ctrlPad.ClientToScreen(&pt);
 		ctrlPad.ShowMenu(m_hWnd, pt);
 		bHandled = TRUE;
 	}else {

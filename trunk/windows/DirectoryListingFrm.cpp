@@ -549,8 +549,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 
 	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) {
 		if(pt.x == -1 && pt.y == -1) {
-			pt.x = pt.y = 0;
-			ctrlList.ClientToScreen(&pt);
+			WinUtil::getContextMenuPos(ctrlList, pt);
 		}
 
 		int n = 0;
@@ -608,8 +607,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 	} else if((HWND)wParam == ctrlTree && ctrlTree.GetSelectedItem() != NULL) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		if(pt.x == -1 && pt.y == -1) {
-			pt.x = pt.y = 0;
-			ctrlTree.ClientToScreen(&pt);
+			WinUtil::getContextMenuPos(ctrlTree, pt);
 		} else {
 			ctrlTree.ScreenToClient(&pt);
 			UINT a = 0;
