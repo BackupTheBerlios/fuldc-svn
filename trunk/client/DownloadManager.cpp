@@ -342,6 +342,11 @@ void DownloadManager::on(Command::SND, UserConnection* aSource, const Command& c
 	}
 }
 
+class RollbackException : public FileException {
+public:
+	RollbackException (const string& aError) : FileException(aError) { };
+	virtual ~RollbackException() { };
+};
 
 template<bool managed>
 class RollbackOutputStream : public OutputStream {
@@ -363,7 +368,7 @@ public:
 			size_t n = len < (bufSize - pos) ? len : bufSize - pos;
 
 			if(memcmp(buf + pos, wb, n) != 0) {
-				throw FileException(STRING(ROLLBACK_INCONSISTENCY));
+				throw RollbackException(STRING(ROLLBACK_INCONSISTENCY));
 			}
 			pos += n;
 			if(pos == bufSize) {
@@ -564,6 +569,16 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 			handleEndData(aSource);
 			aSource->setLineMode();
 		}
+	} catch(const RollbackException& e) {
+		string target = d->getTarget();
+		QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY);
+		fire(DownloadManagerListener::Failed(), d, e.getError());
+
+		d->resetPos();
+		aSource->setDownload(NULL);
+		removeDownload(d, true);
+		removeConnection(aSource);
+		return;
 	} catch(const FileException& e) {
 		fire(DownloadManagerListener::Failed(), d, e.getError());
 

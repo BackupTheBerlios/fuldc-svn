@@ -377,6 +377,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 				}
 				online = qi->hasOnlineUsers();
 				recent.push_back(searchString);
+				nextSearch = aTick + (online ? 120000 : 300000);
 			}
 		}
 	}
@@ -385,7 +386,6 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
 	} else if(!fn.empty()) {
 		SearchManager::getInstance()->search(searchString, sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
-		nextSearch = aTick + (online ? 2000 : 5000);
 	}
 }
 

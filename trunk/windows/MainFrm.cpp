@@ -509,13 +509,16 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		SettingsManager::getInstance()->save();
- 		if(missedAutoConnect && !SETTING(NICK).empty()) {
- 			PostMessage(WM_SPEAKER, AUTO_CONNECT);
- 		}
+		if(missedAutoConnect && !SETTING(NICK).empty()) {
+			PostMessage(WM_SPEAKER, AUTO_CONNECT);
+		}
 		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort) {
 			startSocket();
 		}
-		//ClientManager::getInstance()->infoUpdated();
+		ClientManager::getInstance()->infoUpdated();
+		if(BOOLSETTING(URL_HANDLER)) {
+			WinUtil::registerDchubHandler();
+		}
 	}
 	return 0;
 }

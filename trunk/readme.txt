@@ -273,10 +273,10 @@ suggesting and testing of the enhanced auto search in the first place.
 ------------------------
   * Homepage                  @ http://dcplusplus.sourceforge.net
   * Forum                     @ http://dcplusplus.sourceforge.net/forum
-  * Report bugs               @ http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse
-  * Request features          @ http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse
-  * Download language files   @ http://dcplusplus.sourceforge.net/index.php?page=download
-  * Get newest version        @ http://dcplusplus.sourceforge.net/index.php?page=download
+  * Report bugs               @ http://dcplusplus.sourceforge.net/bugs
+  * Request features          @ http://dcplusplus.sourceforge.net/bugs
+  * Download language files   @ http://sourceforge.net/tracker/?atid=460289&group_id=40287&func=browse
+  * Get newest version        @ http://dcplusplus.sourceforge.net/index.php?t=2&s=1
   * Typos and errors in readme go to Fireball@enLightning.de
 
 11 Have fun
