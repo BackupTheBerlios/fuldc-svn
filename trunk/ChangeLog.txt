@@ -1,4 +1,4 @@
--- 0.671 --
+ï»¿-- 0.671 --
 * Added possibility to set minislot size (thanks ullner)
 * [bug 22] Added possibility for multiline away messages and user commands (thanks ullner)
 * Added file type to queue frame (thanks ullner)
@@ -497,7 +497,7 @@ international filenames in it - they will not be correctly converted.
 * Fixed missing string (thanks gargoyle)
 * Fixed invalid date added formatting
 * Fixed trimming of spaces for http downloads (hub list...)
-* Fixed a bug in autosearch when using auto search strings (thanks ilkka seppälä)
+* Fixed a bug in autosearch when using auto search strings (thanks ilkka seppÃ¤lÃ¤)
 * Fixed typo in user commands help
 * Fixed missing sort arrows
 * Added time last seen online to fav users (thanks gargoyle)
@@ -700,7 +700,7 @@ Major:
 * Added selection size info to queue frame (same as file listing)
 * Fixed some crashes when closing windows (and perhaps added some new ones...)
 
-ADLSearch: (by Henrik Engström)
+ADLSearch: (by Henrik EngstrÃ¶m)
   * Keyboard shortcuts.
   * Context menu (back again).
   * Removed 'Active' column and made it a check box.
@@ -742,7 +742,7 @@ Minor:
 * Added match queue feature to the file listing window. This will take every file in the file listing and see if there
   is any matching file in the queue (exact filename & size match). Every match will then be added to the queue as an
   extra source. Depending on your queue size and the number of files in the listing this might take some time to do...
-* UI updates to ADLSearch (by Henrik Engström)
+* UI updates to ADLSearch (by Henrik EngstrÃ¶m)
 
  -- 0.241 2003-04-01 --
 * Made the XML parser a bit more robust against bad XML data (to avoid embarassing situations such as the last one...)
@@ -773,7 +773,7 @@ Minor:
 
  -- 0.24 2003-03-11 --
 * The splash screen is now correctly centered (we thank Vladimir Marko for this important patch =)
-* Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik Engström.
+* Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik EngstrÃ¶m.
 * Local ip handling improved, so that a per-hub ip is used if nothing is entered in the active field (good for
   people who connect to local hubs or through different network cards)
 * You can now use $ and | in the chat. DC++ uses the HTML standard &#36; and &#124; to replace them...some people
