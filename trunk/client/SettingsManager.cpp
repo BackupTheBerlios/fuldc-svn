@@ -75,7 +75,7 @@ const string SettingsManager::settingTags[] =
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
-	"PopupDontShowOnActive", "DupeColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
+	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
 	"SENTRY",
 	// Int64

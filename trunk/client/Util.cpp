@@ -24,7 +24,6 @@
 #include "SettingsManager.h"
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
-#include "SettingsManager.h"
 #include "version.h"
 
 #ifndef _WIN32
