@@ -98,6 +98,9 @@ typedef WStringPairList::iterator WStringPairIter;
 typedef HASH_MAP<wstring, wstring> WStringMap;
 typedef WStringMap::iterator WStringMapIter;
 
+typedef set<string> StringSet;
+typedef StringSet::iterator StringSetIter;
+
 #ifdef UNICODE
 
 typedef wstring tstring;

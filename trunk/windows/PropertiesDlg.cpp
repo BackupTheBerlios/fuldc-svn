@@ -39,6 +39,7 @@
 #include "FulAppearance.h"
 #include "FulTabsPage.h"
 #include "FulPopupsPage.h"
+#include "FulIgnorePage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
@@ -59,6 +60,7 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[14] = new FulHighlightPage(s);
 	pages[15] = new FulPopupsPage(s);
 	pages[16] = new FulTabsPage(s);
+	pages[17] = new FulIgnorePage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());

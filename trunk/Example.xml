@@ -560,6 +560,7 @@
 		<String Name="SettingsFulHighlight">fulDC\\Appearance\\Highlight</String>
 		<String Name="SettingsFulDownload">fulDC\\Downloads</String>
 		<String Name="SettingsFulAppearance">fulDC\\Appearance</String>
+		<String Name="SettingsFulIgnore">fulDC\\Ignore</String>
 		<String Name="SettingsFulTabs">fulDC\\Appearance\\Tabs</String>
 		<String Name="SettingsFulPopup">fulDC\\Appearance\\Popups</String>
 		<String Name="SettingsAutoUpdateIncoming">Automatically refresh incoming</String>
@@ -698,5 +699,8 @@
 		<String Name="AddFinishedUploads">Add finished uploads to finished uploads window</String>
 		<String Name="Unignore">Unignore</String>
 		<String Name="Ignorea">Ignore</String>
+		<String Name="NewIgnorePatternTitle">New ignore pattern</String>
+		<String Name="NewIgnorePatternDescription">full nick, wildcard or a regexp</String>
+		<String Name="AlreadyIgnored">Pattern is already in the list</String>
 	</Strings>
 </Language>

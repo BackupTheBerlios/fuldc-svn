@@ -561,6 +561,7 @@ string ResourceManager::strings[] = {
 "fulDC\\Appearance\\Highlight", 
 "fulDC\\Downloads", 
 "fulDC\\Appearance", 
+"fulDC\\Ignore", 
 "fulDC\\Appearance\\Tabs", 
 "fulDC\\Appearance\\Popups", 
 "Automatically refresh incoming", 
@@ -699,6 +700,9 @@ string ResourceManager::strings[] = {
 "Add finished uploads to finished uploads window", 
 "Unignore", 
 "Ignore", 
+"New ignore pattern", 
+"full nick, wildcard or a regexp", 
+"Pattern is already in the list", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1260,6 +1264,7 @@ string ResourceManager::names[] = {
 "SettingsFulHighlight", 
 "SettingsFulDownload", 
 "SettingsFulAppearance", 
+"SettingsFulIgnore", 
 "SettingsFulTabs", 
 "SettingsFulPopup", 
 "SettingsAutoUpdateIncoming", 
@@ -1398,4 +1403,7 @@ string ResourceManager::names[] = {
 "AddFinishedUploads", 
 "Unignore", 
 "Ignorea", 
+"NewIgnorePatternTitle", 
+"NewIgnorePatternDescription", 
+"AlreadyIgnored", 
 };

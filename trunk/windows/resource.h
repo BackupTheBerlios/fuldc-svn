@@ -169,6 +169,8 @@
 #define IDD_NETWORKPAGE                 306
 #define IDC_SETTINGS_PM_HISTORY         307
 #define IDC_SHOW_LAST_LINES_LOG         309
+#define IDD_FULIGNOREPAGE               309
+#define IDD_DIALOG4                     310
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -525,6 +527,8 @@
 #define IDC_LOG_OPTIONS                 1308
 #define IDC_IGNORE                      1309
 #define IDC_UNIGNORE                    1310
+#define IDC_LIST1                       1311
+#define IDC_PATTERNS                    1311
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -572,9 +576,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        309
+#define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1311
+#define _APS_NEXT_CONTROL_VALUE         1312
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif

@@ -564,6 +564,7 @@ enum Strings { // @DontAdd
 	SETTINGS_FUL_HIGHLIGHT, // "fulDC\\Appearance\\Highlight"
 	SETTINGS_FUL_DOWNLOAD, // "fulDC\\Downloads"
 	SETTINGS_FUL_APPEARANCE, // "fulDC\\Appearance"
+	SETTINGS_FUL_IGNORE, // "fulDC\\Ignore"
 	SETTINGS_FUL_TABS, // "fulDC\\Appearance\\Tabs"
 	SETTINGS_FUL_POPUP, // "fulDC\\Appearance\\Popups"
 	SETTINGS_AUTO_UPDATE_INCOMING, // "Automatically refresh incoming"
@@ -702,5 +703,8 @@ enum Strings { // @DontAdd
 	ADD_FINISHED_UPLOADS, // "Add finished uploads to finished uploads window"
 	UNIGNORE, // "Unignore"
 	IGNOREA, // "Ignore"
+	NEW_IGNORE_PATTERN_TITLE, // "New ignore pattern"
+	NEW_IGNORE_PATTERN_DESCRIPTION, // "full nick, wildcard or a regexp"
+	ALREADY_IGNORED, // "Pattern is already in the list"
 	LAST // @DontAdd
 };
