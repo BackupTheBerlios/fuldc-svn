@@ -28,6 +28,17 @@
 // Initialize dialog
 LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 {
+	// Translate the texts
+	SetWindowText(CTSTRING(ADLS_PROPERTIES));
+	SetDlgItemText(IDC_ADLSP_SEARCH, CTSTRING(ADLS_SEARCH_STRING));
+	SetDlgItemText(IDC_ADLSP_TYPE, CTSTRING(ADLS_TYPE));
+	SetDlgItemText(IDC_ADLSP_SIZE_MIN, CTSTRING(ADLS_SIZE_MIN));
+	SetDlgItemText(IDC_ADLSP_SIZE_MAX, CTSTRING(ADLS_SIZE_MAX));
+	SetDlgItemText(IDC_ADLSP_UNITS, CTSTRING(ADLS_UNITS));
+	SetDlgItemText(IDC_ADLSP_DESTINATION, CTSTRING(ADLS_DESTINATION));
+	SetDlgItemText(IDC_IS_ACTIVE, CTSTRING(ADLS_ENABLED));
+	SetDlgItemText(IDC_AUTOQUEUE, CTSTRING(ADLS_DOWNLOAD));
+
 	// Initialize combo boxes
 	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_ADDSTRING, 0, 
 		(LPARAM)search->SourceTypeToDisplayString(ADLSearch::OnlyFile).c_str());

@@ -160,7 +160,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	bHandled = FALSE;
 	client->connect();
-
+	
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 	if(fhe != NULL){
 		//retrieve window position
@@ -171,7 +171,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			MoveWindow(rc, TRUE);
 	}
 
-	//avoid receiving timer messages before the window has been created
 	TimerManager::getInstance()->addListener(this);
 
 	return 1;
@@ -292,6 +291,8 @@ void HubFrame::onEnter() {
 					else
 						addLine(_T("*** /") + help);
 				}
+			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + ".log")));
 			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 				tstring nick, msg;
 				tstring::size_type j = param.find(_T(' '));

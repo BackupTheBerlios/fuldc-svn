@@ -120,7 +120,7 @@ public:
 		default:
 		case OnlyFile:		return TSTRING(FILENAME);
 		case OnlyDirectory:	return TSTRING(DIRECTORY);
-		case FullPath:		return TSTRING(ADL_FULL_PATH);
+		case FullPath:		return TSTRING(ADLS_FULL_PATH);
 		}
 	}
 
@@ -304,7 +304,7 @@ public:
 	void PrepareDestinationDirectories(DestDirList& destDirVector, DirectoryListing::Directory* root, StringMap& params);
 	// Finalize destination directories
 	void FinalizeDestinationDirectories(DestDirList& destDirVector, DirectoryListing::Directory* root) {
-		string szDiscard = "<<<" + STRING(ADL_DISCARD) + ">>>";
+		string szDiscard = "<<<" + STRING(ADLS_DISCARD) + ">>>";
 
 		// Add non-empty destination directories to the top level
 		for(vector<DestDir>::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id) {

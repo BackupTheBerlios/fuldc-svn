@@ -381,12 +381,6 @@ public:
 #endif
 	}
 
-	static string toString(int val) {
-		char buf[16];
-		sprintf(buf, "%d", val);
-		return buf;
-	}
-
 	static string toString(u_int32_t val) {
 		char buf[16];
 		sprintf(buf, "%lu", (unsigned long)val);
@@ -396,7 +390,7 @@ public:
 		// TODO A better conversion the day we hit 64 bits
 		return toString((u_int32_t)val);
 	}
-	static string toString(int32_t val) {
+	static string toString(int val) {
 		char buf[16];
 		sprintf(buf, "%d", val);
 		return buf;

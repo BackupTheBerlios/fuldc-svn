@@ -118,6 +118,20 @@
 #define IDD_FULTABSPAGE                 257
 #define IDD_DIALOG3                     258
 #define IDD_FULPOPUPPAGE                258
+#define IDC_ADLSP_SEARCH                259
+#define IDC_ADLSP_TYPE                  260
+#define IDC_ADLSP_SIZE_MIN              261
+#define IDC_ADLSP_SIZE_MAX              262
+#define IDC_ADLSP_UNITS                 263
+#define IDC_ADLSP_DESTINATION           264
+#define IDC_FH_HUB                      265
+#define IDC_FH_IDENT                    266
+#define IDC_FH_NAME                     267
+#define IDC_FH_ADDRESS                  268
+#define IDC_FH_HUB_DESC                 269
+#define IDC_FH_NICK                     270
+#define IDC_FH_PASSWORD                 271
+#define IDC_FH_USER_DESC                272
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -455,6 +469,9 @@
 #define IDC_POPUP_REMOVE                1300
 #define IDC_APPEARANCE                  1301
 #define IDC_POPUP_APPEARANCE            1301
+#define IDC_                            1302
+#define IDC_STRIP_ISP                   1302
+#define IDC_FH_STRIP_ISP                1303
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -502,7 +519,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1302
+#define _APS_NEXT_CONTROL_VALUE         1304
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif

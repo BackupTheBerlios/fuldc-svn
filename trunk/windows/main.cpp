@@ -44,6 +44,9 @@ static char buf[DEBUG_BUFSIZE];
 FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
 	MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an unhandled exception and will terminate. Please do not report this as a bug, as fulDC was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("fulDC Has Crashed"), MB_OK | MB_ICONERROR);
 	exit(-1);
+
+	//needed for compuware performance analysis
+	return 0;
 }
 
 #endif
@@ -124,6 +127,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	EXTENDEDTRACEUNINITIALIZE();
 	
 	exit(-1);
+	
+	//needed for compuware performance analysis
+	return EXCEPTION_CONTINUE_SEARCH;
 #else
 	return EXCEPTION_CONTINUE_SEARCH;
 #endif
