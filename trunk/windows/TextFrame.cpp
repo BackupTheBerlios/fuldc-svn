@@ -69,7 +69,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 
 	try {
-		tmp = File(file, File::READ, File::OPEN).read(MAX_TEXT_LEN);
+		tmp = Util::toDOS(File(file, File::READ, File::OPEN).read(MAX_TEXT_LEN));
 		string::size_type i = 0;
 		while((i = tmp.find('\n', i)) != string::npos) {
 			if(i == 0 || tmp[i-1] != '\r') {

@@ -60,7 +60,7 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 		root = store.getTTH(aFileName, tth.getFileSize(), tth.getTimeStamp());
 	}
 
-	if(root != NULL) {
+	if(root != NULL && speed > -1) {
 		fire(HashManagerListener::TTHDone(), aFileName, root);
 		
 		//don't want to hold a lock when firing the message

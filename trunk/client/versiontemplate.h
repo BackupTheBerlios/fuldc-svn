@@ -21,9 +21,9 @@
 #define VERSIONFLOAT 0.4032
 
 #ifdef _DEBUG
-#define FULVERSIONSTRING "6.50 svn$WCREV$"
+#define FULVERSIONSTRING "6.51 svn$WCREV$"
 #else
-#define FULVERSIONSTRING "6.50"
+#define FULVERSIONSTRING "6.51 Beta 1"
 #endif
 
 /* Update the .rc file as well... */

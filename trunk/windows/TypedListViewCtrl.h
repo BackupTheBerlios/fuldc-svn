@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "ListViewArrows.h"
+#include "memdc.h"
 
 class ColumnInfo {
 public:
@@ -54,6 +55,7 @@ public:
 
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onHeaderMenu)
+		
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -161,8 +163,14 @@ public:
 		return insertItem(getSortPos(item), item, image);
 	}
 	int insertItem(int i, T* item, int image) {
-		return InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i, 
+		int res = InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i, 
 			LPSTR_TEXTCALLBACK, 0, 0, image, (LPARAM)item);
+
+		for(int j = 0; j < columnList.size(); ++j){
+			SetItem(i, j, LVIF_IMAGE, NULL, image, 0, 0, 0);
+		}
+
+		return res;
 	}
 	T* getItemData(int iItem) { return (T*)GetItemData(iItem); }
 	T* getSelectedItem() { return (GetSelectedCount() > 0 ? getItemData(GetNextItem(-1, LVNI_SELECTED)) : NULL); }
@@ -286,10 +294,7 @@ public:
 	}
 
 	LRESULT onHeaderMenu(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ColumnIter i = columnList.begin();
-		for(unsigned int j = 0; j < wParam; ++j, ++i );
-
-		ColumnInfo * ci = (*i);
+		ColumnInfo * ci = columnList[wParam];
 		ci->visible = ! ci->visible;
 
 		SetRedraw(FALSE);
@@ -297,7 +302,11 @@ public:
 		if(!ci->visible){
 			removeColumn(ci);
 		} else {
-			InsertColumn(ci->pos, ci->name.c_str(), ci->format, ci->width, -1);
+			InsertColumn(wParam, ci->name.c_str(), ci->format, ci->width, -1);
+			LVCOLUMN lvcl = { 0 };
+			lvcl.mask = LVCF_ORDER;
+			lvcl.iOrder = ci->pos;
+			SetColumn(wParam, &lvcl);
 		}
 
 		SetRedraw();
@@ -359,13 +368,10 @@ public:
 		StringIter i = l.begin();
 		ColumnIter j = columnList.begin();
 		for(; j != columnList.end() && i != l.end(); ++i, ++j){
-			ColumnInfo *ci = *j;
 
-			if(Util::toInt(*i) == 1)
-				ci->visible = true;
-			else {
-				ci->visible = false;
-				removeColumn(ci);
+			if(Util::toInt(*i) == 0){
+				(*j)->visible = false;
+				removeColumn(*j);
 			}
 		}
 	}
@@ -393,34 +399,30 @@ private:
 	}
 
 	typedef vector< ColumnInfo* > ColumnList;
-	typedef vector< ColumnInfo* >::iterator ColumnIter;
+	typedef ColumnList::iterator ColumnIter;
 
 	ColumnList columnList;
 
 	void removeColumn(ColumnInfo* ci){
-		CHAR *buf = new CHAR[512];
-		LVCOLUMN lvcl;
-		lvcl.mask = LVCF_TEXT;
-		lvcl.pszText = buf;
-		lvcl.cchTextMax = 512;
+		
+		int column = findColumn(ci);
 
-		int columns = GetHeader().GetItemCount();
+		if(column > -1){
+			ci->width = GetColumnWidth(column);
 
-		for(int k = 0; k < columns; ++k){
-
-			GetColumn(k, &lvcl);
-			if(Util::stricmp(ci->name.c_str(), lvcl.pszText) == 0){
-				ci->width = GetColumnWidth(k);
-				DeleteColumn(k);
-				if(sortColumn == ci->pos)
-					sortColumn = 0;
-				break;
-			}
+			HDITEM hd;
+			hd.mask = HDI_ORDER;
+			GetHeader().GetItem(column, &hd);
+			ci->pos = hd.iOrder;
+			
+			DeleteColumn(column);
+			if(sortColumn == ci->pos)
+				sortColumn = 0;
 		}
-
-		delete[] buf;
+		
 	}
 
+	//find the current position for the column that was inserted at the specified pos
 	int findColumn(int col){
 		CHAR *buf = new CHAR[512];
 		LVCOLUMN lvcl;
@@ -430,13 +432,44 @@ private:
 
 		GetColumn(col, &lvcl);
 
+		int result = -1;
+
 		int i = 0;
 		for(ColumnIter j = columnList.begin(); j != columnList.end(); ++i, ++j){
-			if(Util::stricmp((*j)->name.c_str(), buf) == 0)
-				return i;
+			if(Util::stricmp((*j)->name.c_str(), buf) == 0){
+				result = i;
+				break;
+			}
 		}
 
-		return -1;
+		delete[] buf;
+
+		return result;
+	}
+
+	int findColumn(ColumnInfo* ci){
+		CHAR *buf = new CHAR[512];
+		LVCOLUMN lvcl;
+		lvcl.mask = LVCF_TEXT;
+		lvcl.pszText = buf;
+		lvcl.cchTextMax = 512;
+
+		int columns = GetHeader().GetItemCount();
+
+		int result = -1;
+
+		for(int k = 0; k < columns; ++k){
+
+			GetColumn(k, &lvcl);
+			if(Util::stricmp(ci->name.c_str(), lvcl.pszText) == 0){
+				result = k;
+				break;
+			}
+		}
+
+		delete[] buf;
+
+		return result;
 	}
 };
 

@@ -576,7 +576,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 void NmdcHub::myInfo() {
 	checkstate();
 	
-	dcdebug("MyInfo %s...\n", getNick().c_str());
+	dcdebug("In MyInfo %s...\n", getNick().c_str());
 	lastCounts = counts;
 	
 	string tmp1 = ";**\x1fU9";
@@ -607,6 +607,7 @@ void NmdcHub::myInfo() {
 		">$ $" + SETTING(CONNECTION) + "\x01$" + Util::validateMessage(SETTING(EMAIL), false) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|";
 	if(minf != lastMyInfo) {
+		dcdebug("Sending MyInfo %s...\n", getNick().c_str());	
 		send(minf);
 		lastMyInfo = minf;
 	}
