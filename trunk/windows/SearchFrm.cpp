@@ -477,16 +477,19 @@ void SearchFrame::SearchInfo::getList() {
 }
 
 void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
-
 	if(!si->getTTH().empty()) {
-		if(tth.empty()) {
+		if(firstTTH) {
 			tth = si->getTTH();
 			hasTTH = true;
+			firstTTH = false;
 		} else if(hasTTH) {
 			if(tth != si->getTTH()) {
 				hasTTH = false;
 			}
 		} 
+	} else {
+		firstTTH = false;
+		hasTTH = false;
 	}
 
 	if(si->sr->getType() == SearchResult::TYPE_FILE) {
@@ -950,7 +953,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 		SearchInfo::CheckSize cs = ctrlResults.forEachSelectedT(SearchInfo::CheckSize());
 
-		if(cs.size != -1) {
+		if(cs.size != -1 || cs.hasTTH) {
 			targets.clear();
 			if(cs.hasTTH) {
 				QueueManager::getInstance()->getTargetsByRoot(targets, TTHValue(Text::fromT(cs.tth)));

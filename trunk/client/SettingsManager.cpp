@@ -59,7 +59,7 @@ const string SettingsManager::settingTags[] =
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
-	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "ConfirmHubRemoval",
+	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"RotateLogs", "PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -179,6 +179,7 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_USE_UPNP, false);
 	setDefault(DONT_DL_ALREADY_SHARED, false);
 	setDefault(CONFIRM_HUB_REMOVAL, false);
+	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);

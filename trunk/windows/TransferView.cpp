@@ -172,6 +172,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 
 		ucParams["mynick"] = itemI->user->getClientNick();
 		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
+		ucParams["file"] = Text::fromT(itemI->path) + Text::fromT(itemI->file);
 
 		StringMap tmp = ucParams;
 		itemI->user->getParams(tmp);

@@ -118,10 +118,10 @@ private:
 
 
 /**
- * Use this liestener interface to get progress information for downloads.
+ * Use this listener interface to get progress information for downloads.
  *
  * @remarks All methods are sending a pointer to a Download but the receiver
- * (TransferView) is not usig any of the methods in Download, only methods
+ * (TransferView) is not using any of the methods in Download, only methods
  * from its super class, Transfer. The listener functions should send Transfer
  * objects instead.
  *
@@ -190,7 +190,7 @@ public:
 	 * @remarks This is only used in the tray icons. In MainFrame this is
 	 * calculated instead so there seems to be a little duplication of code.
 	 *
-	 * @return Agerage download speed in Bytes/s
+	 * @return Average download speed in Bytes/s
 	 */
 	int getAverageSpeed() {
 		Lock l(cs);

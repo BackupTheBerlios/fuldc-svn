@@ -189,18 +189,6 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			running++;
 		}
 	}
-#ifdef FALSE
-	string msg = Util::getShortTimeString() + " " + aSource->getUser()->getNick() + " slots=" + 
-		Util::toString(SETTING(SLOTS)) + 
-		" free slots=" + Util::toString(getFreeSlots()) + " minislots=3"  + 
-		" free minislots=" + Util::toString(getFreeExtraSlots()) + " hasextraslot=" + 
-		Util::toString( aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) + " hasslot=" + 
-		Util::toString( aSource->isSet(UserConnection::FLAG_HASSLOT)) + " isUserlist=" + 
-		Util::toString( u->isSet(Upload::FLAG_USER_LIST)) + " isLeaves=" + 
-		Util::toString( u->isSet(Upload::FLAG_TTH_LEAVES)) + " ip=" + aSource->getRemoteIp();
-		
-	LogManager::getInstance()->log("slots", msg);
-#endif
 
 	return true;
 }
@@ -394,7 +382,7 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 }
 
-void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
+void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) throw() {
 	if( (!aUser->isOnline()) && 
 		(aUser->isSet(User::QUIT_HUB)) && 
 		(BOOLSETTING(AUTO_KICK)) ){

@@ -143,7 +143,6 @@ void FinishedFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	ctrlList.MoveWindow(rc);
 }
 
-
 LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	
 	NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;

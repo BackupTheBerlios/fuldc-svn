@@ -36,7 +36,7 @@
 NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),  
 	adapter(this), state(STATE_CONNECT),
 	lastActivity(GET_TICK()), 
-	reconnect(true), lastUpdate(0),lastSize(0)
+	reconnect(true), lastUpdate(0)
 {
 	TimerManager::getInstance()->addListener(this);
 
@@ -55,8 +55,8 @@ void NmdcHub::connect() {
 	setReconnDelay(120 + Util::rand(0, 60));
 	reconnect = true;
 	supportFlags = 0;
-	lastMyInfo.clear();
-	lastSize = 0;
+	lastMyInfoA.clear();
+ 	lastMyInfoB.clear();
 	lastUpdate = 0;
 
 	if(socket->isConnected()) {
@@ -638,22 +638,18 @@ void NmdcHub::myInfo(bool alwaysSend) {
 		modeChar = '5';
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
-	string minf = 
+	string myInfoA = 
 		"$MyINFO $ALL " + toNmdc(checkNick(getNick())) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
 		">$ $" + toNmdc(Util::validateMessage(SETTING(CONNECTION), false)) + "\x01$" + 
-		toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$' + 
-		ShareManager::getInstance()->getShareSizeString() + "$|";
-	if(alwaysSend || minf != lastMyInfo) {
-		int64_t ssize = ShareManager::getInstance()->getShareSize();
-
-		if((!alwaysSend) && (lastSize != ssize && lastUpdate + 15*60*1000 > GET_TICK())) {
-			return;
-		}
-		send(minf);
-		lastMyInfo = minf;
-		lastSize = ssize;
-		lastUpdate = GET_TICK();
+		toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$';
+	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
+ 	
+ 	if(lastMyInfoA != myInfoA || alwaysSend || (lastMyInfoB != myInfoB && lastUpdate + 15*60*1000 < GET_TICK()) ){
+ 		send(myInfoA + myInfoB);
+ 		lastMyInfoA = myInfoA;
+ 		lastMyInfoB = myInfoB;
+ 		lastUpdate = GET_TICK();
 	}
 }
 
@@ -683,7 +679,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(IN_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
 		buf = new char[getNick().length() + aString.length() + 64];
-		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", getNick().c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", toNmdc(getNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	}
 	send(buf, chars);
 }

@@ -35,6 +35,7 @@ PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_SHAREHIDDEN, ResourceManager::SETTINGS_SHARE_HIDDEN },
 	{ IDC_REMOVE, ResourceManager::REMOVE },
 	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
+	{ IDC_RENAME, ResourceManager::SETTINGS_RENAME_FOLDER },
 	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, ResourceManager::SETTINGS_UPLOADS_MIN_SPEED },
 	{ IDC_SETTINGS_KBPS, ResourceManager::KBPS },
 	{ IDC_SETTINGS_UPLOADS_SLOTS, ResourceManager::SETTINGS_UPLOADS_SLOTS },
@@ -43,7 +44,7 @@ PropPage::TextItem UploadPage::texts[] = {
 };
 
 PropPage::Item UploadPage::items[] = {
-	{ IDC_SLOTS, SettingsManager::SLOTS, PropPage::T_INT }, 
+	{ IDC_SLOTS, SettingsManager::SLOTS, PropPage::T_INT },
 	{ IDC_SHAREHIDDEN, SettingsManager::SHARE_HIDDEN, PropPage::T_BOOL },
 	{ IDC_MIN_UPLOAD_SPEED, SettingsManager::MIN_UPLOAD_SPEED, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
@@ -127,6 +128,7 @@ LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 {
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
+	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
 	return 0;		
 }
 
@@ -161,6 +163,51 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		ctrlDirectories.DeleteItem(i);
 	}
 	
+	return 0;
+}
+
+LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	TCHAR buf[MAX_PATH];
+	LVITEM item;
+	::ZeroMemory(&item, sizeof(item));
+	item.mask = LVIF_TEXT;
+	item.cchTextMax = sizeof(buf);
+	item.pszText = buf;
+
+	bool setDirty = false;
+
+	int i = -1;
+	while((i = ctrlDirectories.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		item.iItem = i;
+		item.iSubItem = 0;
+		ctrlDirectories.GetItem(&item);
+
+		try {
+			LineDlg virt;
+			virt.title = TSTRING(VIRTUAL_NAME);
+			virt.description = TSTRING(VIRTUAL_NAME_LONG);
+			virt.line = tstring(buf);
+			if(virt.DoModal(m_hWnd) == IDOK) {
+				if (Util::stricmp(buf, virt.line) != 0) {
+					item.iSubItem = 1;
+					ctrlDirectories.GetItem(&item);
+
+					ShareManager::getInstance()->renameDirectory(Text::fromT(buf), Text::fromT(virt.line));
+					ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
+					setDirty = true;
+				} else {
+					MessageBox(CTSTRING(SKIP_RENAME), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONINFORMATION | MB_OK);
+				}
+			}
+		} catch(const ShareException& e) {
+			MessageBox(Text::toT(e.getError()).c_str(), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONSTOP | MB_OK);
+		}
+	}
+
+	if( setDirty )
+		ShareManager::getInstance()->setDirty();
+
 	return 0;
 }
 

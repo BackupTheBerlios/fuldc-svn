@@ -145,6 +145,7 @@
 #define IDC_LIST_LIST                   283
 #define IDC_LIST_REMOVE                 284
 #define IDC_LIST_UP                     285
+#define IDC_LIST_EDIT_BOX               286
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -158,6 +159,7 @@
 #define IDC_DIRECTORIES                 1009
 #define IDC_ADD                         1011
 #define IDC_REMOVE                      1012
+#define IDC_RENAME                      1013
 #define IDC_TOTAL                       1014
 #define IDC_SLOTS                       1015
 #define IDC_TRANSFERS                   1017

@@ -185,10 +185,11 @@ string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 	return tmp;
 }
 
+#ifdef _WIN32
 static const char badChars[] = { 
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-		31, '<', '>', '/', '"', '|', '?', '*', 0
+	17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+	31, '<', '>', '/', '"', '|', '?', '*', 0
 };
 
 static const wchar_t badCharsW[] = { 
@@ -196,6 +197,14 @@ static const wchar_t badCharsW[] = {
 		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 		31, _T('<'), _T('>'), _T('/'), _T('"'), _T('|'), _T('?'), _T('*'), 0
 };
+#else
+
+static const char badChars[] = { 
+	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+	17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+	31, '<', '>', '\\', '"', '|', '?', '*', 0
+};
+#endif
 
 /**
  * Replaces all strange characters in a file with '_'

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Language Name="Example Language" Author="arnetheduck" Version="0.6665" Revision="1">
-	<Strings>
+	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
 		<String Name="Add">&amp;Add</String>
@@ -94,6 +94,7 @@
 		<String Name="DuplicateMatch">Dupe matched against: </String>
 		<String Name="DuplicateSource">Duplicate source</String>
 		<String Name="Edit">Edit</String>
+		<String Name="EditAccel">&amp;Edit</String>
 		<String Name="Email">E-Mail</String>
 		<String Name="EnterNick">Please enter a nickname in the settings dialog!</String>
 		<String Name="EnterPassword">Please enter a password</String>
@@ -389,6 +390,7 @@
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
 		<String Name="SettingsQueueDirty">Set Download Queue tab bold when contents change</String>
+		<String Name="SettingsRenameFolder">Rename</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>
 		<String Name="SettingsSelectTextFace">Select &amp;text style</String>
@@ -417,6 +419,7 @@
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
 		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// URL links</String>
+		<String Name="SettingsUseCtrlForLineHistory">Use CTRL for line history</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUseUpnp">Use UPnP Control</String>
@@ -661,5 +664,6 @@
 		<String Name="FolderName">Name</String>
 		<String Name="PopupDontShowOnActive">Don't display popups for active window</String>
 		<String Name="PopupActivateOnClick">Activate window when clicking popup</String>
+		<String Name="SkipRename">New virtual name matches old name, skipping...</String>
 	</Strings>
 </Language>

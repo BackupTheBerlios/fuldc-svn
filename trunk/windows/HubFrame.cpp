@@ -1070,7 +1070,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				}
 				break;
 		case VK_UP:
-			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING( SETTINGS_USE_CTRL_FOR_LINE_HISTORY ) == true) ) ) {
 				//scroll up in chat command history
 				//currently beyond the last command?
 				if (curCommandPosition > 0) {
@@ -1092,7 +1092,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 			break;
 		case VK_DOWN:
-			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING( SETTINGS_USE_CTRL_FOR_LINE_HISTORY ) == true) ) ) {
 				//scroll down in chat command history
 
 				//currently beyond the last command?

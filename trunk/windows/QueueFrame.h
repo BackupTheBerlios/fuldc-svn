@@ -208,6 +208,7 @@ private:
 			SourceInfo& operator=(const QueueItem::Source& s) {
 				*((Flags*)this) = s;
 				user = s.getUser();
+				return *this;
 			}
 			User::Ptr& getUser() { return user; };
 

@@ -184,12 +184,12 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 		bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
 		bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
 		
-		bool startDown = !tooMany && !tooFast;
-
 		int attempts = 0;
 		
 		ConnectionQueueItem::Iter i = pendingDown.begin();
 		while(i != pendingDown.end()) {
+			bool startDown = !tooMany && !tooFast;
+
 			ConnectionQueueItem* cqi = *i;
 			dcassert(cqi->getUser());
 
@@ -371,6 +371,13 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		}
 
 		aSource->setUser(ClientManager::getInstance()->getUser(aNick));
+
+		if(Util::stricmp(aSource->getUser()->getNick(), aSource->getUser()->getClientNick()) == 0){
+			dcdebug("CM::onMyNick Incoming connection from stupid user %s\n", aSource->getUser()->getNick());
+			putConnection(aSource);
+			return;
+		}
+
 		// We don't need this connection for downloading...make it an upload connection instead...
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 	}

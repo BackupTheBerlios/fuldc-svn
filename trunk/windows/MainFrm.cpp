@@ -548,7 +548,7 @@ LRESULT MainFrame::onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CAboutDlg dlg;
+	AboutDlg dlg;
 	dlg.DoModal(m_hWnd);
 	return 0;
 }

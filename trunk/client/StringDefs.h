@@ -98,6 +98,7 @@ enum Strings { // @DontAdd
 	DUPLICATE_MATCH, // "Dupe matched against: "
 	DUPLICATE_SOURCE, // "Duplicate source"
 	EDIT, // "Edit"
+	EDIT_ACCEL, // "&Edit"
 	EMAIL, // "E-Mail"
 	ENTER_NICK, // "Please enter a nickname in the settings dialog!"
 	ENTER_PASSWORD, // "Please enter a password"
@@ -393,6 +394,7 @@ enum Strings { // @DontAdd
 	SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, // "HTTP Proxy (for hublist only)"
 	SETTINGS_PUBLIC_HUB_LIST_URL, // "Public Hubs list URL"
 	SETTINGS_QUEUE_DIRTY, // "Set Download Queue tab bold when contents change"
+	SETTINGS_RENAME_FOLDER, // "Rename"
 	SETTINGS_REQUIRES_RESTART, // "Note; most of these options require that you restart DC++"
 	SETTINGS_ROLLBACK, // "Rollback"
 	SETTINGS_SELECT_TEXT_FACE, // "Select &text style"
@@ -421,6 +423,7 @@ enum Strings { // @DontAdd
 	SETTINGS_UPLOADS_MIN_SPEED, // "Automatically open an extra slot if speed is below (0 = disable)"
 	SETTINGS_UPLOADS_SLOTS, // "Upload slots"
 	SETTINGS_URL_HANDLER, // "Register with Windows to handle dchub:// URL links"
+	SETTINGS_USE_CTRL_FOR_LINE_HISTORY, // "Use CTRL for line history"
 	SETTINGS_USE_OEM_MONOFONT, // "Use OEM monospaced font for viewing text files"
 	SETTINGS_USE_SYSTEM_ICONS, // "Use system icons when browsing files (slows browsing down a bit)"
 	SETTINGS_USE_UPNP, // "Use UPnP Control"
@@ -665,5 +668,6 @@ enum Strings { // @DontAdd
 	FOLDER_NAME, // "Name"
 	POPUP_DONT_SHOW_ON_ACTIVE, // "Don't display popups for active window"
 	POPUP_ACTIVATE_ON_CLICK, // "Activate window when clicking popup"
+	SKIP_RENAME, // "New virtual name matches old name, skipping..."
 	LAST // @DontAdd
 };

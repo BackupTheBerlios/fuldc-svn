@@ -38,7 +38,8 @@ _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pe
 _T("sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
 _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
-_T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston. ")
+_T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
+_T("bsod, sulan, jonathan stone")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 
@@ -46,16 +47,16 @@ _T("Thanks to snowflake/summerfling/goose for his work on the lovely fuldc websi
 _T("Thanks to fnordpojk for hosting the website and thanks to fusbar for all his advice. ")
 _T("should probably add more in here, seems a bit empty =)");
 
-class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
+class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
 {
 public:
 	enum { IDD = IDD_ABOUTBOX };
 	enum { WM_VERSIONDATA = WM_APP + 53 };
 
-	CAboutDlg() { };
-	virtual ~CAboutDlg() { };
+	AboutDlg() { };
+	virtual ~AboutDlg() { };
 
-	BEGIN_MSG_MAP(CAboutDlg)
+	BEGIN_MSG_MAP(AboutDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_VERSIONDATA, onVersionData)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
@@ -109,7 +110,7 @@ public:
 private:
 	HttpConnection c;
 
-	CAboutDlg(const CAboutDlg&) { dcassert(0); };
+	AboutDlg(const AboutDlg&) { dcassert(0); };
 	
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 		downBuf.append((char*)buf, len);

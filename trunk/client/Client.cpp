@@ -45,11 +45,11 @@ Client::~Client() {
 void Client::reloadSettings() {
 	FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(getHubURL());
 	if(hub) {
-		setNick(hub->getNick(true));
+		setNick(checkNick(hub->getNick(true)));
 		setDescription(hub->getUserDescription());
 		setPassword(hub->getPassword());
 	} else {
-		setNick(SETTING(NICK));
+		setNick(checkNick(SETTING(NICK)));
 	}
 }
 
