@@ -325,9 +325,6 @@
 				RelativePath=".\windows\FulTabsPage.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\NetworkPage.cpp">
-			</File>
-			<File
 				RelativePath=".\windows\GeneralPage.cpp">
 			</File>
 			<File
@@ -338,6 +335,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\MainFrm.cpp">
+			</File>
+			<File
+				RelativePath=".\windows\NetworkPage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\NotepadFrame.cpp">
@@ -503,9 +503,6 @@
 				RelativePath=".\windows\FulTabsPage.h">
 			</File>
 			<File
-				RelativePath=".\windows\NetworkPage.h">
-			</File>
-			<File
 				RelativePath=".\windows\GeneralPage.h">
 			</File>
 			<File
@@ -528,6 +525,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\memdc.h">
+			</File>
+			<File
+				RelativePath=".\windows\NetworkPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\NotepadFrame.h">

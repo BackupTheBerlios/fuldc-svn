@@ -325,6 +325,8 @@ LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 }
 
 LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	ctrlTransfers.SetRedraw(FALSE);
+
 	if(wParam == ADD_ITEM) {
 		ItemInfo* i = (ItemInfo*)lParam;
 		ctrlTransfers.insertItem(i, (i->type == ItemInfo::TYPE_DOWNLOAD) ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
@@ -341,7 +343,6 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			ctrlTransfers.resort();
 	} else if(wParam == UPDATE_ITEMS) {
 		vector<ItemInfo*>* v = (vector<ItemInfo*>*)lParam;
-		ctrlTransfers.SetRedraw(FALSE);
 		for(vector<ItemInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
 			ItemInfo* i = *j;
 			i->update();
@@ -350,11 +351,11 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
 		if(ctrlTransfers.getSortColumn() != COLUMN_STATUS)
 			ctrlTransfers.resort();
-		ctrlTransfers.SetRedraw(TRUE);
-		
+			
 		delete v;
 	}
-
+	
+	ctrlTransfers.SetRedraw(TRUE);
 	return 0;
 }
 

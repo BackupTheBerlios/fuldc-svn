@@ -1525,13 +1525,17 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 		string name = xml->getChildAttrib("Name");
 		u_int64_t size = xml->getLongLongChildAttrib("Size");
 
-#ifdef USE_TTH
+		string path;
 		if( aPath[ aPath.length() -1 ] == PATH_SEPARATOR )
-			HashManager::getInstance()->checkTTH(aPath + name, size);
+			path = aPath + name;
 		else
-			HashManager::getInstance()->checkTTH(aPath + PATH_SEPARATOR + name, size);
-#endif
-		lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, HashManager::getInstance()->getTTH(aPath + PATH_SEPARATOR + name, size)));
+			path = aPath + PATH_SEPARATOR + name;
+		
+		try{
+			HashManager::getInstance()->checkTTH(path, size);
+			lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, HashManager::getInstance()->getTTH(path, size)));
+		} catch (HashException&){
+		}
 	}
 
 	xml->resetCurrentChild();
