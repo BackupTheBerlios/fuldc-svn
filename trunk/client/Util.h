@@ -313,18 +313,6 @@ public:
 		return buf;
 	}
 
-	static string formatNumber(int64_t aNumber) {
-		char buf[64];
-#ifdef _WIN32
-		char number[64];
-		sprintf(number, "%I64d", aNumber);
-		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, NULL, buf, sizeof(buf)/sizeof(buf[0]));
-#else
-		sprintf(buf, "%'lld", aNumber);
-#endif		
-		return buf;
-	}
-
 	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
 	static string toLower(const char* aString, int len = -1) {
 		string tmp;

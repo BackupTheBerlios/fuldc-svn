@@ -162,8 +162,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		}while((item = ctrlDirs.GetNextSiblingItem(item)) != NULL);
 	}
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "Queue.ico");
 
 	bHandled = FALSE;
@@ -1279,7 +1277,6 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		ctrlQueue.saveHeaderOrder(SettingsManager::QUEUEFRAME_ORDER, 
 			SettingsManager::QUEUEFRAME_WIDTHS, SettingsManager::QUEUEFRAME_VISIBLE);
 		checkButton(false);
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}

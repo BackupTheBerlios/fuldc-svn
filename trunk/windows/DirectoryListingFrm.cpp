@@ -36,21 +36,11 @@ void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUs
 
 	frames.insert( FramePair(aUser->getNick(), frame) );
 	
-	if(BOOLSETTING(POPUNDER_DIRLIST)){
-		//get current active window and the window with focus
-		HWND focus = ::SetFocus(NULL);
-		HWND active = ::GetParent(focus);
+	if(BOOLSETTING(POPUNDER_FILELIST))
+		WinUtil::hiddenCreateEx(frame);
+	else
+		frame->CreateEx(WinUtil::mdiClient);
 		
-		//create the window
-		frame->CreateEx(WinUtil::mdiClient);
-
-		//move the active window to the top of z-order and restore focus
-		::SetWindowPos(active, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-		::SendMessage(active, WM_MDIACTIVATE, (WPARAM)frame->m_hWnd, (LPARAM)active);
-		::SetFocus(focus);
-	} else {
-		frame->CreateEx(WinUtil::mdiClient);
-	}
 }
 
 DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser, const string& s) :
@@ -178,8 +168,6 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
 	
 	setWindowTitle();
-
-	m_hMenu = WinUtil::mainMenu;
 
 	WinUtil::SetIcon(m_hWnd, "Directory.ico");
 	
@@ -766,6 +754,8 @@ void DirectoryListingFrame::findFile(bool findNext)
 			return;
 
 		findStr = dlg.line;
+		if(dl->getUtf8())
+			findStr = Util::toUtf8(findStr);
 		skipHits = 0;
 	} else {
 		skipHits++;

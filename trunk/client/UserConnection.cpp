@@ -85,7 +85,8 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 			fire(UserConnectionListener::Direction(), this, param.substr(0, x), param.substr(x+1));
 		}
 	} else if(cmd == "$Error") {
-		if(Util::stricmp(param.c_str(), "File Not Available") == 0) {
+		if(Util::stricmp(param.c_str(), "File Not Available") == 0 || 
+			param.rfind(/*path/file*/" no more exists") != string::npos) { 
 			fire(UserConnectionListener::FileNotAvailable(), this);
 		} else {
 			fire(UserConnectionListener::Failed(), this, param);

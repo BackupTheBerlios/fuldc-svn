@@ -95,8 +95,6 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ClientManager::getInstance()->addListener(this);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "User.ico");
 	
 	ctrlClient.StripIsp(BOOLSETTING(STRIP_ISP_PM));
@@ -375,7 +373,6 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		Lock l(cs);
 		frames.erase(user);
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}
@@ -383,20 +380,10 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 void PrivateFrame::addLine(const string& aLine) {
 	if(!created) {
-		if(BOOLSETTING(POPUNDER_PM)){
-			//get current active window and the window with focus
-			HWND focus = ::SetFocus(NULL);
-			HWND active = ::GetParent(focus);
-						
+		if(BOOLSETTING(POPUNDER_PM))
+			WinUtil::hiddenCreateEx(this);
+		else
 			CreateEx(WinUtil::mdiClient);
-			
-			::SetWindowPos(active, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-			::SendMessage(active, WM_MDIACTIVATE, (WPARAM)m_hWnd, (LPARAM)active);
-			
-			::SetFocus(focus);
-		} else {
-			CreateEx(WinUtil::mdiClient);
-		}
 	}
 
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {

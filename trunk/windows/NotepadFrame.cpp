@@ -49,8 +49,6 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.SetWindowText(tmp.c_str());
 	ctrlPad.EmptyUndoBuffer();
 	
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "notepad.ico");
 
 	bHandled = FALSE;
@@ -70,7 +68,6 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		}
 	}
 
-	m_hMenu = NULL;
 	bHandled = FALSE;
 	return 0;
 	

@@ -74,8 +74,6 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 	ctxMenu.SetMenuDefaultItem(IDC_OPEN_FILE);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "FinishedDL.ico");
 
 	bHandled = FALSE;
@@ -155,7 +153,6 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		
 		checkButton(false);
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}

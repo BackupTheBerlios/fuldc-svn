@@ -140,7 +140,6 @@ public:
 			frames.erase(i);
 
 		bHandled = FALSE;
-		m_hMenu = NULL;
 		return 0;
 	}
 	

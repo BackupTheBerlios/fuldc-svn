@@ -145,7 +145,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	mcMenu.SetMenuInfo(&inf);
 	
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
-	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
 	client->connect();
@@ -679,7 +678,6 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			HubManager::getInstance()->save();
 		}
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}

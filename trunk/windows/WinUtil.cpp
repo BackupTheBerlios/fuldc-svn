@@ -237,7 +237,8 @@ void WinUtil::init(HWND hWnd) {
 	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	help.AppendMenu(MF_STRING, IDC_HELP_FULPAGE, CSTRING(MENU_FULPAGE));
 	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CSTRING(MENU_HOMEPAGE));
-	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CSTRING(MENU_DOWNLOADS));
+	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CSTRING(MENU_HELP_DOWNLOADS));
+	help.AppendMenu(MF_STRING, IDC_HELP_TRANSLATIONS, CSTRING(MENU_HELP_TRANSLATIONS));
 	help.AppendMenu(MF_STRING, IDC_HELP_FAQ, CSTRING(MENU_FAQ));
 	help.AppendMenu(MF_STRING, IDC_HELP_HELP_FORUM, CSTRING(MENU_HELP_FORUM));
 	help.AppendMenu(MF_STRING, IDC_HELP_DISCUSS, CSTRING(MENU_DISCUSS));
@@ -253,7 +254,7 @@ void WinUtil::init(HWND hWnd) {
 		::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
 		::DestroyIcon(fi.hIcon);
-		dirIconIndex = fileImageCount++;	
+		dirIconIndex = fileImageCount++;
 	} else {
 		fileImages.CreateFromImage("icons\\folders.bmp", 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 		dirIconIndex = 0;
@@ -265,11 +266,11 @@ void WinUtil::init(HWND hWnd) {
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, encodeFont(lf));
 	decodeFont(SETTING(TEXT_FONT), lf);
 	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
-		
+	
 	lf2.lfHeight = lf.lfHeight;
 	lf2.lfWeight = lf.lfWeight;
 	lf2.lfItalic = lf.lfItalic;
-	
+
 	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
 	textColor = SETTING(TEXT_COLOR);
 	bgColor = SETTING(BACKGROUND_COLOR);
@@ -421,7 +422,7 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 			dlg.description = name;
 			dlg.line = sm["line:" + name];
 			if(dlg.DoModal(parent) == IDOK) {
-				sm["line:" + name] = dlg.line;
+				sm["line:" + name] = Util::validateMessage(dlg.line, false);
 				done[name] = dlg.line;
 			} else {
 				return false;

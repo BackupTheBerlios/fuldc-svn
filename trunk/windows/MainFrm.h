@@ -118,6 +118,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_TRANSLATIONS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_HELP_FORUM, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
@@ -327,6 +328,7 @@ private:
 	struct {
 		string homepage;
 		string downloads;
+		string translations;
 		string faq;
 		string help;
 		string discuss;

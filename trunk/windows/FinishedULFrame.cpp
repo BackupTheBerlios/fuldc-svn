@@ -78,8 +78,6 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 	ctxMenu.SetMenuDefaultItem(IDC_OPEN_FILE);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "FinishedUL.ico");
 
 	bHandled = FALSE;
@@ -179,7 +177,6 @@ LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		
 		checkButton(false);
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}

@@ -46,8 +46,6 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ShareManager::getInstance()->setHits(0);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "searchspy.ico");
 
 	bHandled = FALSE;

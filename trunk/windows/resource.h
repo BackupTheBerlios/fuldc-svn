@@ -219,6 +219,7 @@
 #define IDC_FREESLOTS                   1094
 #define IDC_KEEP_LISTS                  1094
 #define IDC_AUTO_KICK                   1095
+#define IDC_HELP_TRANSLATIONS           1095
 #define IDC_COPY_NICK                   1096
 #define IDC_ADVANCED_BOOLEANS           1096
 #define IDC_ADD_MENU                    1097

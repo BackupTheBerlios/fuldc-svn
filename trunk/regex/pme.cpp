@@ -434,9 +434,8 @@ std::string PME::UpdateReplacementString ( const std::string & r ) {
 	while ( int numdollars = dollars.match ( r ) ) {
 		
 		// create a regex to replace the backref
-		stringstream regextext;
-		regextext << "[$]" << dollars[1];
-		PME dollarsub ( regextext.str ( ) );
+		string regextext( "[$]" + dollars[1] );
+		PME dollarsub ( regextext );
 		
 		// do the replacement, telling it not to look for backref
 		finalreplacement = dollarsub.sub ( finalreplacement, 
@@ -456,7 +455,7 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 						 int dodollarsubstitution )
 {
 	
-	std::stringstream newstream;
+	string newstring;
 		
 	if ( m_isglobal ) {
 			
@@ -466,7 +465,7 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 				
 			// copy from the end of the last match to the beginning of the current match, then
 			//   copy in the replacement
-			newstream << s.substr ( endoflastmatch, m_marks[0].first - endoflastmatch );
+			newstring.append( s.substr ( endoflastmatch, m_marks[0].first - endoflastmatch ) );
 
 			std::string finalreplacement = r;
 
@@ -476,13 +475,13 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 
 			}
 
-			newstream << finalreplacement;
+			newstring.append( finalreplacement );
 			
 			endoflastmatch = m_marks[0].second;
 		}
 
 		// copy the last bit
-		newstream << s.substr ( endoflastmatch );
+		newstring.append( s.substr ( endoflastmatch ) );
 
 	} else {
 
@@ -501,18 +500,18 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 			
 			
 			
-			newstream << s.substr ( 0, m_marks[0].first );
-			newstream << finalreplacement;
-			newstream << s.substr ( m_marks[0].second );
+			newstring.append( s.substr ( 0, m_marks[0].first ) );
+			newstring.append( finalreplacement );
+			newstring.append( s.substr ( m_marks[0].second ) );
 
 		} else {
 
-			newstream << s;
+			newstring.append( s );
 
 		}
 	}
 
-	return newstream.str ( );
+	return newstring;
 
 }
 

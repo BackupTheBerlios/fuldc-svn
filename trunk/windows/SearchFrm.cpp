@@ -225,8 +225,6 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		SetWindowText(CSTRING(SEARCH));
 	}
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "search.ico");
 
 	bHandled = FALSE;
@@ -574,7 +572,6 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		ctrlResults.saveHeaderOrder(SettingsManager::SEARCHFRAME_ORDER, SettingsManager::SEARCHFRAME_WIDTHS, 
 			SettingsManager::SEARCHFRAME_VISIBLE);
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}

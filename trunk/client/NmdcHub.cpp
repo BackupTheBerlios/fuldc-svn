@@ -129,7 +129,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		// Filter own searches
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			if(seeker == (getLocalIp() + ":" + Util::toString(getPort()))) {
+			if(seeker == (getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)))) {
 				return;
 			}
 		} else {

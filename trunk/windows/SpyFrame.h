@@ -80,7 +80,6 @@ public:
 			return 0;
 		} else {
 			checkButton(false);	
-			m_hMenu = NULL;
 			bHandled = FALSE;
 			return 0;
 		}

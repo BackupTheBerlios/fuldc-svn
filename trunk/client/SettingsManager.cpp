@@ -57,11 +57,11 @@ const string SettingsManager::settingTags[] =
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
-	"ShowToolbar", "ShowTransferview",
+	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"RotateLogs", "PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
-	"HubFrameConfirmation", "QueueRemoveConfirmation", "PopunderPm", "PopunderDirlist",
+	"HubFrameConfirmation", "QueueRemoveConfirmation",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
@@ -168,6 +168,8 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_TRANSFERVIEW, true);
 	setDefault(SHOW_STATUSBAR, true);
 	setDefault(SHOW_TOOLBAR, true);
+	setDefault(POPUNDER_PM, false);
+	setDefault(POPUNDER_FILELIST, false);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -186,8 +188,6 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_ON_HUBSTATUS, false);
 	setDefault(HUBFRAME_CONFIRMATION, false);
 	setDefault(QUEUE_REMOVE_CONFIRMATION, false);
-	setDefault(POPUNDER_PM, false);
-	setDefault(POPUNDER_DIRLIST, false);
 	setDefault(TAB_ACTIVE_BG, RGB(232, 232, 232));
 	setDefault(TAB_ACTIVE_TEXT, RGB(0, 0, 0));
 	setDefault(TAB_ACTIVE_BORDER, RGB(0, 0, 0));

@@ -67,8 +67,6 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "favoriteuser.ico");
 
 	startup = false;
@@ -156,7 +154,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			delete ctrlUsers.getItemData(i);
 		}
 		checkButton(false);
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}

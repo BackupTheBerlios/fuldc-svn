@@ -120,8 +120,6 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	// Load all searches
 	LoadAll();
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "adlsearch.ico");
 
 	bHandled = FALSE;
@@ -138,7 +136,6 @@ LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	checkButton(false);
 	
-	m_hMenu = NULL;
 	bHandled = FALSE;
 	return 0;
 }

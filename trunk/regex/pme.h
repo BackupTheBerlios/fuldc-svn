@@ -14,7 +14,7 @@
 // Added GetLength
 // Added Init
 // Added lazy assignment operator
-//
+// Modified sub and UpdateReplacementString to not use iostreams.
 // Trem 2004
 
 
@@ -25,8 +25,6 @@
 #include <algorithm>
 #include <vector>
 #include <stdexcept>
-#include <sstream>
-#include <vector>
 
 #include <stdio.h>
 

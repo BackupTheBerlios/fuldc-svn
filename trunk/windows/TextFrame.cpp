@@ -85,13 +85,13 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	} catch(const FileException& e) {
 		SetWindowText((Util::getFileName(file) + ": " + e.getError()).c_str());
 	}
-
+	
+	bHandled = FALSE;
 	return 1;
 }
 
 LRESULT TextFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	m_hMenu = NULL;
 	bHandled = FALSE;
 	return 0;
 }

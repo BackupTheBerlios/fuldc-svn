@@ -59,8 +59,6 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::POPUP_ON_HUBSTATUS,			ResourceManager::POPUP_ON_HUBSTATUS },
 	{ SettingsManager::HUBFRAME_CONFIRMATION,		ResourceManager::HUBFRAME_CONFIRMATION },
 	{ SettingsManager::QUEUE_REMOVE_CONFIRMATION,	ResourceManager::QUEUE_REMOVE_CONFIRMATION },
-	{ SettingsManager::POPUNDER_PM,					ResourceManager::POPUNDER_PM },
-	{ SettingsManager::POPUNDER_DIRLIST,			ResourceManager::POPUNDER_DIRLIST }, 
 	{ SettingsManager::TAB_SHOW_ICONS,				ResourceManager::TAB_SHOW_ICONS },
 	{ SettingsManager::CUSTOM_SOUND,				ResourceManager::CUSTOM_SOUND },
 	{ SettingsManager::REMOVE_POPUPS,				ResourceManager::REMOVE_POPUPS },

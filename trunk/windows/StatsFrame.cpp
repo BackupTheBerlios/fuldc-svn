@@ -31,8 +31,6 @@ LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	SetFont(WinUtil::font);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	WinUtil::SetIcon(m_hWnd, "netstats.ico");
 
 	bHandled = FALSE;
@@ -44,7 +42,6 @@ LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		KillTimer(timerId);
 	checkButton(false);	
 	
-	m_hMenu = NULL;
 	bHandled = FALSE;
 	return 0;
 }
