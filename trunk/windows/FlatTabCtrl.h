@@ -378,7 +378,7 @@ public:
 
 		mnu.CreatePopupMenu();
 
-		CDC dc(::GetDC(m_hWnd));
+		CDCHandle dc(::GetDC(m_hWnd));
 		HFONT oldfont = dc.SelectFont(WinUtil::font);
 		height = WinUtil::getTextHeight(dc) + 7;
 		dc.SelectFont(oldfont);

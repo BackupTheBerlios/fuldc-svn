@@ -394,7 +394,11 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int &lineIndex) {
 	int begin = 0, end = 0;
 	bool found = false;
-		
+
+	//this is not a valid regexp
+	if(cs->getMatch().length() < 5)
+		return tstring::npos;
+	
 	PME regexp(cs->getMatch().substr(4), _T("gims"));
 				
 	while( regexp.match(line) > 0 ){

@@ -96,6 +96,7 @@ LRESULT FulHighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 	if(cs->getMatch().empty()){
 		MessageBox(CTSTRING(ADD_EMPTY), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONEXCLAMATION);
+		delete cs;
 		return TRUE;
 	}
 
@@ -103,6 +104,7 @@ LRESULT FulHighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 		PME reg(cs->getMatch().substr(4));
 		if(! reg.IsValid()){
 			MessageBox(CTSTRING(BAD_REGEXP), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONEXCLAMATION);
+			delete cs;
 			return TRUE;
 		}
 	}
