@@ -283,6 +283,9 @@
 				RelativePath=".\windows\FulAdvancedPage.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\FulAppearance.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\FulEditCtrl.cpp">
 			</File>
 			<File
@@ -435,6 +438,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\FulAdvancedPage.h">
+			</File>
+			<File
+				RelativePath=".\windows\FulAppearance.h">
 			</File>
 			<File
 				RelativePath=".\windows\FulEditCtrl.h">

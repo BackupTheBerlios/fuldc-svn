@@ -461,6 +461,7 @@ enum Strings { // @DontAdd
 	SETTINGS_FUL_ADVANCED, // "FulDC\\Advanced"
 	SETTINGS_FUL_HIGHLIGHT, // "FulDC\\Highlight"
 	SETTINGS_FUL_MORE, // "FulDC\\More"
+	SETTINGS_FUL_APPEARANCE, // "FulDC\\Appearance"
 	POPUNDER_PM, // "Open private messages in background"
 	POPUNDER_DIRLIST, // "Open file lists in background"
 	URL, // "Url"

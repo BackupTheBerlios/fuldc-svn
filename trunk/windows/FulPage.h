@@ -15,11 +15,9 @@ public:
 
 	BEGIN_MSG_MAP(FulPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
-		COMMAND_ID_HANDLER(IDC_COLOR_BUTTON, onColorButton)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
-	LRESULT onColorButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -28,7 +26,6 @@ public:
 	
 protected:
 	static Item items[];
-	CComboBox colorList;
 };
 
 #endif //FULPAGE_H

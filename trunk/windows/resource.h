@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by f:\temp\dc\fuldc\DCPlusPlus.rc
+// Used by f:\Programmering\C++\fuldc\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -88,6 +88,8 @@
 #define IDC_SETTINGS_MAX_HASH_SPEED     250
 #define IDC_MAX_HASH_SPEED              251
 #define IDC_SETTINGS_MBS                252
+#define IDD_DIALOG2                     253
+#define IDD_FULAPPEARANCEPAGE           253
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -430,7 +432,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        253
+#define _APS_NEXT_RESOURCE_VALUE        254
 #define _APS_NEXT_COMMAND_VALUE         32816
 #define _APS_NEXT_CONTROL_VALUE         1263
 #define _APS_NEXT_SYMED_VALUE           128

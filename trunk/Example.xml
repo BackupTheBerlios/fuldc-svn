@@ -457,6 +457,7 @@
 		<String Name="SettingsFulAdvanced">FulDC\Advanced</String>
 		<String Name="SettingsFulHighlight">FulDC\Highlight</String>
 		<String Name="SettingsFulMore">FulDC\More</String>
+		<String Name="SettingsFulAppearance">FulDC\Appearance</String>
 		<String Name="PopunderPm">Open private messages in background</String>
 		<String Name="PopunderDirlist">Open file lists in background</String>
 		<String Name="Url">Url</String>
