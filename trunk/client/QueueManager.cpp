@@ -85,13 +85,13 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 
 void QueueManager::FileQueue::add(QueueItem* qi) {
 	if(lastInsert == queue.end())
-		lastInsert = queue.insert(make_pair(qi->getTarget(), qi)).first;
+		lastInsert = queue.insert(make_pair(const_cast<string*>(&qi->getTarget()), qi)).first;
 	else
-		lastInsert = queue.insert(lastInsert, make_pair(qi->getTarget(), qi));
+		lastInsert = queue.insert(lastInsert, make_pair(const_cast<string*>(&qi->getTarget()), qi));
 }
 
 QueueItem* QueueManager::FileQueue::find(const string& target) {
-	QueueItem::StringIter i = queue.find(target);
+	QueueItem::StringIter i = queue.find(const_cast<string*>(&target));
 	return (i == queue.end()) ? NULL : i->second;
 }
 
@@ -164,9 +164,9 @@ QueueItem* QueueManager::FileQueue::findAutoSearch(StringList& recent) {
 }
 
 void QueueManager::FileQueue::move(QueueItem* qi, const string& aTarget) {
-	if(lastInsert != queue.end() && lastInsert->first == qi->getTarget())
+	if(lastInsert != queue.end() && Util::stricmp(*lastInsert->first, qi->getTarget()) == 0)
 		lastInsert = queue.end();
-	queue.erase(qi->getTarget());
+	queue.erase(const_cast<string*>(&qi->getTarget()));
 	qi->setTarget(aTarget);
 	add(qi);
 }
@@ -1318,7 +1318,7 @@ void QueueManager::checkNotify(){
 		pos = string::npos;
 		QueueItem::StringIter j = queue.begin();
 		for(; j != queue.end(); ++j) {
-			pos = j->first.find((*i));
+			pos = j->first->find((*i));
 			if( pos != string::npos)
 				break;
 		}
@@ -1354,8 +1354,8 @@ bool QueueManager::addAlternates(string aFile, User::Ptr aUser) {
 		//iterate through the entire queue and add the user as source
 		//where the filenames match
 		for(i = queue.begin(); i != queue.end(); ++i) {
-			if( i->first.find(file) != string::npos) {
-				string file = path + i->first.substr(i->first.find_last_of("\\"));
+			if( i->first->find(file) != string::npos) {
+				string file = path + i->first->substr(i->first->find_last_of("\\"));
 				if(!i->second->isSource(aUser, file)) {
 					wantConnection = addSource(i->second, file, aUser, false, i->second->isSet(QueueItem::FLAG_SOURCE_UTF8));
 				}	

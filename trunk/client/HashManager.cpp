@@ -46,9 +46,9 @@ TTHValue* HashManager::getTTH(const string& aFileName) {
 	return store.getTTH(aFileName);
 }
 
-bool HashManager::getTree(const string& aFileName, TigerTree& tt) {
+bool HashManager::getTree(const string& aFileName, const TTHValue* root, TigerTree& tt) {
 	Lock l(cs);
-	return store.getTree(aFileName, tt);
+	return store.getTree(aFileName, root, tt);
 }
 
 void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_t speed) {
@@ -125,11 +125,21 @@ int64_t HashManager::HashStore::addLeaves(const TigerTree::MerkleList& leaves) {
 	return pos;
 }
 
-bool HashManager::HashStore::getTree(const string& aFileName, TigerTree& tth) {
+bool HashManager::HashStore::getTree(const string& aFileName, const TTHValue* root, TigerTree& tth) {
 	TTHIter i = indexTTH.find(aFileName);
 	if(i == indexTTH.end())
 		return false;
+
+	// Check if it's the same root that we want...if not, remove the entry
+	// Probably we're redownloading to the same filename
+
 	FileInfo* fi = i->second;
+
+	if(root != NULL && fi->getRoot() != *root) {
+		dirty = true;
+		indexTTH.erase(i);
+		return false;
+	}
 
 	try {
 		File f(dataFile, File::READ, File::OPEN);
@@ -144,17 +154,6 @@ bool HashManager::HashStore::getTree(const string& aFileName, TigerTree& tth) {
 	} catch(const FileException& ) {
 		return false;
 	}
-	return true;
-}
-
-bool HashManager::HashStore::checkTree(const string& aFileName, const TigerTree& tth) {
-    TTHIter i = indexTTH.find(aFileName);
-	if ( i == indexTTH.end() )
-		return false;
-
-	if( !( i->second->getRoot() == tth.getRoot() ) )
-		return false;
-
 	return true;
 }
 

@@ -115,7 +115,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	} else if(aType == "tthl") {
 		// TTH Leaves...
 		TigerTree tree;
-		if(!HashManager::getInstance()->getTree(file, tree)) {
+		if(!HashManager::getInstance()->getTree(file, NULL, tree)) {
 			aSource->fileNotAvail();
 			return false;
 		}
