@@ -64,6 +64,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 				cur.clear();
 				first = false;
 			}
+			break;
 		default:
 			cur += buf[i];
 		}

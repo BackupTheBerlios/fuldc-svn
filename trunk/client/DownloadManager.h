@@ -81,14 +81,18 @@ public:
 		return tt;
 	}
 
-	Command getCommand(bool zlib) {
+	Command getCommand(bool zlib, bool tthf) {
 		Command cmd = Command(Command::GET());
 		if(isSet(FLAG_TREE_DOWNLOAD)) {
 			cmd.addParam("tthl");
 		} else {
 			cmd.addParam("file");
 		}
-		cmd.addParam(Util::toAdcFile(getSource()));
+		if(tthf && getTTH() != NULL) {
+			cmd.addParam("TTH/" + getTTH()->toBase32());
+		} else {
+			cmd.addParam(Util::toAdcFile(getSource()));
+		}
 		cmd.addParam(Util::toString(getPos()));
 		cmd.addParam(Util::toString(getSize() - getPos()));
 

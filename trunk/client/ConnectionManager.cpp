@@ -37,6 +37,7 @@ ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
 	features.push_back(UserConnection::FEATURE_XML_BZLIST);
 	features.push_back(UserConnection::FEATURE_ADCGET);
 	features.push_back(UserConnection::FEATURE_TTHL);
+	features.push_back(UserConnection::FEATURE_TTHF);
 };
 
 /**

@@ -3,6 +3,7 @@
 // Used by f:\Programmering\C++\fuldc\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
+#define IDC_SLOTSPIN					101
 #define IDC_TRAY_QUIT                   102
 #define IDC_TRAY_SHOW                   103
 #define IDC_COPY_HUB                    104
@@ -12,14 +13,10 @@
 #define IDC_COPY_SIZE                   107
 #define IDC_SET_PRIORITY                108
 #define ID_VIEW_TRANSFER_VIEW           108
-#define IDC_SLAP                        109
 #define IDC_NOTIFY                      109
-#define IDC_CLEAR                       110
 #define IDC_OPEN                        110
-#define IDC_CUT                         111
 #define IDC_PM_UP                       111
 #define IDC_PM_DOWN                     112
-#define IDC_PASTE                       113
 #define IDC_SHOWLOG                     113
 #define IDC_HUBISP                      114
 #define IDC_HELP_FULPAGE                114
@@ -91,7 +88,6 @@
 #define IDC_SETTINGS_MAX_HASH_SPEED     250
 #define IDC_MAX_HASH_SPEED              251
 #define IDC_SETTINGS_MBS                252
-#define IDD_DIALOG2                     253
 #define IDD_FULAPPEARANCEPAGE           253
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
@@ -107,7 +103,6 @@
 #define IDC_REMOVE                      1012
 #define IDC_TOTAL                       1014
 #define IDC_SLOTS                       1015
-#define IDC_SLOTSPIN                    1016
 #define IDC_TRANSFERS                   1017
 #define IDC_DOWNLOADDIR                 1017
 #define IDC_CONNECT                     1018
@@ -124,13 +119,9 @@
 #define IDC_REDIRECT                    1024
 #define IDC_AUTOFOLLOW                  1024
 #define IDC_REMOVESOURCE                1025
-#define IDC_MODEHELP                    1025
 #define IDC_EDIT                        1026
-#define IDC_CLEARSEARCH                 1026
 #define IDC_NOTEPAD                     1027
-#define IDC_FULLROW                     1028
 #define IDC_SEARCH_ALTERNATES           1029
-#define IDC_REMOVENOTAVAILABLE          1030
 #define IDC_SELWINCOLOR                 1031
 #define IDC_SELTEXTCOLOR                1032
 #define IDC_SELTEXT                     1032
@@ -158,7 +149,6 @@
 #define IDC_GRANTSLOT                   1049
 #define IDC_POPUPOFFLINE                1049
 #define IDC_FORCE                       1050
-#define IDC_REMOVEDUPES                 1050
 #define IDC_BUFFERSIZE                  1051
 #define IDC_LANGUAGE                    1052
 #define IDC_BROWSE                      1053
@@ -172,7 +162,6 @@
 #define IDC_PROXY                       1060
 #define IDC_ADD_TO_FAVORITES            1061
 #define IDC_LOG_MAIN_CHAT               1061
-#define IDC_COMMENT                     1062
 #define IDC_LOG_PRIVATE_CHAT            1062
 #define IDC_HELP_HOMEPAGE               1063
 #define IDC_LOG_DOWNLOADS               1063
@@ -186,7 +175,6 @@
 #define IDC_HELP_HELP_FORUM             1068
 #define IDC_HELP_FAQ                    1069
 #define IDC_SEARCH_SPY                  1070
-#define IDC_IMPORT_QUEUE                1071
 #define IDC_LATEST                      1071
 #define IDC_PRIVATE_MESSAGE_BEEP        1072
 #define IDC_USE_SYSTEM_ICONS            1072
@@ -196,7 +184,6 @@
 #define IDC_USE_OEM_MONOFONT            1073
 #define IDC_STATUS_IN_CHAT              1074
 #define IDC_MIN_UPLOAD_SPEED            1074
-#define IDC_FINISHED_DIRTY              1074
 #define IDC_SETTINGS_TYPE               1074
 #define IDC_SHOW_JOINS                  1075
 #define IDC_MIN_UPLOAD_SPIN             1075
@@ -233,7 +220,6 @@
 #define IDC_AUTO_KICK                   1095
 #define IDC_COPY_NICK                   1096
 #define IDC_ADVANCED_BOOLEANS           1096
-#define IDC_SHOW_UI                     1097
 #define IDC_ADD_MENU                    1097
 #define IDC_MOVE                        1098
 #define IDC_REMOVE_MENU                 1098
@@ -325,12 +311,10 @@
 #define IDC_SETTINGS_TO                 1206
 #define IDC_FINAL_TEXT                  1207
 #define IDC_RESULT                      1207
-#define IDC_BUTTON1                     1208
 #define IDC_WEB_SHORTCUTS_ADD           1208
 #define IDC_COLOR_BUTTON                1208
 #define IDC_SELECT_SOUND                1208
 #define IDC_BTN_COLOR                   1208
-#define IDC_BUTTON2                     1209
 #define IDC_WEB_SHORTCUTS_REMOVE        1209
 #define IDC_TEXTCOLOR                   1209
 #define IDC_MOVEUP                      1209
@@ -342,7 +326,6 @@
 #define IDC_OPEN_DOWNLOADS              1213
 #define IDC_SETTINGS_UPLOAD_BAR_COLOR   1214
 #define IDC_SETTINGS_DOWNLOAD_BAR_COLOR 1215
-#define IDC_SEARCH_SITE_STOPLIST        1216
 #define IDC_SKIPLIST                    1217
 #define IDC_SKIPLIST_DOWNLOAD           1218
 #define IDC_REFRESH_TIME                1219
@@ -355,7 +338,6 @@
 #define IDC_UL_BG                       1226
 #define IDC_COLOR                       1227
 #define IDC_COLOR_SELECTION             1228
-#define IDC_CHECK1                      1229
 #define IDC_STRIPISP                    1229
 #define IDC_POPUP                       1229
 #define IDC_REFRESH_INCOMING            1229
@@ -364,7 +346,6 @@
 #define IDC_MESSAGE                     1230
 #define IDC_REFRESH_SHARE               1230
 #define IDC_DISPLAYTIME                 1231
-#define IDC_LIST1                       1233
 #define IDC_FUL_ADVANCED_BOOLEANS       1234
 #define IDC_WEB_SHORTCUT_NAME           1235
 #define IDC_WEB_SHORTCUT_KEY            1236
@@ -385,7 +366,6 @@
 #define IDC_MINISLOTS_EXTENSIONS        1247
 #define IDC_FREE_SLOTS_SIZE             1249
 #define IDC_MINISLOTS_SIZE              1249
-#define IDC_CHECK2                      1250
 #define IDC_HAS_BG_COLOR                1250
 #define IDC_MOVEDOWN                    1251
 #define IDC_HAS_FG_COLOR                1252
@@ -449,7 +429,6 @@
 #define IDC_FAVORITES                   32783
 #define IDC_FOLLOW                      32784
 #define IDC_SEND_MESSAGE                32786
-#define IDC_DELETE_WORD                 32787
 #define IDC_FILTER_FOCUS                32788
 #define ID_VIEW_STATUSBAR               32789
 #define IDC_SWITCH_WINDOW_1             32798
