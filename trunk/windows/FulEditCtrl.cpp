@@ -186,11 +186,10 @@ void CFulEditCtrl::Colorize(int begin) {
 		}
 
 		while( pos != string::npos ){
-			if(cs->getMatch().find("$Re:") != string::npos ) {
+			if(cs->usingRegexp()) 
 				pos = RegExpMatch(cs, cf, line, begin);
-			} else {
+			else 
 				pos = FullTextMatch(cs, cf, line, pos, begin);
-			}
 		}
 
 		matchedPopup = false;

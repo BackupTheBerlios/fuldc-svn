@@ -7,7 +7,7 @@
 class ColorSettings
 {
 public:
-	ColorSettings(): bTimestamps(false), bUsers(false), bMyNick(false){	}
+	ColorSettings(): bTimestamps(false), bUsers(false), bMyNick(false), bUsingRegexp(false){	}
 	~ColorSettings(){};
 
 	GETSET(bool, bWholeWord, WholeWord);
@@ -28,10 +28,7 @@ public:
 	GETSET(bool, bHasBgColor, HasBgColor);
 	GETSET(bool, bHasFgColor, HasFgColor);
 	GETSET(string, strSoundFile, SoundFile);
-
-
 	
-
 	void setMatch(string match){
 		if( match.compare("$ts$") == 0){
 			bTimestamps = true;
@@ -39,6 +36,8 @@ public:
 			bUsers = true;
 		}else if(match.compare("$mynick$") == 0) {
 			bMyNick = true;
+		} else if(match.find("$Re:") == 0) {
+			bUsingRegexp = true;
 		}
 		strMatch = match;
 	}
@@ -46,6 +45,7 @@ public:
 	bool getUsers() { return bUsers; }
 	bool getTimestamps() { return bTimestamps; }
 	bool getMyNick() { return bMyNick; }
+	bool usingRegexp() { return bUsingRegexp; }
 
 	const string & getMatch() { return strMatch; }
 	
@@ -56,6 +56,7 @@ private:
 	bool bTimestamps;
 	bool bUsers;
 	bool bMyNick;
+	bool bUsingRegexp;
 
 };
 #endif
