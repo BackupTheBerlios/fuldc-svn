@@ -77,6 +77,7 @@ protected:
 
 	//reset all controls except listview
 	void clear();
+	void addPreset(int preset);
 
 	ColorList highlights;
 

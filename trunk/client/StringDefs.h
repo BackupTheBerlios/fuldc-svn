@@ -710,14 +710,16 @@ enum Strings { // @DontAdd
 	NEW_IGNORE_PATTERN_DESCRIPTION, // "full nick, wildcard or a regexp"
 	ALREADY_IGNORED, // "Pattern is already in the list"
 	REMOVE_FILE, // "Remove file from queue"
+	PRESET_ADD_ALL, // "Add all"
 	PRESET_MY_NICK, // "My nick"
 	PRESET_MY_MESSAGES, // "My messages"
-	PRESET_BOLD_USERS, // "Users"
-	PRESET_BOLD_TIMESTAMP, // "Timestamps"
+	PRESET_USERS, // "Users"
+	PRESET_TIMESTAMP, // "Timestamps"
 	PRESET_URLS, // "Urls"
 	PRESET_ME, // "/me"
 	PRESET_STATUS, // "Status messages"
 	PRESET_JOINS, // "Joins"
 	PRESET_PARTS, // "Parts"
+	PRESET_RELEASES, // "Releases"
 	LAST // @DontAdd
 };

@@ -77,15 +77,18 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	ctrlMatchType.SetCurSel(1);
 
 	presets.CreatePopupMenu();
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_ADD_ALL));
+	presets.AppendMenu(MF_SEPARATOR);
 	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_MY_NICK));
 	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_MY_MESSAGES));
-	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_BOLD_TIMESTAMP));
-	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_BOLD_USERS));
 	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_URLS));
 	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_ME));
 	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_STATUS));
 	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_JOINS));
 	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_PARTS));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_RELEASES));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_TIMESTAMP));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_USERS));
 
 	MENUINFO inf;
 	inf.cbSize = sizeof(MENUINFO);
@@ -174,6 +177,12 @@ LRESULT FulHighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(ctrlStrings.GetSelectedCount() == 1) {
 		int sel = ctrlStrings.GetSelectedIndex();
 		ctrlStrings.DeleteItem(sel);
+		
+		if(sel > 0 && ctrlStrings.GetItemCount() > 0)
+			ctrlStrings.SelectItem(sel-1);
+		else if(ctrlStrings.GetItemCount() > 0)
+			ctrlStrings.SelectItem(0);
+
 		int j = 0;
 		ColorIter i = highlights.begin();
 		for(; j < sel; ++i, ++j);
@@ -362,32 +371,31 @@ LRESULT FulHighlightPage::onPreset(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 LRESULT FulHighlightPage::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	clear();
-	switch(wParam){
-		case 0:
+	if(wParam == 0) {
+		for(int i = 2; i < 12; ++i) {
+			clear();
+			addPreset(i);
+			SendMessage(WM_COMMAND, IDC_ADD);
+		}
+	} else {
+		clear();
+		addPreset(wParam);
+	}
+	return 0;
+}
+
+void FulHighlightPage::addPreset(int preset) {
+	switch(preset){
+		case 2:
 			SetDlgItemText(IDC_STRING, _T("$mynick$"));
 			CheckDlgButton(IDC_BOLD, BST_CHECKED);
 			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
 			fgColor = RGB(200, 0, 0);
 			break;
-		case 1:
+		case 3:
 			SetDlgItemText(IDC_STRING, _T("<$mynick$>"));
 			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
 			CheckDlgButton(IDC_WHOLELINE, BST_CHECKED);
-			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
-			fgColor = RGB(115, 115, 118);
-			break;
-		case 2:
-			SetDlgItemText(IDC_STRING, _T("$ts$"));
-			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
-			CheckDlgButton(IDC_BOLD, BST_CHECKED);
-			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
-			fgColor = RGB(115, 115, 118);
-			break;
-		case 3:
-			SetDlgItemText(IDC_STRING, _T("$users$"));
-			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
-			CheckDlgButton(IDC_BOLD, BST_CHECKED);
 			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
 			fgColor = RGB(115, 115, 118);
 			break;
@@ -418,6 +426,27 @@ LRESULT FulHighlightPage::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
 			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
 			CheckDlgButton(IDC_BOLD, BST_CHECKED);
 			fgColor = RGB(51, 102, 154);
+			break;
+		case 9:
+			SetDlgItemText(IDC_STRING, _T("$Re:(\\S+\\.\\S*(?:dvdrip|xvid|dvdr|svcd|vcd|rip|hdtv)\\S?-\\S+)"));
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(153, 51, 153);
+			break;
+		case 10:
+			SetDlgItemText(IDC_STRING, _T("$ts$"));
+			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(115, 115, 118);
+			break;
+		case 11:
+			SetDlgItemText(IDC_STRING, _T("$users$"));
+			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(115, 115, 118);
+			break;
 		default:
 			break;
 	}
@@ -426,5 +455,4 @@ LRESULT FulHighlightPage::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
 	onClickedBox(0, IDC_HAS_BG_COLOR, NULL, t);
 	onClickedBox(0, IDC_HAS_FG_COLOR, NULL, t);
 	onClickedBox(0, IDC_SOUND, NULL, t);
-	return 0;
 }
