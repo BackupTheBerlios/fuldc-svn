@@ -89,6 +89,7 @@ void Client::connect(const string& aAddressPort) {
 }
 
 void Client::connect() {
+	myInfoString.clear();
 	registered = false;
 	reconnect = true;
 	firstHello = true;

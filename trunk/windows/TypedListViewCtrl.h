@@ -308,22 +308,22 @@ public:
 		int size = GetHeader().GetItemCount();
 		for(int i = 0; i < size; ++i){
 			LVCOLUMN lvc;
-			lvc.mask = LVCF_TEXT | LVCF_ORDER;
+			lvc.mask = LVCF_TEXT | LVCF_ORDER | LVCF_WIDTH;
 			lvc.cchTextMax = 128;
 			lvc.pszText = buf;
 			GetColumn(i, &lvc);
 			for(ColumnIter j = columnList.begin(); j != columnList.end(); ++j){
-				if(Util::stricmp(buf, (*j)->name.c_str()) == 0)
+				if(Util::stricmp(buf, (*j)->name.c_str()) == 0){
 					(*j)->pos = lvc.iOrder;
+					(*j)->width = lvc.cx;
+				}
 			}
 		}
 
-		int j = 0, k = 0;
-		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++k){
+		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i){
 			ColumnInfo* ci = *i;
 
 			if(ci->visible){
-				ci->width = GetColumnWidth(ci->pos);
 				tmp3 += "1,";
 			} else {
 				ci->pos = size++;
