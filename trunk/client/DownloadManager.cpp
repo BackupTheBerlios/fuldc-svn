@@ -34,6 +34,10 @@
 
 #include <limits>
 
+#ifdef ff
+#undef ff
+#endif
+
 static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
@@ -614,8 +618,8 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 		Download* old = d->getOldDownload();
 
-		size_t bl = 1024;
-		while( (bl * old->getTigerTree().getLeaves().size()) < old->getSize())
+		int64_t bl = 1024;
+		while(bl * old->getTigerTree().getLeaves().size() < old->getSize())
 			bl *= 2;
 		old->getTigerTree().setBlockSize(bl);
 		dcassert(old->getSize() != -1);

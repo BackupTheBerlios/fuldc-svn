@@ -57,7 +57,7 @@ public:
 	string translateFileName(const string& aFile, bool adc) throw(ShareException);
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
 	bool refresh( const string& aDir );
-	void setDirty() { xmlDirty = nmdcDirty = true; };
+	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);
@@ -117,7 +117,10 @@ private:
 			File() : size(0), parent(NULL), tth(NULL) { };
 			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
 			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
-
+			
+			~File() {
+				delete tth;
+			}
 			string getADCPath() const { return parent->getADCPath() + name; }
 			string getFullName() const { return parent->getFullName() + getName(); }
 
@@ -230,6 +233,8 @@ private:
 	int64_t bzXmlListLen;
 	bool xmlDirty;
 	bool nmdcDirty;
+	bool shareXmlDirty;
+
 	bool refreshDirs;
 	bool update;
 	bool refreshIncoming;
@@ -282,11 +287,15 @@ private:
 	virtual void on(DownloadManagerListener::Complete, Download* d) throw();
 
 	// HashManagerListener
-	virtual void on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw();
+	virtual void on(HashManagerListener::TTHDone, const string& fname, const TTHValue& root) throw();
 
 	// SettingsManagerListener
 	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw() {
 		save(xml);
+		if(shareXmlDirty) {
+			saveXmlList();
+			shareXmlDirty = false;
+		}
 	}
 	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
 		load(xml);

@@ -33,13 +33,15 @@
 #include "FastAlloc.h"
 #include "Text.h"
 
+STANDARD_EXCEPTION(HashException);
+
 class HashManagerListener {
 public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> TTHDone;
 
-	virtual void on(TTHDone, const string& /* fileName */, TTHValue* /* root */) throw() = 0;
+	virtual void on(TTHDone, const string& /* fileName */, const TTHValue& /* root */) throw() = 0;
 };
 
 class HashLoader;
@@ -76,7 +78,7 @@ public:
 	 * Retrieves TTH root or queue's file for hashing.
 	 * @return TTH root if available, otherwise NULL
 	 */
-	TTHValue* getTTH(const string& aFileName, int64_t aSize);
+	const TTHValue& getTTH(const string& aFileName, int64_t aSize) throw(HashException);
 
 	bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tt);
 
@@ -190,7 +192,7 @@ private:
 		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 		bool checkTTH(const string& aFileName, int64_t aSize);
 
-		TTHValue* getTTH(const string& aFileName);
+		const TTHValue* getTTH(const string& aFileName);
 		bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
@@ -202,17 +204,16 @@ private:
 				bool operator()(FileInfo* a) { return a->getFileName() == str; }	
 			};
 
-			FileInfo(const string& aFileName, const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
+			FileInfo(const string& aFileName, const TTHValue& aRoot, int64_t aSize, int64_t aIndex, int64_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
 			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), fileName(Text::toLower(Util::getFileName(aFileName))) { }
 
 			TTHValue& getRoot() { return root; }
 			void setRoot(const TTHValue& aRoot) { root = aRoot; }
-			bool operator ==(const string& aName) { return fileName == aName; };			
 		private:
 			TTHValue root;
 			GETSET(int64_t, size, Size)
 			GETSET(int64_t, index, Index);
-			GETSET(size_t, blockSize, BlockSize);
+			GETSET(int64_t, blockSize, BlockSize);
 			GETSET(u_int32_t, timeStamp, TimeStamp);
 			GETSET(bool, used, Used);
 			GETSET(string, fileName, FileName);

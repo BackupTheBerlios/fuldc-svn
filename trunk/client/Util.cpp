@@ -209,10 +209,18 @@ string Util::validateFileName(string tmp) {
 	while( (i = tmp.find("\\.\\", i)) != string::npos) {
 		tmp.erase(i+1, 2);
 	}
+	i = 0;
+	while( (i = tmp.find("/./", i)) != string::npos) {
+		tmp.erase(i+1, 2);
+	}
 
 	// Remove any double \\ that are not at the beginning of the path...
 	i = 1;
 	while( (i = tmp.find("\\\\", i)) != string::npos) {
+		tmp.erase(i+1, 1);
+	}
+	i = 1;
+	while( (i = tmp.find("//", i)) != string::npos) {
 		tmp.erase(i+1, 1);
 	}
 
@@ -224,8 +232,17 @@ string Util::validateFileName(string tmp) {
 		tmp[i + 3] = '_';
 		i += 2;
 	}
+	i = 0;
+	while( ((i = tmp.find("/../", i)) != string::npos) ) {
+		tmp[i + 1] = '_';
+		tmp[i + 2] = '_';
+		tmp[i + 3] = '_';
+		i += 2;
+	}
+
 	return tmp;
 }
+
 
 wstring Util::validateFileName(wstring tmp) {
 	wstring::size_type i = 0;

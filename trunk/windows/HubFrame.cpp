@@ -183,6 +183,8 @@ void HubFrame::openWindow(const tstring& aServer) {
 		frames[aServer] = frm;
 		frm->CreateEx(WinUtil::mdiClient);
 	} else {
+		if(::IsIconic(i->second->m_hWnd))
+			::ShowWindow(i->second->m_hWnd, SW_RESTORE);
 		i->second->MDIActivate(i->second->m_hWnd);
 	}
 }

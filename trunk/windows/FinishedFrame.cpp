@@ -183,7 +183,7 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 	l.push_back(Text::toT(entry->getHub()));
 	l.push_back(Text::toT(Util::formatBytes(entry->getSize())));
 	l.push_back(Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s"));
-	l.push_back(entry->getCrc32Checked() ? TSTRING(YES) : TSTRING(NO));
+	l.push_back(entry->getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR));
 	totalBytes += entry->getChunkSize();
 	totalTime += entry->getMilliSeconds();
 

@@ -188,10 +188,10 @@ public:
 		return userCommands.back();
 	}
 
-	bool getUserCommand(int id, UserCommand& uc) {
+	bool getUserCommand(int cid, UserCommand& uc) {
 		Lock l(cs);
 		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
-			if(i->getId() == id) {
+			if(i->getId() == cid) {
 				uc = *i;
 				return true;
 			}
@@ -199,11 +199,11 @@ public:
 		return false;
 	}
 
-	bool moveUserCommand(int id, int pos) {
+	bool moveUserCommand(int cid, int pos) {
 		dcassert(pos == -1 || pos == 1);
 		Lock l(cs);
 		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
-			if(i->getId() == id) {
+			if(i->getId() == cid) {
 				swap(*i, *(i + pos));
 				return true;
 			}
@@ -225,11 +225,11 @@ public:
 			save();
 	}
 
-	void removeUserCommand(int id) {
+	void removeUserCommand(int cid) {
 		bool nosave = true;
 		Lock l(cs);
 		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
-			if(i->getId() == id) {
+			if(i->getId() == cid) {
 				nosave = i->isSet(UserCommand::FLAG_NOSAVE);
 				userCommands.erase(i);
 				break;

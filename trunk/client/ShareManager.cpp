@@ -49,7 +49,7 @@
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	xmlDirty(false), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
 	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20),
-	lastIncomingUpdate(GET_TICK())
+	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -64,8 +64,6 @@ ShareManager::~ShareManager() {
 	HashManager::getInstance()->removeListener(this);
 
 	join();
-	
-	saveXmlList();
 
 	delete lFile;
 	lFile = NULL;
@@ -216,7 +214,7 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 								  
 	string::size_type i;
 	string::size_type j = 0;
-	while( (i = aFile.find(PATH_SEPARATOR, j)) != string::npos) {
+	while( (i = aFile.find('\\', j)) != string::npos) {
 		mi = d->directories.find(aFile.substr(j, i-j));
 		j = i + 1;
 		if(mi == d->directories.end())
@@ -541,7 +539,10 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 		string fileName = fullName + f.getName();
 
 #ifdef USE_TTH		
-		f.setTTH(HashManager::getInstance()->getTTH(fileName, f.getSize()));
+		try {
+			f.setTTH(new TTHValue(HashManager::getInstance()->getTTH(fileName, f.getSize())));
+		} catch(const HashException&) {
+		}
 
 		if(f.getTTH() != NULL) {
 #endif
@@ -1259,7 +1260,7 @@ void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
 	}
 }
 
-void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw() {
+void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const TTHValue& root) throw() {
 	WLock l(cs);
 	Directory* d = getDirectory(fname);
 	if(d != NULL) {
@@ -1271,12 +1272,12 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 			}
 			// Get rid of false constness...
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
-			f->setTTH(root);
-			tthIndex.insert(make_pair(root, i));
+			f->setTTH(new TTHValue(root));
+			tthIndex.insert(make_pair(f->getTTH(), i));
 		} else {
 			string name = Util::getFileName(fname);
 			int64_t size = File::getSize(fname);
-			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, root)).first;
+			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, new TTHValue(root))).first;
 			addFile(d, it);
 		}
 		setDirty();

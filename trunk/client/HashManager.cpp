@@ -38,13 +38,15 @@ void HashManager::checkTTH(const string& aFileName, int64_t aSize) {
 	store.checkTTH(aFileName, aSize);
 
 }
-TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize) {
+
+const TTHValue& HashManager::getTTH(const string& aFileName, int64_t aSize) throw(HashException) {
 	Lock l(cs);
-	TTHValue* tth = store.getTTH(aFileName);
+	const TTHValue* tth = store.getTTH(aFileName);
 	if(tth == NULL){
 		hasher.hashFile(aFileName, aSize);
+		throw HashException(Util::emptyString);
 	}
-	return tth;
+	return *tth;
 }
 
 bool HashManager::getTree(const string& aFileName, const TTHValue* root, TigerTree& tt) {
@@ -53,7 +55,7 @@ bool HashManager::getTree(const string& aFileName, const TTHValue* root, TigerTr
 }
 
 void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_t speed) {
-	TTHValue* root = NULL;
+	const TTHValue* root = NULL;
 	{
 		Lock l(cs);
 		store.addFile(aFileName, tth, true);
@@ -61,7 +63,7 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 	}
 	
 	if(root != NULL && speed > -1) {
-		fire(HashManagerListener::TTHDone(), aFileName, root);
+		fire(HashManagerListener::TTHDone(), aFileName, *root);
 	}
 
 	string fn = aFileName;
@@ -222,7 +224,7 @@ bool HashManager::HashStore::checkTTH(const string& aFileName, int64_t aSize) {
 	return false;
 }
 
-TTHValue* HashManager::HashStore::getTTH(const string& aFileName) {
+const TTHValue* HashManager::HashStore::getTTH(const string& aFileName) {
 	string fname = Text::toLower(Util::getFileName(aFileName));
 	string fpath = Text::toLower(Util::getFilePath(aFileName));
 
@@ -364,10 +366,10 @@ void HashLoader::startTag(const string& name, StringPairList& attribs, bool) {
 	if(name == sFile) {
 		file = getAttrib(attribs, sName, 0);
 		size = Util::toInt64(getAttrib(attribs, sSize, 1));
-		timeStamp = (u_int32_t)Util::toInt(getAttrib(attribs, sTimeStamp, 2));
+		timeStamp = Util::toUInt32(getAttrib(attribs, sTimeStamp, 2));
 	} else if(name == sHash) {
 		const string& type = getAttrib(attribs, sType, 0);
-		size_t blockSize = (size_t)Util::toInt(getAttrib(attribs, sBlockSize, 1));
+		int64_t blockSize = Util::toInt64(getAttrib(attribs, sBlockSize, 1));
 		int64_t index = Util::toInt64(getAttrib(attribs, sIndex, 2));
 		const string& root = getAttrib(attribs, sRoot, 3);
 		if(!file.empty() && (type == sTTH) && (blockSize >= 1024) && (index >= 8) && !root.empty()) {
@@ -571,7 +573,7 @@ int HashManager::Hasher::run() {
 			}
 			try {
 				File f(fname, File::READ, File::OPEN);
-				size_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)MIN_BLOCK_SIZE);
+				int64_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), (int64_t)MIN_BLOCK_SIZE);
 #ifdef _WIN32
 				u_int32_t start = GET_TICK();
 #endif

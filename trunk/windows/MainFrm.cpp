@@ -190,8 +190,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-	c->addListener(this);
-	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	//c->addListener(this);
+	//c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
 	if(BOOLSETTING(OPEN_PUBLIC))
 		PostMessage(WM_COMMAND, ID_FILE_CONNECT);
@@ -811,7 +811,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 
 LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(c != NULL) {
-		c->removeListener(this);
+		//c->removeListener(this);
 		delete c;
 		c = NULL;
 	}
@@ -841,7 +841,7 @@ LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	
 	if(c != NULL) {
-		c->removeListener(this);
+		//c->removeListener(this);
 		delete c;
 		c = NULL;
 	}

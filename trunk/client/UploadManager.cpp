@@ -297,9 +297,9 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
 		if(!u->isSet(Upload::FLAG_USER_LIST)) {
 			// work-around, getTTH will queue the file for hashing if it gets a NULL TTH
-			TTHValue *hash = HashManager::getInstance()->getTTH(u->getFileName(), u->getSize());
-			if(hash != NULL) {
-				params["tth"] = hash->toBase32();
+			try {
+                params["tth"] = HashManager::getInstance()->getTTH(u->getFileName(), u->getSize()).toBase32();
+			} catch(const HashException&) {
 			}
 		}
 		params["ip"] = aSource->getRemoteIp();

@@ -47,6 +47,10 @@
 #define FILELISTS_DIR "filelists/"
 #endif
 
+#ifdef ff
+#undef ff
+#endif
+
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
 namespace {

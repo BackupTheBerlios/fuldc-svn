@@ -31,6 +31,10 @@
 #include "BZUtils.h"
 #include "CryptoManager.h"
 
+#ifdef ff
+#undef ff
+#endif
+
 void DirectoryListing::loadFile(const string& name, bool doAdl) {
 	string txt;
 
