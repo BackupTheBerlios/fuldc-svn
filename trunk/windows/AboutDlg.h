@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -43,9 +43,9 @@ _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka. ")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 
-_T("Thanks to snowflake/summerfling/goose for his work on the lovely fuldc website. ")
-_T("Thanks to fnordpojk for hosting the website and thanks to fusbar for all his advice. ")
-_T("should probably add more in here, seems a bit empty =)");
+_T("Thanks to Snowflake/Summerfling/Goose for his work on the lovely fulDC website. ")
+_T("Thanks to fnordpojk for 0xBADC0DE and to DCPortal.net for hosting the website. ")
+_T("Also thanks to fusbar for all his advice. ");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
 {
