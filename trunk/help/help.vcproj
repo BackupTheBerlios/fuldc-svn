@@ -69,7 +69,37 @@
 				RelativePath=".\credits.html">
 			</File>
 			<File
+				RelativePath=".\dev_applypatch.html">
+			</File>
+			<File
+				RelativePath=".\dev_createpatch.html">
+			</File>
+			<File
 				RelativePath=".\faq.html">
+			</File>
+			<File
+				RelativePath=".\faq_activemode.html">
+			</File>
+			<File
+				RelativePath=".\faq_different_icons.html">
+			</File>
+			<File
+				RelativePath=".\faq_keyboard_commands.html">
+			</File>
+			<File
+				RelativePath=".\faq_nosearch.html">
+			</File>
+			<File
+				RelativePath=".\faq_slowdownload.html">
+			</File>
+			<File
+				RelativePath=".\faq_units.html">
+			</File>
+			<File
+				RelativePath=".\faq_university.html">
+			</File>
+			<File
+				RelativePath=".\faq_upnp.html">
 			</File>
 			<File
 				RelativePath=".\favorite_hubs.html">

@@ -66,7 +66,7 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume",
+	"AdvancedResume", "AdcDebug",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -202,6 +202,7 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_LAST_LINES_LOG, 0);
 	setDefault(CONFIRM_ITEM_REMOVAL, 0);
 	setDefault(ADVANCED_RESUME, true);
+	setDefault(ADC_DEBUG, false);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);

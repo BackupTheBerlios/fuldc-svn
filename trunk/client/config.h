@@ -72,10 +72,14 @@ typedef unsigned __int64 u_int64_t;
 
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 #define _LL(x) x##ll
 #define _ULL(x) x##ull
 #define I64_FMT "%I64d"
+#elif defined(SIZEOF_LONG) && SIZEOF_LONG == 8
+#define _LL(x) x##l
+#define _ULL(x) x##ul
+#define I64_FMT "%ld"
 #else
 #define _LL(x) x##ll
 #define _ULL(x) x##ull
@@ -113,8 +117,8 @@ typedef unsigned __int64 u_int64_t;
 #ifdef _WIN32
 // Change these values to use different versions...don't know what happens though...=)
 #define WINVER		0x0501
-#define _WIN32_WINNT 0x0501
-#define _WIN32_IE	0x0500
+# define _WIN32_WINNT 0x0501
+# define _WIN32_IE	0x0500
 #define _RICHEDIT_VER	0x0200
 #endif
 

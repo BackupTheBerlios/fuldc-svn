@@ -96,8 +96,8 @@ public:
 		return getBZXmlFile();
 	}
 
-	bool isTTHShared(TTHValue* tth){
-		HashFileIter i = tthIndex.find(tth);
+	bool isTTHShared(const TTHValue& tth){
+		HashFileIter i = tthIndex.find(const_cast<TTHValue*>(&tth));
 		return (i != tthIndex.end());
 	}
 

@@ -94,7 +94,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COMMAND_ID_HANDLER(IDC_COPY_PATH, onCopyPath)
 		COMMAND_ID_HANDLER(IDC_COPY_SIZE, onCopySize)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
-		COMMAND_ID_HANDLER(IDC_SEARCH_BY_TTH, onSearchByTTH)
+		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadTargetDir)
 		CHAIN_COMMANDS(ucBase)
@@ -241,7 +241,7 @@ private:
 				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
 
 			if( f->getTTH() )
-				dupe = ShareManager::getInstance()->isTTHShared( f->getTTH() );
+				dupe = ShareManager::getInstance()->isTTHShared( *f->getTTH() );
 			else
 				dupe = false;
 		};

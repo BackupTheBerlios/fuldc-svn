@@ -904,11 +904,12 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		if( ii->getTTH() != NULL ) {
+
+		if(ii->getTTH() != NULL) {
 			WinUtil::searchHash(ii->getTTH());
 		} else {
 			tstring searchString = Text::toT(SearchManager::clean(Text::fromT(ii->getTargetFileName())));
-			
+
 			if(!searchString.empty()) {
 				bool bigFile = (ii->getSize() > 10*1024*1024);
 				if(bigFile) {

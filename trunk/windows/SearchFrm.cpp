@@ -223,7 +223,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetDirMenu, CTSTRING(DOWNLOAD_WHOLE_DIR_TO));
 	resultsMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
 	resultsMenu.AppendMenu(MF_SEPARATOR);
-	resultsMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
+	resultsMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	resultsMenu.AppendMenu(MF_SEPARATOR);
 	appendUserItems(resultsMenu);
 	resultsMenu.AppendMenu(MF_SEPARATOR);
@@ -1041,9 +1041,9 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
 		if (ctrlResults.GetSelectedCount() == 1 && sr->getTTH() != NULL) {
-			resultsMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
 		} else {
-			resultsMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
 		}
 		
 		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);

@@ -86,7 +86,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST, onCopy)
-		COMMAND_ID_HANDLER(IDC_SEARCH_BY_TTH, onSearchByTTH)
+		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_COMMANDS(ucBase)
@@ -247,7 +247,7 @@ private:
 			sr->incRef(); update();
 
 			if( sr->getTTH() )
-				dupe = ShareManager::getInstance()->isTTHShared(sr->getTTH());
+				dupe = ShareManager::getInstance()->isTTHShared(*sr->getTTH());
 			else
 				dupe = false;
 		};

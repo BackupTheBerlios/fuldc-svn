@@ -194,7 +194,7 @@ private:
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
-		void find(QueueItem::List& ql, const TTHValue* tth);
+		void find(QueueItem::List& ql, const TTHValue& tth);
 
 		QueueItem* findAutoSearch(StringList& recent);
 		size_t getSize() { return queue.size(); };

@@ -17,12 +17,8 @@
  */
 
 #include "Client.h"
-#include "BufferedSocket.h"
-#include "CID.h"
 #include "AdcCommand.h"
-#include "TigerHash.h"
 
-class AdcHub;
 class ClientManager;
 
 class AdcHub : public Client, public CommandHandler<AdcHub> {
@@ -93,10 +89,7 @@ private:
 
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw();
-	virtual void on(Line, const string& aLine) throw() { 
-		fire(ClientListener::Message(), this, "<ADC>" + aLine + "</ADC>");
-		dispatch(aLine); 
-	}
+	virtual void on(Line, const string& aLine) throw();
 	virtual void on(Failed, const string& aLine) throw();
 };
 

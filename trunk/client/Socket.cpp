@@ -33,7 +33,7 @@ short Socket::udpPort;
 
 #ifdef _DEBUG
 
-SocketException::SocketException(int aError) {
+SocketException::SocketException(int aError) throw() {
 	error = "SocketException: " + errorToString(aError);
 	dcdebug("Thrown: %s\n", error.c_str());
 }

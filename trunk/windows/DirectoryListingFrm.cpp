@@ -164,8 +164,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
 	fileMenu.AppendMenu(MF_SEPARATOR);
-	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
-	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
+	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
 	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 	
@@ -521,9 +520,9 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		
 		tstring hash = ii->getText(COLUMN_TTH);
 		if (ctrlList.GetSelectedCount() == 1 && hash.length() == 39) {
-			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
 		} else {
-			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
 		}
 
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {

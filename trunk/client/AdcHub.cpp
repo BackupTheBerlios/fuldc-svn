@@ -337,6 +337,13 @@ void AdcHub::on(Connected) throw() {
 	fire(ClientListener::Connected(), this);
 }
 
+void AdcHub::on(Line, const string& aLine) throw() { 
+	if(BOOLSETTING(ADC_DEBUG)) {
+		fire(ClientListener::Message(), this, "<ADC>" + aLine + "</ADC>");
+	}
+	dispatch(aLine); 
+}
+
 void AdcHub::on(Failed, const string& aLine) throw() { 
 	if(getMe())
 		ClientManager::getInstance()->putUserOffline(getMe());
