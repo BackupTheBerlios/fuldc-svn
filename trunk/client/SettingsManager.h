@@ -177,17 +177,10 @@ public:
 	void load(const string& aFileName);
 	void save(const string& aFileName);
 
-	typedef vector< ColorSettings* > colorVector;
-	colorVector colorSettings;
-
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
-	~SettingsManager(){
-		colorVector::iterator i = colorSettings.begin();
-		for(; i != colorSettings.end(); ++i)
-			delete *i;
-	}
+	~SettingsManager(){};
 
 	static const string settingTags[SETTINGS_LAST+1];
 

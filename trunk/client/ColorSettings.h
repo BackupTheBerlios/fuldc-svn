@@ -11,6 +11,14 @@ class ColorSettings
 {
 public:
 	ColorSettings(): bTimestamps(false), bUsers(false), bMyNick(false){	}
+	//ColorSettings(ColorSettings& cs): bWholeWord(cs.bWholeWord), bWholeLine(cs.bWholeLine),
+	//	bIncludeNick(cs.bIncludeNick), bCaseSensitive(cs.bCaseSensitive), bPopup(cs.bPopup),
+	//	bTab(cs.bTab), bPlaySound(cs.bPlaySound), bBold(cs.bBold), bUnderline(cs.bUnderline),
+	//	bItalic(cs.bItalic), bStrikeout(cs.bStrikeout), iMatchType(cs.iMatchType), 
+	//	iBgColor(cs.iBgColor), iFgColor(cs.iFgColor), bHasBgColor(cs.bHasBgColor), 
+	//	bHasFgColor(cs.bHasFgColor), strSoundFile(cs.strSoundFile), strMatch(cs.strMatch),
+	//	bMyNick(cs.bMyNick), bTimestamps(cs.bTimestamps), bUsers(cs.bUsers){}
+
 	~ColorSettings(){};
 
 	GETSET(bool, bWholeWord, WholeWord);
@@ -59,7 +67,4 @@ private:
 	bool bMyNick;
 
 };
-
-typedef vector< ColorSettings* > colorVector;
-
 #endif

@@ -84,10 +84,10 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	transferMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)openMenu, CSTRING(OPEN));
-	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
+	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
 
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);

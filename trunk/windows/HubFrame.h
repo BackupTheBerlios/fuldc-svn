@@ -478,8 +478,6 @@ private:
 	};
 	void speak(Speakers s, const User::Ptr& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u, line)); };
 
-	int Highlight(colorVector::iterator /*i*/, string& /*line*/, int /*pos*/, int& /*lineIndex*/);
-	void Colorize(int /*begin*/);
 	void openLinksInTopic();
 };
 /////////////////////////////////////////////////////////////////////////////

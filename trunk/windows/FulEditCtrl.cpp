@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
-#include "../client/SettingsManager.h"
+#include "../client/highlightmanager.h"
+
 
 #include "../greta/regexpr2.h"
 
@@ -95,7 +96,7 @@ bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
 void CFulEditCtrl::Colorize(int begin) {
 	CHARFORMAT2 cf;
 	cf.cbSize = sizeof(CHARFORMAT2);
-	colorVector::iterator i = SettingsManager::getInstance()->colorSettings.begin();
+	ColorList *cList = HighlightManager::getInstance()->rLock();
 
 	int end = GetTextLengthEx(GTL_NUMCHARS);
 	char *buf = new char[end-begin+1];
@@ -113,7 +114,7 @@ void CFulEditCtrl::Colorize(int begin) {
 	logged = false;
 
 	//compare the last line against all strings in the vector
-	for(; i != SettingsManager::getInstance()->colorSettings.end(); ++i) {
+	for(ColorIter i = cList->begin(); i != cList->end(); ++i) {
 		ColorSettings* cs = *i;
 		int pos;
 		
@@ -143,26 +144,23 @@ void CFulEditCtrl::Colorize(int begin) {
 			cf.crTextColor = cs->getFgColor();
 		}
 
-		while( ( pos = Highlight(cs, cf, line, pos, begin) ) != string::npos );
+		while( pos != string::npos ){
+			if(cs->getMatch().find("$Re:") != string::npos ) {
+				pos = RegExpMatch(cs, cf, line, pos, begin);
+			} else {
+				pos = FullTextMatch(cs, cf, line, pos, begin);
+			}
+		}
 
 		matchedPopup = false;
 		matchedSound = false;
 		
 	}//end for
 
+	HighlightManager::getInstance()->rUnlock();
+
 	HideSelection(false, false);
 }//end Colorize
-
-int CFulEditCtrl::Highlight(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex) {
-	int ret;
-	if(cs->getMatch().find("$Re:") != string::npos ) {
-		ret = RegExpMatch(cs, cf, line, pos, lineIndex);
-	} else {
-		ret = FullTextMatch(cs, cf, line, pos, lineIndex);
-	}
-
-	return ret;
-}//end highlight
 
 void CFulEditCtrl::SetTextColor( COLORREF color ) {
 	CHARFORMAT cf;

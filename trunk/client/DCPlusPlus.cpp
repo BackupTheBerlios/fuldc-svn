@@ -34,6 +34,7 @@
 #include "FinishedManager.h"
 #include "ADLSearch.h"
 #include "Webshortcuts.h"
+#include "HighlightManager.h"
 #include "..\windows\PopupManager.h"
 
 #include "StringTokenizer.h"
@@ -51,6 +52,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	LogManager::newInstance();
 	TimerManager::newInstance();
 	HashManager::newInstance();
+	HighlightManager::newInstance();
 	ShareManager::newInstance();
 	CryptoManager::newInstance();
 	SearchManager::newInstance();
@@ -146,6 +148,7 @@ void shutdown() {
 	
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
+	HighlightManager::deleteInstance();
 	ShareManager::deleteInstance();
 	CryptoManager::deleteInstance();
 	DownloadManager::deleteInstance();

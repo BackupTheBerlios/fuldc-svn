@@ -172,6 +172,9 @@
 				RelativePath=".\client\HashManager.cpp">
 			</File>
 			<File
+				RelativePath=".\client\HighlightManager.cpp">
+			</File>
+			<File
 				RelativePath=".\client\HttpConnection.cpp">
 			</File>
 			<File
@@ -342,6 +345,9 @@
 			</File>
 			<File
 				RelativePath=".\client\HashValue.h">
+			</File>
+			<File
+				RelativePath=".\client\HighlightManager.h">
 			</File>
 			<File
 				RelativePath=".\client\HttpConnection.h">

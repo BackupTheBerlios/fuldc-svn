@@ -4,6 +4,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/ColorSettings.h"
+#include "../client/HighlightManager.h"
 
 #include "../greta/regexpr2.h"
 
@@ -24,13 +25,13 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlStrings.GetClientRect(rc);
 	ctrlStrings.InsertColumn(0, "string to match", LVCFMT_LEFT, rc.Width(), 0);
 
-	colorVector::iterator j = SettingsManager::getInstance()->colorSettings.end();
-	colorVector::iterator i = SettingsManager::getInstance()->colorSettings.begin();
+	ColorList* cList = HighlightManager::getInstance()->rLock();
 		
 	//populate listview with current strings
-	for(;i != j; ++i)
+	for(ColorIter i = cList->begin();i != cList->end(); ++i)
 		ctrlStrings.insert( ctrlStrings.GetItemCount(), (*i)->getMatch(), 0, (LPARAM)(*i) );
-		
+	
+	HighlightManager::getInstance()->rUnlock();
 	
 	//initalize colors
 	bgColor = WinUtil::bgColor;
@@ -54,11 +55,14 @@ void HighlightPage::write(){
 	int i = 0;
 	int end = ctrlStrings.GetItemCount();
 	ColorSettings *cs;
-	settings->colorSettings.clear();
+	ColorList* cList = HighlightManager::getInstance()->wLock();
+    cList->clear();
 	for(; i < end; ++i){
 		cs = (ColorSettings*)ctrlStrings.GetItemData(i);
-		settings->colorSettings.push_back(cs);
+		cList->push_back(cs);
 	}
+
+	HighlightManager::getInstance()->wUnlock();
 }
 
 LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
@@ -83,8 +87,6 @@ LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	ctrlStrings.insert( ctrlStrings.GetItemCount(), cs->getMatch(), 0, (LPARAM)cs );
 	ctrlStrings.SelectItem(ctrlStrings.GetItemCount()-1);
 
-	clear();
-		
 	return TRUE;
 }
 
@@ -95,7 +97,10 @@ LRESULT HighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 	ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
 	string old = cs->getMatch();
+
+	HighlightManager::getInstance()->wLock();
 	getValues(cs);
+	HighlightManager::getInstance()->wUnlock();
 	
 	if(old.compare(cs->getMatch()) != 0){
 		ctrlStrings.DeleteItem(sel);
@@ -128,8 +133,10 @@ LRESULT HighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 		int sel = ctrlStrings.GetSelectedIndex();
 		ColorSettings* cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
 		ctrlStrings.DeleteItem(sel);
+		HighlightManager::getInstance()->wLock();
 		delete cs;
 		cs = NULL;
+		HighlightManager::getInstance()->wUnlock();
 	}
 	
 	return TRUE;
