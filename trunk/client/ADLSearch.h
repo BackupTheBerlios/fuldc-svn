@@ -37,6 +37,8 @@
 #include "StringTokenizer.h"
 #include "Singleton.h"
 
+#include "../greta/regexpr2.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //	Class that represent an ADL search
@@ -48,22 +50,29 @@ public:
 
 	// Constructor
 	ADLSearch() : searchString("<Enter string>"), isActive(true), isAutoQueue(false), sourceType(OnlyFile), 
-		minFileSize(-1), maxFileSize(-1), typeFileSize(SizeBytes), destDir("ADLSearch"), ddIndex(0) {}
+		minFileSize(-1), maxFileSize(-1), typeFileSize(SizeBytes), destDir("ADLSearch"), ddIndex(0),
+		bUseRegexp(false){}
 
 	// Prepare search
 		void Prepare(StringMap& params) {
 			// Prepare quick search of substrings
 			stringSearchList.clear();
 
-			// Replace parameters such as %[nick]
-			string stringParams = Util::formatParams(searchString, params);
+			if(searchString.find("$Re:") == 0){
+				try {
+					regexp.init(searchString.substr(4), regex::NOCASE);
+				} catch(regex::bad_regexpr){}
+			} else {
+				// Replace parameters such as %[nick]
+				string stringParams = Util::formatParams(searchString, params);
 
-			// Split into substrings
-			StringTokenizer st(stringParams, ' ');
-			for(StringList::iterator i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-				if(i->size() > 0) {
-					// Add substring search
-					stringSearchList.push_back(StringSearch(*i));
+				// Split into substrings
+				StringTokenizer st(stringParams, ' ');
+				for(StringList::iterator i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+					if(i->size() > 0) {
+						// Add substring search
+						stringSearchList.push_back(StringSearch(*i));
+					}
 				}
 			}
 		}
@@ -209,14 +218,27 @@ private:
 
 	// Substring searches
 	StringSearch::List stringSearchList;
+
+	//decide if regexps should be used
+	bool bUseRegexp;
+	regex::rpattern regexp;
+
 	bool SearchAll(const string& s) {
-		// Match all substrings
-		for(StringSearch::Iter i = stringSearchList.begin(); i != stringSearchList.end(); ++i) {
-			if(!i->match(s)) {
+		if(bUseRegexp){
+			regex::match_results result;
+			if(regexp.match(s, result, 0).matched)
+				return true;
+			else
 				return false;
+		} else {
+			// Match all substrings
+			for(StringSearch::Iter i = stringSearchList.begin(); i != stringSearchList.end(); ++i) {
+				if(!i->match(s)) {
+					return false;
+				}
 			}
+			return (stringSearchList.size() != 0);
 		}
-		return (stringSearchList.size() != 0);
 	}
 };
 
