@@ -523,10 +523,10 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 	}
 }
 
-HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	
+HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	RECT rc;
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
 	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
 
 	ctrlList.GetHeader().GetWindowRect(&rc);
@@ -541,9 +541,13 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 	WinUtil::AppendSearchMenu(searchMenu);
 
-	if (PtInRect(&rc, pt) && ctrlList.GetSelectedCount() > 0) {
+	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) {
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlList.ClientToScreen(&pt);
+		}
+
 		int n = 0;
-		ctrlList.ClientToScreen(&pt);
 
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
@@ -595,49 +599,47 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		}
 		
 		return TRUE; 
-	} else { 
-		
-		ctrlList.ClientToScreen(&pt);
-		
-		ctrlTree.GetClientRect(&rc);
-		ctrlTree.ScreenToClient(&pt); 
-		
-		if (PtInRect(&rc, pt) && ctrlTree.GetSelectedItem() != NULL) { 
-			// Strange, windows doesn't change the selection on right-click... (!)
-			UINT a = 0;
-			HTREEITEM ht = ctrlTree.HitTest(pt, &a);
-			if(ht != NULL && ht != ctrlTree.GetSelectedItem())
-				ctrlTree.SelectItem(ht);
-			
-			while(targetDirMenu.GetMenuItemCount() > 0) {
-				targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
-			}
-
-			int n = 0;
-			if(downloadPaths.size() > 0) {
-				for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
-					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + n, Text::toT(i->first).c_str() );
-					++n;
-				}
-				targetDirMenu.AppendMenu(MF_SEPARATOR);
-			}
-
-			targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
-
-			if(WinUtil::lastDirs.size() > 0) {
-				targetDirMenu.AppendMenu(MF_SEPARATOR);
-				for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
-					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (n++), i->c_str());
-				}
-			}
-			
+	} else if((HWND)wParam == ctrlTree && ctrlTree.GetSelectedItem() != NULL) { 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
 			ctrlTree.ClientToScreen(&pt);
-			directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			
-			return TRUE; 
-		} 
-	}
-	
+		}
+
+		// Strange, windows doesn't change the selection on right-click... (!)
+		UINT a = 0;
+		HTREEITEM ht = ctrlTree.HitTest(pt, &a);
+		if(ht != NULL && ht != ctrlTree.GetSelectedItem())
+			ctrlTree.SelectItem(ht);
+		
+		while(targetDirMenu.GetMenuItemCount() > 0) {
+			targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
+		}
+
+		int n = 0;
+		if(downloadPaths.size() > 0) {
+			for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + n, Text::toT(i->first).c_str() );
+				++n;
+			}
+			targetDirMenu.AppendMenu(MF_SEPARATOR);
+		}
+
+		targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
+
+		if(WinUtil::lastDirs.size() > 0) {
+			targetDirMenu.AppendMenu(MF_SEPARATOR);
+			for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (n++), i->c_str());
+			}
+		}
+		
+		directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		
+		return TRUE; 
+	} 
+
+	bHandled = FALSE;
 	return FALSE; 
 }
 

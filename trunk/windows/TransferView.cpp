@@ -138,7 +138,7 @@ LRESULT TransferView::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 0;
 }
 
-LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	RECT rc, rc2;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 
@@ -150,8 +150,11 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		return TRUE;
 	}
 
-	if (PtInRect(&rc, pt) && ctrlTransfers.GetSelectedCount() > 0) 
-	{ 
+	if ((HWND)wParam == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) { 
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlTransfers.ClientToScreen(&pt);
+		}
 		int i = -1;
 		ItemInfo* itemI;
 		bool bCustomMenu = false;
@@ -189,6 +192,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		}
 		return TRUE; 
 	}
+	bHandled = FALSE;
 	return FALSE; 
 }
 

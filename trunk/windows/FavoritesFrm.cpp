@@ -129,24 +129,28 @@ void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
 	ctrlHubs.SetCheckState(i, b);
 }
 
-LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 
-	if(ctrlHubs.GetSelectedCount() > 0) {
-		// Get the bounding rectangle of the client area. 
-		ctrlHubs.GetClientRect(&rc);
-		ctrlHubs.ScreenToClient(&pt); 
-
-		if (PtInRect(&rc, pt)) 
-		{ 
+	if((HWND)wParam == ctrlHubs) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
 			ctrlHubs.ClientToScreen(&pt);
-			hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-
-			return TRUE; 
 		}
+
+		int status = ctrlHubs.GetSelectedCount() > 0;
+		hubsMenu.EnableMenuItem(IDC_CONNECT, status);
+		hubsMenu.EnableMenuItem(IDC_EDIT, status);
+		hubsMenu.EnableMenuItem(IDC_MOVE_UP, status);
+		hubsMenu.EnableMenuItem(IDC_MOVE_DOWN, status);
+		hubsMenu.EnableMenuItem(IDC_REMOVE, status);
+
+		hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
+		return TRUE; 
 	}
 
+	bHandled = FALSE;
 	return FALSE; 
 }
 

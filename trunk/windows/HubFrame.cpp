@@ -793,18 +793,18 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	return TRUE;
 }
 
-LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	RECT rc; 
 	POINT pt; 
 	GetCursorPos(&pt);			//need cursor pos
 	ctrlClient.GetWindowRect(&rc);
-
+	
 	bool doMenu = false;
 	bool doMcMenu = false;
 	
 	if (PtInRect(&rc, pt)) {
-		tstring x;
 		ctrlClient.ScreenToClient(&pt);
+		tstring x;
 		string::size_type start = (string::size_type)ctrlClient.TextUnderCursor(pt, x);
 
 		string::size_type end = x.find_first_of(_T(" >\t"), start+1);
@@ -836,10 +836,8 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 			ctrlUsers.SetRedraw(TRUE);
 			ctrlUsers.EnsureVisible(pos, FALSE);
 
-			ctrlClient.ClientToScreen(&pt);
 			doMenu = true; 
-
-
+			ctrlClient.ClientToScreen(&pt);
 		} else {
 			doMcMenu = true;
 		}
@@ -857,10 +855,10 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 			doMenu = true;
 		}else{
 			bHandled = FALSE; //needed to popup context menu under userlist
-		}
-	}
-
-	if(doMenu) {
+		} 
+	} 
+		
+	if((doMenu || ((HWND)wParam == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {
 		if(ctrlUsers.GetSelectedCount() == 1) {
 			int pos = ctrlUsers.GetNextItem(-1, LVNI_SELECTED);
 			if(pos != -1) {
@@ -881,6 +879,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		tabMenuShown = false;
 		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getAddressPort()), client->getOp());
 		checkAdcItems(userMenu);
+
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(userMenu);
 		return TRUE;
