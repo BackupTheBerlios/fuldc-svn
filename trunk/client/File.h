@@ -408,7 +408,9 @@ public:
 	virtual size_t flush() throw(Exception) {
 		if(pos > 0)
 			s->write(buf, pos);
-		return s->flush();
+		pos = 0;
+		s->flush();
+		return 0;
 	}
 
 	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
@@ -417,7 +419,7 @@ public:
 		while(len > 0) {
 			if(pos == 0 && len >= bufSize) {
 				s->write(b, len);
-				return l2;
+				break;
 			} else {
 				size_t n = min(bufSize - pos, len);
 				memcpy(buf + pos, b, n);
