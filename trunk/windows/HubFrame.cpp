@@ -163,11 +163,9 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.SetNick(nick);
 	ctrlClient.StripIsp(stripIsp);
 
-	ctrlFilterSel.AddString(CSTRING(NICK));
-	ctrlFilterSel.AddString(CSTRING(SHARED));
-	ctrlFilterSel.AddString(CSTRING(DESCRIPTION));
-	ctrlFilterSel.AddString(CSTRING(ISP));
-	ctrlFilterSel.AddString(CSTRING(TAG));
+	for(int j=0; j<COLUMN_LAST; j++) {
+		ctrlFilterSel.AddString(CSTRING_I(columnNames[j]));
+	}
 	ctrlFilterSel.SetCurSel(0);
 	
 

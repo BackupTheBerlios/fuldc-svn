@@ -112,6 +112,7 @@ public:
 			int j = 0;
 			CHAR *buf = new CHAR[512];
 			LVCOLUMN lvc;
+			lvc.mask = LVCF_TEXT;
 			lvc.pszText = buf;
 			lvc.cchTextMax = 512;
 			GetColumn(pos, &lvc);
@@ -122,7 +123,7 @@ public:
 					break;
 				}
 			}
-			if(insert)
+			if(insert == true)
 				di->item.pszText = const_cast<char*>(((T*)di->item.lParam)->getText(j).c_str());
 
 			delete[] buf;
@@ -285,10 +286,8 @@ public:
 
 		if(!ci->visible){
 			removeColumn(ci);
-			resort();
 		} else {
 			InsertColumn(ci->pos, ci->name.c_str(), ci->format, ci->width, -1);
-			resort();
 		}
 
 		SetRedraw();
