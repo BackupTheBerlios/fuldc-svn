@@ -470,6 +470,11 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 	}
 
+	if(aSource->getUser()->getIp().empty()) {
+		aSource->getUser()->setIp(aSource->getRemoteIp());
+		User::updated(aSource->getUser());
+	}
+
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
 		aSource->myNick(aSource->getUser()->getClientNick()); 
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
