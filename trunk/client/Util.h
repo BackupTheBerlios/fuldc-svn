@@ -244,6 +244,8 @@ public:
 	static string getShortTimeString();
 	static wstring getShortTimeStringW();
 
+	static tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
+
 	static string getTimeString() {
 		char buf[64];
 		time_t _tt;

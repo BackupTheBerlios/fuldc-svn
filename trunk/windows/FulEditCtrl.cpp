@@ -74,7 +74,7 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 bool CFulEditCtrl::AddLine(const tstring & line, bool timeStamps) {
 	bool noScroll = false;
 	matchedTab = false;
-	tstring aLine = line;
+	tstring aLine = Util::replace(line, _T("\r\n"), _T("\r"));
 	if(GetWindowTextLength() > SETTING(CHATBUFFERSIZE)) {
 		SetRedraw(FALSE);
 		SetSel(0, LineIndex(LineFromChar(2000)));
@@ -103,9 +103,9 @@ bool CFulEditCtrl::AddLine(const tstring & line, bool timeStamps) {
 		aLine = _T("** ") + aLine.substr(1, pos-1) +  aLine.substr(pos+5, aLine.length());
 
 	if(timeStamps) {
-		aLine = _T("\r\n[") + Util::getShortTimeStringW() + _T("] ") + aLine;
+		aLine = _T("\r[") + Util::getShortTimeStringW() + _T("] ") + aLine;
 	} else {
-		aLine = _T("\r\n") + aLine;
+		aLine = _T("\r") + aLine;
 	}
 	
 	SetRedraw(FALSE);
@@ -153,8 +153,8 @@ void CFulEditCtrl::Colorize(const tstring& aLine, int begin) {
 
 	logged = false;
 
-	//compensate for \r\n
-	begin -= 2;
+	//compensate for \r
+	--begin;
 
 	//compare the last line against all strings in the vector
 	for(ColorIter i = cList->begin(); i != cList->end(); ++i) {
@@ -231,7 +231,7 @@ int CFulEditCtrl::TextUnderCursor(POINT p, tstring& x) {
 	x = tstring(buf, len-1);
 	delete[] buf;
 
-	tstring::size_type start = x.find_last_of(_T(" <\t\r\n"), c);
+	tstring::size_type start = x.find_last_of(_T(" <\t\r"), c);
 	if(start == tstring::npos)
 		start = 0;
 	else
@@ -308,14 +308,14 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 		switch(cs->getMatchType()){
 			case 0: //Begins
 				p = index-1;
-                if(line[p] != _T(' ') && line[p] != _T('\r') &&	line[p] != _T('\t') && line[p] != _T('\n') )
+                if(line[p] != _T(' ') && line[p] != _T('\r') &&	line[p] != _T('\t') )
 					return tstring::npos;
 				break;
 			case 1: //Contains
 				break;
 			case 2: // Ends
 				p = index+length;
-				if(line[p] != _T(' ') && line[p] != _T('\r') &&	line[p] != _T('\t') && line[p] != _T('\n') )
+				if(line[p] != _T(' ') && line[p] != _T('\r') &&	line[p] != _T('\t') )
 					return tstring::npos;
 				break;
 			case 3: // Equals
@@ -346,11 +346,11 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 	} else if( cs->getWholeWord() ) {
 		int tmp;
 
-		tmp = line.find_last_of(_T(" \t\r\n"), index);
+		tmp = line.find_last_of(_T(" \t\r"), index);
 		if(tmp != tstring::npos )
 			begin += tmp+1;
 		
-		tmp = line.find_first_of(_T(" \t\r\n"), index);
+		tmp = line.find_first_of(_T(" \t\r"), index);
 		if(tmp != tstring::npos )
 			end = lineIndex + tmp;
 		else
@@ -503,8 +503,8 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	tstring tmp = buf;
 	delete[] buf;
 	
-	int start = tmp.find_last_of(_T(" \t\r\n"), ch-begin) +1;
-	int end = tmp.find_first_of(_T(" \t\r\n"), start+1);
+	int start = tmp.find_last_of(_T(" \t\r"), ch-begin) +1;
+	int end = tmp.find_first_of(_T(" \t\r"), start+1);
 	if(end == tstring::npos)
 		end = tmp.length();
 	tstring url = tmp.substr(start, end-start);

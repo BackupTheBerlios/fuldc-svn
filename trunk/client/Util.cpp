@@ -983,6 +983,16 @@ wstring Util::getShortTimeStringW() {
 	}
 	return wstring(buf);
 }
+
+tstring Util::replace(const tstring& aString, const tstring& fStr, const tstring& rStr) {
+	tstring tmp = aString;
+	tstring::size_type pos;
+	while( (pos = tmp.find(fStr)) != tstring::npos ) {
+		tmp.replace(pos, fStr.length(), rStr);
+	}
+
+	return tmp;
+}
 /**
  * @file
  * $Id: Util.cpp,v 1.4 2004/02/14 13:26:28 trem Exp $
