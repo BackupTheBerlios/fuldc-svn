@@ -599,5 +599,7 @@
 		<String Name="InvalidSlots">Invalid number of slots</String>
 		<String Name="FuldcUptime">fulDC uptime:</String>
 		<String Name="SystemUptime">System uptime:</String>
+		<String Name="NameExists">Name already exists</String>
+		<String Name="DisplayName">Name to be displayed in menus</String>
 	</Strings>
 </Language>

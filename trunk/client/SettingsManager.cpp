@@ -25,6 +25,7 @@
 #include "SimpleXML.h"
 #include "Util.h"
 #include "File.h"
+#include "StringTokenizer.h"
 
 const string SettingsManager::settingTags[] =
 {
@@ -39,7 +40,7 @@ const string SettingsManager::settingTags[] =
 	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID",
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
-	"DownloadToPaths", "HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
+	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
 	"QueueFrameVisible", 
 	"SENTRY", 
 	// Ints
@@ -207,7 +208,6 @@ SettingsManager::SettingsManager()
 	setDefault(SKIPLIST_SHARE, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
 	setDefault(SKIPLIST_DOWNLOAD, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
 	setDefault(TAB_SHOW_ICONS, true);
-	setDefault(DOWNLOAD_TO_PATHS, "");
 	setDefault(CUSTOM_SOUND, false);
 	setDefault(TAB_SIZE, 20);
 	setDefault(REMOVE_POPUPS, true);
@@ -293,6 +293,31 @@ void SettingsManager::load(string const& aFileName)
 		// double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
 
+		xml.resetCurrentChild();
+		if(xml.findChild("DownloadPaths")) {
+			xml.stepIn();
+			Lock l(cs);
+			while(xml.findChild("DownloadPath")){
+				string name = xml.getChildAttrib("Name");
+				string path = xml.getChildData();
+				downloadPaths[ name ] = path;
+			}
+			xml.stepOut();
+		} else {
+			xml.resetCurrentChild();
+			if(xml.findChild("DownloadToPaths")){
+				Lock l(cs);
+				string paths = xml.getChildData();
+				StringTokenizer<string> t(paths, '|');
+				StringList s = t.getTokens();
+				for(StringIter i = s.begin(); i != s.end(); ++i){
+					downloadPaths[ Util::getLastDir(*i) ] = *i;
+				}
+			}
+		}
+		
+
+
 		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();
@@ -339,6 +364,18 @@ void SettingsManager::save(string const& aFileName) {
 		{
 			xml.addTag(settingTags[i], get(Int64Setting(i), false));
 			xml.addChildAttrib(type, curType);
+		}
+	}
+	xml.stepOut();
+
+	xml.addTag("DownloadPaths");
+	xml.stepIn();
+
+	{
+		Lock l(cs);
+		for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i ) {
+			xml.addTag( "DownloadPath", i->second );
+			xml.addChildAttrib( "Name", i->first );
 		}
 	}
 	xml.stepOut();

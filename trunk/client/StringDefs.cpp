@@ -600,6 +600,8 @@ string ResourceManager::strings[] = {
 "Invalid number of slots", 
 "fulDC uptime:", 
 "System uptime:", 
+"Name already exists", 
+"Name to be displayed in menus", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1200,4 +1202,6 @@ string ResourceManager::names[] = {
 "InvalidSlots", 
 "FuldcUptime", 
 "SystemUptime", 
+"NameExists", 
+"DisplayName", 
 };

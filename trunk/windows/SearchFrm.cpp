@@ -547,7 +547,9 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	size_t newId = (size_t)wID - IDC_DOWNLOAD_TARGET;
 
 	if(newId < downloadPaths.size()){
-		ctrlResults.forEachSelectedT(SearchInfo::Download(downloadPaths[newId]));
+		StringMapIter j = downloadPaths.begin();
+		for(int i = 0; i < newId; ++i, ++j);
+		ctrlResults.forEachSelectedT( SearchInfo::Download( Text::toT(j->second) ) );
 	}else if((newId - downloadPaths.size()) < WinUtil::lastDirs.size()) {
 		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId - downloadPaths.size()]));
 	} else {
@@ -562,7 +564,9 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 	dcassert((wID-IDC_DOWNLOAD_WHOLE_TARGET) < (int)WinUtil::lastDirs.size());
 	unsigned int newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
 	if(newId < downloadPaths.size()){
-		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(downloadPaths[newId]));
+		StringMapIter j = downloadPaths.begin();
+		for(int i = 0; i < newId; ++i, ++j);
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole( Text::toT(j->second) ));
 	}else {
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(WinUtil::lastDirs[newId - downloadPaths.size()]));
 	}
@@ -915,8 +919,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		int n = 0;
 		
 		if(downloadPaths.size() > 0){
-			for(TStringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
-				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+			for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, Text::toT(i->first).c_str() );
 				++n;
 			}
 			targetMenu.AppendMenu(MF_SEPARATOR);
@@ -951,8 +955,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 		n = 0;
 		if(downloadPaths.size() > 0){
-			for(TStringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
-				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_TARGET + n, i->c_str());
+			for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_TARGET + n, Text::toT(i->first).c_str() );
 				++n;
 			}
 			targetDirMenu.AppendMenu(MF_SEPARATOR);

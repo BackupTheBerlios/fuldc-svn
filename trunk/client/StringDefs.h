@@ -603,5 +603,7 @@ enum Strings { // @DontAdd
 	INVALID_SLOTS, // "Invalid number of slots"
 	FULDC_UPTIME, // "fulDC uptime:"
 	SYSTEM_UPTIME, // "System uptime:"
+	NAME_EXISTS, // "Name already exists"
+	DISPLAY_NAME, // "Name to be displayed in menus"
 	LAST // @DontAdd
 };

@@ -283,7 +283,7 @@ private:
 	CContainedWindow statusContainer;
 		
 	StringList targets;
-	TStringList downloadPaths;
+	StringMap downloadPaths;
 	
 	CTreeViewCtrl ctrlTree;
 	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;

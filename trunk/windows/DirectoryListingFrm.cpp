@@ -61,8 +61,7 @@ DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::P
 		error = Text::toT(aUser->getFullNick() + ": " + e.getError());
 	}
 
-	StringTokenizer<tstring> token(Text::toT(SETTING(DOWNLOAD_TO_PATHS)), _T("|"));
-	downloadPaths = token.getTokens();
+	downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
 }
 
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -497,8 +496,8 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 		
 		if(downloadPaths.size() > 0) {
-			for(TStringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
-				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
+			for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), Text::toT(i->first).c_str() );
 			}
 			targetMenu.AppendMenu(MF_SEPARATOR);
 		}
@@ -561,8 +560,8 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 			int n = 0;
 			if(downloadPaths.size() > 0) {
-				for(TStringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
-					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + n, i->c_str());
+				for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
+					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + n, Text::toT(i->first).c_str() );
 					++n;
 				}
 				targetDirMenu.AppendMenu(MF_SEPARATOR);
@@ -597,9 +596,11 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		if(ii->type == ItemInfo::FILE) {
 			
 			try {
-				if(newId < downloadPaths.size())
-					dl->download(ii->file, Text::fromT(downloadPaths[newId]) + ii->file->getName());
-				else if( (newId - downloadPaths.size()) < WinUtil::lastDirs.size() )
+				if(newId < downloadPaths.size()){
+					StringMapIter j = downloadPaths.begin();
+					for(int i = 0; i < newId; ++i, ++j);
+					dl->download(ii->file, j->second + ii->file->getName());
+				} else if( (newId - downloadPaths.size()) < WinUtil::lastDirs.size() )
 					dl->download(ii->file, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]) + ii->file->getName());
 				else
 					dl->download(ii->file, targets[newId - downloadPaths.size() - WinUtil::lastDirs.size()]);
@@ -608,15 +609,19 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			} 
 		} else {
-			if(newId < downloadPaths.size())
-				downloadList(downloadPaths[newId]);
-			else
+			if(newId < downloadPaths.size()) {
+				StringMapIter j = downloadPaths.begin();
+				for(int i = 0; i < newId; ++i, ++j);
+				downloadList( Text::toT(j->second) );
+			} else
 				downloadList(WinUtil::lastDirs[newId - downloadPaths.size()]);
 		}
 	} else if(ctrlList.GetSelectedCount() > 1) {
-		if(newId < downloadPaths.size())
-			downloadList(downloadPaths[newId]);
-		else
+		if(newId < downloadPaths.size()) {
+			StringMapIter j = downloadPaths.begin();
+			for(int i = 0; i < newId; ++i, ++j);
+			downloadList( Text::toT(j->second) );
+		} else
 			downloadList(WinUtil::lastDirs[newId - downloadPaths.size()]);
 	}
 	return 0;
@@ -631,9 +636,11 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
-			if(newId < downloadPaths.size())
-				dl->download(dir, Text::fromT(downloadPaths[newId]));
-			else
+			if(newId < downloadPaths.size()){
+				StringMapIter j = downloadPaths.begin();
+				for(int i = 0; i < newId; ++i, ++j);
+				dl->download(dir, j->second );
+			} else
 				dl->download(dir, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]));
 
 		} catch(const Exception& e) {

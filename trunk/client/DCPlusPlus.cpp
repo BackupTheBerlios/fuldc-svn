@@ -42,11 +42,28 @@
 
 #include "StringTokenizer.h"
 
-void startup(void (*f)(void*, const string&, const string&), void* p) {
+void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	// "Dedicated to the near-memory of Nev. Let's start remembering people while they're still alive."
 	// Nev's great contribution to dc++
 	while(1) break;
 	
+<<<<<<< .mine
+	tstring tku[14] = {
+		_T("Fastkedjad i templet, ormar överallt, kukar överallt\r\n"),
+		_T("Jag såg en skäggig herre, han var täckt av säd\r\n"), 
+		_T("Läder och homosex, rött vin och havrekex, det vill vi ha!\r\n"),
+		_T("Fjolla och aristokrat, nobelt blod och lyxig mat, det vill vi ha!\r\n"),
+		_T("Jag färdas naken, allt är som sig bör\r\n"),
+		_T("Polisen och SÄPO de jagar oss, agenterna släpper hundarna loss\r\n"),
+		_T("Sprit och gott, massor av flott, pang på pungen i Portugal!\r\n"),
+		_T("Den kristna tjackfabriken puttrar på, samhället vet ej vad som pågår\r\n"),
+		_T("Arbetslös och utan tjej, då blir det en fet jävla holk och en bitelinepizza\r\n"),
+		_T("Bärs som bärs, det smakar ju lika, man suger bärs så man blir full och ramlar kull\r\n"),
+		_T("Duschring, duschring, det är vad jag vill ha runt taskapåsen\r\n"),
+		_T("Äta olja, dricka sand, spela i arabiska heavymetalband\r\n"),
+		_T("Mellan Hudik och Sundsvall - det brutala Gnarp!\r\n"),
+		_T("Himmelriket i Norrland - det totala Gnarp!\r\n"),
+=======
 	string tku[14] = {
 		"Fastkedjad i templet, ormar Ã¶verallt, kukar Ã¶verallt\r\n",
 		"Jag sÃ¥g en skÃ¤ggig herre, han var tÃ¤ckt av sÃ¤d\r\n", 
@@ -62,6 +79,7 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 		"Ã„ta olja, dricka sand, spela i arabiska heavymetalband\r\n",
 		"Mellan Hudik och Sundsvall - det brutala Gnarp!\r\n",
 		"Himmelriket i Norrland - det totala Gnarp!\r\n",
+>>>>>>> .r176
 	};
 	Util::initialize();
 	int index = Util::rand(14);
@@ -70,7 +88,7 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	SettingsManager::newInstance();
 
 	if(f != NULL)
-		(*f)(p, tku[index], STRING(SETTINGS));
+		(*f)(p, tku[index], TSTRING(SETTINGS));
 
 	LogManager::newInstance();
 	TimerManager::newInstance();
@@ -99,17 +117,17 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	HubManager::getInstance()->load();
 
 	if(f != NULL)
-		(*f)(p, tku[index], STRING(HASH_DATABASE));
+		(*f)(p, tku[index], TSTRING(HASH_DATABASE));
 	HashManager::getInstance()->startup();
 	if(f != NULL)
-		(*f)(p, tku[index], STRING(SHARED_FILES));
+		(*f)(p, tku[index], TSTRING(SHARED_FILES));
 
 	if( !ShareManager::getInstance()->loadXmlList() ){
 		ShareManager::getInstance()->refresh(true, false, true);
 	}
 
 	if(f != NULL)
-		(*f)(p, tku[index], STRING(DOWNLOAD_QUEUE));
+		(*f)(p, tku[index], TSTRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
 
 }

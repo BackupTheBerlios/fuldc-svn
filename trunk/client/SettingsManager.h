@@ -54,7 +54,7 @@ public:
 		DEFAULT_AWAY_MESSAGE, TIME_STAMPS_FORMAT, ADLSEARCHFRAME_ORDER, ADLSEARCHFRAME_WIDTHS, 
 		FINISHED_UL_WIDTHS, FINISHED_UL_ORDER, CLIENT_ID,
 		SKIPLIST_DOWNLOAD, SKIPLIST_SHARE, POPUP_FONT, FREE_SLOTS_EXTENSIONS, 
-		DOWNLOAD_TO_PATHS, HUBFRAME_VISIBLE, MAINFRAME_VISIBLE, SEARCHFRAME_VISIBLE, 
+		HUBFRAME_VISIBLE, MAINFRAME_VISIBLE, SEARCHFRAME_VISIBLE, 
 		QUEUEFRAME_VISIBLE, 
 		STR_LAST };
 
@@ -180,6 +180,16 @@ public:
 	void load(const string& aFileName);
 	void save(const string& aFileName);
 
+	StringMap getDownloadPaths() const {
+		Lock l(cs);
+		return downloadPaths;
+	}
+
+	void setDownloadPaths( const StringMap& dl ) {
+		Lock l(cs);
+		downloadPaths = dl;
+	}
+
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
@@ -193,6 +203,9 @@ private:
 	int    intDefaults[INT_LAST - INT_FIRST];
 	int64_t int64Defaults[INT64_LAST - INT64_FIRST];
 	bool isSet[SETTINGS_LAST];
+
+	mutable CriticalSection cs;
+	StringMap downloadPaths;
 };
 
 // Shorthand accessor macros

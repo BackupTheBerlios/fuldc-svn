@@ -130,7 +130,7 @@ typedef StringMapIter TStringMapIter;
 
 #include "version.h"
 
-extern void startup(void (*f)(void*, const string&, const string&), void* p);
+extern void startup(void (*f)(void*, const tstring&, const tstring&), void* p);
 extern void shutdown();
 
 template<typename T, bool flag> struct ReferenceSelector {

@@ -114,8 +114,7 @@ public:
 		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
-		StringTokenizer<tstring> token(Text::toT(SETTING(DOWNLOAD_TO_PATHS)), _T("|"));
-		downloadPaths = token.getTokens();
+		downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
 	}
 
 	virtual ~SearchFrame() {
@@ -421,7 +420,7 @@ private:
 	TStringList search;
 	StringList targets;
 	StringList wholeTargets;
-	TStringList downloadPaths;
+	StringMap downloadPaths;
 	TStringList filterList;
 
 	PME filterRegExp;
