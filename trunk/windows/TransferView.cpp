@@ -63,6 +63,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlTransfers.SetBkColor(WinUtil::bgColor);
 	ctrlTransfers.SetTextBkColor(WinUtil::bgColor);
 	ctrlTransfers.SetTextColor(WinUtil::textColor);
+	ctrlTransfers.setOwnerDraw(true);
 
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
 	ctrlTransfers.setSortColumn(COLUMN_USER);
@@ -240,69 +241,68 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, cd->iSubItem, LVIR_BOUNDS, rc);
 				CRect rc2 = rc;
 				rc2.left += 6;
-				CMemDC memDC(cd->nmcd.hdc, &rc);
 				
 				// draw background
-				HPEN oldpen = memDC.SelectPen(CreatePen(PS_SOLID,0,bgPal[0]));
-				HBRUSH oldbr = memDC.SelectBrush(CreateSolidBrush(bgPal[1]));
-				memDC.Rectangle(rc.left, rc.top - 1, rc.right, rc.bottom);			
+				HGDIOBJ oldpen = ::SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,bgPal[0]));
+				HGDIOBJ oldbr = ::SelectObject(cd->nmcd.hdc, CreateSolidBrush(bgPal[1]));
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top - 1, rc.right, rc.bottom);			
 				rc.DeflateRect(1, 0, 1, 1);
 
-				int left = rc.left;
-				int w = rc.Width();
+				LONG left = rc.left;
+				int64_t w = rc.Width();
 				// draw start part
 				if(ii->size == 0)
 					ii->size = 1;
 				rc.right = left + (int) (w * ii->start / ii->size);
-				DeleteObject(memDC.SelectBrush(CreateSolidBrush(barPal[0])));
-				DeleteObject(memDC.SelectPen(CreatePen(PS_SOLID,0,barPal[0])));
+				DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[0])));
+				DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,barPal[0])));
 				
-				memDC.Rectangle(rc.left, rc.top, rc.right, rc.bottom);
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
 				
 				// Draw actual part
 				rc.left = rc.right;
 				rc.right = left + (int) (w * ii->actual / ii->size);
-				DeleteObject(memDC.SelectBrush(CreateSolidBrush(barPal[1])));
+				DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[1])));
 
-				memDC.Rectangle(rc.left, rc.top, rc.right, rc.bottom);
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
 
 				// And the effective part...
 				if(ii->pos > ii->actual) {
 					rc.left = rc.right - 1;
 					rc.right = left + (int) (w * ii->pos / ii->size);
-					DeleteObject(memDC.SelectBrush(CreateSolidBrush(barPal[2])));
+					DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[2])));
 
-					memDC.Rectangle(rc.left, rc.top, rc.right, rc.bottom);
+					::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
 
 				}
 				rc.left = left;
 				// draw progressbar highlight
 				if(rc.Width()>2) {
-					DeleteObject(memDC.SelectPen(CreatePen(PS_SOLID,1,barPal[2])));
+					DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,1,barPal[2])));
 
 					rc.top += 2;
-					memDC.MoveTo(rc.left+1,rc.top,(LPPOINT)NULL);
-					memDC.LineTo(rc.right-2,rc.top);
+					::MoveToEx(cd->nmcd.hdc,rc.left+1,rc.top,(LPPOINT)NULL);
+					::LineTo(cd->nmcd.hdc,rc.right-2,rc.top);
 				};
 				
 				// draw status text
-				DeleteObject(memDC.SelectPen(oldpen));
-				DeleteObject(memDC.SelectBrush(oldbr));
+				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
+				DeleteObject(::SelectObject(cd->nmcd.hdc, oldbr));
 
-				int right = rc2.right;
+				LONG right = rc2.right;
 				left = rc2.left;
 				rc2.right = rc.right;
-				int top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
-				memDC.SetBkMode(TRANSPARENT);
-				memDC.SetTextColor(RGB(255, 255, 255));
-				memDC.ExtTextOut(left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
-				
+				LONG top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
+				SetTextColor(cd->nmcd.hdc, RGB(255, 255, 255));
+				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
+				//::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
+
 				rc2.left = rc2.right;
 				rc2.right = right;
 
-				memDC.SetTextColor(WinUtil::textColor);
-				memDC.ExtTextOut(left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
-				
+				SetTextColor(cd->nmcd.hdc, WinUtil::textColor);
+				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
+
 				return CDRF_SKIPDEFAULT;
 			}
 		}
@@ -310,10 +310,6 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 	default:
 		return CDRF_DODEFAULT;
 	}
-}
-
-LRESULT TransferView::onEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	return TRUE;
 }
 
 LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
