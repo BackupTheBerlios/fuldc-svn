@@ -98,6 +98,7 @@ public:
 		MESSAGE_HANDLER(SERVER_SOCKET_MESSAGE, onServerSocket)
 		MESSAGE_HANDLER(WM_APPCOMMAND, onAppCommand)
 		MESSAGE_HANDLER(WM_USER, onCheckButton)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, onRefreshMenu)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, onStaticFrame)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -142,7 +143,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_DIR_LIST, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
-		COMMAND_RANGE_HANDLER(IDC_REFRESH_MENU, IDC_REFRESH_MENU + ShareManager::getInstance()->getNrDirectories(), onRefreshMenu)
 		COMMAND_RANGE_HANDLER(IDC_SWITCH_WINDOW_1, IDC_SWITCH_WINDOW_0, onSwitchWindow)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, onDropDown)
@@ -182,7 +182,7 @@ public:
 	LRESULT onCloseDisconnected(WORD , WORD , HWND , BOOL& );
 	LRESULT onStaticFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDropDown(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
-	LRESULT onRefreshMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRefreshMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onAppCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	static DWORD WINAPI stopper(void* p);
@@ -307,7 +307,7 @@ private:
 	string versionInfo;
 	CImageList images;
 	CImageList largeImages, largeImagesHot;
-	
+		
 	UINT trayMessage;
 	/** Is the tray icon visible? */
 	bool trayIcon;

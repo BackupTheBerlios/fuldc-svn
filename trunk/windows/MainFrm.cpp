@@ -1014,14 +1014,22 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	LPNMTOOLBAR tb = (LPNMTOOLBAR)pnmh;
 	CMenu dropMenu;
+	dropMenu.CreatePopupMenu();
+
+	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
+	MENUINFO inf;
+	inf.cbSize = sizeof(MENUINFO);
+	inf.fMask = MIM_STYLE;
+	inf.dwStyle = MNS_NOTIFYBYPOS;
+	dropMenu.SetMenuInfo(&inf);
 
 	StringList l = ShareManager::getInstance()->getDirectories();
-	dropMenu.CreatePopupMenu();
+	
 	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, CSTRING(SETTINGS_ST_REFRESH_INCOMING));
 	dropMenu.AppendMenu(MF_SEPARATOR, 0, "");
 	int j = 1;
 	for(StringIter i = l.begin(); i != l.end(); ++i, ++j)
-		dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU+j, (*i).c_str());
+		dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, (*i).c_str());
 	
 	POINT pt;
 	pt.x = tb->rcButton.right;
@@ -1032,14 +1040,14 @@ LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	return TBDDRET_DEFAULT;
 }
 
-LRESULT MainFrame::onRefreshMenu(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT MainFrame::onRefreshMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	try
 	{
 		ShareManager::getInstance()->setDirty();
-		if(wID == IDC_REFRESH_MENU){
+		if(wParam == 0){
 			ShareManager::getInstance()->refresh(false, true, false, true, false, false);
-		} else {
-			int id = wID - IDC_REFRESH_MENU -1;
+		} else if(wParam > 1){
+			int id = wParam - 2;
 			StringList l = ShareManager::getInstance()->getDirectories();
 			ShareManager::getInstance()->refresh(l[id]);
 		}

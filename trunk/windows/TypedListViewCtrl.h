@@ -53,7 +53,8 @@ public:
 	typedef ListViewArrows<thisClass> arrowBase;
 
 	BEGIN_MSG_MAP(thisClass)
-		COMMAND_RANGE_HANDLER(IDC_HEADER_MENU, IDC_HEADER_MENU + columnList.size(), onHeaderMenu)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, onHeaderMenu)
+		//COMMAND_RANGE_HANDLER(IDC_HEADER_MENU, IDC_HEADER_MENU + columnList.size(), onHeaderMenu)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -270,19 +271,24 @@ public:
 	void showMenu(POINT &pt){
 		headerMenu.DestroyMenu();
 		headerMenu.CreatePopupMenu();
+		MENUINFO inf;
+		inf.cbSize = sizeof(MENUINFO);
+		inf.fMask = MIM_STYLE;
+		inf.dwStyle = MNS_NOTIFYBYPOS;
+		headerMenu.SetMenuInfo(&inf);
+
 		int j = 0;
 		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++j) {
-			headerMenu.AppendMenu(MF_STRING, IDC_HEADER_MENU + j, (*i)->name.c_str());
+			headerMenu.AppendMenu(MF_STRING, IDC_HEADER_MENU, (*i)->name.c_str());
 			if((*i)->visible)
 				headerMenu.CheckMenuItem(j, MF_BYPOSITION | MF_CHECKED);
 		}
 		headerMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	}
 
-	LRESULT onHeaderMenu(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int pos = wID - IDC_HEADER_MENU;
+	LRESULT onHeaderMenu(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ColumnIter i = columnList.begin();
-		for(int j = 0; j < pos; ++j, ++i );
+		for(int j = 0; j < wParam; ++j, ++i );
 
 		ColumnInfo * ci = (*i);
 		ci->visible = ! ci->visible;
