@@ -12,7 +12,7 @@ class FulPage2 : public CPropertyPage<IDD_FULPAGE2>, public PropPage
 {
 public:
 	FulPage2(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_FUL_MORE));
+		SetTitle( CTSTRING(SETTINGS_FUL_MORE) );
 	};
 	~FulPage2() {
 		ctrlDownload.Detach();

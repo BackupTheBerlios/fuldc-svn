@@ -32,7 +32,7 @@ class FulAdvancedPage : public CPropertyPage<IDD_FULADVANCEDPAGE>, public PropPa
 {
 public:
 	FulAdvancedPage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CTSTRING(SETTINGS_FUL_ADVANCED));
+		SetTitle( CTSTRING(SETTINGS_FUL_ADVANCED) );
 	};
 
 	~FulAdvancedPage() { 

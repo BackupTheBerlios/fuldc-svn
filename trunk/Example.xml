@@ -493,6 +493,7 @@
 		<String Name="SettingsFulHighlight">fulDC\Highlight</String>
 		<String Name="SettingsFulMore">fulDC\More</String>
 		<String Name="SettingsFulAppearance">fulDC\Appearance</String>
+		<String Name="SettingsFulTabs">fulDC\Appearance\Tabs</String>
 		<String Name="SettingsAutoUpdateIncoming">Automatically refresh incoming</String>
 		<String Name="SettingsSbSkiplistDownload">Skiplist Downloads</String>
 		<String Name="SettingsStSkiplistDownload">Skiplist (separate files with |):</String>
@@ -605,7 +606,7 @@
 		<String Name="SystemUptime">System uptime:</String>
 		<String Name="NameExists">Name already exists</String>
 		<String Name="DisplayName">Name to be displayed in menus</String>
-		<String Name="BlendTabs">Blend tabs instead of using bold font when dirty(see appearance page)</String>
+		<String Name="BlendTabs">Blend tabs instead of using bold font when dirty</String>
 		<String Name="FileLeft">file left</String>
 		<String Name="ChangedPriority">Changed priority for</String>
 		<String Name="Paste">Paste</String>

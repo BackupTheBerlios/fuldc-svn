@@ -11,7 +11,7 @@ class FulPage : public CPropertyPage<IDD_FULPAGE>, public PropPage
 {
 public:
 	FulPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_FUL));
+		SetTitle( CTSTRING(SETTINGS_FUL) );
 	};
 	~FulPage() {};
 

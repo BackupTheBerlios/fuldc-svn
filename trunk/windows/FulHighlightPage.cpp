@@ -9,16 +9,10 @@
 
 #include "../client/pme.h"
 
-#include "HighlightPage.h"
+#include "FulHighlightPage.h"
 #include "WinUtil.h"
 
-#ifdef _DEBUG
-//#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-PropPage::TextItem HighlightPage::texts[] = {
+PropPage::TextItem FulHighlightPage::texts[] = {
 	{ IDC_SB_HIGHLIGHT,  ResourceManager::SETTINGS_SB_HIGHLIGHT		},
 	{ IDC_SB_SETTINGS,   ResourceManager::SETTINGS_SB_SETTINGS		},
 	{ IDC_ST_MATCH_TYPE, ResourceManager::SETTINGS_ST_MATCH_TYPE	},
@@ -45,7 +39,7 @@ PropPage::TextItem HighlightPage::texts[] = {
 	{ 0,				 ResourceManager::SETTINGS_AUTO_AWAY		}
 };
 
-LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	PropPage::translate((HWND)(*this), texts);
 
 	CRect rc;
@@ -81,7 +75,7 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return TRUE;
 }
 
-void HighlightPage::write(){
+void FulHighlightPage::write(){
 	int i = 0;
 	int end = ctrlStrings.GetItemCount();
 	ColorSettings *cs;
@@ -95,7 +89,7 @@ void HighlightPage::write(){
 	HighlightManager::getInstance()->wUnlock();
 }
 
-LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+LRESULT FulHighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	ColorSettings *cs = new ColorSettings();
 	getValues(cs);
 
@@ -119,7 +113,7 @@ LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return TRUE;
 }
 
-LRESULT HighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT FulHighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int sel = ctrlStrings.GetSelectedIndex();
 	if(sel == -1)
 		return true;
@@ -140,7 +134,7 @@ LRESULT HighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return true;
 }
 
-LRESULT HighlightPage::onMove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT FulHighlightPage::onMove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int sel = ctrlStrings.GetSelectedIndex();
 	if(wID == IDC_MOVEUP && sel > 0){
 		ctrlStrings.moveItem(sel, sel-1);
@@ -157,7 +151,7 @@ LRESULT HighlightPage::onMove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	return 0;
 }
 
-LRESULT HighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+LRESULT FulHighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	if(ctrlStrings.GetSelectedCount() == 1) {
 		int sel = ctrlStrings.GetSelectedIndex();
 		ColorSettings* cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
@@ -171,7 +165,7 @@ LRESULT HighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return TRUE;
 }
 
-LRESULT HighlightPage::onFgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+LRESULT FulHighlightPage::onFgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	CColorDialog dlg(fgColor, CC_FULLOPEN);
 	if(dlg.DoModal() == IDOK) {
 		fgColor = dlg.GetColor();
@@ -179,7 +173,7 @@ LRESULT HighlightPage::onFgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return TRUE;
 }
 
-LRESULT HighlightPage::onBgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+LRESULT FulHighlightPage::onBgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	CColorDialog dlg(bgColor, CC_FULLOPEN);
 	if(dlg.DoModal() == IDOK) {
 		bgColor = dlg.GetColor();
@@ -187,7 +181,7 @@ LRESULT HighlightPage::onBgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return TRUE;
 }
 
-LRESULT HighlightPage::onSelSound(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT FulHighlightPage::onSelSound(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CFileDialog dlg(TRUE);
 	dlg.m_ofn.lpstrFilter = _T("Wave Files\0*.wav\0\0");
 	if(dlg.DoModal() == IDOK){
@@ -197,7 +191,7 @@ LRESULT HighlightPage::onSelSound(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return TRUE;
 }
 
-void HighlightPage::clear() {
+void FulHighlightPage::clear() {
 
 	SetDlgItemText(IDC_STRING, _T(""));
 
@@ -227,11 +221,11 @@ void HighlightPage::clear() {
 	onClickedBox(0, IDC_SELECT_SOUND, NULL, t);
 }
 
-HighlightPage::~HighlightPage() {
+FulHighlightPage::~FulHighlightPage() {
 	ctrlStrings.Detach();
 	ctrlMatchType.Detach();
 }
-void HighlightPage::getValues(ColorSettings* cs){
+void FulHighlightPage::getValues(ColorSettings* cs){
 	TCHAR buf[1000];
 	GetDlgItemText(IDC_STRING, buf, 1000);
 	cs->setMatch(buf);
@@ -263,7 +257,7 @@ void HighlightPage::getValues(ColorSettings* cs){
 }
 
 
-LRESULT HighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
+LRESULT FulHighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 	if(ctrlStrings.GetSelectedCount() != 1) {
 		return TRUE;
 	}
@@ -307,7 +301,7 @@ LRESULT HighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*b
 	return TRUE;
 }
 
-LRESULT HighlightPage::onClickedBox(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+LRESULT FulHighlightPage::onClickedBox(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	int button = 0;
 	switch(wID) {
 	case IDC_SOUND:		   button = IDC_SELECT_SOUND; break;

@@ -572,6 +572,34 @@ BEGIN
     LTEXT           "Current file...",IDC_CURRENT_FILE,7,19,416,8
 END
 
+IDD_FULTABSPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_RTLREADING
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COLOR_COMBO,157,187,98,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,204,57,11
+    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,177,116,40
+    EDITTEXT        IDC_TAB_SIZE,15,148,84,14,ES_AUTOHSCROLL
+    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,7,
+                    134,116,40
+    EDITTEXT        IDC_TAB_DIRTY_BLEND,15,190,84,14,ES_AUTOHSCROLL
+    GROUPBOX        "Amount of blending when dirty",IDC_SB_TAB_DIRTY_BLEND,8,
+                    177,116,40
+    LTEXT           "%",IDC_STATIC,102,193,8,8
+    CONTROL         "",IDC_CH_STATUS_HUB_BOLD,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,9,14,259,10
+    CONTROL         "",IDC_CH_STATUS_PM_BOLD,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,9,25,259,10
+    CONTROL         "",IDC_CH_ICONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,
+                    36,259,10
+    CONTROL         "",IDC_CH_BLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,
+                    47,259,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -753,6 +781,17 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 106
     END
+
+    IDD_FULTABSPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 266
+        VERTGUIDE, 14
+        VERTGUIDE, 124
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 216
+        HORZGUIDE, 174
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -928,28 +967,16 @@ BEGIN
                     40
     LTEXT           "Max size ~2.1 billion (2^31)",IDC_ST_CHATBUFFERSIZE,21,
                     121,92,8
-    COMBOBOX        IDC_COLOR_COMBO,157,26,98,30,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,43,57,11
-    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,16,109,40
-    EDITTEXT        IDC_TAB_SIZE,21,30,84,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_DISPLAYTIME,21,184,40,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_MESSAGE_LENGTH,106,184,40,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Font",IDC_BTN_FONT,202,169,50,14
     PUSHBUTTON      "TextColor",IDC_BTN_TEXTCOLOR,202,187,50,14
-    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,13,
-                    16,116,40
     GROUPBOX        "Popup",IDC_SB_POPUP,7,161,252,45
     LTEXT           "Popup time in seconds",IDC_ST_DISPLAYTIME,21,172,77,8
     LTEXT           "Max message length",IDC_ST_MESSAGE_LENGTH,106,172,72,8
     GROUPBOX        "Time stamps",IDC_SB_TIME_STAMPS,149,115,110,43
     EDITTEXT        IDC_EDIT_TIME_STAMPS,157,126,95,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Button1",IDC_BTN_TIME_STAMP_HELP,157,143,57,11
-    EDITTEXT        IDC_TAB_DIRTY_BLEND,21,72,84,14,ES_AUTOHSCROLL
-    GROUPBOX        "Static",IDC_STATIC,7,7,259,101
-    GROUPBOX        "Amount of blending when dirty",IDC_SB_TAB_DIRTY_BLEND,
-                    14,59,115,40
-    LTEXT           "%",IDC_STATIC,108,75,8,8
 END
 
 

@@ -9,15 +9,15 @@
 #include "ExListViewCtrl.h"
 #include "../client/SettingsManager.h"
 
-class HighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
+class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 {
 	public:
-	HighlightPage(SettingsManager *s) : PropPage(s), bgColor(RGB(255,255,255)), fgColor(RGB(0, 0, 0)) {
-		SetTitle(CTSTRING(SETTINGS_FUL_HIGHLIGHT));
+	FulHighlightPage(SettingsManager *s) : PropPage(s), bgColor(RGB(255,255,255)), fgColor(RGB(0, 0, 0)) {
+		SetTitle( CTSTRING(SETTINGS_FUL_HIGHLIGHT) );
 	};
-	virtual ~HighlightPage();
+	virtual ~FulHighlightPage();
 
-	BEGIN_MSG_MAP(HighlightPage)
+	BEGIN_MSG_MAP(FulHighlightPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_DELETE, onDelete)

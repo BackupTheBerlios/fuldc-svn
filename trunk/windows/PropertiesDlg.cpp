@@ -29,11 +29,12 @@
 #include "AdvancedPage.h"
 #include "Advanced2Page.h"
 #include "UCPage.h"
-#include "HighlightPage.h"
+#include "FulHighlightPage.h"
 #include "FulPage.h"
 #include "FulPage2.h"
 #include "FulAdvancedPage.h"
 #include "FulAppearance.h"
+#include "FulTabsPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
@@ -47,8 +48,9 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[7]  = new FulPage(s);
 	pages[8]  = new FulPage2(s);
 	pages[9]  = new FulAdvancedPage(s);
-	pages[10] = new HighlightPage(s);
+	pages[10] = new FulHighlightPage(s);
 	pages[11] = new FulAppearancePage(s);
+	pages[12] = new FulTabsPage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());

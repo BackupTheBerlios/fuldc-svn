@@ -11,20 +11,18 @@ class FulAppearancePage : public CPropertyPage<IDD_FULAPPEARANCEPAGE>, public Pr
 {
 public:
 	FulAppearancePage(SettingsManager *s) : PropPage(s) {	
-		SetTitle(CTSTRING(SETTINGS_FUL_APPEARANCE));
+		SetTitle( CTSTRING(SETTINGS_FUL_APPEARANCE) );
 	};
 	~FulAppearancePage() {};
 
 	BEGIN_MSG_MAP(FulAppearancePage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
-		COMMAND_ID_HANDLER(IDC_COLOR_BUTTON, onColorButton)
 		COMMAND_ID_HANDLER(IDC_FONT, onFont)
 		COMMAND_ID_HANDLER(IDC_TEXTCOLOR, onTextColor)
 		COMMAND_ID_HANDLER(IDC_BTN_TIME_STAMP_HELP, onTimeStampHelp)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
-	LRESULT onColorButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -36,7 +34,6 @@ public:
 protected:
 	static Item items[];
 	static TextItem texts[];
-	CComboBox colorList;
 };
 
 #endif //FULAPPEARANCEPAGE_H
