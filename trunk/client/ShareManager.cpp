@@ -511,17 +511,8 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	const Directory::File& f = *i;
 
-	//HashFileIter j = tthIndex.find(f.getTTH());
-	//if(j == tthIndex.end()) {
-		dir->size+=f.getSize();
-	//} else {
-	//	if(!SETTING(LIST_DUPES)) {
-	//		LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
-	//		dir->files.erase(i);
-	//		return;
-	//	}
-	//}
-
+	dir->size+=f.getSize();
+	
 	dir->addSearchType(getMask(f.getName()));
 	dir->addType(getType(f.getName()));
 
@@ -708,6 +699,7 @@ void ShareManager::generateNmdcList() {
 			}
 
 			string newName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".DcLst";
+			tmp2.clear();
 			CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 			File(newName, File::WRITE, File::CREATE | File::TRUNCATE).write(tmp2);
 
@@ -1475,7 +1467,8 @@ bool ShareManager::isIncoming(const string& aDir) {
 
 	StringBoolMapIter i = incomingMap.find(tmp);
 
-	dcassert(i != incomingMap.end());
+	if(i == incomingMap.end())
+		return false;
 	
 	return i->second;
 }

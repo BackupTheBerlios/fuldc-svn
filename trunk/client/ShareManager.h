@@ -88,6 +88,7 @@ public:
 
 	bool loadXmlList();
 	void generateXmlList();
+	void generateNmdcList();
 
 	bool isIncoming(const string& aDir);
 	void setIncoming(const string& aDir, bool incoming = true);
@@ -265,8 +266,7 @@ private:
 	Directory* buildTree(const string& aName, Directory* aParent);
 	void addTree(const string& aName, Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
-	void generateNmdcList();
-	
+		
 	void removeTTH(TTHValue* tth, const Directory::File::Iter&);
 
 	Directory* getDirectory(const string& fname);

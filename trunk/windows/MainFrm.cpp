@@ -959,6 +959,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	
 	if(wID == IDC_OPEN_MY_LIST){
 		ShareManager::getInstance()->generateXmlList();
+		ShareManager::getInstance()->generateNmdcList();
 		file = Text::toT(ShareManager::getInstance()->getBZXmlFile());
 		DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser("My List"));
 				
