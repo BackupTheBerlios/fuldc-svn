@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ADVANCED2PAGE_H
-#define ADVANCED2PAGE_H
+#ifndef LOGPAGE_H
+#define LOGPAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -27,17 +27,17 @@
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
-class Advanced2Page : public CPropertyPage<IDD_ADVANCED2PAGE>, public PropPage
+class LogPage : public CPropertyPage<IDD_LOGPAGE>, public PropPage
 {
 public:
-	Advanced2Page(SettingsManager *s) : PropPage(s) { 
+	LogPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle(CTSTRING(SETTINGS_LOGS));
 		 m_psp.dwFlags |= PSP_HASHELP;
 	};
 
-	virtual ~Advanced2Page() { };
+	virtual ~LogPage() { };
 
-	BEGIN_MSG_MAP(Advanced2Page)
+	BEGIN_MSG_MAP(LogPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_BROWSE_LOG, onClickedBrowseDir)
@@ -49,7 +49,7 @@ public:
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -61,19 +61,19 @@ protected:
 	static ListItem listItems[];
 
 	ExListViewCtrl logOptions;
-
+	
 	int oldSelection;
-
-	//store all log formats here so we can discard them
+	
+	//store all log options here so we can discard them
 	//if the user cancels the dialog.
-	//even numbers are file names and odd numbers are log format
-	TStringList options;
+	//.first is filename and .second is format
+	TStringPairList options;
 };
 
-#endif //ADVANCED2PAGE_H
+#endif //LOGPAGE_H
 
 /**
  * @file
- * $Id: Advanced2Page.h,v 1.1 2003/12/15 16:51:56 trem Exp $
+ * $Id: LogPage.h,v 1.1 2004/12/29 19:52:36 arnetheduck Exp $
  */
 

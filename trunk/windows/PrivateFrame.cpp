@@ -609,28 +609,27 @@ void PrivateFrame::readLog() {
 	string path = Util::validateFileName(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 
 	try {
-        File f(path, File::READ, File::OPEN);
+		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
+			File f(path, File::READ, File::OPEN);
 		
-		int64_t size = f.getSize();
+			int64_t size = f.getSize();
 
-		if(size > 32*1024) {
-			f.setPos(size - 32*1024);
+			if(size > 32*1024) {
+				f.setPos(size - 32*1024);
+			}
+
+			StringList lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
+
+			int linesCount = lines.size();
+
+			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG) + 1) : 0;
+
+			for(; i < (linesCount - 1); ++i){
+				addLine(_T("- ") + Text::acpToWide(lines[i]));
+			}
+
+			f.close();
 		}
-
-		StringList lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
-
-		int linesCount = lines.size();
-
-		int i = linesCount > 10 ? linesCount - 10 : 0;
-
-		for(; i < linesCount; ++i){
-			addLine(Text::acpToWide(lines[i]));
-		}
-        
-		if(linesCount > 0)
-			addLine(TSTRING(END_LOG));
-
-		f.close();
 	} catch(FileException & /*e*/){
 	}
 }

@@ -324,6 +324,9 @@ public:
 	}
 
 	static string toAdcFile(const string& file) {
+		if(file == "files.xml.bz2" || file == "MyList.DcLst")
+			return file;
+
 		string ret;
 		ret.reserve(file.length() + 1);
 		ret += '/';

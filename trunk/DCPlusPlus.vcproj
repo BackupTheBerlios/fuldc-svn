@@ -259,9 +259,6 @@
 				RelativePath="windows\ADLSProperties.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\Advanced2Page.cpp">
-			</File>
-			<File
 				RelativePath=".\windows\Advanced3Page.cpp">
 			</File>
 			<File
@@ -329,6 +326,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\HubFrame.cpp">
+			</File>
+			<File
+				RelativePath=".\windows\LogPage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\main.cpp">
@@ -434,9 +434,6 @@
 				RelativePath="windows\ADLSProperties.h">
 			</File>
 			<File
-				RelativePath=".\windows\Advanced2Page.h">
-			</File>
-			<File
 				RelativePath=".\windows\Advanced3Page.h">
 			</File>
 			<File
@@ -516,6 +513,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\ListViewArrows.h">
+			</File>
+			<File
+				RelativePath=".\windows\LogPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\MainFrm.h">

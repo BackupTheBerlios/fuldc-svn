@@ -92,7 +92,7 @@
 #define IDR_PUBLICHUBS                  215
 #define IDR_FAVORITES                   217
 #define IDD_FAVORITEHUB                 223
-#define IDD_ADVANCED2PAGE               224
+#define IDD_LOGPAGE                     224
 #define IDD_USER_COMMAND                230
 #define IDR_ADLSEARCH                   233
 #define IDD_ADLS_PROPERTIES             234
@@ -539,6 +539,7 @@
 #define IDC_PRIORITY_HIGHEST            7005
 #define IDC_DOWNLOAD_WHOLE_TARGET       7500
 #define IDC_REMOVE_SOURCES              8000
+#define IDC_REMOVE_SOURCE_ALL           8500
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

@@ -39,66 +39,17 @@ public:
 class LogManager : public Singleton<LogManager>, public Speaker<LogManagerListener>
 {
 public:
-	enum LogArea { UPLOAD, DOWNLOAD, SYSTEM, PM, CHAT, STATUS };
+	enum LogArea { CHAT, PM, DOWNLOAD, UPLOAD, SYSTEM, STATUS, LAST };
+	enum {FILE, FORMAT};
 
 	void log(LogArea area, StringMap& params) throw() {
 		string path = SETTING(LOG_DIRECTORY);
 		string msg;
-		switch(area){
-			case UPLOAD:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_UPLOAD), params), time(NULL));
-				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params), time(NULL));
-				break;
-			case DOWNLOAD:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_DOWNLOAD), params), time(NULL));
-				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params), time(NULL));
-				break;
-			case PM:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params), time(NULL));
-				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params), time(NULL));
-				break;
-			case CHAT:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), time(NULL));
-				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params), time(NULL));
-				break;
-			case STATUS:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_STATUS), params), time(NULL));
-				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_STATUS), params), time(NULL));
-			case SYSTEM:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_SYSTEM), params), time(NULL));
-				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_SYSTEM), params), time(NULL));
-		}
+	
+		path += Util::formatParams(getSetting(area, FILE), params);
+		msg = Util::formatParams(getSetting(area, FORMAT), params);
 
 		log(path, msg);
-	}
-
-	string getLogFilename(LogArea area, StringMap& params) {
-		string path = SETTING(LOG_DIRECTORY);
-		switch(area){
-			case UPLOAD:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_UPLOAD), params), time(NULL));
-				break;
-			case DOWNLOAD:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_DOWNLOAD), params), time(NULL));
-				break;
-			case PM:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params), time(NULL));
-				break;
-			case CHAT:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), time(NULL));
-				break;
-			case STATUS:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_STATUS), params), time(NULL));
-				break;	
-			case SYSTEM:
-				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_SYSTEM), params), time(NULL));
-				break;
-			default:
-				path = Util::emptyString;
-				break;
-		}
-
-		return path;
 	}
 
 	void message(const string& msg) {
@@ -108,6 +59,20 @@ public:
 			log(LogManager::SYSTEM, params);
 		}
 		fire(LogManagerListener::Message(), msg);
+	}
+
+	const string& getSetting(int area, int sel) {
+		return SettingsManager::getInstance()->get(static_cast<SettingsManager::StrSetting>(logOptions[area][sel]), true);
+	}
+
+	void saveSetting(int area, int sel, const string& setting) {
+		SettingsManager::getInstance()->set(static_cast<SettingsManager::StrSetting>(logOptions[area][sel]), setting);
+	}
+
+	string getLogFilename(int area, StringMap& params){
+		string path = SETTING(LOG_DIRECTORY);
+		path += Util::formatParams(getSetting(area, FILE), params);
+		return path;
 	}
 
 private:
@@ -124,21 +89,30 @@ private:
 		}
 	}
 
-	void logDateTime(const string& area, const string& msg) throw() {
-		log(area, Util::formatTime("%Y-%m-%d %H:%M: ", TimerManager::getInstance()->getTime()) + msg);
-	}
-
-private:
 	friend class Singleton<LogManager>;
 	CriticalSection cs;
-	
-	LogManager() { };
+
+	int logOptions[LAST][2];
+
+	LogManager() {
+		logOptions[UPLOAD][FILE]		= SettingsManager::LOG_FILE_UPLOAD;
+		logOptions[UPLOAD][FORMAT]		= SettingsManager::LOG_FORMAT_POST_UPLOAD;
+        	logOptions[DOWNLOAD][FILE]		= SettingsManager::LOG_FILE_DOWNLOAD;
+		logOptions[DOWNLOAD][FORMAT]		= SettingsManager::LOG_FORMAT_POST_DOWNLOAD;
+		logOptions[CHAT][FILE]			= SettingsManager::LOG_FILE_MAIN_CHAT;
+		logOptions[CHAT][FORMAT]		= SettingsManager::LOG_FORMAT_MAIN_CHAT;
+		logOptions[PM][FILE]			= SettingsManager::LOG_FILE_PRIVATE_CHAT;
+		logOptions[PM][FORMAT]			= SettingsManager::LOG_FORMAT_PRIVATE_CHAT;
+		logOptions[SYSTEM][FILE]		= SettingsManager::LOG_FILE_SYSTEM;
+		logOptions[SYSTEM][FORMAT]		= SettingsManager::LOG_FORMAT_SYSTEM;
+		logOptions[STATUS][FILE]		= SettingsManager::LOG_FILE_STATUS;
+		logOptions[STATUS][FORMAT]		= SettingsManager::LOG_FORMAT_STATUS;
+	};
 	virtual ~LogManager() { };
-	
+
 };
 
 #define LOG(area, msg) LogManager::getInstance()->log(area, msg)
-#define LOGDT(area, msg) LogManager::getInstance()->logDateTime(area, msg)
 
 #endif // !defined(AFX_LOGMANAGER_H__73C7E0F5_5C7D_4A2A_827B_53267D0EF4C5__INCLUDED_)
 

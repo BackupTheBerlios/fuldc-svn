@@ -294,7 +294,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
 
-		if(u->getTTH()) {
+		if(u->getTTH() != NULL) {
 			params["tth"] = u->getTTH()->toBase32();
 		}
 		params["ip"] = aSource->getRemoteIp();

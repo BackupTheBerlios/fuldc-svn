@@ -27,7 +27,7 @@
 #include "UploadPage.h"
 #include "AppearancePage.h"
 #include "AdvancedPage.h"
-#include "Advanced2Page.h"
+#include "LogPage.h"
 #include "UCPage.h"
 #include "Appearance2Page.h"
 #include "Advanced3Page.h"
@@ -48,7 +48,7 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[3]  = new UploadPage(s);
 	pages[4]  = new AppearancePage(s);
 	pages[5]  = new Appearance2Page(s);
-	pages[6]  = new Advanced2Page(s);
+	pages[6]  = new LogPage(s);
 	pages[7]  = new AdvancedPage(s);
 	pages[8]  = new Advanced3Page(s);
 	pages[9]  = new UCPage(s);
