@@ -28,8 +28,8 @@
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
+				WarningLevel="0"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

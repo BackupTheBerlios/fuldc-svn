@@ -14,7 +14,9 @@
 // Added GetLength
 // Added Init
 // Added lazy assignment operator
-// Modified sub and UpdateReplacementString to not use iostreams.
+// Modified sub to not use iostreams.
+// Added wstring versions of most functions just to avoid having to do the conversion
+// everywhere they're used.
 // Trem 2004
 
 
@@ -90,11 +92,11 @@ public:
 
 	/// substitutes out whatever matches the regex for the second paramter
 	std::string             sub ( const std::string & s, 
-								  const std::string & r,
-								  int dodollarsubstitution = 0 );
+								  const std::string & r
+								);
 	std::wstring			sub ( const std::wstring & s,
-								  const std::wstring & r, 
-								  int dodollarsubstitution = 0 );
+								  const std::wstring & r
+								);
 
 	/// study the regular expression to make it faster
 	void                    study();
@@ -163,10 +165,6 @@ protected:
 	/// takes perl-style character modifiers and determines the corresponding PCRE flags
 	unsigned int DeterminePcreOptions ( const std::string & opts = "" );
 	
-	/// deals with $1-type constructs in the replacement string in a substitution
-	std::string UpdateReplacementString ( const std::string & r );
-	
-
 	/// flag as to whether this regex is valid (compiled without error)
 	int                     nValid;
 

@@ -59,7 +59,7 @@ public:
 		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), utf8(aUtf8), ref(1) { }
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
-		int64_t aSize, const string& aFile, const string& aHubName, 
+		int64_t aSize, const string& aFile, 
 		const string& aHubIpPort, TTHValue* aTTH, bool aUtf8) :
 	file(aFile), hubName(aUser->getClientName()), hubIpPort(aHubIpPort), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 

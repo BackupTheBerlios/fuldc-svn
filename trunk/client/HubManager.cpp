@@ -107,9 +107,9 @@ void HubManager::onHttpFinished() throw() {
 					continue;
 
 				StringList::const_iterator k = tok.getTokens().begin();
-				const string& name = *k++;
-				const string& server = *k++;
-				const string& desc = *k++;
+				const string& name = Text::acpToUtf8( *k++ );
+				const string& server = Text::acpToUtf8( *k++ );
+				const string& desc = Text::acpToUtf8( *k++ );
 				const string& usersOnline = *k++;
 				publicHubs.push_back(HubEntry(name, server, desc, usersOnline));
 			}

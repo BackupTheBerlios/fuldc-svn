@@ -588,7 +588,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 }
 
 LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	u_int newId = wID - IDC_DOWNLOAD_TARGET;
+	size_t newId = wID - IDC_DOWNLOAD_TARGET;
 	dcassert(newId >= 0);
 	
 	if(ctrlList.GetSelectedCount() == 1) {
@@ -599,7 +599,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 			try {
 				if(newId < downloadPaths.size()){
 					StringMapIter j = downloadPaths.begin();
-					for(int i = 0; i < newId; ++i, ++j);
+					for(size_t i = 0; i < newId; ++i, ++j);
 					dl->download(ii->file, j->second + ii->file->getName());
 				} else if( (newId - downloadPaths.size()) < WinUtil::lastDirs.size() )
 					dl->download(ii->file, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]) + ii->file->getName());
@@ -612,7 +612,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		} else {
 			if(newId < downloadPaths.size()) {
 				StringMapIter j = downloadPaths.begin();
-				for(int i = 0; i < newId; ++i, ++j);
+				for(size_t i = 0; i < newId; ++i, ++j);
 				downloadList( Text::toT(j->second) );
 			} else
 				downloadList(WinUtil::lastDirs[newId - downloadPaths.size()]);
@@ -620,7 +620,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 	} else if(ctrlList.GetSelectedCount() > 1) {
 		if(newId < downloadPaths.size()) {
 			StringMapIter j = downloadPaths.begin();
-			for(int i = 0; i < newId; ++i, ++j);
+			for(size_t i = 0; i < newId; ++i, ++j);
 			downloadList( Text::toT(j->second) );
 		} else
 			downloadList(WinUtil::lastDirs[newId - downloadPaths.size()]);
@@ -629,7 +629,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 }
 
 LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	u_int newId = wID - IDC_DOWNLOAD_TARGET_DIR;
+	size_t newId = wID - IDC_DOWNLOAD_TARGET_DIR;
 	dcassert(newId >= 0);
 	
 	HTREEITEM t = ctrlTree.GetSelectedItem();
@@ -639,7 +639,7 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		try {
 			if(newId < downloadPaths.size()){
 				StringMapIter j = downloadPaths.begin();
-				for(int i = 0; i < newId; ++i, ++j);
+				for(size_t i = 0; i < newId; ++i, ++j);
 				dl->download(dir, j->second );
 			} else
 				dl->download(dir, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]));

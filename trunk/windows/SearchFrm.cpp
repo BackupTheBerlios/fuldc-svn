@@ -548,7 +548,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 
 	if(newId < downloadPaths.size()){
 		StringMapIter j = downloadPaths.begin();
-		for(int i = 0; i < newId; ++i, ++j);
+		for(size_t i = 0; i < newId; ++i, ++j);
 		ctrlResults.forEachSelectedT( SearchInfo::Download( Text::toT(j->second) ) );
 	}else if((newId - downloadPaths.size()) < WinUtil::lastDirs.size()) {
 		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId - downloadPaths.size()]));
@@ -562,10 +562,10 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 
 LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	dcassert((wID-IDC_DOWNLOAD_WHOLE_TARGET) < (int)WinUtil::lastDirs.size());
-	unsigned int newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
+	size_t newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
 	if(newId < downloadPaths.size()){
 		StringMapIter j = downloadPaths.begin();
-		for(int i = 0; i < newId; ++i, ++j);
+		for(size_t i = 0; i < newId; ++i, ++j);
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole( Text::toT(j->second) ));
 	}else {
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(WinUtil::lastDirs[newId - downloadPaths.size()]));

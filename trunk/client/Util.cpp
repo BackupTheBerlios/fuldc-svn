@@ -466,10 +466,10 @@ static wchar_t utf8ToLC(ccp& str) {
 }
 wstring::size_type Util::findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type start ) {
 	if(aString.length() < start)
-		return wstring::npos;
+		return static_cast<wstring::size_type> ( wstring::npos );
 
 	if(aString.length() - start < aSubString.length())
-		return string::npos;
+		return static_cast<wstring::size_type> ( wstring::npos );
 
 	if(aSubString.empty())
 		return 0;

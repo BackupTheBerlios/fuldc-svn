@@ -360,7 +360,7 @@ PME::split(const std::string & s, unsigned maxfields)
 	vector<markers> oCurrentTrailingEmpties; 
 
 	int nOffset = 0;
-	int nMatchesFound = 0;
+	unsigned int nMatchesFound = 0;
 
 	// while we are still finding matches and maxfields is 0 or negative
 	//   (meaning we get all matches), or we haven't gotten to the number
@@ -495,35 +495,7 @@ const PME & PME::operator = (const PME & r){
 
 
 
-std::string PME::UpdateReplacementString ( const std::string & r ) {
-	std::string finalreplacement = r;
-	
-	// search for each backref and store it out
-	PME dollars ( "\\$([0-9]+)", "g" );
-	
-	// search each backref
-	while ( int numdollars = dollars.match ( r ) ) {
-		
-		// create a regex to replace the backref
-		string regextext( "[$]" + dollars[1] );
-		PME dollarsub ( regextext );
-		
-		// do the replacement, telling it not to look for backref
-		finalreplacement = dollarsub.sub ( finalreplacement, 
-										   (*this)[atoi(dollars[1].c_str())],
-										   0 );
-		
-		
-	}
-
-	return finalreplacement;
-	
-}
-
-
-
-std::string PME::sub ( const std::string & s, const std::string & r,
-						 int dodollarsubstitution )
+std::string PME::sub ( const std::string & s, const std::string & r)
 {
 	
 	string newstring = s;
@@ -541,10 +513,9 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 
 }
 
-std::wstring PME::sub ( const std::wstring & s, const std::wstring & r,
-					  int dodollarsubstitution )
+std::wstring PME::sub ( const std::wstring & s, const std::wstring & r )
 {
-	return Text::acpToWide( sub( Text::wideToAcp( s ), Text::wideToAcp( r ), dodollarsubstitution ) );
+	return Text::acpToWide( sub( Text::wideToAcp( s ), Text::wideToAcp( r ) ) );
 }
 
 

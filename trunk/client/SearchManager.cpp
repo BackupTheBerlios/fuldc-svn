@@ -28,7 +28,7 @@
 SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, TTHValue* aTTH, bool aUtf8) :
 file(aFile), hubName(aClient->getName()), hubIpPort(aClient->getIpPort()), user(aClient->getMe()), 
 size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
-tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), ref(1) { }
+tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), ref(1), utf8(aUtf8) { }
 
 string SearchResult::toSR() const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"

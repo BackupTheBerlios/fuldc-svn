@@ -36,7 +36,7 @@ public:
 		if(frame == NULL) {
 			frame = new T();
 			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, CTSTRING_I(ResourceManager::Strings(title)));
-			::SendMessage(WinUtil::mainWnd, WM_USER, ID, true);
+			::SendMessage(WinUtil::mainWnd, WM_USER, ID, TRUE);
 		} else {
 			
 			if( (HWND)::SendMessage(WinUtil::mdiClient, WM_MDIGETACTIVE, 0, 0) == frame->m_hWnd){
@@ -50,7 +50,7 @@ public:
 	}
 
 	void checkButton(bool check = true){
-		::SendMessage(WinUtil::mainWnd, WM_USER, ID, check);
+		::SendMessage(WinUtil::mainWnd, WM_USER, ID, check ? TRUE : FALSE );
 	}
 };
 

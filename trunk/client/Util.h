@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #endif
 
+#include <locale.h>
+
 #include "Text.h"
 
 /** Evaluates op(pair<T1, T2>.first, compareTo) */
@@ -354,11 +356,12 @@ public:
 	}
 
 	static double toDouble(const string& aString) {
+		lconv* lv = localeconv();
 		// Work-around for atof and locales...
-		string::size_type i = aString.rfind(',');
+		string::size_type i = aString.rfind('.');
 		if(i != string::npos) {
 			string tmp(aString);
-			tmp[i] = '.';
+			tmp[i] = lv->decimal_point[0];
 			return atof(tmp.c_str());
 		}
 		return atof(aString.c_str());

@@ -194,7 +194,7 @@ public:
 	void parseCommandLine(const tstring& cmdLine);
 
 	LRESULT MainFrame::onCheckButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/){
-		ctrlToolBar.CheckButton(static_cast<int>(wParam), static_cast<bool>(lParam));
+		ctrlToolBar.CheckButton(static_cast<int>(wParam), static_cast<BOOL>(lParam) ? true : false);
 
 		return 0;
 	}
