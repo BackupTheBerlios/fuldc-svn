@@ -58,6 +58,7 @@ public:
 		FLAG_UTF8 = 0x80,
 		FLAG_TREE_DOWNLOAD = 0x100,
 		FLAG_TREE_TRIED = 0x200,
+		FLAG_PARTIAL_LIST = 0x400,
 	};
 
 	Download() throw();
@@ -78,7 +79,7 @@ public:
 		} else {
 			return getTarget();
 		}
-	};
+	}
 
 	/** @internal */
 	string getDownloadTarget() {
@@ -87,9 +88,8 @@ public:
 	}
 
 	/** @internal */
-	TigerTree& getTigerTree() {
-		return tt;
-	}
+	TigerTree& getTigerTree() { return tt; }
+	string& getPFS() { return pfs; }
 
 	int64_t getTotalSecondsLeft();
 
@@ -111,6 +111,7 @@ private:
 	Download& operator=(const Download&);
 
 	TigerTree tt;
+	string pfs;
 };
 
 

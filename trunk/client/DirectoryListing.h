@@ -137,7 +137,7 @@ public:
 	void loadFile(const string& name);
 
 	void load(const string& i);
-	void loadXML(const string& xml);
+	void loadXML(const string& xml, bool updating);
 
 	void download(const string& aDir, const string& aTarget, bool highPrio);
 	void download(Directory* aDir, const string& aTarget, bool highPrio);

@@ -650,14 +650,14 @@ void NmdcHub::myInfo(bool alwaysSend) {
 
 void NmdcHub::disconnect() throw() {	
 	state = STATE_CONNECT;
-	socket->disconnect();
+	Client::disconnect();
 	{ 
 		Lock l(cs);
 		clearUsers();
 	}
 }
 
-void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString){
+void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {
 	checkstate(); 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';

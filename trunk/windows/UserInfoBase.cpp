@@ -65,6 +65,15 @@ void UserInfoBase::unignore() {
 	IgnoreManager::getInstance()->unignore(user->getNick());
 }
 
+void UserInfoBase::browseList() {
+	if(user->getCID().isZero())
+		return;
+	try {
+		QueueManager::getInstance()->addPfs(user, "");
+	} catch(const Exception&) {
+	}
+}
+
 void UserInfoBase::showLog() {
 	StringMap params;
 	params["user"] = user->getNick();

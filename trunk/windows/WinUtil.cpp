@@ -63,6 +63,7 @@ CMenu WinUtil::mainMenu;
 CImageList WinUtil::fileImages;
 CImageList WinUtil::userImages;
 int WinUtil::dirIconIndex = 0;
+int WinUtil::dirMaskedIndex = 0;
 TStringList WinUtil::lastDirs;
 HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
@@ -262,17 +263,27 @@ void WinUtil::init(HWND hWnd) {
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)help, CTSTRING(MENU_HELP));
 
+/** @todo fix this so that the system icon is used for dirs as well (we need
+			  to mask it so that incomplete folders appear correct */
+#if 0	
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
 		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
 		::SHGetFileInfo(_T("."), FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
+		fileImages.AddIcon(ic);
 		::DestroyIcon(fi.hIcon);
-		dirIconIndex = fileImageCount++;
 	} else {
 		fileImages.CreateFromImage(_T("icons\\folders.bmp"), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-		dirIconIndex = 0;
 	}
+#endif
+
+	fileImages.CreateFromImage(_T("icons\\folders.bmp"), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	dirIconIndex = fileImageCount++;
+	dirMaskedIndex = fileImageCount++;
+
+	fileImageCount++;
+
 	userImages.CreateFromImage(_T("icons\\users.bmp"), 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 
 	LOGFONT lf, lf2;

@@ -37,43 +37,80 @@ int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::EXACT_SIZE, ResourceManager::SIZE, ResourceManager::TTH_ROOT };
 
-void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
-	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
-	if(BOOLSETTING(POPUNDER_FILELIST))
-		WinUtil::hiddenCreateEx(frame);
-	else
-		frame->CreateEx(WinUtil::mdiClient);
 
-	frames.insert( FramePair( frame->m_hWnd, frame ) );
-		
+DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
+
+void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
+	UserIter i = lists.find(aUser);
+	if(i != lists.end()) {
+		if(!BOOLSETTING(POPUNDER_FILELIST)) {
+			i->second->MDIActivate(i->second->m_hWnd);
+		}
+	} else {
+		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser);
+		if(BOOLSETTING(POPUNDER_FILELIST)) {
+			WinUtil::hiddenCreateEx(frame);
+		} else {
+			frame->CreateEx(WinUtil::mdiClient);
+		}
+		frame->loadFile(aFile);
+		frames.insert( FramePair( frame->m_hWnd, frame ) );
+	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser) :
+void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt) {
+	UserIter i = lists.find(aUser);
+	if(i != lists.end()) {
+		i->second->loadXML(txt);
+	} else {
+		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser);
+		if(BOOLSETTING(POPUNDER_FILELIST)) {
+			WinUtil::hiddenCreateEx(frame);
+		} else {
+			frame->CreateEx(WinUtil::mdiClient);
+		}
+		frame->loadXML(txt);
+		frames.insert( FramePair( frame->m_hWnd, frame ) );
+	}
+}
+
+DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
 		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(Text::toT(WinUtil::getInitialDir(aUser))),
 		mylist(false)
 {
 	tstring tmp;
-	if(aFile.size() < 4) {
-		error = Text::toT(aUser->getFullNick() + ": " + STRING(UNSUPPORTED_FILELIST_FORMAT));
-		return;
-	}
 
 	dl = new DirectoryListing(aUser);
+
+	lists.insert(make_pair(aUser, this));
+}
+
+void DirectoryListingFrame::loadFile(const tstring& name) {
 	try {
-		dl->loadFile(Text::fromT(aFile));
+		dl->loadFile(Text::fromT(name));
 		ADLSearchManager::getInstance()->matchListing(dl);
+		refreshTree();
 	} catch(const Exception& e) {
-		error = Text::toT(aUser->getFullNick() + ": " + e.getError());
+		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
 	}
 
-	tstring filename = Util::getFileName(aFile);
+	tstring filename = Util::getFileName(name);
 	if( Util::stricmp(filename, _T("files.xml.bz2")) == 0 )
 		mylist = true;
 	else if ( Util::strnicmp(filename, _T("MyList"), 6) == 0 )
 		mylist = true;
 
 	downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
+}
+
+void DirectoryListingFrame::loadXML(const string& txt) {
+	try {
+		dl->loadXML(txt, true);
+		refreshTree();
+	} catch(const Exception& e) {
+		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
+	}
 }
 
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -127,25 +164,14 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
 	m_nProportionalPos = 2500;
 	
-	if(dl != NULL){
-		treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, Text::toT(dl->getUser()->getNick()).c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
+	treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, Text::toT(dl->getUser()->getNick()).c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
 
-		updateTree(dl->getRoot(), treeRoot);
-		files = dl->getTotalFileCount();
-		size = Util::formatBytes(dl->getTotalSize());
-
-		if(!start.empty()) {
-			StringTokenizer<tstring> tok(start, _T('\\'));
-			TStringIter i = tok.getTokens().begin();
-			GoToDirectory(treeRoot, i, tok.getTokens().end());
-		} else {
-			ctrlTree.SelectItem(treeRoot);
-		}
-	}
+	files = dl->getTotalFileCount();
+	size = Util::formatBytes(dl->getTotalSize());
 
 	memset(statusSizes, 0, sizeof(statusSizes));
-	tstring tmp1 = Text::toT(STRING(FILES) + ": " + ( dl != NULL ? Util::toString(dl->getTotalFileCount(true)) : Util::emptyString ) );
-	tstring tmp2 = Text::toT(STRING(SIZE) + ": " + ( dl != NULL ? Util::formatBytes(dl->getTotalSize(true)) : Util::emptyString ) );
+	tstring tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true)));
+	tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true)));
 	statusSizes[2] = WinUtil::getTextWidth(tmp1, m_hWnd);
 	statusSizes[3] = WinUtil::getTextWidth(tmp2, m_hWnd);
 	statusSizes[4] = WinUtil::getTextWidth(TSTRING(MATCH_QUEUE), m_hWnd) + 8;
@@ -203,11 +229,37 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 		} else {
 			name = Text::toT(Text::acpToUtf8((*i)->getName()));
 		}
-		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
+		int index = (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
+		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), index, index, 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
 		if((*i)->getAdls())
 			ctrlTree.SetItemState(ht, TVIS_BOLD, TVIS_BOLD);
 		updateTree(*i, ht);
 	}
+}
+void DirectoryListingFrame::refreshTree() {
+	
+	ctrlTree.SetRedraw(FALSE);
+	HTREEITEM next = ctrlTree.GetSelectedItem();
+	if(next != treeRoot && next != NULL) {
+		DirectoryListing::Directory* d = (DirectoryListing::Directory*)ctrlTree.GetItemData(next);
+		start = Text::toT(dl->getPath(d));
+	}
+
+	while((next = ctrlTree.GetChildItem(treeRoot)) != NULL) {
+		ctrlTree.DeleteItem(next);
+	}
+
+	updateTree(dl->getRoot(), treeRoot);
+	ctrlTree.SetRedraw(TRUE);
+
+	if(!start.empty()) {
+		StringTokenizer<tstring> tok(start, _T('\\'));
+		TStringIter i = tok.getTokens().begin();
+		GoToDirectory(treeRoot, i, tok.getTokens().end());
+	} else {
+		ctrlTree.SelectItem(treeRoot);
+	}
+	start.clear();
 }
 
 void DirectoryListingFrame::updateStatus() {
@@ -261,7 +313,7 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	clearList();
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
-		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i, dl->getUtf8()), WinUtil::getDirIconIndex());
+		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i, dl->getUtf8()), (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex());
 	}
 	for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 		ItemInfo* ii = new ItemInfo(*j, dl->getUtf8());
@@ -271,6 +323,15 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	ctrlList.SetRedraw(enableRedraw);
 	updating = false;
 	updateStatus();
+
+	if(!d->getComplete()) {
+		if(dl->getUser()->isOnline()) {
+			QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
+			ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_LIST));
+		} else {
+			ctrlStatus.SetText(0, CTSTRING(USER_OFFLINE));
+		}
+	}
 }
 
 LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {

@@ -484,6 +484,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
 		DirectoryListingFrame::openWindow(i->file, i->user);
 		delete i;
+	} else if(wParam == BROWSE_LISTING) {
+		DirectoryBrowseInfo* i = (DirectoryBrowseInfo*)lParam;
+		DirectoryListingFrame::openWindow(i->user, i->text);
+		delete i;
 	} else if(wParam == VIEW_FILE_AND_DELETE) {
 		tstring* file = (tstring*)lParam;
 		TextFrame::openWindow(*file);
@@ -1173,6 +1177,10 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 	versionInfo += string((const char*)buf, len);
+}
+
+void MainFrame::on(PartialList, const User::Ptr& aUser, const string& text) throw() {
+	PostMessage(WM_SPEAKER, BROWSE_LISTING, (LPARAM)new DirectoryBrowseInfo(aUser, text));
 }
 
 void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {

@@ -63,7 +63,7 @@ public:
 	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
-	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);
+	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults);
 
 	StringPairList getDirectories() const { RLock<> l(cs); return virtualMap; }
 
@@ -191,7 +191,7 @@ private:
 		}
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
-		void search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults) throw();
+		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw();
 
 		void toNmdc(string& nmdc, string& indent, string& tmp2);
 		void toXml(SimpleXML* xml);
@@ -229,6 +229,8 @@ private:
 		}
 
 		bool hasExt(const string& name) {
+			if(ext.empty())
+				return true;
 			for(StringIter i = ext.begin(); i != ext.end(); ++i) {
 				if(name.length() >= i->length() && Util::stricmp(name.c_str() + name.length() - i->length(), i->c_str()) == 0)
 					return true;

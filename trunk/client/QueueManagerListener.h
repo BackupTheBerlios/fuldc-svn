@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "User.h"
+
 class QueueItem;
 
 class QueueManagerListener {
@@ -36,8 +38,9 @@ public:
 	typedef X<4> SourcesUpdated;
 	typedef X<5> StatusUpdated;
 	typedef X<6> SearchStringUpdated;
-	typedef X<7> ReleaseDone;
-	typedef X<8> SearchAlternates;
+	typedef X<7> PartialList;
+	typedef X<8> ReleaseDone;
+	typedef X<9> SearchAlternates;
 
 	virtual void on(Added, QueueItem*) throw() { }
 	virtual void on(Finished, QueueItem*) throw() { }
@@ -46,6 +49,7 @@ public:
 	virtual void on(SourcesUpdated, QueueItem*) throw() { }
 	virtual void on(StatusUpdated, QueueItem*) throw() { }
 	virtual void on(SearchStringUpdated, QueueItem*) throw() { }
+	virtual void on(PartialList, const User::Ptr&, const string&) throw() { }
 	virtual void on(ReleaseDone, string) throw() { }
 	virtual void on(SearchAlternates, string, int) throw() { }
 };

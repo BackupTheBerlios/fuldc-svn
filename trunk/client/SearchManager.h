@@ -52,6 +52,7 @@ public:
 	typedef List::iterator Iter;
 	
 	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, const TTHValue* aTTH, bool aUtf8);
+	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue* aTTH);
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
@@ -139,17 +140,19 @@ public:
 		TYPE_TTH
 	};
 	
-	void search(const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
-	void search(const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
-		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
+	void search(const string& aName, int64_t aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken);
+	void search(const string& aName, const string& aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken) {
+		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode, aToken);
 	}
 	
-	void search(StringList& who, const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
-	void search(StringList& who, const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
-		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
+	void search(StringList& who, const string& aName, int64_t aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken);
+	void search(StringList& who, const string& aName, const string& aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken) {
+		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode, aToken);
 	}
 	static string clean(const string& aSearchString);
 	
+	void respond(const AdcCommand& cmd);
+
 	short getPort()
 	{
 		return port;

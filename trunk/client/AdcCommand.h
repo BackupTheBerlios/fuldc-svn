@@ -102,6 +102,7 @@ public:
 
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
+	void setType(char t) { type = t; }
 
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
@@ -145,7 +146,9 @@ public:
 		return tmp;
 	}
 	const CID& getTo() const { return to; }
+	void setTo(const CID& cid) { to = cid; }
 	const CID& getFrom() const { return from; }
+
 private:
 	StringList parameters;
 	union {

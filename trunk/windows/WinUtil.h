@@ -71,6 +71,7 @@ public:
 	static HFONT tabFont;
 	static CMenu mainMenu;
 	static int dirIconIndex;
+	static int dirMaskedIndex;
 	static TStringList lastDirs;
 	static HWND mainWnd;
 	static HWND mdiClient;
@@ -164,9 +165,8 @@ public:
 
 	static int getIconIndex(const tstring& aFileName);
 
-	static int getDirIconIndex() {
-		return dirIconIndex;
-	}
+	static int getDirIconIndex() { return dirIconIndex; }
+	static int getDirMaskedIndex() { return dirMaskedIndex; }
 	
 	static int getOsMajor();
 	static int getOsMinor();

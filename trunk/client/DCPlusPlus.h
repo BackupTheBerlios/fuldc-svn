@@ -87,6 +87,11 @@ typedef StringMap::iterator StringMapIter;
 
 typedef HASH_MAP<string, bool> StringBoolMap;
 typedef StringBoolMap::iterator StringBoolMapIter;
+
+typedef pair<string, int> StringIntPair;
+typedef HASH_MAP<string, int> StringIntMap;
+typedef StringIntMap::iterator StringIntIter;
+
 typedef vector<wstring> WStringList;
 typedef WStringList::iterator WStringIter;
 typedef WStringList::const_iterator WStringIterC;

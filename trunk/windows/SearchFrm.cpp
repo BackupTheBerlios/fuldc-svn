@@ -374,7 +374,7 @@ void SearchFrame::onEnter() {
 	if(SearchManager::getInstance()->okToSearch()) {
 		results = filtered = 0;
 		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
-			(SearchManager::TypeModes)ftype, mode);
+			(SearchManager::TypeModes)ftype, mode, "manual");
 		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
 			ctrlSearch.SetWindowText(_T(""));
 	} else {

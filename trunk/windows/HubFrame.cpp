@@ -1687,8 +1687,10 @@ LRESULT HubFrame::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 			addClientLine(Text::acpToWide(h->h_name) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(c), BOOLSETTING(STATUS_IN_CHAT));
 	
 	//since the user can't do anything about these errors avoid showing them
-	} else if( WSAGETASYNCERROR(lParam) && !( WSAGETASYNCERROR(lParam) & ( WSAENOBUFS | WSAEFAULT) ) ) {
-		addClientLine(Text::acpToWide( Util::translateError(WSAGetLastError())), BOOLSETTING(STATUS_IN_CHAT));
+	} else if(WSAGETASYNCERROR(lParam)) {
+		if(WSAGETASYNCERROR(lParam) != WSAENOBUFS && WSAGETASYNCERROR(lParam) != WSAEFAULT) {
+			addClientLine(Text::acpToWide( Util::translateError(WSAGETASYNCERROR(lParam))), BOOLSETTING(STATUS_IN_CHAT));
+		}
 	}
 	
 	if(resolveBuffer) {

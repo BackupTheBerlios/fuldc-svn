@@ -96,6 +96,8 @@ public:
 			true);
 	}
 
+	void addPfs(const User::Ptr& aUser, const string& aDir) throw();
+
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 
@@ -123,7 +125,7 @@ public:
 
 	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {
 		Lock l(cs);
-		return (userQueue.getNext(aUser, minPrio) != NULL);
+		return (pfsQueue.find(aUser->getCID()) != pfsQueue.end()) || (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
 	void loadQueue() throw();
@@ -169,9 +171,8 @@ private:
 	void onTimerSearch();
 	void checkNotify();
 
-	typedef HASH_MAP< string, u_int64_t > StringIntMap;
-	typedef StringIntMap::iterator StringIntIter;
-	typedef pair< string, u_int64_t > StringIntPair;
+	typedef HASH_MAP_X(CID, string, CID::Hash, equal_to<CID>, less<CID>) PfsQueue;
+	typedef PfsQueue::iterator PfsIter;
 
 	StringIntMap totalSizeMap;
 
@@ -245,6 +246,8 @@ private:
 	
 	CriticalSection cs;
 	
+	/** Partial file list queue */
+	PfsQueue pfsQueue;
 	/** QueueItems by target */
 	FileQueue fileQueue;
 	/** QueueItems by user */

@@ -123,7 +123,7 @@ public:
 	virtual void sendUserCmd(const string& aUserCmd) throw() {
 		send(toNmdc(aUserCmd));
 	}
-	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
+	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	virtual void password(const string& aPass) { send("$MyPass " + toNmdc(aPass) + "|"); }
 	virtual void info(bool alwaysSend) { myInfo(alwaysSend); }
 	
