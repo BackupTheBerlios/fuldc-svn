@@ -56,7 +56,9 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onHeaderMenu)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
-		
+		//MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
+		//MESSAGE_HANDLER(WM_PAINT, onPaint)
+		//MESSAGE_HANDLER(WM_DRAWITEM, onDrawItem)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -289,6 +291,123 @@ public:
 		headerMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	}
 
+	/////////////////////////////////////////////////////////////////
+	//this is a beginning of an owner drawn flicker free list control
+	//doesn't work yet, i'll see if it's worth finishing one day
+	/////////////////////////////////////////////////////////////////
+	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return 0;
+	}
+	
+	
+	LRESULT onPaint(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		CRect rc;
+		CRect crc;
+		GetClientRect(&crc);
+
+		if(GetUpdateRect(&rc, FALSE)) {
+			CPaintDC dc(m_hWnd);
+			dc.SetBkColor(WinUtil::bgColor);
+			CMemDC memDC(&dc, &crc);
+
+			memDC.SetBkMode(TRANSPARENT);
+			memDC.SelectFont(WinUtil::font);
+			memDC.SetMapMode(MM_TEXT);
+
+			DRAWITEMSTRUCT dd;
+			dd.hwndItem = m_hWnd;
+			dd.hDC = memDC.m_hDC;
+			
+			// select objects as && if you like 
+
+			int nVertPos = GetScrollPos(SB_VERT);
+
+			dcdebug("scrollpos=%d\n", nVertPos);
+
+
+			for (int v=0; v<crc.Height()/16; v++) {
+
+				dd.itemID = v+nVertPos;    
+				DrawItem(&dd);
+
+
+			}
+		}
+
+		return 0;
+	}
+
+	LRESULT onDrawItem(UINT /*msg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		LPDRAWITEMSTRUCT ld = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
+		HDC tmp = ld->hDC;
+		CRect rc(&ld->rcItem);
+		CMemDC dc(ld->hDC, &rc);
+		ld->hDC = dc.m_hDC;
+
+		DrawItem(ld);
+
+		ld->hDC = tmp;
+
+		return 0;
+	}
+
+	void DrawItem(LPDRAWITEMSTRUCT ld) 
+	{
+		int nCols = GetHeader().GetItemCount( );
+		CRect rc;
+
+		T* item = (T*)GetItemData(ld->itemID);
+
+		if(!item)
+			return;
+
+		for (int nIndex=0; nIndex<nCols; nIndex++) 
+		{
+			int col = findColumn(nIndex);
+
+			LVITEM lvItem;
+
+			LVCOLUMN lvColumn;
+			lvColumn.mask = LVCF_ORDER | LVCF_FMT;
+			GetColumn(nIndex, &lvColumn);
+
+			//hmm the docs says that the index is one based
+			//but the rect gets fucked up if i use it, maybe i'm
+			//doing something wrong
+			GetSubItemRect(ld->itemID, nIndex,LVIR_BOUNDS , rc);
+
+			if(lvColumn.iOrder == 0){
+				lvItem.iItem = ld->itemID;
+				lvItem.iSubItem = 0;
+				lvItem.mask = LVIF_IMAGE;
+				GetItem(&lvItem);
+				
+				if(imageList.m_hImageList) {
+					HICON icon = imageList.GetIcon(lvItem.iImage);
+					if(icon) {
+						dcassert(::DrawIconEx(ld->hDC, rc.left, rc.top, icon, 16, 16, 0, NULL, DI_NORMAL | DI_COMPAT));
+						rc.left += 16;
+						DestroyIcon(icon);
+					}
+				}
+			}
+
+			//lvItem.iItem = ld->itemID;
+			//lvItem.iSubItem = nIndex + 1;
+			//lvItem.mask = 
+			
+			rc.DeflateRect(2, 2);
+			::ExtTextOut(ld->hDC, rc.left, rc.top, ETO_CLIPPED, rc, item->getText(col).c_str(), item->getText(col).length(), NULL);
+		}
+	}
+
+	CImageList SetImageList(HIMAGELIST hImageList, int nImageList)
+	{
+		imageList.Attach(hImageList);
+		return CListViewCtrl::SetImageList(hImageList, nImageList);
+		//return CImageList((HIMAGELIST)::SendMessage(m_hWnd, LVM_SETIMAGELIST, nImageList, (LPARAM)hImageList));
+	}
+
 	LRESULT onHeaderMenu(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ColumnInfo * ci = columnList[wParam];
 		ci->visible = ! ci->visible;
@@ -395,9 +514,35 @@ public:
 		return 1;
 	}
 
+	//find the current position for the column that was inserted at the specified pos
+	int findColumn(int col){
+		TCHAR *buf = new TCHAR[512];
+		LVCOLUMN lvcl;
+		lvcl.mask = LVCF_TEXT;
+		lvcl.pszText = buf;
+		lvcl.cchTextMax = 512;
+
+		GetColumn(col, &lvcl);
+
+		int result = -1;
+
+		int i = 0;
+		for(ColumnIter j = columnList.begin(); j != columnList.end(); ++i, ++j){
+			if(Util::stricmp((*j)->name.c_str(), buf) == 0){
+				result = i;
+				break;
+			}
+		}
+
+		delete[] buf;
+
+		return result;
+	}					
+
 
 private:
 	CMenu headerMenu;
+	CImageList imageList;
 
 	int sortColumn;
 	bool sortAscending;
@@ -430,31 +575,6 @@ private:
 				sortColumn = 0;
 		}
 		
-	}
-
-	//find the current position for the column that was inserted at the specified pos
-	int findColumn(int col){
-		TCHAR *buf = new TCHAR[512];
-		LVCOLUMN lvcl;
-		lvcl.mask = LVCF_TEXT;
-		lvcl.pszText = buf;
-		lvcl.cchTextMax = 512;
-
-		GetColumn(col, &lvcl);
-
-		int result = -1;
-
-		int i = 0;
-		for(ColumnIter j = columnList.begin(); j != columnList.end(); ++i, ++j){
-			if(Util::stricmp((*j)->name.c_str(), buf) == 0){
-				result = i;
-				break;
-			}
-		}
-
-		delete[] buf;
-
-		return result;
 	}
 
 	int findColumn(ColumnInfo* ci){

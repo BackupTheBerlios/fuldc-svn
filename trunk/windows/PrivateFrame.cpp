@@ -598,7 +598,15 @@ void PrivateFrame::FlashWindow() {
 }
 
 void PrivateFrame::ReadLog() {
-	string path = SETTING(LOG_DIRECTORY) + Util::validateFileName(user->getNick()) + ".log";
+	StringMap params;
+	params["user"] = user->getNick();
+	params["hub"] = user->getClientName();
+	params["hubaddr"] = user->getClientAddressPort();
+	params["mynick"] = user->getClientNick(); 
+	params["mycid"] = user->getClientCID().toBase32(); 
+	params["cid"] = user->getCID().toBase32(); 
+	
+	string path = Util::validateFileName(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 
 	try {
         File f(path, File::READ, File::OPEN);
