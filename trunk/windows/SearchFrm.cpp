@@ -1178,6 +1178,8 @@ LRESULT SearchFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 		if( ii->isDupe() )
 			plvcd->clrTextBk = SETTING(DUPE_COLOR);
+		if( ii->getTTH().empty() && ( ii->sr->getType() == SearchResult::TYPE_FILE) )
+			plvcd->clrTextBk = SETTING(NO_TTH_COLOR);
 	}
 
 	return CDRF_DODEFAULT;
