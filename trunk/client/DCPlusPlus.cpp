@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -48,18 +48,18 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	while(1) break;
 	
 	string tku[14] = {
-		"Fastkedjad i templet, ormar överallt, kukar överallt\r\n",
-		"Jag såg en skäggig herre, han var täckt av säd\r\n", 
-		"Läder och homosex, rött vin och havrekex, det vill vi ha!\r\n",
+		"Fastkedjad i templet, ormar Ã¶verallt, kukar Ã¶verallt\r\n",
+		"Jag sÃ¥g en skÃ¤ggig herre, han var tÃ¤ckt av sÃ¤d\r\n", 
+		"LÃ¤der och homosex, rÃ¶tt vin och havrekex, det vill vi ha!\r\n",
 		"Fjolla och aristokrat, nobelt blod och lyxig mat, det vill vi ha!\r\n",
-		"Jag färdas naken, allt är som sig bör\r\n",
-		"Polisen och SÄPO de jagar oss, agenterna släpper hundarna loss\r\n",
-		"Sprit och gott, massor av flott, pang på pungen i Portugal!\r\n",
-		"Den kristna tjackfabriken puttrar på, samhället vet ej vad som pågår\r\n",
-		"Arbetslös och utan tjej, då blir det en fet jävla holk och en bitelinepizza\r\n",
-		"Bärs som bärs, det smakar ju lika, man suger bärs så man blir full och ramlar kull\r\n",
-		"Duschring, duschring, det är vad jag vill ha runt taskapåsen\r\n",
-		"Äta olja, dricka sand, spela i arabiska heavymetalband\r\n",
+		"Jag fÃ¤rdas naken, allt Ã¤r som sig bÃ¶r\r\n",
+		"Polisen och SÃ„PO de jagar oss, agenterna slÃ¤pper hundarna loss\r\n",
+		"Sprit och gott, massor av flott, pang pÃ¥ pungen i Portugal!\r\n",
+		"Den kristna tjackfabriken puttrar pÃ¥, samhÃ¤llet vet ej vad som pÃ¥gÃ¥r\r\n",
+		"ArbetslÃ¶s och utan tjej, dÃ¥ blir det en fet jÃ¤vla holk och en bitelinepizza\r\n",
+		"BÃ¤rs som bÃ¤rs, det smakar ju lika, man suger bÃ¤rs sÃ¥ man blir full och ramlar kull\r\n",
+		"Duschring, duschring, det Ã¤r vad jag vill ha runt taskapÃ¥sen\r\n",
+		"Ã„ta olja, dricka sand, spela i arabiska heavymetalband\r\n",
 		"Mellan Hudik och Sundsvall - det brutala Gnarp!\r\n",
 		"Himmelriket i Norrland - det totala Gnarp!\r\n",
 	};
