@@ -116,6 +116,8 @@
 #define IDR_NOTEPAD                     256
 #define IDD_DIALOG2                     257
 #define IDD_FULTABSPAGE                 257
+#define IDD_DIALOG3                     258
+#define IDD_FULPOPUPPAGE                258
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -443,8 +445,15 @@
 #define IDC_SB_TAB_DIRTY_BLEND          1293
 #define IDC_CH_STATUS_HUB_BOLD          1294
 #define IDC_CH_STATUS_PM_BOLD           1295
+#define IDC_POPUP_AWAY                  1295
 #define IDC_CH_ICONS                    1296
+#define IDC_POPUP_MINIMIZED             1296
 #define IDC_CH_BLEND                    1297
+#define IDC_POPUP_ON_PM                 1297
+#define IDC_POPUP_ON_NEW_PM             1298
+#define IDC_POPUP_ON_HUBSTATUS          1299
+#define IDC_CHECK6                      1300
+#define IDC_POPUP_REMOVE                1300
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -490,9 +499,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        258
+#define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1295
+#define _APS_NEXT_CONTROL_VALUE         1296
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif

@@ -27,6 +27,15 @@
 
 WebShortcuts::WebShortcuts() {
 	SettingsManager::getInstance()->addListener(this);
+
+	tstring s = Text::toT(OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false));
+
+	StringTokenizer<tstring> st(s, _T('\x02'));
+	for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+		StringTokenizer<tstring> st_i(*i, _T('\x01'));
+		dcassert(st_i.getTokens().size() == 3);
+		list.push_back(new WebShortcut(st_i.getTokens()[0], st_i.getTokens()[1], st_i.getTokens()[2]));
+	}
 }
 
 WebShortcuts::~WebShortcuts() {
@@ -34,24 +43,20 @@ WebShortcuts::~WebShortcuts() {
 }
 
 void WebShortcuts::load(SimpleXML* xml) {
-	clear();
-
 	xml->resetCurrentChild();
 
 	if(xml->findChild("WebShortcuts")){
 		xml->stepIn();
 		WebShortcut* tmp = NULL;
+
+		clear();
+
 		while(xml->findChild("WebShortcut")){
 			tmp = new WebShortcut();
-#ifdef UNICODE
-			tmp->name  = Text::utf8ToWide(xml->getChildAttrib("Name"));
-			tmp->key   = Text::utf8ToWide(xml->getChildAttrib("Key"));
-			tmp->url   = Text::utf8ToWide(OXMLLib::decode(xml->getChildAttrib("URL"), false));
-#else
-			tmp->name  = xml->getChildAttrib("Name");
-			tmp->key   = xml->getChildAttrib("Key");
-			OXMLLib::decode(xml->getChildAttrib("URL"), false);
-#endif
+
+			tmp->name  = Text::toT(xml->getChildAttrib("Name"));
+			tmp->key   = Text::toT(xml->getChildAttrib("Key"));
+			tmp->url   = Text::toT(OXMLLib::decode(xml->getChildAttrib("URL"), false));
 
 			tmp->clean = xml->getBoolChildAttrib("Clean");
 			list.push_back(tmp);
@@ -61,30 +66,23 @@ void WebShortcuts::load(SimpleXML* xml) {
 		return;
 	}
 	
-#ifdef UNICODE
-	tstring s = Text::utf8ToWide(OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false));
-#else
-	tstring s = OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false);
-#endif
-	
 	xml->resetCurrentChild();
 	if(xml->findChild("Settings")){
 		xml->stepIn();
 		if(xml->findChild("WebShortcuts")){
-#ifdef UNICODE
-			s = Text::utf8ToWide(OXMLLib::decode( xml->getChildData(), false));
-#else
-			s = OXMLLib::decode( xml->getChildData(), false);
-#endif
+
+			tstring s = Text::toT(OXMLLib::decode( xml->getChildData(), false));
+
+			clear();
+
+			StringTokenizer<tstring> st(s, _T('\x02'));
+			for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+				StringTokenizer<tstring> st_i(*i, _T('\x01'));
+				dcassert(st_i.getTokens().size() == 3);
+				list.push_back(new WebShortcut(st_i.getTokens()[0], st_i.getTokens()[1], st_i.getTokens()[2]));
+			}
 		}
 		xml->stepOut();
-	}
-	
-	StringTokenizer<tstring> st(s, _T('\x02'));
-	for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-		StringTokenizer<tstring> st_i(*i, _T('\x01'));
-		dcassert(st_i.getTokens().size() == 3);
-		list.push_back(new WebShortcut(st_i.getTokens()[0], st_i.getTokens()[1], st_i.getTokens()[2]));
 	}
 }
 

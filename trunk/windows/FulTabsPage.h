@@ -21,7 +21,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_CH_BLEND, onClickedBox)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onColorButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBox(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 

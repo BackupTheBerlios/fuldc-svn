@@ -9,13 +9,6 @@
 
 #include "FulDownloadPage.h"
 
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem FulDownloadPage::texts[] =  {
 	{ IDC_SB_PATHS,				ResourceManager::SETTINGS_SB_PATHS				},
 	{ IDC_SB_MAX_SOURCES,		ResourceManager::SETTINGS_SB_MAX_SOURCES		},

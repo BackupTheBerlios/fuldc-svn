@@ -27,12 +27,6 @@
 #include "../client/SettingsManager.h"
 #include "../client/HubManager.h"
 
-#ifdef _DEBUG
-//#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem FulAdvancedPage::texts[] = {
 	{ IDC_WEB_SHORTCUTS_ADD,		ResourceManager::ADD						},
 	{ IDC_WEB_SHORTCUTS_REMOVE,		ResourceManager::REMOVE						},
@@ -50,18 +44,11 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::STRIP_ISP_PM,					ResourceManager::STRIP_ISP_PM },
 	{ SettingsManager::HIGH_PRIO_SAMPLE,				ResourceManager::HIGH_PRIO_SAMPLE },
 	{ SettingsManager::ROTATE_LOG,						ResourceManager::ROTATE_LOG },
-	{ SettingsManager::POPUP_AWAY,						ResourceManager::POPUP_AWAY },
-	{ SettingsManager::POPUP_MINIMIZED,					ResourceManager::POPUP_MINIMIZED },
-	{ SettingsManager::POPUP_ON_PM,						ResourceManager::POPUP_ON_PM },
-	{ SettingsManager::POPUP_ON_NEW_PM,					ResourceManager::POPUP_ON_NEW_PM },
-	{ SettingsManager::POPUP_ON_HUBSTATUS,				ResourceManager::POPUP_ON_HUBSTATUS },
 	{ SettingsManager::HUBFRAME_CONFIRMATION,			ResourceManager::HUBFRAME_CONFIRMATION },
 	{ SettingsManager::QUEUE_REMOVE_CONFIRMATION,		ResourceManager::QUEUE_REMOVE_CONFIRMATION },
 	{ SettingsManager::FAVORITES_REMOVE_CONFIRMATION,	ResourceManager::FAVORITES_REMOVE_CONFIRMATION },
 	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND },
-	{ SettingsManager::REMOVE_POPUPS,					ResourceManager::REMOVE_POPUPS },
 	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC }, 
-	{ SettingsManager::BLEND_TABS,						ResourceManager::BLEND_TABS },
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

@@ -59,9 +59,9 @@ private:
 		SPACE_MID = 5,
 		SPACE_TOP = 10,
 		SPACE_BOTTOM = 10,
-		SPACE_LEFT = 10,
-		SPACE_RIGHT = 10,
-		TREE_WIDTH = 150,
+		SPACE_LEFT = 7,
+		SPACE_RIGHT = 7,
+		TREE_WIDTH = 156,
 	};
 
 	enum {

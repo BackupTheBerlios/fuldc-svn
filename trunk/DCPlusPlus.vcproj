@@ -306,6 +306,9 @@
 				RelativePath=".\windows\FulHighlightPage.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\FulPopupsPage.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\FulSharePage.cpp">
 			</File>
 			<File
@@ -470,6 +473,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\FulHighlightPage.h">
+			</File>
+			<File
+				RelativePath=".\windows\FulPopupsPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\FulSharePage.h">

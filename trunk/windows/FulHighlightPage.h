@@ -33,7 +33,7 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 		NOTIFY_HANDLER(IDC_ITEMS, LVN_ITEMCHANGED, onItemChanged)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	LRESULT onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

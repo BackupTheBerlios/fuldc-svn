@@ -639,7 +639,8 @@ void NmdcHub::myInfo() {
 	string minf = 
 		"$MyINFO $ALL " + toNmdc(checkNick(getNick())) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
-		">$ $" + SETTING(CONNECTION) + "\x01$" + toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$' + 
+		">$ $" + toNmdc(Util::validateMessage(SETTING(CONNECTION), false)) + "\x01$" + 
+		toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|";
 	if(minf != lastMyInfo) {
 		send(minf);

@@ -35,6 +35,7 @@
 #include "FulAdvancedPage.h"
 #include "FulAppearance.h"
 #include "FulTabsPage.h"
+#include "FulPopupsPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
@@ -48,9 +49,10 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[7]  = new FulDownloadPage(s);
 	pages[8]  = new FulSharePage(s);
 	pages[9]  = new FulAdvancedPage(s);
-	pages[11] = new FulAppearancePage(s);
-	pages[10] = new FulHighlightPage(s);
-	pages[12] = new FulTabsPage(s);
+	pages[10] = new FulAppearancePage(s);
+	pages[11] = new FulHighlightPage(s);
+	pages[12] = new FulPopupsPage(s);
+	pages[13] = new FulTabsPage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());

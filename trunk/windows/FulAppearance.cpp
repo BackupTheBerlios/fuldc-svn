@@ -9,10 +9,7 @@
 
 PropPage::TextItem FulAppearancePage::texts[] = {
 	{ IDC_SB_CHATBUFFERSIZE,  ResourceManager::SETTINGS_SB_CHATBUFFERSIZE	 },
-	{ IDC_SB_POPUP,			  ResourceManager::SETTINGS_SB_POPUP			 },
 	{ IDC_ST_CHATBUFFERSIZE,  ResourceManager::SETTINGS_ST_CHATBUFFERSIZE	 },
-	{ IDC_ST_DISPLAYTIME,	  ResourceManager::SETTINGS_ST_DISPLAYTIME		 },
-	{ IDC_ST_MESSAGE_LENGTH,  ResourceManager::SETTINGS_ST_MESSAGE_LENGTH	 },
 	{ IDC_BTN_FONT,			  ResourceManager::SETTINGS_BTN_FONT			 },
 	{ IDC_BTN_TEXTCOLOR,	  ResourceManager::SETTINGS_BTN_TEXTCOLOR		 },
 	{ IDC_BTN_TIME_STAMP_HELP,ResourceManager::SETTINGS_TIME_STAMP_HELP		 },
@@ -22,8 +19,6 @@ PropPage::TextItem FulAppearancePage::texts[] = {
 
 PropPage::Item FulAppearancePage::items[] = {
 	{ IDC_CHATBUFFERSIZE,	SettingsManager::CHATBUFFERSIZE,	PropPage::T_INT },
-	{ IDC_DISPLAYTIME,		SettingsManager::POPUP_TIMEOUT,		PropPage::T_INT },
-	{ IDC_MESSAGE_LENGTH,	SettingsManager::MAX_MSG_LENGTH,	PropPage::T_INT },
 	{ IDC_EDIT_TIME_STAMPS, SettingsManager::TIME_STAMPS_FORMAT,PropPage::T_STR },
 	{ 0,					0,									PropPage::T_END }
 };

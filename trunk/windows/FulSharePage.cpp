@@ -7,12 +7,6 @@
 #include "FulSharePage.h"
 #include "WinUtil.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem FulSharePage::texts[] = {
 	{ IDC_REFRESH_INCOMING,		ResourceManager::SETTINGS_AUTO_UPDATE_INCOMING	},
 	{ IDC_REFRESH_SHARE,		ResourceManager::SETTINGS_AUTO_UPDATE_LIST		},

@@ -325,7 +325,7 @@
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>
-		<String Name="SettingsGeneral">DC++\General</String>
+		<String Name="SettingsGeneral">DC++</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
 		<String Name="SettingsIp">IP</String>
@@ -489,12 +489,13 @@
 		<String Name="PopupsDeactivated">Popups turned off</String>
 		<String Name="ShowLog">View Log</String>
 		<String Name="OpenLogDir">Open Log Directory</String>
-		<String Name="SettingsFulShare">fulDC\Share</String>
-		<String Name="SettingsFulAdvanced">fulDC\Advanced</String>
+		<String Name="SettingsFulShare">fulDC\Sharing</String>
+		<String Name="SettingsFulAdvanced">fulDC</String>
 		<String Name="SettingsFulHighlight">fulDC\Appearance\Highlight</String>
-		<String Name="SettingsFulDownload">fulDC\Download</String>
+		<String Name="SettingsFulDownload">fulDC\Downloads</String>
 		<String Name="SettingsFulAppearance">fulDC\Appearance</String>
 		<String Name="SettingsFulTabs">fulDC\Appearance\Tabs</String>
+		<String Name="SettingsFulPopup">fulDC\Appearance\Popups</String>
 		<String Name="SettingsAutoUpdateIncoming">Automatically refresh incoming</String>
 		<String Name="SettingsSbSkiplistDownload">Skiplist Downloads</String>
 		<String Name="SettingsStSkiplistDownload">Skiplist (separate files with |):</String>

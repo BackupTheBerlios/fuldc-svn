@@ -22,7 +22,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_BTN_TIME_STAMP_HELP, onTimeStampHelp)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
