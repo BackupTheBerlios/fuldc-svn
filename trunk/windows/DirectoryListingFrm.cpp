@@ -27,6 +27,7 @@
 #include "Resource.h"
 
 #include "DirectoryListingFrm.h"
+#include "SearchFrm.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
 #include "stack"
@@ -161,14 +162,14 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	targetMenu.CreatePopupMenu();
 	directoryMenu.CreatePopupMenu();
 	targetDirMenu.CreatePopupMenu();
-	copyMenu.CreatePopupMenu();
-	copyMenu.AppendMenu(MF_STRING, IDC_COPY_FILENAME, CTSTRING(FILENAME));
-	copyMenu.AppendMenu(MF_STRING, IDC_COPY_PATH, CTSTRING(PATH));
-	copyMenu.AppendMenu(MF_STRING, IDC_COPY_SIZE, CTSTRING(SIZE));
-	copyMenu.AppendMenu(MF_STRING, IDC_COPY_TTH, CTSTRING(TTH_ROOT));
-
 	searchMenu.CreatePopupMenu();
-		
+	copyMenu.CreatePopupMenu();
+	
+	for(int i = 0; i < COLUMN_LAST; ++i) {
+		copyMenu.AppendMenu(MF_STRING, IDC_COPY + i, CTSTRING_I(columnNames[i]));
+	}
+	copyMenu.AppendMenu(MF_STRING, IDC_COPY + COLUMN_LAST, CTSTRING(PATH));
+			
 	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CTSTRING(DOWNLOAD));
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
@@ -395,19 +396,15 @@ LRESULT DirectoryListingFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onCopyTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	ItemInfo* ii = ctrlList.getSelectedItem();
-	if(ii != NULL)
-		WinUtil::setClipboard(ii->getText(COLUMN_TTH));
-
-	return 0;
-}
-
 LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
 	if(ii != NULL) {
-		TTHValue tmp(Text::fromT(ii->getText(COLUMN_TTH)));
-		WinUtil::searchHash(&tmp);
+		if(ii->type == ItemInfo::DIRECTORY) {
+			SearchFrame::openWindow(ii->getText(COLUMN_FILENAME), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_DIRECTORY);
+		} else {
+			if(ii->file->getTTH())
+				WinUtil::searchHash(ii->file->getTTH());
+		}
 	}
 	return 0;
 }
@@ -534,13 +531,6 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			}
 		}
 		
-		tstring hash = ii->getText(COLUMN_TTH);
-		if (ctrlList.GetSelectedCount() == 1 && hash.length() == 39) {
-			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
-		} else {
-			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
-		}
-
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
 			targets.clear();
 			QueueManager::getInstance()->getTargetsBySize(targets, ii->file->getSize(), Util::getFileExt(ii->file->getName()));
@@ -919,60 +909,27 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 	return;
 }
 
-LRESULT DirectoryListingFrame::onCopyFilename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT DirectoryListingFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
-	
-	WinUtil::setClipboard(ii->getText(COLUMN_FILENAME));
-	
-	return 0;
-}
 
-LRESULT DirectoryListingFrame::onCopyPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
-	DirectoryListing::Directory* dir;
-
-	if(ii->type == ItemInfo::FILE)
-		dir = ii->file->getParent();
-	else
-		dir = ii->dir;
-
-	DirectoryListing::Directory* tempDir = dir;
-	stack< string > tempPath;
-	string path;
-	while(!tempDir->getName().empty()) {
-		tempPath.push(tempDir->getName());
-		tempDir = tempDir->getParent();
-	}
-	while(!tempPath.empty()){
-		if(!path.empty()) {
-			path += "\\";
+	tstring tmp;
+	if((wID - IDC_COPY) == COLUMN_LAST) {
+		if(ii->type == ItemInfo::FILE) {
+			tmp = Text::toT(dl->getPath(ii->file) + ii->file->getName());
+		} else {
+			tmp = Text::toT(dl->getPath(ii->dir));
+			if(tmp[tmp.length()-1] == _T('\\'))
+				tmp.erase(tmp.length()-1);
 		}
-		path += tempPath.top();
-		tempPath.pop();
+	} else {
+		tmp = ii->getText(wID - IDC_COPY);
 	}
 	
-	if(!path.empty()) {
-		path += "\\";
-	}
-
-	if(ii->type == ItemInfo::FILE) {
-		WinUtil::setClipboard(Text::toT(path + ii->file->getName()));
-	} else {
-		WinUtil::setClipboard(Text::toT(path));
-	}
-
-	return 0;
-}
-
-LRESULT DirectoryListingFrame::onCopySize(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
-	if(ii->type == ItemInfo::FILE) {
-		WinUtil::setClipboard(Util::formatBytesW(ii->file->getSize()));
-	} else{
-		WinUtil::setClipboard(Util::formatBytesW(ii->dir->getTotalSize()));
-	}
+	
+	if(!tmp.empty())
+		WinUtil::setClipboard(tmp);
+	
 	return 0;
 }
 

@@ -1005,13 +1005,10 @@ void WinUtil::search(tstring searchTerm, int searchMode, bool tth) {
 		}
 		if(!searchTerm.empty()) {
 			if(0 == searchMode) {
-				SearchFrame* pChild = new SearchFrame();
 				if(tth)
-					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_TTH);
+					SearchFrame::openWindow(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_TTH);
 				else
-					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
-				pChild->CreateEx(WinUtil::mdiClient);
-				searchTerm = Util::emptyStringT;
+					SearchFrame::openWindow(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
 			}else{
 				--searchMode;
 				if(searchMode < (int)WebShortcuts::getInstance()->list.size()) {

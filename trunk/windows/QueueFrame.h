@@ -181,6 +181,7 @@ private:
 		COLUMN_ERRORS,
 		COLUMN_ADDED,
 		COLUMN_TTH,
+		COLUMN_TYPE,
 		COLUMN_LAST
 	};
 	enum Tasks {
@@ -224,7 +225,8 @@ private:
 			MASK_PATH = 1 << COLUMN_PATH,
 			MASK_ERRORS = 1 << COLUMN_ERRORS,
 			MASK_ADDED = 1 << COLUMN_ADDED,
-			MASK_TTH = 1 << COLUMN_TTH
+			MASK_TTH = 1 << COLUMN_TTH,
+			MASK_TYPE = 1 << COLUMN_TYPE
 		};
 
 		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(Text::toT(aQI->getTarget())),
@@ -297,6 +299,7 @@ private:
 		GETSET(QueueItem::Priority, priority, Priority);
 		GETSET(QueueItem::Status, status, Status);
 		GETSET(TTHValue*, tth, TTH);
+		GETSET(tstring, type, Type);
 		u_int32_t updateMask;
 	
 	private:

@@ -801,10 +801,10 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 		ctrlSearchBox.MoveWindow(rc);
 		ctrlFilterBox.MoveWindow(rc);
 		ctrlMode.MoveWindow(rc);
+		ctrlPurge.MoveWindow(rc);
 		ctrlSize.MoveWindow(rc);
 		ctrlSizeMode.MoveWindow(rc);
 		ctrlFiletype.MoveWindow(rc);
-		ctrlPurge.MoveWindow(rc);
 	}
 
 	POINT pt;

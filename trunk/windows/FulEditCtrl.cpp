@@ -288,7 +288,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 			if(index == tstring::npos)
 				return tstring::npos;
 			//compensate for "] "
-			index += 3;
+			index += 2;
 		} else if( line[0] == _T('<')) {
 			index = 0;
 		}

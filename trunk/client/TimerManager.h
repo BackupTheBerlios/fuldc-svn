@@ -71,7 +71,6 @@ private:
 	};
 	
 	virtual ~TimerManager() throw() {
-		dcassert(listeners.empty());
 		s.signal();
 		join();
 	};
