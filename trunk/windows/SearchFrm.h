@@ -33,6 +33,7 @@
 #include "../client/SearchManager.h"
 #include "../client/CriticalSection.h"
 #include "../client/ClientManagerListener.h"
+#include "../client/TimerManager.h"
 
 #include "UCHandler.h"
 
@@ -41,7 +42,8 @@
 
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>,
 	private SearchManagerListener, private ClientManagerListener, 
-	public UCHandler<SearchFrame>, public UserInfoBaseHandler<SearchFrame>
+	public UCHandler<SearchFrame>, public UserInfoBaseHandler<SearchFrame>,
+	private TimerManagerListener
 {
 public:
 	static void openWindow(const string& str = Util::emptyString, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
@@ -105,14 +107,16 @@ public:
 		filterBoxContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
 		filterContainer("edit", this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false)
+		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
+		TimerManager::getInstance()->addListener(this);
 		StringTokenizer token(SETTING(DOWNLOAD_TO_PATHS), "|");
 		downloadPaths = token.getTokens();
 	}
 
 	virtual ~SearchFrame() {
+		TimerManager::getInstance()->removeListener(this);
 	}
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
@@ -357,6 +361,7 @@ private:
 		HUB_ADDED,
 		HUB_CHANGED,
 		HUB_REMOVED,
+		STATS
 	};
 
 	string initialString;
@@ -416,6 +421,9 @@ private:
 	bool onlyFree;
 	bool isHash;
 
+	int results;
+	int filtered;
+
 	CriticalSection cs;
 
 	static StringList lastSearches;
@@ -441,6 +449,10 @@ private:
 	virtual void on(ClientUpdated, Client* c) throw() { speak(HUB_CHANGED, c); }
 	virtual void on(ClientDisconnected, Client* c) throw() { speak(HUB_REMOVED, c); }
 
+	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw(){
+		PostMessage(WM_SPEAKER, STATS);
+	}
+	
 	void initHubs();
 	void onHubAdded(HubInfo* info);
 	void onHubChanged(HubInfo* info);

@@ -514,7 +514,7 @@
 		<String Name="DialogCancel">&amp;Cancel</String>
 		<String Name="SettingsWsTitle">Web shortcuts properties</String>
 		<String Name="SettingsWsHowto">How to use</String>
-		<String Name="SettingsWsDescr">Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One \"%s\" which will be replaced with the string you'll enter. If no \"%s\" exists, nothing will be pasted to the url, and the page will just open up. An example is:\nhttp://domain.com/search=%s\n\nNote: The key is case sensitive!\n\n Clean search string means that things like year, xvid, dvdrip, dots and other meaningless info will be removed from the string. e.g \"Movie.Name.2003.DVDRip.XviD-ABC\" will become \"Movie Name\"</String>
+		<String Name="SettingsWsDescr">Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One \"%s\" which will be replaced with the string you'll enter. If no \"%s\" exists, nothing will be pasted to the url, and the page will just open up. An example is:\nhttp://domain.com/search=%s\n\nNote: The key is case sensitive!\n\nClean search string means that things like year, xvid, dvdrip, dots and other meaningless info will be removed from the string. e.g \"Movie.Name.2003.DVDRip.XviD-ABC\" will become \"Movie Name\"</String>
 		<String Name="SettingsWsClean">Clean search string</String>
 		<String Name="NameRequired">Name required</String>
 		<String Name="NameAlreadyInUse">Name already in use</String>
@@ -545,5 +545,7 @@
 		<String Name="ResolveIp">Resolve IP</String>
 		<String Name="ResolvesTo">resolves to</String>
 		<String Name="NotFound">Not found in help file</String>
+		<String Name="Results">Results: </String>
+		<String Name="Filtered">Filtered: </String>
 	</Strings>
 </Language>

@@ -11,7 +11,7 @@
 	<dlsots>dslots (#) - Set no of download slots to #.</dlsots>
 	<favorite>favorite - Add active hub to favorite.</favorite>
 	<fuldc>fuldc - Display link to fulDC web site.</fuldc>
-	<fuptime>fuptime - Show fulDC uptime in mainchat.</uptime>
+	<fuptime>fuptime - Show fulDC uptime in mainchat.</fuptime>
 	<getlist>getlist (user)	- Get users filelist.</getlist>
 	<grant>grant (user) - Grant user an extra slot.</grant>
 	<join>join (address:port) - Join a hub.</join>

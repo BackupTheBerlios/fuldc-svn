@@ -348,6 +348,8 @@ void SearchFrame::onEnter() {
 	SearchManager::getInstance()->search(clients, s, llsize, 
 		(SearchManager::TypeModes)ftype, mode);
 
+	results = filtered = 0;
+
 }
 
 void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
@@ -374,21 +376,29 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	}
 
 	// Reject results without free slots if selected
-	if(onlyFree && aResult->getFreeSlots() < 1)
+	if(onlyFree && aResult->getFreeSlots() < 1){
+		filtered++;
 		return;
-	
+	}
+
 	if(!filterList.empty()){
 		string file = Util::toLower(aResult->getFile());
 		StringIter i = filterList.begin();
 		for(; i != filterList.end(); ++i){
-			if(file.find(*i) != string::npos)
+			if(file.find(*i) != string::npos){
+				filtered++;	
 				return;
+			}
 		}
 	} else if(useRegExp){
 		regex::match_results result;
-		if(!filterRegExp.match(aResult->getFile(), result).matched)
+		if(!filterRegExp.match(aResult->getFile(), result).matched){
+			filtered++;
 			return;
+		}
 	}
+	
+	results++;
 
 	SearchInfo* i = new SearchInfo(aResult);
 	PostMessage(WM_SPEAKER, ADD_RESULT, (LPARAM)i);	
@@ -580,16 +590,16 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 	
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[4];
+		int w[5];
 		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-		
+					
 		w[0] = 15;
-		w[1] = sr.right - tmp;
-		w[2] = w[1] + (tmp-16)/2;
-		w[3] = w[1] + (tmp-16);
+		w[1] = sr.right - 240;
+		w[2] = w[1] +80;
+		w[3] = w[2] +80;
+		w[4] = w[3] +80;
 		
-		ctrlStatus.SetParts(4, w);
+		ctrlStatus.SetParts(5, w);
 
 		// Layout showUI button in statusbar part #0
 		ctrlStatus.GetRect(0, sr);
@@ -828,6 +838,10 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
   	case HUB_REMOVED:
  		onHubRemoved((HubInfo*)(lParam));
 		break;
+	case STATS:
+		ctrlStatus.SetText(2, (STRING(RESULTS) + Util::toString(results)).c_str());
+		ctrlStatus.SetText(3, (STRING(FILTERED) + Util::toString(filtered)).c_str());
+		ctrlStatus.SetText(4, (STRING(TOTAL) + Util::toString(results+filtered)).c_str());
  	}
 
 	return 0;
@@ -1011,7 +1025,6 @@ LRESULT SearchFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 	
 	return 0;
 }
-
 /**
  * @file
  * $Id: SearchFrm.cpp,v 1.8 2004/02/14 13:55:25 trem Exp $

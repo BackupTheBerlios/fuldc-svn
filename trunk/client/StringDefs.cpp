@@ -515,7 +515,7 @@ string ResourceManager::strings[] = {
 "&Cancel", 
 "Web shortcuts properties", 
 "How to use", 
-"Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One \"%s\" which will be replaced with the string you'll enter. If no \"%s\" exists, nothing will be pasted to the url, and the page will just open up. An example is:\nhttp://domain.com/search=%s\n\nNote: The key is case sensitive!\n\n Clean search string means that things like year, xvid, dvdrip, dots and other meaningless info will be removed from the string. e.g \"Movie.Name.2003.DVDRip.XviD-ABC\" will become \"Movie Name\"", 
+"Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One \"%s\" which will be replaced with the string you'll enter. If no \"%s\" exists, nothing will be pasted to the url, and the page will just open up. An example is:\nhttp://domain.com/search=%s\n\nNote: The key is case sensitive!\n\nClean search string means that things like year, xvid, dvdrip, dots and other meaningless info will be removed from the string. e.g \"Movie.Name.2003.DVDRip.XviD-ABC\" will become \"Movie Name\"", 
 "Clean search string", 
 "Name required", 
 "Name already in use", 
@@ -546,6 +546,8 @@ string ResourceManager::strings[] = {
 "Resolve IP", 
 "resolves to", 
 "Not found in help file", 
+"Results: ", 
+"Filtered: ", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1092,4 +1094,6 @@ string ResourceManager::names[] = {
 "ResolveIp", 
 "ResolvesTo", 
 "NotFound", 
+"Results", 
+"Filtered", 
 };

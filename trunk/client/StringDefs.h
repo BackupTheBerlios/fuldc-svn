@@ -549,5 +549,7 @@ enum Strings { // @DontAdd
 	RESOLVE_IP, // "Resolve IP"
 	RESOLVES_TO, // "resolves to"
 	NOT_FOUND, // "Not found in help file"
+	RESULTS, // "Results: "
+	FILTERED, // "Filtered: "
 	LAST // @DontAdd
 };
