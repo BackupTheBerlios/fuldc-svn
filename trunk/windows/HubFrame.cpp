@@ -166,6 +166,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlFilterSel.SetCurSel(0);
 	
 
+	WinUtil::SetIcon(m_hWnd, "hub.ico");
+
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
 	if(fhe != NULL){
 		//retrieve window position
@@ -174,12 +176,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		//if we don't have any window position stored, return so we don't
 		//set window size to zero 
 		if(rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0)
-			return 1;
+			return 1;		
 
 		MoveWindow(rc, TRUE);
 	}
-
-	WinUtil::SetIcon(m_hWnd, "hub.ico");
 
 	return 1;
 }
