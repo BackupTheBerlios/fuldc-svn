@@ -40,7 +40,7 @@ public:
 	virtual void password(const string& pwd);
 	virtual void info();
 
-	virtual int getUserCount() const { return 0;};
+	virtual size_t getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };
 	virtual const string& getName() const { return (hub ? hub->getNick() : getAddressPort()); };
 	virtual const string& getNameWithTopic() const { return (hub ? hub->getNick() : getAddressPort()); };

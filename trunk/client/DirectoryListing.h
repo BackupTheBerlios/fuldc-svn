@@ -94,10 +94,10 @@ public:
 			for_each(files.begin(), files.end(), DeleteFunction<File*>());
 		}
 
-		int getTotalFileCount(bool adls = false);		
+		size_t getTotalFileCount(bool adls = false);		
 		int64_t getTotalSize(bool adls = false);
 		
-		int getFileCount() { return files.size(); };
+		size_t getFileCount() { return files.size(); };
 		
 		int64_t getSize() {
 			int64_t x = 0;
@@ -143,7 +143,7 @@ public:
 	string getPath(File* f) { return getPath(f->getParent()); };
 
 	int64_t getTotalSize(bool adls = false) { return root->getTotalSize(adls); };
-	int getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
+	size_t getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
 
 	Directory* getRoot() { return root; };
 

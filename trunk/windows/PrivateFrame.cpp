@@ -81,7 +81,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	mcMenu.CreatePopupMenu();
 	mcMenu.AppendMenu(MF_STRING, IDC_COPY, CTSTRING(COPY));
 	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
-	mcMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
+	mcMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
 
 	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
 	MENUINFO inf;
@@ -574,13 +574,13 @@ LRESULT PrivateFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT PrivateFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(searchMenu.m_hMenu == (HMENU)lParam) {
-		WinUtil::search(searchTerm, wParam+1);
+		WinUtil::search(searchTerm, static_cast<int>(wParam)+1);
 		searchTerm = Util::emptyStringT;
 	} else {
 		MENUITEMINFO inf;
 		inf.cbSize = sizeof(MENUITEMINFO);
 		inf.fMask = MIIM_ID;
-		mcMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+		mcMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
 		PostMessage(WM_COMMAND, inf.wID, 0);
 	}
 	return 0;

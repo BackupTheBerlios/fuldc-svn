@@ -79,7 +79,7 @@ public:
 	static HHOOK hook;
 	static tstring tth;
 	static HWND findDialog;
-	static const u_int32_t startTime;
+	static const time_t startTime;
 	static DWORD comCtlVersion;
 
 	static void SearchSite(WebShortcut* ws, tstring strSearchString);

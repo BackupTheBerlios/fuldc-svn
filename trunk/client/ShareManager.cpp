@@ -132,6 +132,8 @@ string ShareManager::translateFileName(const string& aFile, bool adc, bool utf8)
 			} else if(aFile.compare(0, 1, "/") == 0) {
 				if(!utf8) {
 					file = Util::toUtf8(aFile, file);
+				} else {
+					file = aFile;
 				}
 			} else {
 				throw ShareException("File Not Available");
@@ -159,14 +161,14 @@ string ShareManager::translateFileName(const string& aFile, bool adc, bool utf8)
 		string aDir = file.substr(0, i);
 
 		RLock l(cs);
-		StringPairIter j = findVirtual(aDir);
+		StringPairIter j = lookupVirtual(aDir);
 		if(j == virtualMap.end()) {
 			throw ShareException("File Not Available");
 		}
 
 		file = file.substr(i + 1);
 		
-		if(!checkFile(j->second.substr(0, j->second.size() - 1), file)) {
+		if(!checkFile(j->second, file)) {
 			throw ShareException("File Not Available");
 		}
 		
@@ -177,6 +179,14 @@ string ShareManager::translateFileName(const string& aFile, bool adc, bool utf8)
 StringPairIter ShareManager::findVirtual(const string& name) {
 	for(StringPairIter i = virtualMap.begin(); i != virtualMap.	end(); ++i) {
 		if(Util::stricmp(name, i->second) == 0)
+			return i;
+	}
+	return virtualMap.end();
+}
+
+StringPairIter ShareManager::lookupVirtual(const string& name) {
+	for(StringPairIter i = virtualMap.begin(); i != virtualMap.	end(); ++i) {
+		if(Util::stricmp(name, i->first) == 0)
 			return i;
 	}
 	return virtualMap.end();
@@ -212,15 +222,18 @@ void ShareManager::load(SimpleXML* aXml) {
 		aXml->stepIn();
 		while(aXml->findChild("Directory")) {
 			const string& virt = aXml->getChildAttrib("Virtual");
-			if(!virt.empty()) {
-				string d(aXml->getChildData());
+			string d(aXml->getChildData()), newVirt;
 
-				if(d[d.length() - 1] != PATH_SEPARATOR)
-					d += PATH_SEPARATOR;
-				Directory* dp = new Directory(virt);
-				directories[d] = dp;
-				virtualMap.push_back(make_pair(virt, d));
+			if(d[d.length() - 1] != PATH_SEPARATOR)
+				d += PATH_SEPARATOR;
+			if(!virt.empty()) {
+				newVirt = Util::getLastDir(virt);
+			} else {
+				newVirt = Util::getLastDir(d);
 			}
+			Directory* dp = new Directory(newVirt);
+			directories[d] = dp;
+			virtualMap.push_back(make_pair(newVirt, d));
 		}
 		aXml->stepOut();
 	}
@@ -267,7 +280,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 			}
 		}
 
-		if(findVirtual(aName) != virtualMap.end()) {
+		if(lookupVirtual(aName) != virtualMap.end()) {
 			throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
 		}
 
@@ -547,7 +560,7 @@ int ShareManager::run() {
 				RLock l(cs);
 				for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 					Directory* dp = buildTree(i->first, NULL);
-					dp->setName(findVirtual(i->first)->second);
+					dp->setName(findVirtual(i->first)->first);
 					newDirs.insert(make_pair(i->first, dp));
 				}
 			}

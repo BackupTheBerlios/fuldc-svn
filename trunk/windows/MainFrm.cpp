@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1157,7 +1157,7 @@ LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	
 	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, CTSTRING(SETTINGS_ST_REFRESH_INCOMING));
 	dropMenu.AppendMenu(MF_SEPARATOR);
-	int j = 1;
+	//int j = 1;
 	//for(StringPairIter i = l.begin(); i != l.end(); ++i, ++j)
 	//	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, (i->first).c_str());
 	
@@ -1177,7 +1177,7 @@ LRESULT MainFrame::onRefreshMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/
 		if(wParam == 0){
 			//ShareManager::getInstance()->refresh(false, true, false, true, false, false);
 		} else if(wParam > 1){
-			int id = wParam - 2;
+			//int id = wParam - 2;
 			//TStringList l = ShareManager::getInstance()->getDirectories();
 			//ShareManager::getInstance()->refresh(l[id]);
 		}

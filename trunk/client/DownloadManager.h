@@ -165,20 +165,20 @@ public:
 	}
 
 	int64_t getAverageSpeed(const string & path){
-		int pos = path.rfind("\\");
+		size_t pos = path.rfind("\\");
 		string tmp = path.substr(0, pos);
 		
 		return averageSpeedMap.find(tmp)->second;
 	}
 
 	u_int64_t getAveragePos(const string & path) {
-		int pos = path.rfind("\\");
+		size_t pos = path.rfind("\\");
 		string tmp = path.substr(0, pos);
 
 		return averagePosMap.find(tmp)->second;
 	}
 
-	int getDownloads() {
+	size_t getDownloads() {
 		Lock l(cs);
 		return downloads.size();
 	}

@@ -73,7 +73,7 @@ class UploadManager : private ClientManagerListener, private UserConnectionListe
 {
 public:
 	
-	int getUploads() { Lock l(cs); return uploads.size(); };
+	size_t getUploads() { Lock l(cs); return uploads.size(); };
 	int getAverageSpeed() {
 		Lock l(cs);
 		int avg = 0;

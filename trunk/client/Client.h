@@ -92,7 +92,7 @@ public:
 	virtual void password(const string& pwd) = 0;
 	virtual void info() = 0;
     
-	virtual int getUserCount() const = 0;
+	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
 	virtual const string& getName() const = 0;
 	virtual const string& getNameWithTopic() const = 0;

@@ -37,10 +37,8 @@ public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> TTHDone;
-	//typedef X<1> Finished;
 
 	virtual void on(TTHDone, const string& /* fileName */, TTHValue* /* root */) throw() = 0;
-	//virtual void on(Finished) throw() = 0;
 };
 
 class HashLoader;
@@ -102,14 +100,6 @@ public:
 		store.save();
 	}
 
-	void pause(){
-		hasher.pause();
-	}
-
-	void resume() {
-		hasher.resume();
-	}
-
 	void remove( const string& aPath ){
 		hasher.remove( aPath );
 	}
@@ -146,15 +136,6 @@ private:
 			s.signal();
 		}
 
-		void pause(){
-			bPause = true;
-		}
-
-		void resume() {
-			bPause = false;
-			p.signal();
-		}
-
 		void remove( const string & aPath );
 
 	private:
@@ -164,10 +145,8 @@ private:
 		WorkSet w;
 		CriticalSection cs;
 		Semaphore s;
-		Semaphore p; //used to pause execution
 
 		bool stop;
-		bool bPause;
 		bool running;
 		int64_t total;
 		string file;

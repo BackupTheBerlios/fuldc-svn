@@ -243,7 +243,10 @@ private:
 
 	BloomFilter<5> bloom;
 	
+	/** Find virtual name from real name */
 	StringPairIter findVirtual(const string& name);
+	/** Find real name from virtual name */
+	StringPairIter lookupVirtual(const string& name);
 
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);

@@ -297,7 +297,7 @@ public:
 			removeColumn(ci);
 		} else {
 			int pos = GetHeader().GetItemCount();
-			InsertColumn(pos, ci->name.c_str(), ci->format, ci->width, wParam);
+			InsertColumn(pos, ci->name.c_str(), ci->format, ci->width, static_cast<int>(wParam));
 			LVCOLUMN lvcl = { 0 };
 			lvcl.mask = LVCF_ORDER;
 			lvcl.iOrder = ci->pos;

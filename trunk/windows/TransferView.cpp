@@ -82,12 +82,12 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	transferMenu.CreatePopupMenu();
 	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
-	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
+	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
 	transferMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
 	transferMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
 	transferMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
-	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)openMenu, CTSTRING(OPEN));
-	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CTSTRING(COPY));
+	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)openMenu, CTSTRING(OPEN));
+	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY));
 	transferMenu.AppendMenu(MF_STRING, IDC_RESOLVE_IP, CTSTRING(RESOLVE_IP));
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR);

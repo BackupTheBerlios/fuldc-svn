@@ -152,13 +152,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	searchMenu.CreatePopupMenu();
 		
 	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CTSTRING(DOWNLOAD));
-	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
+	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
-	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
+	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
 	fileMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
 	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
-	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
+	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
 	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 	
 	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
@@ -169,7 +169,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.SetMenuInfo(&inf);
 
 	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CTSTRING(DOWNLOAD));
-	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CTSTRING(DOWNLOAD_TO));
+	directoryMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetDirMenu, CTSTRING(DOWNLOAD_TO));
 	
 	setWindowTitle();
 
@@ -922,7 +922,7 @@ LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARA
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 		searchTerm = ii->getText(COLUMN_FILENAME);
 		
-		WinUtil::search(searchTerm, wParam+1);
+		WinUtil::search(searchTerm, static_cast<UINT>(wParam) + 1);
 	} else {
 		MENUITEMINFO inf;
 		inf.cbSize = sizeof(MENUITEMINFO);
@@ -930,13 +930,13 @@ LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARA
 		inf.wID = 0;
 
 		if(fileMenu.m_hMenu == (HMENU)lParam) {
-			fileMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+			fileMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
 		} else if(copyMenu.m_hMenu == (HMENU)lParam) {
-			copyMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+			copyMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
 		} else if(targetMenu.m_hMenu == (HMENU)lParam) {
-			targetMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+			targetMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
 		} else if(targetDirMenu.m_hMenu == (HMENU)lParam) {
-			targetDirMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+			targetDirMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
 		}
 		PostMessage(WM_COMMAND, inf.wID, 0);
 	}

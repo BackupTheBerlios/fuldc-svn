@@ -305,7 +305,7 @@ private:
 
 	int skipHits;
 
-	int files;
+	size_t files;
 
 	bool updating;
 	bool searching;

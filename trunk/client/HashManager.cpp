@@ -59,20 +59,9 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 		root = store.getTTH(aFileName);
 	}
 	
-	bool done = false;
-
 	if(root != NULL && speed > -1) {
 		fire(HashManagerListener::TTHDone(), aFileName, root);
 		
-		//don't want to hold a lock when firing the message
-		{
-			Lock l(cs);
-			if( --fileCount == 0)
-				done = true;
-		}
-
-		//if(done)
-			//fire(HashManagerListener::Finished());
 	}
 
 	string fn = aFileName;
@@ -87,10 +76,6 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 	} else if(speed == 0) {
 		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn);
 	}
-	
-	if(done)
-		LogManager::getInstance()->message(STRING(HASHING_FINISHED));
-	
 }
 
 void HashManager::HashStore::addFile(const string& aFileName, const TigerTree& tth, bool aUsed) {
@@ -470,8 +455,6 @@ int HashManager::Hasher::run() {
 		s.wait();
 		if(stop)
 			break;
-		if(bPause)
-			p.wait();
 
 		{
 			Lock l(cs);

@@ -112,17 +112,17 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
 	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
-	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)browseMenu, CTSTRING(GET_FILE_LIST));
-	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)readdMenu, CTSTRING(READD_SOURCE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)browseMenu, CTSTRING(GET_FILE_LIST));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)readdMenu, CTSTRING(READD_SOURCE));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
 	singleMenu.AppendMenu(MF_SEPARATOR);
-	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)removeMenu, CTSTRING(REMOVE_SOURCE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)removeAllMenu, CTSTRING(REMOVE_FROM_ALL));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeMenu, CTSTRING(REMOVE_SOURCE));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeAllMenu, CTSTRING(REMOVE_FROM_ALL));
 	singleMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
-	multiMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
+	multiMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
 	multiMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
 	multiMenu.AppendMenu(MF_SEPARATOR);
 	multiMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
@@ -134,7 +134,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGH, CTSTRING(HIGH));
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGHEST, CTSTRING(HIGHEST));
 
-	dirMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
+	dirMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
 	dirMenu.AppendMenu(MF_STRING, IDC_SEARCH_RELEASEALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	dirMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
 	dirMenu.AppendMenu(MF_STRING, IDC_NOTIFY, CTSTRING(NOTIFY_ME));
@@ -775,7 +775,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPTSTR)nick.c_str();
-				mi.dwItemData = (DWORD)&(*i);
+				mi.dwItemData = (ULONG_PTR)&(*i);
 				mi.wID = IDC_BROWSELIST + menuItems;
 				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				mi.wID = IDC_REMOVE_SOURCE + menuItems;
@@ -794,7 +794,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPTSTR)nick.c_str();
-				mi.dwItemData = (DWORD)&(*i);
+				mi.dwItemData = (ULONG_PTR)&(*i);
 				mi.wID = IDC_READD + readdItems;
 				readdMenu.InsertMenuItem(readdItems, TRUE, &mi);
 				readdItems++;

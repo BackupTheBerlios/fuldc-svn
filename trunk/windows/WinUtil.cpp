@@ -67,7 +67,7 @@ FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
 tstring WinUtil::tth;
 HWND WinUtil::findDialog = NULL;
-const u_int32_t WinUtil::startTime = GET_TIME();
+const time_t WinUtil::startTime = GET_TIME();
 DWORD WinUtil::comCtlVersion = 0;
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
@@ -194,7 +194,7 @@ void WinUtil::init(HWND hWnd) {
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, ID_APP_EXIT, CTSTRING(MENU_EXIT));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)file, CTSTRING(MENU_FILE));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)file, CTSTRING(MENU_FILE));
 
 	CMenuHandle view;
 	view.CreatePopupMenu();
@@ -216,7 +216,7 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_TRANSFER_VIEW, CTSTRING(MENU_TRANSFER_VIEW));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)view, CTSTRING(MENU_VIEW));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)view, CTSTRING(MENU_VIEW));
 
 	CMenuHandle window;
 	window.CreatePopupMenu();
@@ -232,7 +232,7 @@ void WinUtil::init(HWND hWnd) {
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_DIR_LIST, CTSTRING(MENU_CLOSE_ALL_DIR_LIST));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_SEARCH_FRAME, CTSTRING(MENU_CLOSE_ALL_SEARCHFRAME));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CTSTRING(MENU_WINDOW));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)window, CTSTRING(MENU_WINDOW));
 
 	CMenuHandle help;
 	help.CreatePopupMenu();
@@ -252,7 +252,7 @@ void WinUtil::init(HWND hWnd) {
 	help.AppendMenu(MF_STRING, IDC_HELP_REPORT_BUG, CTSTRING(MENU_REPORT_BUG));
 	help.AppendMenu(MF_STRING, IDC_HELP_DONATE, CTSTRING(MENU_DONATE));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)help, CTSTRING(MENU_HELP));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)help, CTSTRING(MENU_HELP));
 
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
@@ -764,7 +764,7 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 
 		tstring strSearch = strSearchString;
 		tstring strStoplistText = _T("xvid|divx|dvdrip|dvdr|dvd-r|pal|ntsc|screener|dvdscr|complete|proper|.*|.ws.|ac3|internal|directoryfix|pdtv|hdtv|rerip|tvrip|swedish");
-		int intPos = 0;
+		size_t intPos = 0;
 
 		// Convert the stoplist string to a vector
 		StringTokenizer<tstring> t(strStoplistText, '|');
@@ -774,10 +774,10 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 		strSearch = Util::toLower(strSearch);
 		// Loop all words and remove those that exists in the search string
 		for (unsigned int i = 0; i < strStoplist.size(); i++) {
-			int intPos = strSearch.find(strStoplist[i]);
-			while (intPos > 0) {
-				strSearch = strSearch.substr(0, intPos) + strSearch.substr(intPos + strStoplist[i].length());
-				intPos = strSearch.find(strStoplist[i]);
+			tstring::size_type pos = strSearch.find(strStoplist[i]);
+			while (pos > 0) {
+				strSearch = strSearch.substr(0, pos) + strSearch.substr(pos + strStoplist[i].length());
+				pos = strSearch.find(strStoplist[i]);
 			}
 		}
 		// Just include the text until the first "-"
@@ -839,7 +839,7 @@ void WinUtil::search(tstring searchTerm, int searchMode, bool tth) {
 						_T('('), _T('['), _T(')'), _T(']'), _T('='), _T('}'), _T('?'), _T('+'), _T('´'),
 						_T('`'), _T('*'), _T('^'), _T('\\'), _T('\r'), _T('\n')};
 		
-		int length = searchTerm.length()-1;
+		size_t length = searchTerm.length()-1;
 		try{
 			//gå igenom hela listan och leta efter tecknen
 			for(int i = 0; i < 31; ++i) {

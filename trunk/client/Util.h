@@ -222,7 +222,7 @@ public:
 		if(i == string::npos)
 			return Util::emptyString;
 		string::size_type j = path.rfind(PATH_SEPARATOR, i-1);
-		return (j != string::npos) ? path.substr(j+1, j-i-1) : path;
+		return (j != string::npos) ? path.substr(j+1, i-j-1) : path;
 	}
 
 	static wstring getFilePath(const wstring& path) {
@@ -242,7 +242,7 @@ public:
 		if(i == wstring::npos)
 			return Util::emptyStringW;
 		wstring::size_type j = path.rfind(PATH_SEPARATOR, i-1);
-		return (j != wstring::npos) ? path.substr(j+1, j-i-1) : path;
+		return (j != wstring::npos) ? path.substr(j+1, i-j-1) : path;
 	}
 
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
@@ -350,16 +350,16 @@ public:
 	}
 
 	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
-	static string toLower(const char* aString, int len = -1) {
+	static string toLower(const char* aString, size_t len = (size_t)-1) {
 		string tmp;
-		tmp.resize((len == -1) ? strlen(aString) : len);
+		tmp.resize((len == (size_t)-1) ? strlen(aString) : len);
 		for(string::size_type i = 0; aString[i]; i++) {
 			tmp[i] = toLower(aString[i]);
 		}
 		return tmp;
 	}
 	static wstring toLower(const wstring& aString) { return toLower(aString.c_str(), aString.length()); };
-	static wstring toLower(const wchar_t* aString, int len = -1) {
+	static wstring toLower(const wchar_t* aString, size_t len = -1) {
 		wstring tmp;
 		tmp.resize( (len == -1) ? _tcslen(aString) : len);
 		for(wstring::size_type i = 0; aString[i]; ++i) {
@@ -460,6 +460,10 @@ public:
 		sprintf(buf, "%lu", (unsigned long)val);
 		return buf;
 	}
+	static string toString(size_t val) {
+		// TODO A better conversion the day we hit 64 bits
+		return toString((u_int32_t)val);
+	}
 	static string toString(int val) {
 		char buf[16];
 		sprintf(buf, "%d", val);
@@ -478,6 +482,12 @@ public:
 	}
 
 	static wstring toStringW( int val ) {
+		wchar_t buf[16];
+		swprintf(buf, L"%d", val);
+		return buf;
+	}
+
+	static wstring toStringW( size_t val ) {
 		wchar_t buf[16];
 		swprintf(buf, L"%d", val);
 		return buf;
@@ -537,7 +547,7 @@ public:
 		// return ::stricmp(a, b);
 		
 	}
-	static int strnicmp(const char* a, const char* b, int n) {
+	static int strnicmp(const char* a, const char* b, size_t n) {
 		return stricmp(utf8ToWide(string(a, n)), utf8ToWide(string(b, n)));
 		// return ::strnicmp(a, b, n);
 /*		while(n && *a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
@@ -545,7 +555,7 @@ public:
 		}
 		return (n == 0) ? 0 : cmpi[(u_int8_t)*a][(u_int8_t)*b];*/
 	}
-	static int strnicmp(const wchar_t* a, const wchar_t* b, int n) {
+	static int strnicmp(const wchar_t* a, const wchar_t* b, size_t n) {
 #ifdef _WIN32
 		return ::_wcsnicmp(a, b, n);
 #else
@@ -557,9 +567,9 @@ public:
 	//static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
 	//static int strnicmp(const string& a, const string& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
 	static int stricmp(const string& a, const string& b) { return stricmp(utf8ToWide(a), utf8ToWide(b)); };
-	static int strnicmp(const string& a, const string& b, int n) { return strnicmp(utf8ToWide(a), utf8ToWide(b), n); };
+	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(utf8ToWide(a), utf8ToWide(b), n); };
 	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); };
-	static int strnicmp(const wstring& a, const wstring& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
+	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); };
 	
 	static string validateNick(string tmp) {	
 		string::size_type i;

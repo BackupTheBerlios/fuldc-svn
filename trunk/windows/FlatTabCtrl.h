@@ -460,7 +460,7 @@ public:
 			TabInfo* ti = *i;
 			if(ti->row == -1) {
 				mi.dwTypeData = (LPTSTR)ti->name.c_str();
-				mi.dwItemData = (DWORD)ti->hWnd;
+				mi.dwItemData = (ULONG_PTR)ti->hWnd;
 				mi.fState = MFS_ENABLED | (ti->dirty ? MFS_CHECKED : 0);
 				mi.wID = IDC_SELECT_WINDOW + n;
 				mnu.InsertMenuItem(n++, TRUE, &mi);
@@ -515,9 +515,9 @@ private:
 			update();
 		};
 
-		const int MAX_LENGTH;
+		const unsigned int MAX_LENGTH;
 		HWND hWnd;
-		int len;
+		size_t len;
 		tstring name;
 		SIZE size;
 		SIZE boldSize;
