@@ -76,15 +76,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	}
 
 	HubManager::getInstance()->load();
-	int i;
-	for(i = 0; i < SettingsManager::SPEED_LAST; i++) {
-		if(SETTING(CONNECTION) == SettingsManager::connectionSpeeds[i])
-			break;
-	}
-	if(i == SettingsManager::SPEED_LAST) {
-		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, SettingsManager::connectionSpeeds[0]);
-	}
-
+	
 	double v = Util::toDouble(SETTING(CONFIG_VERSION));
 	if(v <= 0.22) {
 		// Disable automatic public hublist opening

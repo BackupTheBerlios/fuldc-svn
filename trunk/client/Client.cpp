@@ -585,7 +585,7 @@ void Client::myInfo() {
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	send("$MyINFO $ALL " + Util::validateNick(getNick()) + " " + Util::validateMessage(getDescription(), false) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
-		">$ $" + SETTING(CONNECTION) + "\x01$" + Util::validateMessage(SETTING(EMAIL), false) + '$' + 
+		">$ $" + Util::validateMessage(SETTING(CONNECTION), false) + "\x01$" + Util::validateMessage(SETTING(EMAIL), false) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|");
 }
 

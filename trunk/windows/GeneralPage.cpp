@@ -106,6 +106,7 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	PropPage::translate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
+	ctrlConnection.AddString(SETTING(CONNECTION).c_str());
 	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
 		ctrlConnection.AddString(SettingsManager::connectionSpeeds[i].c_str());
 
