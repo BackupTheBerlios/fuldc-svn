@@ -164,6 +164,7 @@ public:
 
 	int changePriority(const string& /*search*/, int /*priority*/);
 	void SearchAlternates(const string /*path*/);
+	u_int64_t getTotalSize(const string & path);
 
 private:
 	//MY STUFF =)
@@ -173,6 +174,14 @@ private:
 	bool addAlternates(string, User::Ptr);
 	void onTimerSearch();
 	void checkNotify();
+
+	typedef HASH_MAP< string, u_int64_t > StringIntMap;
+	typedef StringIntMap::iterator StringIntIter;
+	typedef pair< string, u_int64_t > StringIntPair;
+
+	StringIntMap totalSizeMap;
+
+	void updateTotalSize(const string & path, const u_int64_t& size, bool add = true);
 	
 	u_int32_t lastSearchAlternates;
 	

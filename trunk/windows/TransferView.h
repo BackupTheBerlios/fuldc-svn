@@ -119,6 +119,7 @@ private:
 		COLUMN_HUB,
 		COLUMN_STATUS,
 		COLUMN_TIMELEFT,
+		COLUMN_TOTALTIMELEFT,
 		COLUMN_SPEED,
 		COLUMN_FILE,
 		COLUMN_SIZE,
@@ -150,7 +151,7 @@ private:
 		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
 			int64_t p = 0, int64_t sz = 0, int st = 0, int a = 0) : UserInfoBase(u), type(t), 
 			status(s), pos(p), size(sz), start(st), actual(a), speed(0), timeLeft(0),
-			updateMask((u_int32_t)-1) { update(); };
+			updateMask((u_int32_t)-1), totalTimeLeft(0) { update(); };
 
 		Types type;
 		Status status;
@@ -160,6 +161,7 @@ private:
 		int64_t actual;
 		int64_t speed;
 		int64_t timeLeft;
+		int64_t totalTimeLeft;
 		string statusString;
 		string file;
 		string path;
@@ -170,6 +172,7 @@ private:
 			MASK_HUB = 1 << COLUMN_HUB,
 			MASK_STATUS = 1 << COLUMN_STATUS,
 			MASK_TIMELEFT = 1 << COLUMN_TIMELEFT,
+			MASK_TOTALTIMELEFT = 1 << COLUMN_TOTALTIMELEFT, 
 			MASK_SPEED = 1 << COLUMN_SPEED,
 			MASK_FILE = 1 << COLUMN_FILE,
 			MASK_SIZE = 1 << COLUMN_SIZE,
@@ -205,6 +208,7 @@ private:
 			case COLUMN_HUB: return Util::stricmp(a->user->getClientName(), b->user->getClientName());
 			case COLUMN_STATUS: return 0;
 			case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
+			case COLUMN_TOTALTIMELEFT: return compare(a->totalTimeLeft, b->totalTimeLeft);
 			case COLUMN_SPEED: return compare(a->speed, b->speed);
 			case COLUMN_FILE: return Util::stricmp(a->columns[COLUMN_FILE], b->columns[COLUMN_FILE]);
 			case COLUMN_SIZE: return compare(a->size, b->size);

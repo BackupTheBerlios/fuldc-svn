@@ -487,6 +487,7 @@ string ResourceManager::strings[] = {
 "Unmuted", 
 "Automatically close popup windows", 
 "Show topic in hub column in transfer view", 
+"Total Time Left", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -974,4 +975,5 @@ string ResourceManager::names[] = {
 "Unmuted", 
 "RemovePopups", 
 "ShowTopic", 
+"TotalTimeLeft", 
 };

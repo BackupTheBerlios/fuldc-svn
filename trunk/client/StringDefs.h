@@ -490,5 +490,6 @@ enum Strings { // @DontAdd
 	UNMUTED, // "Unmuted"
 	REMOVE_POPUPS, // "Automatically close popup windows"
 	SHOW_TOPIC, // "Show topic in hub column in transfer view"
+	TOTAL_TIME_LEFT, // "Total Time Left"
 	LAST // @DontAdd
 };

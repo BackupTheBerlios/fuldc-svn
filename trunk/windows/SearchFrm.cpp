@@ -364,18 +364,18 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 			return;
 		}
 
-		if(isHash) {
-			if(aResult->getTTH() == NULL)
-				return;
-			if(Util::stricmp(aResult->getTTH()->toBase32(), search[0]) != 0)
-				return;
-		} else {
-		for(StringIter j = search.begin(); j != search.end(); ++j) {
-			if(Util::findSubString(aResult->getFile(), *j) == -1) {
-				return;
+		//if(isHash) {
+		//	if(aResult->getTTH() == NULL)
+		//		return;
+		//	if(Util::stricmp(aResult->getTTH()->toBase32(), search[0]) != 0)
+		//		return;
+		//} else {
+			for(StringIter j = search.begin(); j != search.end(); ++j) {
+				if(Util::findSubString(aResult->getFile(), *j) == -1) {
+					return;
+				}
 			}
-		}
-	}
+		//}
 	}
 
 	// Reject results without free slots if selected

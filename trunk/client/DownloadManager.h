@@ -23,6 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "QueueManager.h"
 #include "TimerManager.h"
 
 #include "UserConnection.h"
@@ -32,6 +33,7 @@
 
 class QueueItem;
 class ConnectionQueueItem;
+class DownloadManager;
 
 class Download : public Transfer, public Flags {
 public:
@@ -69,6 +71,8 @@ public:
 		const string& tgt = (getTempTarget().empty() ? getTarget() : getTempTarget());
 		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;			
 	}
+
+	int64_t getTotalSecondsLeft();
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSETREF(string, source, Source);
@@ -128,11 +132,32 @@ public:
 		}
 		return avg;
 	}
+
+	int getAverageSpeed(const string & path){
+		int pos = path.rfind("\\");
+		string tmp = path.substr(0, pos);
+		
+		return averageSpeedMap.find(tmp)->second;
+	}
+
+	u_int64_t getAveragePos(const string & path) {
+		int pos = path.rfind("\\");
+		string tmp = path.substr(0, pos);
+
+		return averagePosMap.find(tmp)->second;
+	}
+
 	int getDownloads() {
 		Lock l(cs);
 		return downloads.size();
 	}
 private:
+	typedef HASH_MAP< string, int > StringIntMap;
+	typedef StringIntMap::iterator StringIntIter;
+	typedef pair< string, int> StringIntPair;
+
+	StringIntMap averageSpeedMap;
+	StringIntMap averagePosMap;
 
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {

@@ -47,6 +47,14 @@ Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 		setFlag(Download::FLAG_UTF8);
 };
 
+int64_t Download::getTotalSecondsLeft() {
+	updateRunningAverage();
+	int64_t avg = DownloadManager::getInstance()->getAverageSpeed(target);
+	u_int64_t pos = DownloadManager::getInstance()->getAveragePos(target);
+	u_int64_t size = QueueManager::getInstance()->getTotalSize(target);
+	return (avg > 0) ? ((size - pos) / avg) : 0;
+}
+
 void DownloadManager::onTimerSecond(u_int32_t /*aTick*/) {
 	Lock l(cs);
 
@@ -58,6 +66,25 @@ void DownloadManager::onTimerSecond(u_int32_t /*aTick*/) {
 		}
 	}
 
+	averageSpeedMap.clear();
+	averagePosMap.clear();
+
+	for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i){
+		Download* d = *i;
+		string tmp = d->getTarget().substr(0, d->getTarget().rfind("\\"));
+		StringIntIter j = averageSpeedMap.find(tmp);
+		if(j != averageSpeedMap.end())
+			j->second += d->getRunningAverage();
+		else
+			averageSpeedMap.insert(StringIntPair(tmp, d->getRunningAverage()));
+		
+		j = averagePosMap.find(tmp);
+		if(j != averagePosMap.end())
+			j->second += d->getPos();
+		else
+			averagePosMap.insert(StringIntPair(tmp, d->getPos()));
+	}
+		
 	if(tickList.size() > 0)
 		fire(DownloadManagerListener::TICK, tickList);
 }

@@ -428,6 +428,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
 			q = fileQueue.add(target, aSize, aSearchString, aFlags, p, aTempTarget, 0, GET_TIME(), root);
+			updateTotalSize(q->getTarget(), q->getSize(), true);
 			fire(QueueManagerListener::ADDED, q);
 		} else {
 			if(q->getSize() != aSize) {
@@ -844,6 +845,8 @@ void QueueManager::remove(const string& aTarget) throw() {
 		Lock l(cs);
 
 		QueueItem* q = fileQueue.find(aTarget);
+		updateTotalSize(q->getTarget(), q->getSize(), false);
+
 		if(q != NULL) {
 			if(q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD)) {
 				dcassert(q->getSources().size() == 1);
@@ -1157,6 +1160,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			QueueItem* qi = qm->fileQueue.find(target);
 
 			if(qi == NULL) {
+				qm->updateTotalSize(target, size, true);
 				if(tthRoot.empty())
 					qi = qm->fileQueue.add(target, size, searchString, flags, p, tempTarget, downloaded, added, NULL);
 				else {
@@ -1310,8 +1314,11 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 						QueueItem::DEFAULT, Util::emptyString, false);
 					dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
 					// Only download list for exact matches
-					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (Util::stricmp(target, fileName) == 0) )
-						addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
+					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (Util::stricmp(target, fileName) == 0)){
+						QueueItem *qi = fileQueue.find(sr->getFile());
+						if(qi != NULL && qi->getSources().size() < 4)
+							addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
+					}
 				} catch(const Exception&) {
 					// ...
 				}
@@ -1482,6 +1489,37 @@ void QueueManager::onTimerSearch() {
     
 	delete qi;
 	searchQueue.pop_front();
+}
+
+void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, bool add /* = true */){
+	int pos = path.rfind("\\");
+
+	string tmp = path.substr(0, pos);
+
+	StringIntIter i = totalSizeMap.find(tmp);
+
+	if(add){
+		if( i == totalSizeMap.end() ) 
+			totalSizeMap.insert(StringIntPair(tmp, size));
+		else
+			i->second += size;
+	} else {
+		i->second -= size;
+		if(i->second == 0)
+			totalSizeMap.erase(i);
+	}
+}
+
+u_int64_t QueueManager::getTotalSize(const string & path){
+	int pos = path.rfind("\\");
+
+	string tmp = path.substr(0, pos);
+
+	StringIntIter i = totalSizeMap.find(tmp);
+
+	dcassert(i != totalSizeMap.end());
+	
+	return i->second;
 }
 /**
  * @file

@@ -486,5 +486,6 @@
 		<String Name="Unmuted">Unmuted</String>
 		<String Name="RemovePopups">Automatically close popup windows</String>
 		<String Name="ShowTopic">Show topic in hub column in transfer view</String>
+		<String Name="TotalTimeLeft">Total Time Left</String>
 	</Strings>
 </Language>

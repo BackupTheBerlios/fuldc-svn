@@ -28,11 +28,11 @@
 #include "TransferView.h"
 #include "LineDlg.h"
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
-int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_TOTALTIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
-ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
+ResourceManager::TIME_LEFT, ResourceManager::TOTAL_TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
 ResourceManager::IP_BARE, ResourceManager::RATIO};
 
 TransferView::~TransferView() {
@@ -55,7 +55,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
 
 	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_SIZE || j == COLUMN_TIMELEFT || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		int fmt = (j == COLUMN_SIZE || j == COLUMN_TIMELEFT || j == COLUMN_TOTALTIMELEFT || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 		ctrlTransfers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 
@@ -142,7 +142,6 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		if ( bCustomMenu ) {
-			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 			cleanMenu(transferMenu);
 		}
@@ -338,6 +337,9 @@ void TransferView::ItemInfo::update() {
 	if(colMask & MASK_TIMELEFT) {
 		columns[COLUMN_TIMELEFT] = Util::formatSeconds(timeLeft);
 	}
+	if(colMask & MASK_TOTALTIMELEFT) {
+		columns[COLUMN_TOTALTIMELEFT] = Util::formatSeconds(totalTimeLeft);
+	}
 	if(colMask & MASK_SPEED) {
 		columns[COLUMN_SPEED] = Util::formatBytes(speed) + "/s";
 	}
@@ -451,6 +453,7 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 			i->actual = i->start + d->getActual();
 			i->pos = i->start + d->getTotal();
 			i->timeLeft = d->getSecondsLeft();
+			i->totalTimeLeft = d->getTotalSecondsLeft();
 			i->speed = d->getRunningAverage();
 
 			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
@@ -458,7 +461,7 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 			} else {
 				i->statusString = buf;
 			}
-			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
+			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_TOTALTIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 
 			v->push_back(i);
 		}
