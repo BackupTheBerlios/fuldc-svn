@@ -30,6 +30,7 @@
 #define IDC_COPY_TTH                    117
 #define IDC_SHOW_HUB_LOG                119
 #define IDC_OPEN_LOG_DIR                120
+#define IDC_OPEN_MY_LIST                121
 #define IDC_SEARCH_RELEASEALTERNATES    127
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
@@ -367,7 +368,6 @@
 #define IDC_PATHS                       1253
 #define IDC_TAB_SIZE                    1254
 #define IDC_SETTINGS_FORMAT1            1255
-#define IDC_TAB_SIZE2                   1255
 #define IDC_MAX_SOURCES                 1255
 #define IDC_SETTINGS_FORMAT2            1256
 #define IDC_SETTINGS_FORMAT3            1257
@@ -422,6 +422,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1261
-#define _APS_NEXT_SYMED_VALUE           121
+#define _APS_NEXT_SYMED_VALUE           122
 #endif
 #endif

@@ -862,8 +862,17 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 static const char types[] = "File Lists\0*.DcLst;*.bz2\0All Files\0*.*\0";
 
-LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	string file;
+	
+	if(wID == IDC_OPEN_MY_LIST){
+		file = ShareManager::getInstance()->getBZXmlFile();
+		DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser("My List"));
+				
+		return 0;
+	}
+
+
 	if(WinUtil::browseFile(file, m_hWnd, false, Util::getAppPath() + "FileLists\\", types)) {
 		string username;
 		if(file.rfind('\\') != string::npos) {

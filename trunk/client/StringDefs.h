@@ -491,5 +491,6 @@ enum Strings { // @DontAdd
 	REMOVE_POPUPS, // "Automatically close popup windows"
 	SHOW_TOPIC, // "Show topic in hub column in transfer view"
 	TOTAL_TIME_LEFT, // "Total Time Left"
+	MENU_OPEN_MY_LIST, // "Open my file list"
 	LAST // @DontAdd
 };
