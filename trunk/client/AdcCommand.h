@@ -20,6 +20,7 @@
 #define ADC_COMMAND_H
 
 #include "CID.h"
+#include "SettingsManager.h"
 
 class Command {
 public:
@@ -88,13 +89,10 @@ public:
 #undef CMD
 
 	template<typename T>
-	explicit Command(const T&) : cmdInt(T::CMD), type(TYPE_CLIENT) { }
+	explicit Command(const T&, char aType = TYPE_CLIENT) : cmdInt(T::CMD), from(SETTING(CLIENT_ID)), type(aType) { }
 
 	template<typename T>
-	explicit Command(const T&, const CID& aFrom, char aType) : cmdInt(T::CMD), type(aType), from(aFrom) { }
-
-	template<typename T>
-	explicit Command(const T&, const CID& aFrom, const CID& aTarget) : cmdInt(T::CMD), type(TYPE_DIRECT), from(aFrom), to(aTarget) { }
+	explicit Command(const T&, const CID& aTarget) : cmdInt(T::CMD), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
 
 	//explicit Command(u_int32_t cmd) : cmdInt(cmd), type(0) { }
 
@@ -149,9 +147,9 @@ private:
 		u_int8_t cmd[4];
 		u_int32_t cmdInt;
 	};
-	char type;
 	CID from;
 	CID to;
+	char type;
 
 };
 

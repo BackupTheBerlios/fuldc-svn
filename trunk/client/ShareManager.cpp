@@ -466,6 +466,7 @@ public:
 private:
 	HANDLE handle;
 #else
+// This code has been cleaned up/fixed a little.
 public:
 	FileFindIter() {
 		dir = NULL;
@@ -477,39 +478,35 @@ public:
 	}
 
 	FileFindIter(const string& name) {
-		if (!dir) return;
-
-		base = name;
-		if (name[name.size() - 1] != PATH_SEPARATOR)
-			base = base + PATH_SEPARATOR;
 		dir = opendir(name.c_str());
-
+		if (!dir)
+			return;
+		data.base = name;
 		data.ent = readdir(dir);
 		if (!data.ent) {
 			closedir(dir);
 			dir = NULL;
-		} else {
-			data.currentFile = base + data.ent->d_name;
 		}
 	}
 	
 	FileFindIter& operator++() {
-		if (!dir) return *this;
+		if (!dir) 
+			return *this;
 		data.ent = readdir(dir);
 		if (!data.ent) {
 			closedir(dir);
 			dir = NULL;
-		} else {
-			data.currentFile = base + data.ent->d_name;
 		}
 		return *this;
 	}
 	
+	// good enough to to say if it's null
 	bool operator !=(const FileFindIter& rhs) const {
 		return dir != rhs.dir;
 	}
 
 	struct DirData {
+		DirData() : ent(NULL) {}
 		string getFileName() {
 			if (!ent) return Util::emptyString;
 			return string(ent->d_name);
@@ -517,7 +514,7 @@ public:
 		bool isDirectory() {
 			struct stat inode;
 			if (!ent) return false;
-			if (stat(currentFile.c_str(), &inode) == -1) return false;
+			if (stat((base + PATH_SEPARATOR + ent->d_name).c_str(), &inode) == -1) return false;
 			return S_ISDIR(inode.st_mode);
 		}
 		bool isHidden() {
@@ -527,21 +524,20 @@ public:
 		int64_t getSize() {
 			struct stat inode;
 			if (!ent) return false;
-			if (stat(currentFile.c_str(), &inode) == -1) return 0;
+			if (stat((base + PATH_SEPARATOR + ent->d_name).c_str(), &inode) == -1) return 0;
 			return inode.st_size;
 		}
 		u_int32_t getLastWriteTime() {
 			struct stat inode;
 			if (!ent) return false;
-			if (stat(currentFile.c_str(), &inode) == -1) return 0;
+			if (stat((base + PATH_SEPARATOR + ent->d_name).c_str(), &inode) == -1) return 0;
 			return inode.st_mtime;
 		}
 		struct dirent* ent;
-		string currentFile;
+		string base;
 	};
 private:
 	DIR* dir;
-	string base;
 #endif
 
 public:

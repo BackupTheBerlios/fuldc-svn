@@ -271,7 +271,7 @@ void HubFrame::onEnter() {
 					ctrlShowUsers.SetCheck(BST_CHECKED);
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)))));
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)) + "/" + Util::toString(SETTING(UDP_PORT)))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
@@ -1087,9 +1087,9 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 					//replace current chat buffer with current command
 					ctrlMessage.SetWindowText(prevCommands[--curCommandPosition].c_str());
-					int pos = ctrlMessage.GetWindowTextLength();
-					ctrlMessage.SetSel(pos, pos);
 				}
+				// move cursor to end of line
+				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
 			} else {
 				bHandled = FALSE;
 			}
@@ -1103,19 +1103,25 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				if (curCommandPosition + 1 < prevCommands.size()) {
 					//replace current chat buffer with current command
 					ctrlMessage.SetWindowText(prevCommands[++curCommandPosition].c_str());
-					int pos = ctrlMessage.GetWindowTextLength();
-					ctrlMessage.SetSel(pos, pos);
 				} else if (curCommandPosition + 1 == prevCommands.size()) {
 					//revert to last saved, unfinished command
 
 					ctrlMessage.SetWindowText(currentCommand.c_str());
-					int pos = ctrlMessage.GetWindowTextLength();
-					ctrlMessage.SetSel(pos, pos);
 					++curCommandPosition;
 				}
+				// move cursor to end of line
+				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
 			} else {
 				bHandled = FALSE;
 			}
+
+			break;
+		case VK_PRIOR: // page up
+			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEUP);
+
+			break;
+		case VK_NEXT: // page down
+			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEDOWN);
 
 			break;
 		case VK_HOME:

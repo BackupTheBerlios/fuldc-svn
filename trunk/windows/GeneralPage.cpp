@@ -36,7 +36,8 @@ PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_PASSIVE, ResourceManager::SETTINGS_PASSIVE },
 	{ IDC_SOCKS5, ResourceManager::SETTINGS_SOCKS5 }, 
 	{ IDC_SETTINGS_IP, ResourceManager::SETTINGS_IP },
-	{ IDC_SETTINGS_PORT, ResourceManager::SETTINGS_PORT },
+	{ IDC_SETTINGS_PORT, ResourceManager::SETTINGS_TCP_PORT },
+	{ IDC_SETTINGS_UDP_PORT, ResourceManager::SETTINGS_UDP_PORT },
 	{ IDC_SETTINGS_SOCKS5_IP, ResourceManager::SETTINGS_SOCKS5_IP },
 	{ IDC_SETTINGS_SOCKS5_PORT, ResourceManager::SETTINGS_SOCKS5_PORT },
 	{ IDC_SETTINGS_SOCKS5_USERNAME, ResourceManager::SETTINGS_SOCKS5_USERNAME },
@@ -52,6 +53,7 @@ PropPage::Item GeneralPage::items[] = {
 	{ IDC_CONNECTION,	SettingsManager::CONNECTION,	PropPage::T_STR }, 
 	{ IDC_SERVER,		SettingsManager::SERVER,		PropPage::T_STR }, 
 	{ IDC_PORT,			SettingsManager::IN_PORT,		PropPage::T_INT }, 
+	{ IDC_UDP_PORT,		SettingsManager::UDP_PORT,		PropPage::T_INT }, 
 	{ IDC_SOCKS_SERVER, SettingsManager::SOCKS_SERVER,	PropPage::T_STR },
 	{ IDC_SOCKS_PORT,	SettingsManager::SOCKS_PORT,	PropPage::T_INT },
 	{ IDC_SOCKS_USER,	SettingsManager::SOCKS_USER,	PropPage::T_STR },
@@ -144,6 +146,7 @@ void GeneralPage::fixControls() {
 	BOOL checked = IsDlgButtonChecked(IDC_ACTIVE);
 	::EnableWindow(GetDlgItem(IDC_SERVER), checked);
 	::EnableWindow(GetDlgItem(IDC_PORT), checked);
+	::EnableWindow(GetDlgItem(IDC_UDP_PORT), checked);
 
 	checked = IsDlgButtonChecked(IDC_SOCKS5);
 	::EnableWindow(GetDlgItem(IDC_SOCKS_SERVER), checked);

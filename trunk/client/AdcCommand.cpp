@@ -53,12 +53,12 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		case ' ': 
 			// New parameter...
 			{
-				if(type == TYPE_DIRECT && !toSet) {
-					to = CID(cur);
-					toSet = true;
-				} else if(!fromSet && type != TYPE_CLIENT) {
+				if(!nmdc && !fromSet) {
 					from = CID(cur);
 					fromSet = true;
+				} else if(type == TYPE_DIRECT && !toSet) {
+					to = CID(cur);
+					toSet = true;
 				} else {
 					parameters.push_back(cur);
 				}
@@ -71,16 +71,15 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		i++;
 	}
 	if(!cur.empty()) {
-		if(!fromSet && type != TYPE_CLIENT) {
-			from = CID(cur);
-			fromSet = true;
-		} else 	if(type == TYPE_DIRECT && !toSet) {
+		if(!nmdc && !fromSet) {
 			to = CID(cur);
+			fromSet = true;
+		} else if(type == TYPE_DIRECT && !toSet) {
+			from = CID(cur);
 			toSet = true;
 		} else {
 			parameters.push_back(cur);
 		}
-		cur.clear();
 	}
 }
 
@@ -91,15 +90,19 @@ string Command::toString(bool nmdc /* = false */) const {
 	} else {
 		tmp += getType();
 	}
+
 	tmp += cmdChar;
-	if(getType() != TYPE_CLIENT) {
+
+	if(!nmdc) {
 		tmp += ' ';
 		tmp += from.toBase32();
 	}
+
 	if(getType() == TYPE_DIRECT) {
 		tmp += ' ';
 		tmp += to.toBase32();
 	}
+
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 		tmp += ' ';
 		tmp += escape(*i);
@@ -107,7 +110,7 @@ string Command::toString(bool nmdc /* = false */) const {
 	if(nmdc) {
 		tmp += '|';
 	} else {
-		tmp += '$';
+		tmp += '\n';
 	}
 	return tmp;
 }

@@ -68,7 +68,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
-
+	
 	if(f != NULL)
 		(*f)(p, tku[index], TSTRING(SETTINGS));
 
@@ -91,6 +91,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	WebShortcuts::newInstance();
 	
 	SettingsManager::getInstance()->load();
+	SettingsManager::getInstance()->setDefault(SettingsManager::UDP_PORT, SETTING(IN_PORT));
 
 	if(!SETTING(LANGUAGE_FILE).empty()) {
 		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
