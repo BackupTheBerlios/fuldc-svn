@@ -220,7 +220,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	startSocket();
 	// we should have decided what ports we are using by now
 	// so if we are using UPnP lets open the ports.
-/*	if( BOOLSETTING( SETTINGS_USE_UPNP ) )
+	if( BOOLSETTING( SETTINGS_USE_UPNP ) )
 	{
 		 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
 			  || Util::getOsMajor() >= 6 )  //Longhorn
@@ -263,7 +263,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		UPnP_TCPConnection = NULL;
 		UPnP_UDPConnection = NULL;
 	}
-	*/
+	
 	if(SETTING(NICK).empty()) {
 		PostMessage(WM_COMMAND, IDC_HELP_README);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
@@ -858,7 +858,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			SearchManager::getInstance()->disconnect();
 			ConnectionManager::getInstance()->disconnect();
 
-/*			if( BOOLSETTING( SETTINGS_USE_UPNP ) )
+			if( BOOLSETTING( SETTINGS_USE_UPNP ) )
 			{
 			 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
 				  || Util::getOsMajor() >= 6 )  //Longhorn
@@ -878,7 +878,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 					LogManager::getInstance()->message(STRING(OPERATING_SYSTEM_NOT_COMPATIBLE));
 				}
 			}
-*/
+
 			DWORD id;
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
 			closing = true;

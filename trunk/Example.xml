@@ -80,6 +80,7 @@
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
 		<String Name="Downloads">Downloads</String>
 		<String Name="DuplicateFileNotShared">Duplicate file will not be shared: </String>
+		<String Name="DuplicateMatch">Dupe matched against: </String>
 		<String Name="DuplicateSource">Duplicate source</String>
 		<String Name="Edit">Edit</String>
 		<String Name="Email">E-Mail</String>
@@ -321,6 +322,7 @@
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
+		<String Name="SettingsListDupes">Keep duplicate files in your file list (duplicates never count towards your share size)</String>
 		<String Name="SettingsLogDownloads">Log downloads</String>
 		<String Name="SettingsLogFilelistTransfers">Log filelist transfers</String>
 		<String Name="SettingsLogMainChat">Log main chat</String>
