@@ -50,6 +50,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		MESSAGE_HANDLER(WM_SIZE, onSize)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -74,11 +75,25 @@ public:
 		ctrlPad.SetFocus();
 		return 0;
 	}
+
+	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if(init){
+			ctrlPad.ScrollToBeginning();
+			init = false;
+			
+		} else {
+			ctrlPad.DisableScrollHandling(false);
+		}
+		
+		bHandled = FALSE;
+		return 0;
+	}
 	
 private:
 	deque<string> *log;
 	string file;
 	CFulEditCtrl ctrlPad;
+	bool init;
 };
 
 #endif // !defined(AFX_TEXTFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)

@@ -49,6 +49,9 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	WinUtil::SetIcon(m_hWnd, "notepad.ico");
 	bHandled = FALSE;
+	
+	init = true;
+	ctrlPad.DisableScrollHandling();
 
 	if(file.empty()){
 		SetWindowText("Lastlog");

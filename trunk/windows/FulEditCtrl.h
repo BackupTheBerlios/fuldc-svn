@@ -24,6 +24,7 @@ public:
 	int		TextUnderCursor(POINT p, string& x);
 	void	Find();
 	bool	LastSeen(string & nick);
+	void	DisableScrollHandling(bool disable = true);
 	
 	deque<string>* LastLog();
 	
@@ -45,9 +46,9 @@ private:
 	bool		matchedPopup;
 	bool		matchedTab;
 	bool		stripIsp;
-	bool		noScroll;
 	bool		logged;
 	bool		skipLog;
+	bool		handleScrolling;
 	string		nick;
 	CHARFORMAT2 selFormat;
 	char*		findBuffer;

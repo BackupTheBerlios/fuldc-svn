@@ -51,7 +51,7 @@ static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb,
 
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
-CFulEditCtrl::CFulEditCtrl(void): noScroll(false), matchedPopup(false), nick(Util::emptyString), findBufferSize(100),
+CFulEditCtrl::CFulEditCtrl(void): handleScrolling(true), matchedPopup(false), nick(Util::emptyString), findBufferSize(100),
 								logged(false), matchedSound(false), skipLog(false)
 {
 	findBuffer = new char[findBufferSize];
@@ -72,6 +72,7 @@ CFulEditCtrl::~CFulEditCtrl(void)
 }
 
 bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
+	bool noScroll = false;
 	matchedTab = false;
 	string aLine = line;
 	if(GetWindowTextLength() > SETTING(CHATBUFFERSIZE)) {
@@ -442,7 +443,8 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 }
 
 LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
-	ScrollToEnd();
+	if(handleScrolling)
+		ScrollToEnd();
 			
 	bHandled = FALSE;
 	return FALSE;
@@ -616,4 +618,8 @@ void CFulEditCtrl::AddLogLine(string & line){
 
 deque<string> *CFulEditCtrl::LastLog(){
 	return &lastlog;
+}
+
+void CFulEditCtrl::DisableScrollHandling(bool disable){
+	handleScrolling = !disable;
 }
