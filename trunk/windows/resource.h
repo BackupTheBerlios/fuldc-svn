@@ -163,6 +163,8 @@
 #define IDD_ADVANCED3PAGE               302
 #define IDC_SETTINGS_TIME_STAMPS_FORMAT 303
 #define IDC_TIME_STAMPS_FORMAT          304
+#define IDC_SETTINGS_FILELIST_MENU      305
+#define IDD_NETWORKPAGE                 306
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002

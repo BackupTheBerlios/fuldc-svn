@@ -25,6 +25,7 @@ settings_sharing.html
 settings_usercommands.html
 settings_colors_and_sounds.html
 settings_expert.html
+settings_connection.html
 settings_fuldc.html
 settings_fuldc_downloads.html
 settings_fuldc_sharing.html
@@ -59,6 +60,7 @@ IDD_DOWNLOADPAGE=settings_downloads.html
 IDD_DOWNLOADPAGE=settings_sharing.html
 IDD_FAVORITE_DIRSPAGE=settings_favoritedirs.html
 IDD_GENERALPAGE=settings_general.html
+IDD_NETWORKPAGE=settings_connection.html
 IDD_KEYBOARD=faq_keyboard_commands.html
 IDD_STARTPAGE=index.html
 IDD_UCPAGE=settings_usercommands.html

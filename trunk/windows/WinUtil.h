@@ -154,7 +154,9 @@ public:
 
 	static void searchHash(TTHValue* /*aHash*/);
 	static void registerDchubHandler();
+	static void registerADChubHandler();
 	static void parseDchubUrl(const tstring& /*aUrl*/);
+	static void parseADChubUrl(const tstring& /*aUrl*/);
 	static void openLink(const tstring& url);
 	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);

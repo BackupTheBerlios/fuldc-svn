@@ -1467,7 +1467,7 @@ void HubFrame::updateUserList() {
 	ctrlUsers.SetRedraw(TRUE);
 }
 
-LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring path = Text::toT(SETTING(LOG_DIRECTORY));
 	
 

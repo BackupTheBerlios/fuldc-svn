@@ -76,6 +76,10 @@
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="General">
+				<param name="Local" value="settings_connection.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Downloads">
 				<param name="Local" value="settings_downloads.html">
 				</OBJECT>

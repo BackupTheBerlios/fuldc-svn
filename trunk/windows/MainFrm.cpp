@@ -536,6 +536,9 @@ void MainFrame::parseCommandLine(const tstring& cmdLine)
 	if( (j = cmdLine.find(_T("dchub://"), i)) != string::npos) {
 		WinUtil::parseDchubUrl(cmdLine.substr(j));
 	}
+	if( (j = cmdLine.find(_T("adc://"), i)) != string::npos) {
+		WinUtil::parseADChubUrl(cmdLine.substr(j));
+	}
 }
 
 LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -597,6 +600,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		ClientManager::getInstance()->infoUpdated();
 		if(BOOLSETTING(URL_HANDLER)) {
 			WinUtil::registerDchubHandler();
+			WinUtil::registerADChubHandler();
 		}
 	}
 	return 0;

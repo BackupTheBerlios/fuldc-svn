@@ -29,6 +29,7 @@
 #include "FlatTabCtrl.h"
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
+#include "UCHandler.h"
 
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
@@ -37,13 +38,16 @@
 #define STATUS_MESSAGE_MAP 9
 #define VIEW_MESSAGE_MAP   10
 
-class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, public CSplitterImpl<DirectoryListingFrame>
+class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>,
+	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
+
 {
 public:
 	static void openWindow(const tstring& aFile, const User::Ptr& aUser);
 	static void closeAll();
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame> baseClass;
+typedef UCHandler<DirectoryListingFrame> ucBase;
 
 	enum {
 		COLUMN_FILENAME,
@@ -93,6 +97,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEARCH_BY_TTH, onSearchByTTH)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadTargetDir)
+		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
@@ -126,6 +131,7 @@ public:
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void findFile(bool findNext);
+	void runUserCommand(UserCommand& uc);
 	
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
@@ -303,6 +309,9 @@ private:
 	
 	CButton ctrlFind, ctrlFindNext;
 	CButton ctrlMatchQueue;
+
+	/** Parameter map for user commands */
+	StringMap ucParams;
 
 	string findStr;
 	tstring error;
