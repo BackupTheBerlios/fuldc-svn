@@ -62,7 +62,7 @@ const string SettingsManager::settingTags[] =
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"PopupTextColor", "FreeSlotsSize", "ShowStatusbar", "ShowToolbar", "ShowTransferView",
-	"CustomSound", "TabSize",
+	"CustomSound", "TabSize", "RemovePopups", "ShowTopic",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -201,6 +201,8 @@ SettingsManager::SettingsManager()
 	setDefault(DOWNLOAD_TO_PATHS, "");
 	setDefault(CUSTOM_SOUND, false);
 	setDefault(TAB_SIZE, 20);
+	setDefault(REMOVE_POPUPS, true);
+	setDefault(SHOW_TOPIC, true);
 	
 	
 	

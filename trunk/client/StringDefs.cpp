@@ -479,6 +479,8 @@ string ResourceManager::strings[] = {
 "Play custom sound on PM's", 
 "Muted", 
 "Unmuted", 
+"Automatically close popup windows", 
+"Show topic in hub column in transfer view", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -958,4 +960,6 @@ string ResourceManager::names[] = {
 "CustomSound", 
 "Muted", 
 "Unmuted", 
+"RemovePopups", 
+"ShowTopic", 
 };

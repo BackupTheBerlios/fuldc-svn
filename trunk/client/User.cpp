@@ -57,10 +57,10 @@ void User::updated(User::Ptr& aUser) {
 	}
 }
 
-const string& User::getClientName() const {
+const string& User::getClientName(bool topic) const {
 	RLock l(cs);
 	if(client) {
-		return client->getName();
+		return client->getName(topic);
 	} else if(!getLastHubName().empty()) {
 		return getLastHubName();
 	} else {

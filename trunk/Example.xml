@@ -478,5 +478,7 @@
 		<String Name="CustomSound">Play custom sound on PM's</String>
 		<String Name="Muted">Muted</String>
 		<String Name="Unmuted">Unmuted</String>
+		<String Name="RemovePopups">Automatically close popup windows</String>
+		<String Name="ShowTopic">Show topic in hub column in transfer view</String>
 	</Strings>
 </Language>

@@ -488,7 +488,7 @@ BEGIN
     CONTROL         "Whole Line",IDC_WHOLELINE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,86,133,54,10
     CONTROL         "Case Sensitive",IDC_CASESENSITIVE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,86,145,54,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,86,145,68,10
     CONTROL         "Entire word",IDC_WHOLEWORD,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,86,157,54,10
     CONTROL         "Change Tabcolor",IDC_TABCOLOR,"Button",BS_AUTOCHECKBOX | 

@@ -10,7 +10,6 @@
 #include "Resource.h"
 #include "WinUtil.h"
 
-
 class PopupWnd : public CWindowImpl<PopupWnd, CWindow>
 {
 public:
@@ -20,9 +19,10 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
+		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 	END_MSG_MAP()
 
-	PopupWnd(HWND hWnd, const string& aMsg, CRect rc, HBITMAP hBmp) {
+	PopupWnd(HWND hWnd, const string& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
 		if(aMsg.length() > 90){
 			msg = aMsg.substr(0, 87);
 			msg += "...";
@@ -31,7 +31,7 @@ public:
 			msg = aMsg;
 
 		bmp = hBmp;
-		
+
 		if(bmp == NULL)
 			Create(hWnd, rc, NULL, WS_CAPTION | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN );
 		else
@@ -39,10 +39,18 @@ public:
 
 		WinUtil::decodeFont(SETTING(POPUP_FONT), logFont);
 		font = ::CreateFontIndirect(&logFont);
+
 	}
 
 	~PopupWnd(){
 		DeleteObject(font);
+	}
+
+	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/){
+		CRect rc;
+		GetWindowRect(rc);
+		::PostMessage(GetParent(), WM_SPEAKER, WM_CLOSE, (LPARAM)rc.bottom);
+		return 0;
 	}
 
 
@@ -52,7 +60,7 @@ public:
 			bHandled = false;
 			return 1;
 		}
-		
+
 		::SetClassLongPtr(m_hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)::GetSysColorBrush(COLOR_3DFACE));
 		CRect rc;
 		GetClientRect(rc);
@@ -61,12 +69,12 @@ public:
 		rc.left += 5;
 		rc.right -= 5;
 		rc.bottom -=5;
-				
+
 		label.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 			SS_CENTER | SS_NOPREFIX);
-		
+
 		SetWindowText("fulDC");
-		
+
 		label.SetFont(WinUtil::font);
 		label.SetWindowText(msg.c_str());
 
@@ -81,7 +89,7 @@ public:
 			label.Detach();
 		}
 		DestroyWindow();
-		
+
 		bHandled = false;
 		return 1;
 	}
@@ -92,7 +100,7 @@ public:
 			bHandled = FALSE;
 			return 0;
 		}
-		
+
 		PAINTSTRUCT ps;
 		HDC hdc = ::BeginPaint(m_hWnd,&ps);
 
@@ -112,7 +120,7 @@ public:
 		HFONT oldFont = (HFONT)SelectObject(hdc, font);
 		::SetBkMode(hdc, TRANSPARENT);
 		::SetTextColor(hdc, SETTING(POPUP_TEXTCOLOR));
-		
+
 		int xBorder = bm.bmWidth / 10;
 		int yBorder = bm.bmHeight / 10;
 		CRect rc(xBorder, yBorder, bm.bmWidth - xBorder, bm.bmHeight - yBorder);
@@ -125,6 +133,9 @@ public:
 		return 0;
 
 	}
+
+	u_int32_t visible;
+
 private:
 	string  msg;
 	CStatic label;
@@ -132,4 +143,6 @@ private:
 	LOGFONT logFont;
 	HFONT   font;
 };
+
+
 #endif

@@ -482,5 +482,7 @@ enum Strings { // @DontAdd
 	CUSTOM_SOUND, // "Play custom sound on PM's"
 	MUTED, // "Muted"
 	UNMUTED, // "Unmuted"
+	REMOVE_POPUPS, // "Automatically close popup windows"
+	SHOW_TOPIC, // "Show topic in hub column in transfer view"
 	LAST // @DontAdd
 };

@@ -296,7 +296,7 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_USER] = user->getNick();
 	}
 	if(colMask & MASK_HUB) {
-		columns[COLUMN_HUB] = user->getClientName();
+		columns[COLUMN_HUB] = user->getClientName(BOOLSETTING(SHOW_TOPIC));
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;

@@ -79,7 +79,7 @@ public:
 	void setClient(Client* aClient);
 	void connect();
 	const string& getClientNick() const;
-	const string& getClientName() const;
+	const string& getClientName(bool topic = true) const;
 	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);

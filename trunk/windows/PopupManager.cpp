@@ -38,10 +38,10 @@ void PopupManager::Show(HWND &hWnd, const string& aMsg ) {
 	CRect rc(screenWidth - width , screenHeight - height - offset, screenWidth, screenHeight - offset);
 	
 	//Create a new popup
-	Popup *p = new Popup(aMsg, GET_TICK(), hWnd, rc, hBitmap);
-	
+	PopupWnd *p = new PopupWnd(hWnd, aMsg, rc, hBitmap);
+			
 	//Set the correct font and display the window
-	p->dialog->ShowWindow(SW_SHOW);
+	p->ShowWindow(SW_SHOW);
 		
 	//restore focus to window
 	::SetFocus(gotFocus);
@@ -60,6 +60,9 @@ void PopupManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
 		if(popups.empty()) {
 			return;
 		}
+
+		if(!BOOLSETTING(REMOVE_POPUPS))
+			return;
 
 		//check all popups and see if we need to remove anyone
 		PopupList::iterator i = popups.begin();
@@ -90,14 +93,32 @@ void PopupManager::onAction(QueueManagerListener::Types type, string msg) {
 	::PostMessage(hWnd, WM_SPEAKER, DOWNLOAD_COMPLETE, (LPARAM)s);
 }
 
-void PopupManager::Remove() {
+void PopupManager::Remove(int pos) {
 	Lock l(cs);
-	//remove the first popup
-	Popup *p = popups.front();
-	popups.pop_front();
+
+	CRect rcDesktop;
+
+	//get desktop rect so we know where to place the popup
+	::SystemParametersInfo(SPI_GETWORKAREA,0,&rcDesktop,0);
+
+	//find the correct window
+	int end = (rcDesktop.bottom - pos) / height;
+	PopupList::iterator i = popups.begin();
+	for(int j = 0; j < end; ++j, ++i);
 	
-	if(p != NULL) 
-		delete p;
+	//remove the window from the list
+	PopupWnd *p = (*i);
+	popups.erase(i);
+	
+	//close the window and delete it
+	if(p == NULL){
+		return;
+	}
+	
+	p->SendMessage(WM_CLOSE, 0, 0);
+	delete p;
+	p = NULL;
+	
 	    
 	//set offset one window position lower
 	offset -= height;
@@ -108,14 +129,14 @@ void PopupManager::Remove() {
 
 	CRect rc;
 
-	PopupList::iterator i;
-
 	//move down all windows
 	for(i = popups.begin(); i != popups.end(); ++i) {
-		(*i)->dialog->GetWindowRect(rc);
-		rc.top += height;
-		rc.bottom += height;
-		(*i)->dialog->MoveWindow(rc);
+		(*i)->GetWindowRect(rc);
+		if(rc.bottom <= pos){
+			rc.top += height;
+			rc.bottom += height;
+			(*i)->MoveWindow(rc);
+		}
 	}
 }
 

@@ -179,7 +179,7 @@ public:
 		fire(ClientListener::MY_INFO, this, aUser);
 	}
 
-	const string& getName() const { return name; };
+	const string& getName(bool topic = true) const { return topic ? name : shortName; };
 	const string& getAddress() const { return address; };
 	const string& getAddressPort() const { return addressPort; };
 	short getPort() const { return port; };
@@ -253,6 +253,7 @@ private:
 	short port;
 
 	string name;
+	string shortName;
 	string description;
 
 	BufferedSocket* socket;

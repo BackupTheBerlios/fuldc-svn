@@ -369,6 +369,12 @@ void Client::onLine(const string& aLine) throw() {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
 		name = param;
+		int pos;
+		if( (pos = param.find(" - ")) != string::npos ){
+			shortName = param.substr(0, pos);
+		} else {
+			shortName = name;
+		}
 		fire(ClientListener::HUB_NAME, this);
 	} else if(cmd == "$Supports") {
 		StringTokenizer st(param, ' ');

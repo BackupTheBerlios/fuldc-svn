@@ -17,30 +17,6 @@
 
 #define DOWNLOAD_COMPLETE 6
 
-class Popup
-{
-public:
-	Popup(const string& aMsg, u_int32_t aVisible, HWND hWnd, CRect rc, HBITMAP hBitmap) : visible(aVisible) {
-		dialog = new PopupWnd(hWnd, aMsg, rc, hBitmap);
-	}
-	Popup() {}
-
-	~Popup() {
-		if(dialog != NULL){
-			//destroy the window before deleting the object
-			//::SendMessageTimeout(dialog->m_hWnd, WM_CLOSE, 0, 0, SMTO_BLOCK, 1000, NULL);
-			SendMessage(dialog->m_hWnd, WM_CLOSE, 0, 0);
-			delete dialog;
-			dialog = NULL;
-		}
-	}
-
-	//popup and time of creation, no need to save position
-	//as that can be retrieved with GetWindowRect()
-	PopupWnd *dialog;
-	u_int32_t visible;
-};
-
 class PopupManager : public Singleton< PopupManager >, private TimerManagerListener, 
 	private QueueManagerListener
 {
@@ -87,13 +63,16 @@ public:
 	//and take care of cleanup
 	void ShowDownloadComplete(string *msg);
 
+	//remove first popup in list and move everyone else
+	void Remove(int pos = 0);
+
 	void Mute(bool mute) {
 		activated = !mute;
 	}
 
 private:
 		
-	typedef deque< Popup* > PopupList;
+	typedef deque< PopupWnd* > PopupList;
 	PopupList popups;
 	
 	//size of the popup window
@@ -106,9 +85,6 @@ private:
 	
 	//store handle to mainframe window
 	HWND hWnd;
-
-	//remove first popup in list and move everyone else
-	void Remove();
 
 	//used for thread safety
 	CriticalSection cs;

@@ -535,8 +535,10 @@ private:
 			if(len >= MAX_LENGTH && MAX_LENGTH > 7) {
 				name.assign(text, MAX_LENGTH - 3);
 				name.append("...");
+			} else if(len >= MAX_LENGTH){
+				name.assign(text, MAX_LENGTH);
 			} else {
-				name.assign(text);
+				name.assign(text, len);
 			}
 			len = name.length();
 			CDC dc(::GetDC(hWnd));
