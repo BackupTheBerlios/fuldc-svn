@@ -73,14 +73,16 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 	
 	TCHAR buf[512];
 	
-	if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
-		options[oldSelection].first = buf;
-	if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
-		options[oldSelection].second = buf;
-	
 	int sel = logOptions.GetSelectedIndex();
 		
 	if(sel >= 0) {
+		if(oldSelection >= 0) {
+			if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
+				options[oldSelection].first = buf;
+			if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
+				options[oldSelection].second = buf;
+		}
+
 		BOOL checkState = logOptions.GetCheckState(sel) == BST_CHECKED ? TRUE : FALSE;
 				
 		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), checkState);

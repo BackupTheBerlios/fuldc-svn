@@ -681,6 +681,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			if (BOOLSETTING(QUEUE_DIRTY)) {
 				setDirty();
 			}
+			dirty = true;
 		} else if(ti->first == UPDATE_ITEM) {
 			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
 			if(!showTree || isCurDir(ii->getPath())) {
@@ -752,7 +753,7 @@ void QueueFrame::moveSelectedDir() {
 void QueueFrame::moveDir(HTREEITEM ht, const tstring& target) {
 	HTREEITEM next = ctrlDirs.GetChildItem(ht);
 	while(next != NULL) {
-		moveDir(next, target + Util::getLastDir(getDir(next)));
+		moveDir(next, target + Util::getLastDir(getDir(next)) + _T(PATH_SEPARATOR_STR));		
 		next = ctrlDirs.GetNextSiblingItem(next);
 	}
 	tstring* s = (tstring*)ctrlDirs.GetItemData(ht);

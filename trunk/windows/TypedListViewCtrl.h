@@ -42,7 +42,7 @@ class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, C
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:
-	TypedListViewCtrl() : sortColumn(-1), sortAscending(true), ownerDraw(false) { };
+	TypedListViewCtrl() : sortColumn(-1), sortAscending(true), ownerDraw(false), state(-1) { };
 	~TypedListViewCtrl() {
 		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i){
 			delete (*i);
@@ -328,6 +328,25 @@ public:
 			
 			int nVertPos = GetScrollPos(SB_VERT);
 
+			//////////////////////////
+			//stuff for NM_CUSTOMDRAW
+			/////////////////////////
+			NMLVCUSTOMDRAW customDraw;
+			customDraw.nmcd.dwDrawStage = CDDS_PREPAINT;
+			customDraw.nmcd.hdc = memDC.m_hDC;
+			customDraw.nmcd.uItemState = CDIS_DEFAULT;
+
+			customDraw.nmcd.hdr.hwndFrom = m_hWnd;
+			customDraw.nmcd.hdr.code = NM_CUSTOMDRAW;
+			//hmm have to figure out how to get the id
+			customDraw.nmcd.hdr.idFrom = 0;
+
+			customDraw.clrText = ::GetTextColor(memDC.m_hDC);
+			customDraw.clrTextBk = ::GetBkColor(memDC.m_hDC);
+			customDraw.iSubItem = 0;
+			customDraw.dwItemType = LVCDI_ITEM;
+
+
 			for (int v=0; v<crc.Height()/16; v++) {
 				dd.itemID = v+nVertPos;    
 				DrawItem(&dd);
@@ -348,12 +367,6 @@ public:
 
 		if(!item)
 			return;
-
-		//////////////////////////
-		//stuff for NM_CUSTOMDRAW
-		/////////////////////////
-		NMLVCUSTOMDRAW customDraw;
-		customDraw
 
 		LVITEM lvItem;
 		lvItem.iItem = ld->itemID;
@@ -419,8 +432,26 @@ public:
 				}
 			}
 
+			int justify = 0;
+
+			switch(lvColumn.fmt & LVCFMT_JUSTIFYMASK){
+				case LVCFMT_CENTER:
+					justify = TA_CENTER;
+					break;
+				case LVCFMT_RIGHT:
+					justify = TA_RIGHT;
+					break;
+				case LVCFMT_LEFT:
+					justify = TA_LEFT;
+					break;
+			}
+
+			int alignment = ::SetTextAlign(ld->hDC, justify);
+
 			//rc.DeflateRect(2, 2);
 			::ExtTextOut(ld->hDC, rc.left, rc.top, ETO_CLIPPED, rc, item->getText(col).c_str(), item->getText(col).length(), NULL);
+
+			::SetTextAlign(ld->hDC, alignment);
 		}
 
 		if(lvItem.state & LVIS_SELECTED) {

@@ -605,8 +605,7 @@ void PrivateFrame::readLog() {
 	params["mycid"] = user->getClientCID().toBase32();	
 	params["cid"] = user->getCID().toBase32();	
 	params["hubaddr"] = user->getClientAddressPort();	
-	
-	string path = Util::validateFileName(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
+	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params));
 
 	try {
 		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
@@ -625,7 +624,7 @@ void PrivateFrame::readLog() {
 			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG) + 1) : 0;
 
 			for(; i < (linesCount - 1); ++i){
-				addLine(_T("- ") + Text::acpToWide(lines[i]));
+				addLine(_T("- ") + Text::toT(lines[i]));
 			}
 
 			f.close();

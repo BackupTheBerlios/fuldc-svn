@@ -321,7 +321,7 @@ wstring Util::validateFileName(wstring tmp) {
  * http:// -> port 80
  * dchub:// -> port 411
  */
-void Util::decodeUrl(const string& url, string& aServer, unsigned short& aPort, string& aFile) {
+void Util::decodeUrl(const string& url, string& aServer, u_int16_t& aPort, string& aFile) {
 	// First, check for a protocol: xxxx://
 	string::size_type i = 0, j, k;
 	

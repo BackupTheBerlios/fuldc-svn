@@ -588,15 +588,12 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 				int64_t size = i->getSize();
 				string fileName = aName + name;
-#ifdef USE_TTH
+
 				try {
 					HashManager::getInstance()->checkTTH(fileName, size, i->getLastWriteTime());
 					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, HashManager::getInstance()->getTTH(fileName, size)));
 				} catch(const HashException&) {
 				}
-#else
-				lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, NULL));
-#endif
 			}
 		}
 	}
@@ -623,10 +620,7 @@ void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	dir->size+=f.getSize();
 	dir->addType(getType(f.getName()));
 
-#ifdef USE_TTH
 	tthIndex.insert(make_pair(const_cast<TTHValue*>(&f.getTTH()), i));
-#endif
-
 	bloom.add(Text::toLower(f.getName()));
 }
 
@@ -672,7 +666,7 @@ int ShareManager::run() {
 				WLock<> l(cs);
 				StringPairList dirs = virtualMap;
 				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
-					removeDirectory( *j );
+					removeDirectory(*j, true);
 				}
 				virtualMap = dirs;
 
@@ -704,7 +698,7 @@ int ShareManager::run() {
 				StringPairList dirs = virtualMap;
 				for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
 					if(isIncoming(i->second))
-						removeDirectory(i->second);
+						removeDirectory(i->second, true);
 				}
 				
 				virtualMap = dirs;

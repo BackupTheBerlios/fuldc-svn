@@ -1175,7 +1175,7 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	
 	if(!redirect.empty()) {
 		string s, f;
-		unsigned short p = 411;
+		u_int16_t p = 411;
 		Util::decodeUrl(Text::fromT(redirect), s, p, f);
 		if(ClientManager::getInstance()->isConnected(s, p)) {
 			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
@@ -1319,7 +1319,7 @@ void HubFrame::on(UserRemoved, Client*, const User::Ptr& user) throw() {
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() { 
 	string s, f;
-	unsigned short p = 411;
+	u_int16_t p = 411;
 	Util::decodeUrl(line, s, p, f);
 	if(ClientManager::getInstance()->isConnected(s, p)) {
 		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));

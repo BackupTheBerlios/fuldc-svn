@@ -26,6 +26,7 @@
 #include "Util.h"
 #include "File.h"
 #include "version.h"
+#include "CID.h"
 #include "StringTokenizer.h"
 
 const string SettingsManager::settingTags[] =
@@ -40,8 +41,8 @@ const string SettingsManager::settingTags[] =
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
-	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", "LogFormatSystem", 
-	"LogFormatStatus",
+	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
+	"LogFormatSystem", "LogFormatStatus",
 	
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
@@ -64,7 +65,7 @@ const string SettingsManager::settingTags[] =
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
-	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", 
+	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -102,6 +103,7 @@ SettingsManager::SettingsManager()
 	setDefault(SLOTS, 1);
 	//setDefault(SERVER, Util::getLocalIp());
 	setDefault(IN_PORT, Util::rand(1025, 32000));
+	setDefault(UDP_PORT, Util::rand(1025, 32000));
 	setDefault(ROLLBACK, 4096);
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
@@ -196,6 +198,7 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
 	setDefault(SEARCH_ONLY_TTH, false);
 	setDefault(SHOW_LAST_LINES_LOG, 0);
+	setDefault(CONFIRM_ITEM_REMOVAL, 0);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -324,6 +327,9 @@ void SettingsManager::load(string const& aFileName)
 		if(v < 0.668 && isSet[IN_PORT]) {
 			set(UDP_PORT, SETTING(IN_PORT));
 		}
+
+		if(SETTING(CLIENT_ID).empty())
+			set(CLIENT_ID, CID::generate().toBase32());
 
 		setDefault(UDP_PORT, SETTING(IN_PORT));
 

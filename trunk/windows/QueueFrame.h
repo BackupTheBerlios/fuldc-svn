@@ -424,7 +424,8 @@ private:
 	}
 
 	void removeSelected() {
-		ctrlQueue.forEachSelected(&QueueItemInfo::remove);
+		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T("Really remove?"), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+			ctrlQueue.forEachSelected(&QueueItemInfo::remove);
 	}
 	
 	void removeSelectedDir() { removeDir(ctrlDirs.GetSelectedItem()); };

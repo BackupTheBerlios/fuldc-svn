@@ -282,7 +282,7 @@ public:
 		return (j != wstring::npos) ? path.substr(j+1, i-j-1) : path;
 	}
 
-	static void decodeUrl(const string& aUrl, string& aServer, unsigned short& aPort, string& aFile);
+	static void decodeUrl(const string& aUrl, string& aServer, u_int16_t& aPort, string& aFile);
 	static string validateFileName(string aFile);
 	static wstring validateFileName(wstring aFile);
 	
