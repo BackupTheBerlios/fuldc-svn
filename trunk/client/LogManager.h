@@ -44,7 +44,7 @@ public:
 		try {
 			File f(Util::validateFileName(SETTING(LOG_DIRECTORY) + area + ".log"), File::WRITE, File::OPEN | File::CREATE);
 			f.setEndPos(0);
-			f.write(msg + "\r\n");
+			f.write( Text::utf8ToAcp( msg ) + "\r\n" );
 		} catch (const FileException&) {
 			// ...
 			return false;

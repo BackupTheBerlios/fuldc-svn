@@ -460,7 +460,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 		if(i->isDirectory()) {
 			string newName = aName + name + PATH_SEPARATOR;
-			if(Util::stricmp(newName + PATH_SEPARATOR, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
+			if(Util::stricmp(newName, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
 				dir->directories[name] = buildTree(newName, dir);
 				dir->addSearchType(dir->directories[name]->getSearchTypes()); 
 			}
@@ -1349,8 +1349,6 @@ bool ShareManager::loadXmlList(){
 			string path = xml->getChildAttrib("Path");
 			if(path[path.length() - 1] != PATH_SEPARATOR)
 				path += PATH_SEPARATOR;
-			//Util::toAcp(name);
-			//Util::toAcp(path);
 			
 			Directory *d = addDirectoryFromXml(xml, NULL, name, path); 
 			addTree(path, d);
@@ -1383,9 +1381,13 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	Directory::File::Iter lastFileIter = dir->files.begin();
 	while (xml->findChild("File")) {
 		string name = xml->getChildAttrib("Name");
-		
 		u_int64_t size = xml->getIntChildAttrib("Size");
-		HashManager::getInstance()->checkTTH(aPath + PATH_SEPARATOR + name, size);
+
+		if( aPath[ aPath.length() -1 ] == PATH_SEPARATOR )
+			HashManager::getInstance()->checkTTH(aPath + name, size);
+		else
+			HashManager::getInstance()->checkTTH(aPath + PATH_SEPARATOR + name, size);
+
 		lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, NULL));
 	}
 
@@ -1440,7 +1442,10 @@ void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, c
 
 	indent += '\t';
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		i->second->toXmlList(xmlFile, indent, path + PATH_SEPARATOR + i->first);
+		if(path[ path.length() -1 ] == PATH_SEPARATOR )
+			i->second->toXmlList(xmlFile, indent, path + i->first);
+		else
+			i->second->toXmlList(xmlFile, indent, path + PATH_SEPARATOR + i->first);
 	}
 
 	Directory::File::Iter j = files.begin();
