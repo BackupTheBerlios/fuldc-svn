@@ -39,7 +39,9 @@
 #define IDC_SETTINGS_GET_USER_COUNTRY   127
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
+#define IDC_TOOLBAR                     129
 #define IDC_PUBLIST                     130
+#define IDC_REFRESH_MENU                130
 #define IDC_HUBLIST                     131
 #define IDR_MDIDIRECTORY                132
 #define IDC_SERVER                      133
@@ -467,6 +469,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        254
 #define _APS_NEXT_COMMAND_VALUE         32818
 #define _APS_NEXT_CONTROL_VALUE         1288
-#define _APS_NEXT_SYMED_VALUE           129
+#define _APS_NEXT_SYMED_VALUE           131
 #endif
 #endif

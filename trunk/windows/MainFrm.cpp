@@ -254,6 +254,7 @@ HWND MainFrame::createToolbar() {
 	largeImagesHot.CreateFromImage("icons\\toolbar20-highlight.bmp", 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	
 	ctrlToolBar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
+	ctrlToolBar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 	ctrlToolBar.SetImageList(largeImages);
 	ctrlToolBar.SetHotImageList(largeImagesHot);
 
@@ -354,7 +355,7 @@ HWND MainFrame::createToolbar() {
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_REFRESH_FILE_LIST;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_DROPDOWN;
 		
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
@@ -991,6 +992,44 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 	}
 }
 
+
+LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	LPNMTOOLBAR tb = (LPNMTOOLBAR)pnmh;
+	CMenu dropMenu;
+
+	StringList l = ShareManager::getInstance()->getDirectories();
+	dropMenu.CreatePopupMenu();
+	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, CSTRING(SETTINGS_ST_REFRESH_INCOMING));
+	int j = 1;
+	for(StringIter i = l.begin(); i != l.end(); ++i, ++j)
+		dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU+j, (*i).c_str());
+	
+	POINT pt;
+	pt.x = tb->rcButton.right;
+	pt.y = tb->rcButton.bottom;
+	ClientToScreen(&pt);
+	dropMenu.TrackPopupMenu(TPM_LEFTALIGN, pt.x, pt.y, m_hWnd);
+
+	return TBDDRET_DEFAULT;
+}
+
+LRESULT MainFrame::onRefreshMenu(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	try
+	{
+		ShareManager::getInstance()->setDirty();
+		if(wID == IDC_REFRESH_MENU){
+			ShareManager::getInstance()->refresh(false, true, false, true, false, false);
+		} else {
+			int id = wID - IDC_REFRESH_MENU -1;
+			StringList l = ShareManager::getInstance()->getDirectories();
+			ShareManager::getInstance()->refresh(l[id]);
+		}
+	} catch(ShareException) {
+		//...
+	}
+
+	return 0;
+}
 /**
  * @file
  * $Id: MainFrm.cpp,v 1.13 2004/02/22 01:24:11 trem Exp $

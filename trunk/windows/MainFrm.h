@@ -29,6 +29,7 @@
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
 #include "../client/LogManager.h"
+#include "../client/ShareManager.h"
 
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
@@ -140,8 +141,10 @@ public:
 		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_DIR_LIST, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
+		COMMAND_RANGE_HANDLER(IDC_REFRESH_MENU, IDC_REFRESH_MENU + ShareManager::getInstance()->getDirectories().size(), onRefreshMenu)
 		COMMAND_RANGE_HANDLER(IDC_SWITCH_WINDOW_1, IDC_SWITCH_WINDOW_0, onSwitchWindow)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
+		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, onDropDown)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
@@ -175,6 +178,8 @@ public:
 	LRESULT onSwitchWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCloseDisconnected(WORD , WORD , HWND , BOOL& );
 	LRESULT onStaticFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDropDown(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT onRefreshMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
