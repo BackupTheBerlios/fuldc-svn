@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,8 +45,8 @@ class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 	public UserInfoBaseHandler<HubFrame>
 {
 public:
-	DECLARE_FRAME_WND_CLASS_EX("HubFrame", IDR_HUBFRAME, 0, COLOR_3DFACE);
-	
+	DECLARE_FRAME_WND_CLASS_EX(_T("HubFrame"), IDR_HUB, 0, COLOR_3DFACE);
+
 	typedef CSplitterImpl<HubFrame> splitBase;
 	typedef MDITabChildWindowImpl<HubFrame> baseClass;
 	typedef UCHandler<HubFrame> ucBase;
@@ -128,13 +128,13 @@ public:
 	
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void addLine(string aLine, bool bold = true											);
-	void addClientLine(const string& aLine, bool inChat = true);
+	void addLine(tstring aLine, bool bold = true);
+	void addClientLine(const tstring& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
 	void runUserCommand(::UserCommand& uc);
 
-	static void openWindow(const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString, const string& description = Util::emptyString);
+	static void openWindow(const tstring& server, const tstring& nick = Util::emptyStringT, const tstring& password = Util::emptyStringT, const tstring& description = Util::emptyStringT);
 	static void closeDisconnected();
 	static void setClosing();
 	
@@ -229,72 +229,58 @@ private:
 		COLUMN_EMAIL, 
 		COLUMN_LAST
 	};
-	
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const User::Ptr& u, bool aStripIsp) : UserInfoBase(u), op(false), stripIsp(aStripIsp) { update(); };
+		UserInfo(const User::Ptr& u, bool aStripIsp) : UserInfoBase(u), op(false), stripIsp(aStripIsp) { 
+			update(); 
+		};
 
-		const string& getText(int col) const {
-			switch(col) {
-				case COLUMN_NICK: 	return stripIsp ? user->getShortNick() : user->getNick();
-				case COLUMN_SHARED: return shared;
-				case COLUMN_DESCRIPTION: return user->getDescription();
-				case COLUMN_TAG: return user->getTag();
-				case COLUMN_ISP: return user->getIsp();
-				case COLUMN_CONNECTION: return user->getConnection();
-				case COLUMN_EMAIL: return user->getEmail();
-				default: return Util::emptyString;
-			}
+		const tstring& getText(int col) const {
+			return columns[col];
 		}
 
 		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
-			if(a == NULL || b == NULL){
-				dcdebug("UserInfo::compareItems: pointer == NULL\n");
-				return 0;
+			if(col == COLUMN_NICK) {
+				if(a->getOp() && !b->getOp()) {
+					return -1;
+				} else if(!a->getOp() && b->getOp()) {
+					return 1;
+				}
 			}
-			switch(col) {
-				case COLUMN_NICK:
-					if(a->getOp() && !b->getOp()) {
-						return -1;
-					} else if(!a->getOp() && b->getOp()) {
-						return 1;
-					}
-					if(a->stripIsp)
-						return Util::stricmp(a->user->getShortNick(), b->user->getShortNick());	
-					else
-						return Util::stricmp(a->user->getNick(), b->user->getNick());	
-				case COLUMN_SHARED:	return compare(a->user->getBytesShared(), b->user->getBytesShared());
-				case COLUMN_DESCRIPTION: return Util::stricmp(a->user->getDescription(), b->user->getDescription());
-				case COLUMN_TAG: return Util::stricmp(a->user->getTag(), b->user->getTag());
-				case COLUMN_ISP: return Util::stricmp(a->user->getIsp(), b->user->getIsp());
-				case COLUMN_CONNECTION: return Util::stricmp(a->user->getConnection(), b->user->getConnection());
-				case COLUMN_EMAIL: return Util::stricmp(a->user->getEmail(), b->user->getEmail());
-				default: return 0;
-			}
+			return Util::stricmp(a->columns[col], b->columns[col]);	
 		}
 
-		void update() { shared = Util::formatBytes(user->getBytesShared()); op = user->isSet(User::OP); }
+		void update() { 
+			columns[COLUMN_NICK] = WinUtil::toT(user->getNick());
+			columns[COLUMN_SHARED] = WinUtil::toT(Util::formatBytes(user->getBytesShared()));
+			columns[COLUMN_DESCRIPTION] = WinUtil::toT(Util::formatBytes(user->getUserDescription()));
+			columns[COLUMN_TAG] = WinUtil::toT(Util::formatBytes(user->getTag()));
+			columns[COLUMN_CONNECTION] = WinUtil::toT(user->getConnection());
+			columns[COLUMN_EMAIL] = WinUtil::toT(user->getEmail());
+			op = user->isSet(User::OP); 
+		
+		}
 
-		GETSET(string, shared, Shared);
+		tstring columns[COLUMN_LAST];
 		GETSET(bool, op, Op);
 		bool stripIsp;
 	};
 
 	class PMInfo {
 	public:
-		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(m) { };
+		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(WinUtil::toT(m)) { };
 		User::Ptr user;
-		string msg;
+		tstring msg;
 	};
 
-	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
+	HubFrame(const tstring& aServer, const tstring& aNick, const tstring& aPassword, const tstring& aDescription) : 
 	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
-		updateUsers(true), curCommandPosition(0), 
-		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
-		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
-		clientContainer("edit", this, EDIT_MESSAGE_MAP),
-		ctrlFilterContainer("edit", this, FILTER_MESSAGE_MAP),
+		updateUsers(true), curCommandPosition(0),
+		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP), 
+		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
+		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
+		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
 		ctrlFilterSelContainer("COMBOBOX", this, FILTER_MESSAGE_MAP)
 	{
 		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(aServer);
@@ -354,32 +340,33 @@ private:
 		ClientManager::getInstance()->putClient(client);
 	}
 
-	typedef HASH_MAP<string, HubFrame*> FrameMap;
+	typedef HASH_MAP<tstring, HubFrame*> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 
-	string redirect;
+	tstring redirect;
 	bool timeStamps;
 	bool showJoins;
 	bool favShowJoins;
-	
-	string lastKick;
-	string lastRedir;
-	string lastServer;
+	tstring complete;
+
+	tstring lastKick;
+	tstring lastRedir;
+	tstring lastServer;
 	
 	bool waitingForPW;
 	bool extraSort;
 	bool stripIsp;
 	bool showUserList;
 
-	StringList prevCommands;
-	string currentCommand;
-	StringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
+	TStringList prevCommands;
+	tstring currentCommand;
+	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
 	StringList tabList;
 
 	Client* client;
-	string server;
+	tstring server;
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow clientContainer;
 	CContainedWindow showUsersContainer;
@@ -414,9 +401,9 @@ private:
 	static bool closing;
 
 	StringMap ucParams;
-	StringMap tabParams;
+	TStringMap tabParams;
 	bool tabMenuShown;
-	
+
 	typedef vector<pair<User::Ptr, Speakers> > UpdateList;
 	typedef UpdateList::iterator UpdateIter;
 	UpdateList updateList;
@@ -424,8 +411,8 @@ private:
 	bool updateUsers;
 
 	enum { MAX_CLIENT_LINES = 5 };
-	StringList lastLinesList;
-	string lastLines;
+	TStringList lastLinesList;
+	tstring lastLines;
 	CToolTipCtrl ctrlLastLines;
 	
 	static int columnIndexes[COLUMN_LAST];
@@ -491,7 +478,7 @@ private:
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
-	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new string(msg)); };
+	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(WinUtil::toT(msg))); };
 	void speak(Speakers s, const User::Ptr& u) { 
 		Lock l(updateCS);
 		updateList.push_back(make_pair(u, s));

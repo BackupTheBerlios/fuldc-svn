@@ -175,11 +175,11 @@ public:
 	}
 	struct CompFirst {
 		CompFirst() { } 
-		bool operator()(T& a, const string& b) {
+		bool operator()(T& a, const tstring& b) {
 			return Util::stricmp(a.getText(0), b) == -1;
 		}
 	};
-	int findItem(const string& b, int start = -1, bool aPartial = false) {
+	int findItem(const tstring& b, int start = -1, bool aPartial = false) {
 		LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
 		return FindItem(&fi, start);
 	}

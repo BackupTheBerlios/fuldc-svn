@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,13 @@
 class TextFrame : public MDITabChildWindowImpl<TextFrame>
 {
 public:
-	static void openWindow(const string& aFileName);
-	static void openWindow(deque<string>* aLog);
+	static void openWindow(const tstring& aFileName);
+	static void openWindow(deque<tstring>* aLog);
 	
-	DECLARE_FRAME_WND_CLASS_EX("TextFrame", 0, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("TextFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
-	TextFrame(const string& fileName) : file(fileName){ }
-	TextFrame(deque<string> *aLog) : log(aLog) {}
+	TextFrame(const tstring& fileName) : file(fileName){ }
+	TextFrame(deque<tstring> *aLog) : log(aLog) {}
 	
 	~TextFrame() { }
 	
@@ -90,8 +90,8 @@ public:
 	}
 	
 private:
-	deque<string> *log;
-	string file;
+	deque<tstring> *log;
+	tstring file;
 	CFulEditCtrl ctrlPad;
 	bool init;
 };

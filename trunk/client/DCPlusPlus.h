@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,41 @@ typedef StringMap::iterator StringMapIter;
 
 typedef HASH_MAP<string, bool> StringBoolMap;
 typedef StringBoolMap::iterator StringBoolMapIter;
+typedef vector<wstring> WStringList;
+typedef WStringList::iterator WStringIter;
+typedef WStringList::const_iterator WStringIterC;
+
+typedef pair<wstring, wstring> WStringPair;
+typedef vector<WStringPair> WStringPairList;
+typedef WStringPairList::iterator WStringPairIter;
+
+typedef HASH_MAP<wstring, wstring> WStringMap;
+typedef WStringMap::iterator WStringMapIter;
+
+#ifdef UNICODE
+
+typedef wstring tstring;
+typedef WStringList TStringList;
+typedef WStringIter TStringIter;
+
+typedef WStringPair TStringPair;
+typedef WStringPairIter TStringPairIter;
+typedef WStringPairList TStringPairList;
+
+typedef WStringMap TStringMap;
+typedef WStringMapIter TStringMapIter;
+#else
+typedef string tstring;
+typedef StringList TStringList;
+typedef StringIter TStringIter;
+
+typedef StringPair TStringPair;
+typedef StringPairIter TStringPairIter;
+typedef StringPairList TStringPairList;
+
+typedef StringMap TStringMap;
+typedef StringMapIter TStringMapIter;
+#endif
 
 #include "version.h"
 

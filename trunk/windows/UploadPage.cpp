@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include "UploadPage.h"
 #include "WinUtil.h"
+#include "HashProgressDlg.h"
 
 #include "../client/Util.h"
 #include "../client/ShareManager.h"
@@ -55,38 +56,25 @@ PropPage::Item UploadPage::items[] = {
 
 LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	LVITEM item;
-
-	// Get the text (directory name) of the item that just was (un)checked
-	::ZeroMemory(&item, sizeof(item));
-	item.mask = LVIS_STATEIMAGEMASK;
-
 	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
 	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_CHECKBOXES);
 		
 	ctrlTotal.Attach(GetDlgItem(IDC_TOTAL));
 
 	PropPage::read((HWND)*this, items);
 
 	// Prepare shared dir list
-	ctrlDirectories.InsertColumn(0, CSTRING(DIRECTORY), LVCFMT_LEFT, 277, 0);
-	ctrlDirectories.InsertColumn(1, CSTRING(SIZE), LVCFMT_RIGHT, 90, 1);
-	
-	blnInitializing = true;
-
-	StringList directories = ShareManager::getInstance()->getDirectories();
-	for(StringIter j = directories.begin(); j != directories.end(); j++)
+	ctrlDirectories.InsertColumn(0, CTSTRING(DIRECTORY), LVCFMT_LEFT, 277, 0);
+	ctrlDirectories.InsertColumn(1, CTSTRING(SIZE), LVCFMT_RIGHT, 90, 1);
+	StringPairList directories = ShareManager::getInstance()->getDirectories();
+	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), *j);
-		ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(*j)).c_str());
-		//dcdebug("init row %d = %s\n", i, ShareManager::getInstance()->IsIncomingDir(*j) ? "true" : "false");
-		ListView_SetCheckState(ctrlDirectories, i, ShareManager::getInstance()->isIncoming(*j));
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), WinUtil::toT(j->second));
+		ctrlDirectories.SetItemText(i, 1, WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
 	}
-	blnInitializing = false;
 	
-	ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
+	ctrlTotal.SetWindowText(WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 
 	CUpDownCtrl updown;
 	updown.Attach(GetDlgItem(IDC_SLOTSPIN));
@@ -130,46 +118,17 @@ void UploadPage::write()
 
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	char buf[MAX_PATH];
-	LVITEM item;
-
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
-	
-	// Set default item
-	if (lv->uNewState & LVIS_FOCUSED) {
-		::EnableWindow(GetDlgItem(IDC_REMOVE), TRUE);
-	}
-
-	// Are we initialzing?
-	if (!blnInitializing) {
-		// No. Check checkbox status
-		if ((lv->uChanged & LVIF_STATE) != 0) {
-			// Have the checkbox state changed?
-			if ((((lv->uNewState & INDEXTOSTATEIMAGEMASK(2)) != 0) && ((lv->uOldState & INDEXTOSTATEIMAGEMASK(1)) != 0)) || (((lv->uNewState & INDEXTOSTATEIMAGEMASK(1)) != 0) && ((lv->uOldState & INDEXTOSTATEIMAGEMASK(2)) != 0))) {
-				// Item was just checked or unchecked
-				bool bSelected = ((lv->uNewState & INDEXTOSTATEIMAGEMASK(2)) != 0);
-				dcdebug("bSelected: %s\n", (bSelected ? "true" : "false"));
-				// Extract filename
-				::ZeroMemory(&item, sizeof(item));
-				item.mask = LVIF_TEXT | LVIS_STATEIMAGEMASK;
-				item.cchTextMax = sizeof(buf);
-				item.pszText = buf;
-				item.iItem = lv->iItem;
-				if (ctrlDirectories.GetItem(&item)) {
-					// Set the incoming directory or not
-					ShareManager::getInstance()->setIncoming(buf, bSelected);
-				}
-			}
-		}
-	}
+	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	return 0;		
 }
 
 LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	string target;
+	tstring target;
 	if(WinUtil::browseDirectory(target, m_hWnd)) {
 		addDirectory(target);
+		HashProgressDlg(true).DoModal();
 	}
 	
 	return 0;
@@ -177,7 +136,7 @@ LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	char buf[MAX_PATH];
+	TCHAR buf[MAX_PATH];
 	LVITEM item;
 	::ZeroMemory(&item, sizeof(item));
 	item.mask = LVIF_TEXT;
@@ -188,13 +147,8 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		item.iItem = i;
 		ctrlDirectories.GetItem(&item);
-		ShareManager::getInstance()->removeDirectory(buf);
-		ShareManager::getInstance()->removeIncoming(buf);
-		
-		//remove the directory from the hash queue to avoid unnecessary cpu usage
-		HashManager::getInstance()->remove(buf);
-
-		ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
+		ShareManager::getInstance()->removeDirectory(WinUtil::fromT(buf));
+		ctrlTotal.SetWindowText(WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		ctrlDirectories.DeleteItem(i);
 	}
 	
@@ -218,31 +172,26 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 	// Clear the GUI list, for insertion of updated shares
 	ctrlDirectories.DeleteAllItems();
-	StringList directories = ShareManager::getInstance()->getDirectories();
-	for(StringIter j = directories.begin(); j != directories.end(); j++)
+	StringPairList directories = ShareManager::getInstance()->getDirectories();
+	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), *j);
-		ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(*j)).c_str());
-		ListView_SetCheckState(ctrlDirectories, i, ShareManager::getInstance()->isIncoming(*j));
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), WinUtil::toT(j->second));
+		ctrlDirectories.SetItemText(i, 1, WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
 	}
 
 	// Display the new total share size
-	ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
+	ctrlTotal.SetWindowText(WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 	return 0;
 }
 
-void UploadPage::addDirectory(string path){
+void UploadPage::addDirectory(tstring path){
 	try {
-		// Remove trailing \ if exists
-		if (path[path.size() - 1] == '\\') {
-			path = path.substr(0, path.size() - 1);
-		}
-		ShareManager::getInstance()->addDirectory(path);
+		ShareManager::getInstance()->addDirectory(WinUtil::fromT(path), Util::getLastDir(WinUtil::fromT(path)));
 		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), path);
-		ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(path)).c_str());
-		ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
+		ctrlDirectories.SetItemText(i, 1, WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(WinUtil::fromT(path)))).c_str());
+		ctrlTotal.SetWindowText(WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 	} catch(const ShareException& e) {
-		MessageBox(e.getError().c_str(), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
+		MessageBox(WinUtil::toT(e.getError()).c_str(), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 	}
 }
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>,
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
-	static void gotMessage(const User::Ptr& aUser, const string& aMessage);
-	static void openWindow(const User::Ptr& aUser, const string& aMessage = Util::emptyString);
+	static void gotMessage(const User::Ptr& aUser, const tstring& aMessage);
+	static void openWindow(const User::Ptr& aUser, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 	static void closeAll();
 
@@ -49,7 +49,7 @@ public:
 		USER_UPDATED
 	};
 
-	DECLARE_FRAME_WND_CLASS_EX("PrivateFrame", IDR_PRIVATEFRAME, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("PrivateFrame"), IDR_PRIVATE, 0, COLOR_3DFACE);
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
@@ -103,7 +103,7 @@ public:
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	void addLine(const string& aLine, bool bold = true);
+	void addLine(const tstring& aLine, bool bold = true);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
@@ -147,22 +147,22 @@ public:
 		return 0;
 	}
 	
-	void addClientLine(const string& aLine) {
+	void addClientLine(const tstring& aLine) {
 		if(!created) {
 			CreateEx(WinUtil::mdiClient);
 		}
-		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
+		ctrlStatus.SetText(0, (_T("[") + WinUtil::toT(Util::getShortTimeString()) + _T("] ") + aLine).c_str());
 		
 		if(BOOLSETTING(PM_BOLD_TABS))
 			setDirty();
 	}
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
-	void sendMessage(const string& msg) {
+	void sendMessage(const tstring& msg) {
 		if(user && user->isOnline()) {
-			string s = "<" + user->getClientNick() + "> " + msg;
+			string s = "<" + user->getClientNick() + "> " + WinUtil::fromT(msg);
 			user->privateMessage(s);
-			addLine(s);
+			addLine(WinUtil::toT(s));
 		}
 	}
 	
@@ -205,19 +205,19 @@ private:
 	//needed to receive WM_CONTEXTMENU
 	CContainedWindow ctrlClientContainer;
 
-	StringList prevCommands;
-	string currentCommand;
-	StringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
+	TStringList prevCommands;
+	tstring currentCommand;
+	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
 	CMenu userMenu;
 	CMenu mcMenu;
 	CMenu searchMenu;
 
-	string searchTerm;
+	tstring searchTerm;
 	
 	void updateTitle() {
 		if(user->isOnline()) {
-			SetWindowText(user->getFullNick().c_str());
+			SetWindowText(WinUtil::toT(user->getFullNick()).c_str());
 			setDisconnected(false);
 			if(offline){
 				addLine("*** " + STRING(USER_CAME_ONLINE), false);
@@ -225,9 +225,9 @@ private:
 			}
 		} else {
 			if(user->getClientName() == STRING(OFFLINE)) {
-				SetWindowText(user->getFullNick().c_str());
+				SetWindowText(WinUtil::toT(user->getFullNick()).c_str());
 			} else {
-				SetWindowText((user->getFullNick() + " [" + STRING(OFFLINE) + "]").c_str());
+				SetWindowText((WinUtil::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
 			}
 			addLine("*** " + STRING(USER_WENT_OFFLINE), false);
             setDisconnected(true);

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,13 +71,13 @@ public:
 	static HFONT tabFont;
 	static CMenu mainMenu;
 	static int dirIconIndex;
-	static StringList lastDirs;
+	static TStringList lastDirs;
 	static HWND mainWnd;
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
-	static string commands;
+	static tstring commands;
 	static HHOOK hook;
-	static string tth;
+	static tstring tth;
 	static HWND findDialog;
 	static const u_int32_t startTime;
 	static DWORD comCtlVersion;
@@ -88,7 +88,7 @@ public:
 	static void init(HWND hWnd);
 	static void uninit();
 
-	static void decodeFont(const string& setting, LOGFONT &dest);
+	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
 	static void SetIcon(HWND hWnd, string file, bool big = false);
 	static void copyToClipboard(const string & aStr);
@@ -108,10 +108,10 @@ public:
 	 * @param status Message that should be shown in the status line.
 	 * @return True if the command was processed, false otherwise.
 	 */
-	static bool checkCommand(string& cmd, string& param, string& message, string& status);
+	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
 
-	static int getTextWidth(const string& str, HWND hWnd);
-	static int getTextWidth(const string& str, HDC dc);
+	static int getTextWidth(const tstring& str, HWND hWnd);
+	static int getTextWidth(const tstring& str, HDC dc);
 	static int getTextWidth(HWND wnd, HFONT fnt);
 	static int getTextHeight(HWND wnd, HFONT fnt);
 	static int getTextHeight(HDC dc, HFONT fnt);
@@ -119,21 +119,38 @@ public:
 	static int getTextSpacing(HWND wnd, HFONT fnt); 
 
 	static void addLastDir(const string& dir);
-	
+#ifdef UNICODE
+	static wstring toT(const string& str) {
+		return Util::utf8ToWide(str);
+	}
+	static string fromT(const wstring& str) {
+		return Util::wideToUtf8(str);
+	}
+#else
+	static string toT(const string& str) {
+		string tmp;
+		return Util::toAcp(str, tmp);
+	}
+	static string fromT(const string& str) {
+		string tmp;
+		return Util::toUtf8(str, tmp);
+	}
+#endif
+
 	static string encodeFont(LOGFONT const& font);
-		
-	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL, const char* defExt = NULL);
-	static bool browseDirectory(string& target, HWND owner = NULL);
+	
+	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
+	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
 	static void searchHash(TTHValue* /*aHash*/);
 	static void registerDchubHandler();
-	static void parseDchubUrl(const string& /*aUrl*/);
-	static void openLink(const string& url);
-	static void openFile(const string& file) {
+	static void parseDchubUrl(const tstring& /*aUrl*/);
+	static void openLink(const tstring& url);
+	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 
-	static int getIconIndex(const string& aFileName);
+	static int getIconIndex(const tstring& aFileName);
 
 	static int getDirIconIndex() {
 		return dirIconIndex;

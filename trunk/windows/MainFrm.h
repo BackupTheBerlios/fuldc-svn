@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public:
 	MainFrame();
 	virtual ~MainFrame();
 
-	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
+	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
 	CMDICommandBarCtrl m_CmdBar;
 
@@ -144,6 +144,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
 		COMMAND_ID_HANDLER(ID_FILE_QUICK_CONNECT, onQuickConnect)
 		COMMAND_RANGE_HANDLER(IDC_SWITCH_WINDOW_1, IDC_SWITCH_WINDOW_0, onSwitchWindow)
+		COMMAND_ID_HANDLER(IDC_HASH_PROGRESS, onHashProgress)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, onDropDown)
 		CHAIN_MDI_CHILD_COMMANDS()
@@ -161,6 +162,7 @@ public:
 
 	LRESULT onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -187,7 +189,7 @@ public:
 
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void parseCommandLine(const string& cmdLine);
+	void parseCommandLine(const tstring& cmdLine);
 
 	LRESULT MainFrame::onCheckButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/){
 		ctrlToolBar.CheckButton(wParam, lParam);
@@ -248,7 +250,7 @@ public:
 	}
 	
 	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		WinUtil::openFile(SETTING(DOWNLOAD_DIRECTORY));
+		WinUtil::openFile(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)));
 		return 0;
 	}
 
@@ -288,16 +290,16 @@ private:
 	public:
 		DirectoryListInfo(LPARAM lp = NULL) : lParam(lp) { };
 		User::Ptr user;
-		string file;
-		string start;
+		tstring file;
+		tstring start;
 		LPARAM lParam;
 	};
 	
 	TransferView transferView;
 
 	enum { MAX_CLIENT_LINES = 10 };
-	StringList lastLinesList;
-	string lastLines;
+	TStringList lastLinesList;
+	tstring lastLines;
 	CToolTipCtrl ctrlLastLines;
 	CToolBarCtrl ctrlToolBar;
 
@@ -331,14 +333,14 @@ private:
 	bool missedAutoConnect;
 
 	struct {
-		string homepage;
-		string downloads;
-		string translations;
-		string faq;
-		string help;
-		string discuss;
-		string features;
-		string bugs;
+		tstring homepage;
+		tstring downloads;
+		tstring translations;
+		tstring faq;
+		tstring help;
+		tstring discuss;
+		tstring features;
+		tstring bugs;
 	} links;
 
 	HWND createToolbar();
@@ -351,7 +353,7 @@ private:
 	MainFrame(const MainFrame&) { dcassert(0); };
 
 	// LogManagerListener
-	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new string(m)); };
+	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new tstring(WinUtil::toT(m))); };
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second type, u_int32_t aTick) throw();

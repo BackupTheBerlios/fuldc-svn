@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -361,7 +361,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			shortName = name;
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::HubName(), this);
 	} else if(cmd == "$Supports") {
-		StringTokenizer st(param, ' ');
+		StringTokenizer<string> st(param, ' ');
 		StringList& sl = st.getTokens();
 		for(StringIter i = sl.begin(); i != sl.end(); ++i) {
 			if(*i == "UserCommand") {
@@ -477,7 +477,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
 			User::List v;
-			StringTokenizer t(param, "$$");
+			StringTokenizer<string> t(param, "$$");
 			StringList& l = t.getTokens();
 			for(StringIter it = l.begin(); it != l.end(); ++it) {
 				string::size_type j = 0;
@@ -494,7 +494,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$NickList") {
 		if(!param.empty()) {
 			User::List v;
-			StringTokenizer t(param, "$$");
+			StringTokenizer<string> t(param, "$$");
 			StringList& sl = t.getTokens();
 
 			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
@@ -529,7 +529,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$OpList") {
 		if(!param.empty()) {
 			User::List v;
-			StringTokenizer t(param, "$$");
+			StringTokenizer<string> t(param, "$$");
 			StringList& sl = t.getTokens();
 			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
 				v.push_back(ClientManager::getInstance()->getUser(*it, this));

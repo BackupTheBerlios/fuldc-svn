@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ private:
 			}
 		} 
 	}
-	size_t getPos(const string& s, int i, int l) { HashFunc h; return (h(&s[i], l) % table.size()); }
+	size_t getPos(const string& s, int i, int l) { return (HashFunc()(&s[i], l) % table.size()); }
 	
 	vector<bool> table;
 };

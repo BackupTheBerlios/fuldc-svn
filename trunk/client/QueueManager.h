@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,6 +124,15 @@ public:
 		}
 	}
 
+	void getTargetsByRoot(StringList& sl, const TTHValue& tth) {
+		Lock l(cs);
+		QueueItem::List ql;
+		fileQueue.find(ql, &tth);
+		for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
+			sl.push_back((*i)->getTarget());
+		}
+	}
+
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
 	void unlockQueue() throw() { cs.leave(); };
 
@@ -203,7 +212,7 @@ private:
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
-		void find(QueueItem::List& ql, TTHValue* tth);
+		void find(QueueItem::List& ql, const TTHValue* tth);
 
 		QueueItem* findAutoSearch(StringList& recent);
 		size_t getSize() { return queue.size(); };

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		fire(UserConnectionListener::MaxedOut(), this);
 	} else if(cmd == "$Supports") {
 		if(!param.empty()) {
-			fire(UserConnectionListener::Supports(), this, StringTokenizer(param, ' ').getTokens());
+			fire(UserConnectionListener::Supports(), this, StringTokenizer<string>(param, ' ').getTokens());
 		}
 	} else if(cmd.compare(0, 4, "$ADC") == 0) {
 		dispatch(aLine, true);

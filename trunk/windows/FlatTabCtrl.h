@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -277,7 +277,7 @@ public:
 					ClientToScreen(&pt);
 					CMenu mnu;
 					mnu.CreatePopupMenu();
-					mnu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CSTRING(CLOSE));
+					mnu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 					mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd);
 				}
 				break;
@@ -374,7 +374,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
 		chevron.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 			BS_PUSHBUTTON , 0, IDC_CHEVRON);
-		chevron.SetWindowText("»");
+		chevron.SetWindowText(_T("»"));
 
 		mnu.CreatePopupMenu();
 
@@ -383,7 +383,7 @@ public:
 		height = WinUtil::getTextHeight(dc) + 7;
 		dc.SelectFont(oldfont);
 		::ReleaseDC(m_hWnd, dc);
-
+		
 		return 0;
 	}
 
@@ -459,7 +459,7 @@ public:
 		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* ti = *i;
 			if(ti->row == -1) {
-				mi.dwTypeData = (LPSTR)ti->name.c_str();
+				mi.dwTypeData = (LPTSTR)ti->name;
 				mi.dwItemData = (DWORD)ti->hWnd;
 				mi.fState = MFS_ENABLED | (ti->dirty ? MFS_CHECKED : 0);
 				mi.wID = IDC_SELECT_WINDOW + n;
@@ -518,7 +518,7 @@ private:
 		const int MAX_LENGTH;
 		HWND hWnd;
 		int len;
-		string name;
+		tstring name;
 		SIZE size;
 		SIZE boldSize;
 		int xpos;
@@ -533,7 +533,7 @@ private:
 		HICON hIcon;
 
 		bool update() {
-			char *name2 = new char[MAX_LENGTH+2];
+			THCAR *name2 = new TCHAR[MAX_LENGTH+2];
 			::GetWindowText(hWnd, name2, MAX_LENGTH+1);
 			bool ret = updateText(name2);
 			delete[] name2;

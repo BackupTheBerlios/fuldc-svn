@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,15 +35,15 @@
 #include "FulAdvancedPage.h"
 #include "FulAppearance.h"
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CSTRING(SETTINGS))
+PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
-	pages[0]  = new GeneralPage(s);
-	pages[1]  = new DownloadPage(s);
-	pages[2]  = new UploadPage(s);
-	pages[3]  = new AppearancePage(s);
-	pages[4]  = new Advanced2Page(s);
-	pages[5]  = new AdvancedPage(s);
-	pages[6]  = new UCPage(s);
+	pages[0] = new GeneralPage(s);
+	pages[1] = new DownloadPage(s);
+	pages[2] = new UploadPage(s);
+	pages[3] = new AppearancePage(s);
+	pages[4] = new Advanced2Page(s);
+	pages[5] = new AdvancedPage(s);
+	pages[6] = new UCPage(s);
 	pages[7]  = new FulPage(s);
 	pages[8]  = new FulPage2(s);
 	pages[9]  = new FulAdvancedPage(s);

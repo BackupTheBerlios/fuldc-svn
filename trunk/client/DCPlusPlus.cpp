@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 		SettingsManager::getInstance()->set(SettingsManager::OPEN_PUBLIC, false);
 	}
 	if(v <= 0.251) {
-		StringTokenizer st(SETTING(HUBLIST_SERVERS), ';');
+		StringTokenizer<string> st(SETTING(HUBLIST_SERVERS), ';');
 		StringList& sl = st.getTokens();
 		StringList sl2;
 		bool defFound = false;

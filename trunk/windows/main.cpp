@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 	if(File::getSize(Util::getAppPath() + "DCPlusPlus.pdb") == -1) {
 		// No debug symbols, we're not interested...
-		::MessageBox(WinUtil::mainWnd, "DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution...", "DC++ has crashed", MB_OK);
+		::MessageBox(WinUtil::mainWnd, _T("DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution..."), _T("DC++ has crashed"), MB_OK);
 #ifndef _DEBUG
 		exit(1);
 #else
@@ -118,7 +118,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	f.close();
 
-	MessageBox(WinUtil::mainWnd, "fulDC just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of fulDC. A file named \"exceptioninfo.txt\" has been generated in the same directory as fulDC. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "fulDC Has Crashed", MB_OK | MB_ICONERROR);
+	MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of fulDC. A file named \"exceptioninfo.txt\" has been generated in the same directory as fulDC. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed."), _T("fulDC Has Crashed"), MB_OK | MB_ICONERROR);
 
 #ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
@@ -131,12 +131,12 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 static void sendCmdLine(HWND hOther, LPTSTR lpstrCmdLine)
 {
-	string cmdLine = _T(lpstrCmdLine);
+	tstring cmdLine = lpstrCmdLine;
 	LRESULT result;
 
 	COPYDATASTRUCT cpd;
 	cpd.dwData = 0;
-	cpd.cbData = cmdLine.length() + 1;
+	cpd.cbData = sizeof(TCHAR)*(cmdLine.length() + 1);
 	cpd.lpData = (void *)cmdLine.c_str();
 	result = SendMessage(hOther, WM_COPYDATA, NULL,	(LPARAM)&cpd);
 }
@@ -162,7 +162,7 @@ static DWORD checkCommonControls() {
 	HINSTANCE hinstDll;
 	DWORD dwVersion = 0;
 	
-	hinstDll = LoadLibrary("comctl32.dll");
+	hinstDll = LoadLibrary(_T("comctl32.dll"));
 	
 	if(hinstDll)
 	{
@@ -190,7 +190,7 @@ static DWORD checkCommonControls() {
 	}
 
 	if(dwVersion < PACKVERSION(5,80)) {
-		MessageBox(NULL, "Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly.", "User Interface Warning", MB_OK);
+		MessageBox(NULL, _T("Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T("User Interface Warning"), MB_OK);
 	}
 
 	return dwVersion;
@@ -290,7 +290,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 {
 	dcdebug("String: %d\n", sizeof(string));
 #ifndef _DEBUG
-	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
+	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}"));
 
 	if(dcapp.IsAnotherInstanceRunning()) {
 		HWND hOther = NULL;
@@ -342,8 +342,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			n2 = DEBUG_BUFSIZE;
 		}
 		tth.finalize();
-		WinUtil::tth = tth.getRoot().toBase32();
-		strcpy(::tth, WinUtil::tth.c_str());
+		strcpy(::tth, tth.getRoot().toBase32().c_str());
+		WinUtil::tth = WinUtil::toT(::tth);
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
