@@ -232,11 +232,8 @@ PME::match(const std::string & s, ///< s String to match against
 
 
 	int returnvalue = 0;
-	if ( nMatches > 0 ) {
+	if ( nMatches > 0 )
 		returnvalue = nMatches;
-	} else {
-		returnvalue = 0;
-	}
 
 	return returnvalue;
 }
