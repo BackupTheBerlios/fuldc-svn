@@ -179,7 +179,7 @@ string::size_type SimpleXMLReader::loadAttribs(const string& name, const string&
 		}
 		// Ok, we have an attribute...
 		attribs.push_back(make_pair(tmp.substr(i, j-i), tmp.substr(x, y-x)));
-		SimpleXML::escape(attribs.back().second, true, true);
+		SimpleXML::escape(attribs.back().second, true, true, utf8);
 
 		i = tmp.find_first_not_of(' ', y + 1);
 		if(tmp[i] == '/' || tmp[i] == '>') {
@@ -243,7 +243,7 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 			{
 				if(!hasChildren) {
 					data = tmp.substr(start, i - start - 2);
-					SimpleXML::escape(data, false, true);
+					SimpleXML::escape(data, false, utf8);
 				} else {
 					data.clear();
 				}
