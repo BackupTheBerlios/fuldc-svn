@@ -115,7 +115,7 @@ private:
 		}
 
 		static int compareItems(UserInfo* a, UserInfo* b, int col) {
-			return Util::stricmp(a->columns[col], b->columns[col]);
+			return Util::lstricmp(a->columns[col], b->columns[col]);
 		}
 
 		void remove() { HubManager::getInstance()->removeFavoriteUser(user); }

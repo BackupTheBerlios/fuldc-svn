@@ -268,7 +268,7 @@ private:
 					switch(col) {
 					case COLUMN_EXACTSIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
 					case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
-					default: return Util::stricmp(a->columns[col], b->columns[col]);
+					default: return Util::lstricmp(a->columns[col], b->columns[col]);
 					}
 				} else {
 					return -1;
@@ -279,7 +279,7 @@ private:
 				switch(col) {
 				case COLUMN_EXACTSIZE: return compare(a->file->getSize(), b->file->getSize());
 				case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
-				default: return Util::stricmp(a->columns[col], b->columns[col]);
+				default: return Util::lstricmp(a->columns[col], b->columns[col]);
 				}
 			}
 		}

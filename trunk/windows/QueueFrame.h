@@ -259,7 +259,7 @@ private:
 				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
 				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
 				case COLUMN_ADDED: return compare(a->getAdded(), b->getAdded());
-				default: return Util::stricmp(a->getDisplay()->columns[col], b->getDisplay()->columns[col]);
+				default: return Util::lstricmp(a->getDisplay()->columns[col], b->getDisplay()->columns[col]);
 			}
 		}
 

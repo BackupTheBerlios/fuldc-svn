@@ -552,10 +552,24 @@ public:
 		return n == 0 ? 0 : ((int)Text::toLower(*a)) - ((int)Text::toLower(*b));
 	}
 
+	static int lstricmp(const wchar_t* a, const wchar_t* b) {
+		int ret = CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE, a, -1, b, -1);
+		//0 means it failed, might give weird results? but i don't know
+		//what else should be done to handle the error gracefully
+		if(ret == 0) {
+			dcdebug("Util::lstricmp: %s", Util::translateError(GetLastError()));
+			return ret;
+		}
+
+		return ret - 2;
+	}
+
 	static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
 	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); };
 	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); };
 	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); };
+	static int lstricmp(const wstring& a, const wstring& b) { return lstricmp(a.c_str(), b.c_str());}
+
 	
 	static string validateMessage(string tmp, bool reverse, bool checkNewLines = true);
 
