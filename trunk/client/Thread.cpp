@@ -23,10 +23,13 @@
 
 #include "ResourceManager.h"
 
+#include <process.h>
+
 #ifdef _WIN32
 void Thread::start() throw(ThreadException) {
 	join();
-	if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
+	//if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
+	if( (threadHandle = reinterpret_cast<HANDLE>(_beginthreadex(NULL, 0, &starter, this, 0, reinterpret_cast<unsigned int*>(&threadId)))) == NULL) {
 		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 	}
 }

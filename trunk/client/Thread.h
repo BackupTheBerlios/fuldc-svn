@@ -129,7 +129,7 @@ private:
 #ifdef _WIN32
 	HANDLE threadHandle;
 	DWORD threadId;
-	static DWORD WINAPI starter(void* p) {
+	static unsigned int  WINAPI starter(void* p) {
 		Thread* t = (Thread*)p;
 		t->run();
 		return 0;
