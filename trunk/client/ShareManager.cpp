@@ -183,6 +183,8 @@ void ShareManager::load(SimpleXML* aXml) {
 	WLock l(cs);
 	
 	string tmp;
+	aXml->resetCurrentChild();
+
 	if(aXml->findChild("Share")) {
 		aXml->stepIn();
 		while(aXml->findChild("Directory")) {

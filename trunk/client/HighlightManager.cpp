@@ -19,6 +19,8 @@ HighlightManager::~HighlightManager(void)
 }
 
 void HighlightManager::load(SimpleXML *aXml){
+	aXml->resetCurrentChild();
+
 	if(aXml->findChild("Highlights")) {
 		aXml->stepIn();
 		while(aXml->findChild("Highlight")) {

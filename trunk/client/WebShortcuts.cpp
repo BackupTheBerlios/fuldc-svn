@@ -36,6 +36,8 @@ WebShortcuts::~WebShortcuts() {
 void WebShortcuts::load(SimpleXML* xml) {
 	clear();
 
+	xml->resetCurrentChild();
+
 	if(xml->findChild("WebShortcuts")){
 		xml->stepIn();
 		WebShortcut* tmp = NULL;
