@@ -12,6 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 	
 #include "pme.h"
+#include "../client/Util.h"
 	
 unsigned int PME::DeterminePcreOptions ( const std::string & opts ///< perl style character modifiers -- i.e. "gi" is global, case-insensitive
  )
@@ -114,6 +115,19 @@ PME::PME(const std::string & s ///< string to copmile into regular expression
 
 }
 
+PME::PME(const std::wstring & s ///< string to copmile into regular expression
+			, unsigned opts ///< PCRE-style option flags to be set on PME object
+)
+{
+	reset ( );
+	m_isglobal = 0;
+	_opts = opts;
+	compile(Util::wideToUtf8(s));
+	extra = NULL;
+	lastglobalposition = 0;
+	nMatches = 0;
+}
+
 PME::PME ( const std::string & s, ///< string to compile into regular expression
 		   const std::string & opts ///< perl-style character flags to be set on PME object 
 )
@@ -122,6 +136,20 @@ PME::PME ( const std::string & s, ///< string to compile into regular expression
 	m_isglobal = 0;
 	_opts = DeterminePcreOptions ( opts );
 	compile ( s );
+	extra = NULL;
+	lastglobalposition = 0;
+	nMatches = 0;
+
+}
+
+PME::PME ( const std::wstring & s, ///< string to compile into regular expression
+		  const std::wstring & opts ///< perl-style character flags to be set on PME object 
+		  )
+{
+	reset ( );
+	m_isglobal = 0;
+	_opts = DeterminePcreOptions ( Util::wideToUtf8(opts) );
+	compile ( Util::wideToUtf8(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -143,6 +171,20 @@ PME::PME(const char * s, ///< string to compile into regular expression
 
 }
 
+PME::PME(const wchar_t * s, ///< string to compile into regular expression
+		 unsigned opts ///< PCRE-style option flags to be set on PME object
+		 )
+{
+	reset ( );
+	m_isglobal = 0;
+	_opts = opts;
+	compile( Util::wideToUtf8(s) );
+	extra = NULL;
+	lastglobalposition = 0;
+	nMatches = 0;
+
+}
+
 PME::PME ( const char * s, ///< string to compile into regular expression
 			   const std::string & opts ///< perl-style character flags to be set on PME object
 )
@@ -151,6 +193,20 @@ PME::PME ( const char * s, ///< string to compile into regular expression
 	m_isglobal = 0;
 	_opts = DeterminePcreOptions ( opts );
 	compile ( s );
+	extra = NULL;
+	lastglobalposition = 0;
+	nMatches = 0;
+
+}
+
+PME::PME ( const wchar_t * s, ///< string to compile into regular expression
+		  const std::wstring & opts ///< perl-style character flags to be set on PME object
+		  )
+{
+	reset ( );
+	m_isglobal = 0;
+	_opts = DeterminePcreOptions ( Util::wideToUtf8(opts) );
+	compile ( Util::wideToUtf8(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -240,6 +296,14 @@ PME::match(const std::string & s, ///< s String to match against
 	return returnvalue;
 }
 
+int
+PME::match(const std::string & s, ///< s String to match against
+		   unsigned offset ///< offset Offset at which to start matching
+		   )
+{
+	return match( Util::wideToUtf8(s), offset );
+}
+
 std::string
 PME::substr(const std::string & s, const vector<PME::markers> & marks,
 			  unsigned index)
@@ -254,6 +318,13 @@ PME::substr(const std::string & s, const vector<PME::markers> & marks,
 		return "";
 	int end = marks[index].second;
 	return s.substr(begin, end-begin);
+}
+
+std::wstring
+PME::substr(const std::wstring & s, const vector<PME::markers> & marks,
+			unsigned index)
+{
+	return Util::utf8ToWide( substr( Util::wideToUtf8( s ), marks, index) );
 }
 
 
@@ -376,6 +447,12 @@ PME::split(const std::string & s, unsigned maxfields)
 	return m_marks.size ( );
 }
 
+int
+PME::split(const std::wstring & s, unsigned maxfields)
+{
+	return split( Util::wideToUtf8( s ), maxfields );
+}
+
 
 void PME::study()
 {
@@ -469,6 +546,12 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 
 }
 
+std::wstring PME::sub ( const std::wstring & s, const std::wstring & r,
+					  int dodollarsubstitution )
+{
+	return Util::utf8ToWide( sub( Util::wideToUtf8( s ), Util::wideToUtf8( r ), dodollarsubstitution ) );
+}
+
 
 StringVector PME::GetStringVector ( ) 
 {
@@ -485,6 +568,20 @@ StringVector PME::GetStringVector ( )
 
 	return oStringVector;
 
+}
+
+WStringVector PME::GetStringVectorW ( )
+{
+	WStringVector oStringVector;
+
+	for ( int nCurrentMatch = 0;
+		  nCurrentMatch < nMatches;
+		  nCurrentMatch++; ) {
+
+			  oStringVector.insert( oStringVector.end ( ), Util::utf8ToWide( (*this)[nCurrentMatch] ) );
+		  }
+
+	return oStringVector;
 }
 
 int PME::GetStartPos( int _backRef )
@@ -514,7 +611,12 @@ void PME::Init(const std::string & s, unsigned opts )
 	nMatches = 0;
 }
 
-void PME::Init(const std::string & s, const std::string & opts)
+void PME::Init(const std::wstring & s, unsigned opts )
+{
+	Init( Util::wideToUtf8( s ), opts );
+}
+
+void PME::Init(const std::string & s, const std::string & opts )
 {
 	reset ( );
 	m_isglobal = 0;
@@ -523,4 +625,9 @@ void PME::Init(const std::string & s, const std::string & opts)
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
+}
+
+void PME::Init(const std::wstring & s, const std::wstring & opts )
+{
+	Init( Util::wideToUtf8( s ), Util::wideToUtf8(opts) );
 }

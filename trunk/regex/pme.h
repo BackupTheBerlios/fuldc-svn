@@ -43,6 +43,7 @@ using namespace std;
  *   from backrefs and splits.
  */
 typedef vector < std::string > StringVector;
+typedef vector < std::wstring > WStringVector;
 class PME
 {
 public:
@@ -52,15 +53,19 @@ public:
 
 	/// s is the regular expression, opts are PCRE flags bit-wise or'd together
 	PME(const std::string & s, unsigned opts );
+	PME(const std::wstring & s, unsigned opts );
 
 	/// s is the regular expression, opts is a perl-like string of modifier letters "gi" is global and case insensitive
 	PME(const std::string & s, const std::string & opts = "");
+	PME(const std::wstring & s, const std::wstring & opts = L"");
 
 	/// s is the regular expression, opts are PCRE flags bit-wise or'd together
 	PME(const char * s, unsigned opts );
+	PME(const wchar_t * s, unsigned opts );
 
 	/// s is the regular expression, opts is a perl-like string of modifier letters "gi" is global and case insensitive  
 	PME ( const char * s, const std::string & opts = "" );
+	PME ( const wchar_t *s, const std::wstring & opts = L"" );
 
 	/// PME copy constructor
 	PME(const PME & r);
@@ -82,15 +87,22 @@ public:
 
 	/// runs a match on s against the regex 'this' was created with -- returns the number of matches found
 	int         			match(const std::string & s, unsigned offset = 0);
+	int						match(const std::wstring & s, unsigned offset = 0);
 
 	/// splits s based on delimiters matching the regex.
 	int         			split(const std::string & s, ///< string to split on
 								  unsigned maxfields = 0 ///< maximum number of fields to be split out.  0 means split all fields, but discard any trailing empty bits.  Negative means split all fields and keep trailing empty bits.  Positive means keep up to N fields including any empty fields less than N.  Anything remaining is in the last field.
-);
+	);
+	int						split(const std::wstring &s, ///< string to split on
+								  unsigned maxfields = 0 ///< maximum number of fields to be split out.  0 means split all fields, but discard any trailing empty bits.  Negative means split all fields and keep trailing empty bits.  Positive means keep up to N fields including any empty fields less than N.  Anything remaining is in the last field.
+	);
 
 	/// substitutes out whatever matches the regex for the second paramter
 	std::string             sub ( const std::string & s, 
 								  const std::string & r,
+								  int dodollarsubstitution = 0 );
+	std::wstring			sub ( const std::wstring & s,
+								  const std::wstring & r, 
 								  int dodollarsubstitution = 0 );
 
 	/// study the regular expression to make it faster
@@ -98,7 +110,7 @@ public:
 
 	/// returns the substring from the internal m_marks vector requires having run match or split first
 	std::string             operator[](int);
-
+	
 	/// resets the regex object -- mostly useful for global matching
 	void                    reset();
 
@@ -113,15 +125,18 @@ public:
 
 	/// s is the regular expression, opts are PCRE flags bit-wise or'd together
 	void					Init( const std::string & s, unsigned opts );
+	void					Init( const std::wstring & s, unsigned opts );
 
 	/// s is the regular expression, opts is a perl-like string of modifier letters "gi" is global and case insensitive
 	void					Init( const std::string & s, const std::string & opts = "" );
+	void					Init( const std::wstring & s, const std::wstring & opts = L"" );
 
 	/// whether this regex is valid
 	int IsValid ( ) { return nValid; }
 
 	/// returns a vector of strings for the last match/split/sub
-	StringVector GetStringVector ( );
+	StringVector  GetStringVector  ( );
+	WStringVector GetStringVectorW ( );
 
 
 protected:
