@@ -471,13 +471,13 @@ public:
 	static int stricmp(const wchar_t* a, const wchar_t* b) {
 		while(*a && Text::toLower(*a) == Text::toLower(*b))
 			++a, ++b;
-		return Text::toLower(*b) - Text::toLower(*a);
+		return Text::toLower(*a) - Text::toLower(*b);
 	}
 	static int strnicmp(const wchar_t* a, const wchar_t* b, size_t n) {
 		while(n && *a && Text::toLower(*a) == Text::toLower(*b))
 			--n, ++a, ++b;
 
-		return n == 0 ? 0 : Text::toLower(*b) - Text::toLower(*a);
+		return n == 0 ? 0 : Text::toLower(*a) - Text::toLower(*b);
 	}
 
 	//static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
