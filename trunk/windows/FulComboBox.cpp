@@ -81,7 +81,9 @@ LRESULT CFulComboBox::onDrawItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 			}
 
 			TCHAR* buf = NULL;
+			
 			int length = SendMessage(CB_GETLBTEXTLEN, di->itemID, 0);
+
 			if(length != CB_ERR) {
 				buf = new TCHAR[length+1];
 				if(CB_ERR == SendMessage(CB_GETLBTEXT, di->itemID, reinterpret_cast<LPARAM>(buf))) {
