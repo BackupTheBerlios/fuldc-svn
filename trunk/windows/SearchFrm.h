@@ -39,7 +39,7 @@
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 #define SHOWUI_MESSAGE_MAP 7
 
-class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, 
+class SearchFrame : public MDITabChildWindowImpl<SearchFrame>,
 	private SearchManagerListener, private ClientManagerListener, 
 	public UCHandler<SearchFrame>, public UserInfoBaseHandler<SearchFrame>
 {
@@ -48,7 +48,7 @@ public:
 	
 	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", 0, 0, COLOR_3DFACE)
 
-	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
+	typedef MDITabChildWindowImpl<SearchFrame> baseClass;
 	typedef UCHandler<SearchFrame> ucBase;
 	typedef UserInfoBaseHandler<SearchFrame> uicBase;
 

@@ -36,7 +36,7 @@
 
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
-class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>, 
+class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>, 
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
@@ -55,7 +55,7 @@ public:
 		delete this;
 	}
 
-	typedef MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)> baseClass;
+	typedef MDITabChildWindowImpl<PrivateFrame> baseClass;
 	typedef UCHandler<PrivateFrame> ucBase;
 
 	BEGIN_MSG_MAP(PrivateFrame)

@@ -36,13 +36,13 @@
 #define STATUS_MESSAGE_MAP 9
 #define VIEW_MESSAGE_MAP   10
 
-class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>, public CSplitterImpl<DirectoryListingFrame>
+class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, public CSplitterImpl<DirectoryListingFrame>
 {
 public:
 	static void openWindow(const string& aFile, const User::Ptr& aUser, const string& start = Util::emptyString);
 	static void closeAll();
 
-	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
+	typedef MDITabChildWindowImpl<DirectoryListingFrame> baseClass;
 
 	enum {
 		COLUMN_FILENAME,

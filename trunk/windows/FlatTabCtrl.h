@@ -58,8 +58,8 @@ public:
 		return _T("FlatTabCtrl");
 	}
 
-	void addTab(HWND hWnd, COLORREF color = RGB(0, 0, 0), HICON hIcon = NULL) {
-		TabInfo* i = new TabInfo(hWnd, color, hIcon);
+	void addTab(HWND hWnd, HICON hIcon = NULL) {
+		TabInfo* i = new TabInfo(hWnd, hIcon);
 		dcassert(getTabInfo(hWnd) == NULL);
 		tabs.push_back(i);
 		viewOrder.push_back(hWnd);
@@ -224,7 +224,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	LRESULT onLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		int xPos = GET_X_LPARAM(lParam); 
 		int yPos = GET_Y_LPARAM(lParam); 
 		int row = getRows() - ((yPos / getTabHeight()) + 1);
@@ -496,7 +496,7 @@ private:
 		typedef vector<TabInfo*> List;
 		typedef typename List::iterator ListIter;
 
-		TabInfo(HWND aWnd, COLORREF c, HICON icon) : hWnd(aWnd), len(0), xpos(0), row(0), 
+		TabInfo(HWND aWnd, HICON icon) : hWnd(aWnd), len(0), xpos(0), row(0), 
 			dirty(false), hIcon(icon), disconnected(false), notification(false), wCode(-1),
 			MAX_LENGTH(SETTING(TAB_SIZE)){ 
 			memset(&size, 0, sizeof(size));
@@ -729,14 +729,14 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX(GetWndClassName(), 0, 0, COLOR_3DFACE);
 };
 
-template <class T, int C = RGB(128, 128, 128), class TBase = CMDIWindow, class TWinTraits = CMDIChildWinTraits>
+template <class T, class TBase = CMDIWindow, class TWinTraits = CMDIChildWinTraits>
 class ATL_NO_VTABLE MDITabChildWindowImpl : public CMDIChildWindowImpl<T, TBase, TWinTraits> {
 public:
 
 	MDITabChildWindowImpl() : created(false) { };
 	FlatTabCtrl* getTab() { return WinUtil::tabCtrl; };
 
- 	typedef MDITabChildWindowImpl<T, C, TBase, TWinTraits> thisClass;
+ 	typedef MDITabChildWindowImpl<T, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
 	BEGIN_MSG_MAP(thisClass>)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -808,7 +808,7 @@ public:
 		return baseClass::PreTranslateMessage((LPMSG)lParam);
 	}
 
-	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		if(wParam == SC_NEXTWINDOW) {
 			HWND next = getTab()->getNext();
 			if(next != NULL) {
@@ -830,7 +830,7 @@ public:
 		bHandled = FALSE;
 		dcassert(getTab());
 		HICON hIcon = (HICON)::SendMessage(m_hWnd, WM_GETICON, ICON_SMALL, 0);
-		getTab()->addTab(m_hWnd, C, hIcon);
+		getTab()->addTab(m_hWnd, hIcon);
 		created = true;
 		return 0;
 	}
@@ -856,12 +856,12 @@ public:
 		return 0;
 	}
 
-	LRESULT onReallyClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onReallyClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		PostMessage(WM_REALLY_CLOSE);
 		return 0;
 	}

@@ -593,7 +593,7 @@ LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return 0;
 }
-LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;
 	if(focus == ctrlClient.m_hWnd) {
