@@ -3,9 +3,11 @@
 #include "Resource.h"
 
 #include "../client/SettingsManager.h"
+#include "../client/StringTokenizer.h"
 #include "WinUtil.h"
 
 #include "FulPage2.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,6 +46,21 @@ LRESULT FulPage2::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 }
 
 void FulPage2::write() {
+	char buf[2000];
+	string tmp;
+	GetDlgItemText(IDC_PATHS, buf, 2000);
+	StringTokenizer t(buf, '|');
+	StringList l = t.getTokens();
+
+	for(StringIter i = l.begin(); i != l.end(); ++i){
+		if((*i)[i->length()-1] == '\\')
+			tmp += (*i) + "|";
+		else
+			tmp += (*i) + "\\|";
+	}
+
+	SetDlgItemText(IDC_PATHS, tmp.c_str());
+	
 	PropPage::write((HWND)*this, items);
 }
 

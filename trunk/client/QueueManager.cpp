@@ -1461,6 +1461,16 @@ bool QueueManager::addAlternates(string aFile, User::Ptr aUser) {
 int QueueManager::changePriority(const string& search, int priority) {
 	//count number of hits
 	int count = 0;
+	
+	string s;
+	bool useRegexp = false;
+
+	if(Util::strnicmp(search.c_str(), "$Re:", 4) == 0) {
+		useRegexp = true;
+	}
+
+	regex::rpattern reg(search.substr(4), regex::NOCASE);
+	regex::match_results mr;
 
 	QueueItem::StringMap::iterator i;
 	QueueItem* q;
@@ -1469,9 +1479,13 @@ int QueueManager::changePriority(const string& search, int priority) {
 		q = i->second;
 
 		//get the first source to get the path
-		QueueItem::Source::List::iterator l = q->getSources().begin();
-		if(l != q->getSources().end()) {
-			if((*l)->getPath().find(search) != string::npos) {
+		if(useRegexp){
+			if(reg.match(q->getTarget(), mr, 0).matched) {
+				setPriority(q->getTarget(), (QueueItem::Priority)priority);
+				++count;
+			}
+		} else {
+			if(q->getTarget().find(search) != string::npos) {
 				setPriority(q->getTarget(), (QueueItem::Priority)priority);
 				++count;
 			}

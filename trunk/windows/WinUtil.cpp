@@ -459,6 +459,13 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		} catch(const ShareException& e) {
 			status = e.getError();
 		}
+	} else if(Util::stricmp(cmd.c_str(), "refreshi") == 0) {
+		try {
+			ShareManager::getInstance()->setDirty();
+			ShareManager::getInstance()->refresh(false, true, false, true);
+		} catch( const ShareException& e) {
+			status = e.getError();
+		}
 	} else if(Util::stricmp(cmd.c_str(), "share") == 0){
 		if(!param.empty()){
 			ShareManager::getInstance()->addDirectory(param);
