@@ -674,5 +674,6 @@
 		<String Name="DropStupidConnectionLog">Incoming connection dropped because user tried to use a fake nick, IP=</String>
 		<String Name="FlashWindowOnPm">Flash window on PM</String>
 		<String Name="FlashWindowOnNewPm">Flash window on PM only if it's from a new user</String>
+		<String Name="EndLog">--End Log--</String>
 	</Strings>
 </Language>

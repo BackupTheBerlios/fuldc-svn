@@ -678,5 +678,6 @@ enum Strings { // @DontAdd
 	DROP_STUPID_CONNECTION_LOG, // "Incoming connection dropped because user tried to use a fake nick, IP="
 	FLASH_WINDOW_ON_PM, // "Flash window on PM"
 	FLASH_WINDOW_ON_NEW_PM, // "Flash window on PM only if it's from a new user"
+	END_LOG, // "--End Log--"
 	LAST // @DontAdd
 };

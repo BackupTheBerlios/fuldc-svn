@@ -219,6 +219,7 @@ private:
 	}
 
 	void FlashWindow();
+	void ReadLog();
 	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {

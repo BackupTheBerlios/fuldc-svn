@@ -675,6 +675,7 @@ string ResourceManager::strings[] = {
 "Incoming connection dropped because user tried to use a fake nick, IP=", 
 "Flash window on PM", 
 "Flash window on PM only if it's from a new user", 
+"--End Log--", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1350,4 +1351,5 @@ string ResourceManager::names[] = {
 "DropStupidConnectionLog", 
 "FlashWindowOnPm", 
 "FlashWindowOnNewPm", 
+"EndLog", 
 };

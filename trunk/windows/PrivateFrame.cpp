@@ -32,6 +32,8 @@
 #include "../client/ShareManager.h"
 #include "../client/HubManager.h"
 #include "../client/QueueManager.h"
+#include "../client/File.h"
+#include "../client/StringTokenizer.h"
 
 #include <MMSystem.h>
 
@@ -118,6 +120,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 		if(!found) {
 			p = new PrivateFrame(aUser);
 			frames[aUser] = p;
+			p->ReadLog();
 			p->addLine(aMessage);
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
@@ -569,6 +572,36 @@ void PrivateFrame::FlashWindow() {
 		flash.dwTimeout = 0;
 
 		FlashWindowEx(&flash);
+	}
+}
+
+void PrivateFrame::ReadLog() {
+	string path = SETTING(LOG_DIRECTORY) + Util::validateFileName(user->getNick()) + ".log";
+
+	try {
+        File f(path, File::READ, File::OPEN);
+		
+		int64_t size = f.getSize();
+
+		if(size > 32*1024) {
+			f.setPos(size - 32*1024);
+		}
+
+		StringList lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
+
+		int linesCount = lines.size();
+
+		int i = linesCount > 10 ? linesCount - 10 : 0;
+
+		for(; i < linesCount; ++i){
+			addLine(Text::acpToWide(lines[i]));
+		}
+        
+		if(linesCount > 0)
+			addLine(TSTRING(END_LOG));
+
+		f.close();
+	} catch(FileException & /*e*/){
 	}
 }
 
