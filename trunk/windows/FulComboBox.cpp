@@ -80,7 +80,16 @@ LRESULT CFulComboBox::onDrawItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 				oldBkColor = ::SetBkColor(di->hDC, WinUtil::bgColor);
 			}
 
-			LPCTSTR text = reinterpret_cast<LPCTSTR>(di->itemData);
+			TCHAR* buf = NULL;
+			int length = SendMessage(CB_GETLBTEXTLEN, di->itemID, 0);
+			if(length != CB_ERR) {
+				buf = new TCHAR[length+1];
+				if(CB_ERR == SendMessage(CB_GETLBTEXT, di->itemID, reinterpret_cast<LPARAM>(buf))) {
+					delete[] buf;
+					buf = NULL;
+				}
+			}
+
 
 			int size = di->rcItem.bottom - di->rcItem.top;
 
@@ -95,14 +104,16 @@ LRESULT CFulComboBox::onDrawItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 					spacing = 16 + iconSpacing * 3;
 			}
 
-			::ExtTextOut(di->hDC, 
+			if(buf) {
+				::ExtTextOut(di->hDC, 
 						spacing,
 						di->rcItem.top + (size / 2) - (fontSize / 2),
 						ETO_OPAQUE,
 						&di->rcItem, 
-						text,
-						_tcslen(text),
+						buf,
+						length,
 						NULL);
+			}
 
 			if(!imageList.IsNull() && di->itemID < imageList.GetImageCount()) {
 				ImageList_Draw(	imageList.m_hImageList, 
@@ -119,6 +130,9 @@ LRESULT CFulComboBox::onDrawItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 
 			::SetTextColor(di->hDC, oldTextColor);
 			::SetBkColor(di->hDC, oldBkColor);
+
+			if(buf)
+				delete[] buf;
 	}
 
 	::RestoreDC(di->hDC, state);

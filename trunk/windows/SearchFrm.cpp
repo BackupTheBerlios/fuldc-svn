@@ -94,7 +94,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	sizeModeContainer.SubclassWindow(ctrlSizeMode.m_hWnd);
 
 	ctrlFiletype.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED, WS_EX_CLIENTEDGE);
+		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, WS_EX_CLIENTEDGE);
 	fileTypeContainer.SubclassWindow(ctrlFiletype.m_hWnd);
 
 	ctrlFiletype.LoadImageList(_T("icons\\search_filetypes.bmp"), 16, 9);
