@@ -550,8 +550,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 
 	// Get the bounding rectangle of the client area. 
 	ctrlList.GetClientRect(&rc);
-	ctrlList.ScreenToClient(&pt); 
-
+	
 	WinUtil::AppendSearchMenu(searchMenu);
 
 	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) {
