@@ -105,8 +105,12 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 					else
 						MessageBeep(MB_OK);
 				}
-				if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
+				if(BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
 					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
+				}
+
+				if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
+					p->FlashWindow();
 				}
 				break;
 			}
@@ -128,8 +132,12 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 					MessageBeep(MB_OK);
 			}
 
-			if (BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
+			if(BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
 				PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
+			}
+
+			if(BOOLSETTING(FLASH_WINDOW_ON_PM)){
+				p->FlashWindow();
 			}
 		}
 	} else {
@@ -142,6 +150,11 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
 			PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, i->second->m_hWnd);
 		}
+
+		if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
+			p->FlashWindow();
+		}
+
 		i->second->addLine(aMessage);
 
 	}
@@ -542,6 +555,21 @@ void PrivateFrame::closeAll(){
 		i->second->PostMessage(WM_CLOSE, 0, 0);
 
 	frames.clear();
+}
+
+void PrivateFrame::FlashWindow() {
+	if( GetForegroundWindow() != WinUtil::mainWnd ) {
+		DWORD flashCount;
+		SystemParametersInfo(SPI_GETFOREGROUNDFLASHCOUNT, 0, &flashCount, 0);
+		FLASHWINFO flash;
+		flash.cbSize = sizeof(FLASHWINFO);
+		flash.dwFlags = FLASHW_ALL;
+		flash.uCount = flashCount;
+		flash.hwnd = WinUtil::mainWnd;
+		flash.dwTimeout = 0;
+
+		FlashWindowEx(&flash);
+	}
 }
 
 /**

@@ -676,5 +676,7 @@ enum Strings { // @DontAdd
 	POPUP_ACTIVATE_ON_CLICK, // "Activate window when clicking popup"
 	DROP_STUPID_CONNECTION, // "Drop connections from own nick(stupid clients)"
 	DROP_STUPID_CONNECTION_LOG, // "Incoming connection dropped because user tried to use a fake nick, IP="
+	FLASH_WINDOW_ON_PM, // "Flash window on PM"
+	FLASH_WINDOW_ON_NEW_PM, // "Flash window on PM only if it's from a new user"
 	LAST // @DontAdd
 };

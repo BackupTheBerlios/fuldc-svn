@@ -217,6 +217,8 @@ private:
 			offline = true;
 		}
 	}
+
+	void FlashWindow();
 	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {

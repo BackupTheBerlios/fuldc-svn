@@ -50,6 +50,8 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC				}, 
 	{ SettingsManager::TOGGLE_ACTIVE_WINDOW,			ResourceManager::TOGGLE_ACTIVE_WINDOW		},
 	{ SettingsManager::DROP_STUPID_CONNECTION,			ResourceManager::DROP_STUPID_CONNECTION		},
+	{ SettingsManager::FLASH_WINDOW_ON_PM,				ResourceManager::FLASH_WINDOW_ON_PM			},
+	{ SettingsManager::FLASH_WINDOW_ON_NEW_PM,			ResourceManager::FLASH_WINDOW_ON_NEW_PM		},
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 
