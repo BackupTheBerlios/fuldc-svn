@@ -191,7 +191,7 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool) {
 		} else if(name == sDirectory) {
 			const string& n = getAttrib(attribs, sName, 0);
 			if(n.empty())
-				return;
+				throw SimpleXMLException("oops no name");
 			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n);
 			cur->directories.push_back(d);
 			cur = d;

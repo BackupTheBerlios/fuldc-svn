@@ -258,19 +258,23 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 			// We have attribs...
 			j = loadAttribs(name, tmp, j);
 		}
-
-		if(tmp[j] == '>') {
-			// This is a real tag with data etc...
-			cb->startTag(name, attribs, false);
-			j = fromXML(tmp, name, j+1, true);
-			cb->endTag(name, data);
-		} else {
-			// A simple tag (<xxx/>
-			cb->startTag(name, attribs, true);
-			j++;
+		
+		try{
+			if(tmp[j] == '>') {
+				// This is a real tag with data etc...
+				cb->startTag(name, attribs, false);
+				j = fromXML(tmp, name, j+1, true);
+				cb->endTag(name, data);
+			} else {
+				// A simple tag (<xxx/>
+				cb->startTag(name, attribs, true);
+				j++;
+			}
+			i = j;
+		} catch( SimpleXMLException )	{
+			return string::npos;
 		}
-		i = j;
-	}	
+	}
 }
 
 void SimpleXML::addTag(const string& aName, const string& aData /* = "" */) throw(SimpleXMLException) {

@@ -386,7 +386,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 		string file = Util::toLower(aResult->getFile());
 		StringIter i = filterList.begin();
 		for(; i != filterList.end(); ++i){
-			if(file.find(*i) == string::npos)
+			if(file.find(*i) != string::npos)
 				return;
 		}
 	} else if(useRegExp){

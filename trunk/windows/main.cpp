@@ -275,7 +275,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	dcdebug("String: %d\n", sizeof(string));
 #ifndef _DEBUG
-/*	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
+	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
 
 	if(dcapp.IsAnotherInstanceRunning()) {
 		HWND hOther = NULL;
@@ -294,7 +294,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
-*/
+
 #endif
 	
 	HRESULT hRes = ::CoInitialize(NULL);
