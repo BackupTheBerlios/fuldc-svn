@@ -532,12 +532,11 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				string tmp;
 				// Let's assume 10 characters per nick...
 				tmp.reserve(v.size() * (11 + 10 + getNick().length())); 
+				string n = ' ' +  toNmdc(getNick()) + '|';
 				for(User::List::const_iterator i = v.begin(); i != v.end(); ++i) {
 					tmp += "$GetINFO ";
-					tmp += (*i)->getNick();
-					tmp += ' ';
-					tmp += getNick(); 
-					tmp += '|';
+					tmp += toNmdc((*i)->getNick());
+					tmp += n;
 				}
 				if(!tmp.empty()) {
 					send(tmp);

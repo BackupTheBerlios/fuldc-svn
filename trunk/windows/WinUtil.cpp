@@ -537,7 +537,17 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		cmd = cmd.substr(1);
 	}
 
-	if(Util::stricmp(cmd.c_str(), _T("refresh"))==0) {
+	if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+		if(Util::stricmp(param.c_str(), _T("system")) == 0) {
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "system.log")));
+		} else if(Util::stricmp(param.c_str(), _T("downloads")) == 0) {
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "Downloads.log")));
+		} else if(Util::stricmp(param.c_str(), _T("uploads")) == 0) {
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "Uploads.log")));
+		} else {
+			return false;
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("refresh"))==0) {
 		try {
 			ShareManager::getInstance()->setDirty();
 			if(!param.empty()) {

@@ -59,7 +59,7 @@ const string SettingsManager::settingTags[] =
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
-	"AddFinishedInstantly", "UseUPnP",
+	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"RotateLogs", "PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -175,6 +175,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUNDER_FILELIST, false);
 	setDefault(ADD_FINISHED_INSTANTLY, false);
 	setDefault(SETTINGS_USE_UPNP, false);
+	setDefault(DONT_DL_ALREADY_SHARED, false);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
