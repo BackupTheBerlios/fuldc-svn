@@ -248,6 +248,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_ACTIVATE_ON_CLICK, false);
 	setDefault(POPUP_DONT_SHOW_ON_ACTIVE, false);
 	setDefault(DUPE_COLOR, RGB(255, 128, 255));
+	setDefault(NO_TTH_COLOR, RGB(128,128,128));
 	setDefault(DROP_STUPID_CONNECTION, false);
 	setDefault(FLASH_WINDOW_ON_PM, false);
 	setDefault(FLASH_WINDOW_ON_NEW_PM, false);
