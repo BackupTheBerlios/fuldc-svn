@@ -128,6 +128,27 @@ void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
 	ctrlHubs.SetCheckState(i, b);
 }
 
+LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+
+	if(ctrlHubs.GetSelectedCount() > 0) {
+		// Get the bounding rectangle of the client area. 
+		ctrlHubs.GetClientRect(&rc);
+		ctrlHubs.ScreenToClient(&pt); 
+
+		if (PtInRect(&rc, pt)) 
+		{ 
+			ctrlHubs.ClientToScreen(&pt);
+			hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
+			return TRUE; 
+		}
+	}
+
+	return FALSE; 
+}
+
 LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;

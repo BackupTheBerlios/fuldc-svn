@@ -36,13 +36,14 @@ struct FastAllocBase {
 template<class T>
 struct FastAlloc : public FastAllocBase {
 	// Custom new & delete that (hopefully) use the node allocator
+#ifndef _DEBUG
 	static void* operator new(size_t s) {
 		if(s != sizeof(T))
 			return ::operator new(s);
 		return allocate();
 	}
 
-	// Avoid hiding placement new that's needed by the stl container...
+	// Avoid hiding placement new that's needed by the stl containers...
 	static void* operator new(size_t, void* m) {
 		return m;
 	}
@@ -90,8 +91,12 @@ private:
 		}
 		*(void**)tmp = NULL;
 	}
+#endif
+
 };
+#ifndef _DEBUG
 template<class T> void* FastAlloc<T>::freeList = NULL;
+#endif
 
 #endif // _FAST_ALLOC
 /**

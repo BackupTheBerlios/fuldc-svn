@@ -105,6 +105,7 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onSetPriority(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchReleaseAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -139,26 +140,6 @@ public:
 
 	LRESULT onMove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		usingDirMenu ? moveSelectedDir() : moveSelected();
-		return 0;
-	}
-
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		if(kd->wVKey == VK_DELETE) {
-			if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
-				if(IDNO == MessageBox(CTSTRING(CONFIRM_REMOVE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION) ) 
-					return 0;
-			}
-			removeSelected();
-		} else if(kd->wVKey == VK_ADD){
-			// Increase Item priority
-			changePriority(true);
-		} else if(kd->wVKey == VK_SUBTRACT){
-			// Decrease item priority
-			changePriority(false);
-		} else if(kd->wVKey == VK_TAB) {
-			onTab();
-		}
 		return 0;
 	}
 

@@ -336,6 +336,27 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 	ctrlDirs.Invalidate();
 }
 
+LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	if(kd->wVKey == VK_DELETE) {
+		if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
+			if(IDNO == MessageBox(CTSTRING(CONFIRM_REMOVE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION) ) 
+				return 0;
+		}
+		removeSelected();
+	} else if(kd->wVKey == VK_ADD){
+		// Increase Item priority
+		changePriority(true);
+	} else if(kd->wVKey == VK_SUBTRACT){
+		// Decrease item priority
+		changePriority(false);
+	} else if(kd->wVKey == VK_TAB) {
+		onTab();
+	}
+	return 0;
+}
+
+
 HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = false */, HTREEITEM startAt /* = NULL */) {
 	TVINSERTSTRUCT tvi;
 	tvi.hInsertAfter = TVI_SORT;

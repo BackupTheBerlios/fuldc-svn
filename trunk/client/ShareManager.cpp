@@ -1057,12 +1057,11 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 			for(; iter.first != iter.second; ++(iter.first) ){
 				dcassert(iter.first->second->getTTH() != NULL);
 
-				SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_FILE, 
+				results.push_back( new SearchResult(aClient, SearchResult::TYPE_FILE, 
 					iter.first->second->getSize(),
 					iter.first->second->getParent()->getFullName() + iter.first->second->getName(), 
-					iter.first->second->getTTH(), true);
+					iter.first->second->getTTH(), true));
 
-				results.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 			}
 		}

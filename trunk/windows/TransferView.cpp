@@ -167,6 +167,8 @@ void TransferView::runUserCommand(UserCommand& uc) {
 	int i = -1;
 	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo* itemI = ctrlTransfers.getItemData(i);
+		if(!itemI->user->isOnline())
+			return;
 
 		ucParams["mynick"] = itemI->user->getClientNick();
 		ucParams["mycid"] = itemI->user->getClientCID().toBase32();

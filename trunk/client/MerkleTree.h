@@ -28,8 +28,6 @@
 #include "HashValue.h"
 #include "File.h"
 
-#include <math.h>
-
 /**
  * A class that represents a Merkle Tree hash. Storing
  * only the leaves of the tree, it is rather memory efficient, 

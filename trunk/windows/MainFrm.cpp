@@ -1094,11 +1094,6 @@ LRESULT MainFrame::onSwitchWindow(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	return 0;
 }
 
-LRESULT MainFrame::onCloseDisconnected(WORD , WORD , HWND , BOOL& ) {
-	HubFrame::closeDisconnected();
-	return 0;
-}
-
 LRESULT MainFrame::onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	LineDlg dlg;
 	dlg.description = TSTRING(HUB_ADDRESS);
