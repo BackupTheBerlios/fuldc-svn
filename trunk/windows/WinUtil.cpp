@@ -914,7 +914,7 @@ string WinUtil::DiskSpaceInfo() {
 				totalSize += size;
 				
 				ret.append(drive);
-				ret += "=" + Util::formatBytes(free) + "/" + Util::formatBytes(size) + " ";
+				ret += "=" + Util::formatBytes(size) + " ";
 			}
 		}
 

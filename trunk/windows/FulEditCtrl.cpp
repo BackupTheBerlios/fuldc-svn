@@ -51,7 +51,7 @@ static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb,
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
 CFulEditCtrl::CFulEditCtrl(void): noScroll(false), matchedPopup(false), nick(Util::emptyString), findBufferSize(100),
-								logged(false), matchedSound(false)
+								logged(false), matchedSound(false), skipLog(false)
 {
 	findBuffer = new char[findBufferSize];
 	findBuffer[0] = '\0';
@@ -81,6 +81,9 @@ bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
 		ScrollCaret();
 		SetRedraw(true);
 	}
+	if(Util::strnicmp("<" + nick + ">", aLine, nick.length() + 2) == 0)
+		skipLog = true;
+
 	if(stripIsp && aLine[0] == '<') {
 		u_int pos = aLine.find("]");
 		if(pos < aLine.find(">") )
@@ -247,6 +250,7 @@ void CFulEditCtrl::AddInternalLine(string & aLine) {
 	//StreamIn(SF_RTF , es);
 	SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 	
+	skipLog = false;
 	ScrollCaret();
 }
 
@@ -355,7 +359,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 	if(cs->getTab())
 		matchedTab = true;
 
-	if(cs->getLog() && !logged){
+	if(cs->getLog() && !logged && !skipLog){
 		logged = true;
 		AddLogLine(line);
 	}
@@ -419,7 +423,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 		if(cs->getTab())
 			matchedTab = true;
 
-		if(cs->getLog() && !logged){
+		if(cs->getLog() && !logged && !skipLog){
 			logged = true;
 			AddLogLine(line);
 		}

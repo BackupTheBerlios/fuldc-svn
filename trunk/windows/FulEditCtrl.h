@@ -46,6 +46,7 @@ private:
 	bool		stripIsp;
 	bool		noScroll;
 	bool		logged;
+	bool		skipLog;
 	string		nick;
 	CHARFORMAT2 selFormat;
 	char*		findBuffer;
