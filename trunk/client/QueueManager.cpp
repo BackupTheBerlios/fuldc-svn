@@ -608,7 +608,8 @@ static wstring utfTmp;
 
 static const wstring& utfEscaper(const string& x) {
 	utfTmp.clear();
-	return curDl->getUtf8() ? Text::utf8ToWide(x) : Text::acpToWide(x, utfTmp);
+	curDl->getUtf8() ? Text::utf8ToWide(x, utfTmp) : Text::acpToWide(x, utfTmp);
+	return utfTmp;
 }
 
 int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
