@@ -105,7 +105,7 @@ public:
 		filterBoxContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
 		filterContainer("edit", this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), useRegExp(false)
+		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false)
 	{	
 		SearchManager::getInstance()->addListener(this);
 		StringTokenizer token(SETTING(DOWNLOAD_TO_PATHS), "|");

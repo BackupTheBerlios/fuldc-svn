@@ -35,7 +35,7 @@ class DirectoryListing
 public:
 	class Directory;
 
-	class File /*: public FastAlloc<File> */{
+	class File : public FastAlloc<File> {
 	public:
 		typedef File* Ptr;
 		struct FileSort {

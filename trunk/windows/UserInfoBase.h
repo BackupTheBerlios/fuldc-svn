@@ -39,6 +39,7 @@ public:
 	void removeAll();
 	void showLog();
 
+	User::Ptr& getUser() { return user; }	
 	User::Ptr user;
 };
 

@@ -31,6 +31,7 @@
 #include "../client/User.h"
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
+#include "../client/FastAlloc.h"
 
 #include "WinUtil.h"
 #include "UCHandler.h"
@@ -232,12 +233,14 @@ private:
 		COLUMN_DESCRIPTION, 
 		COLUMN_ISP,
 		COLUMN_TAG,
+		COLUMN_CONNECTION, 
+		COLUMN_EMAIL, 
 		COLUMN_LAST
 	};
-	
+	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const User::Ptr& u, bool aStripIsp) : UserInfoBase(u), stripIsp(aStripIsp) { update(); };
+		UserInfo(const User::Ptr& u, bool aStripIsp) : UserInfoBase(u), op(false), stripIsp(aStripIsp) { update(); };
 
 		const string& getText(int col) const {
 			switch(col) {
@@ -250,21 +253,22 @@ private:
 				case COLUMN_DESCRIPTION: return user->getDescription();
 				case COLUMN_TAG: return user->getTag();
 				case COLUMN_ISP: return user->getIsp();
-				//case COLUMN_EMAIL: return user->getEmail();
+				case COLUMN_CONNECTION: return user->getConnection();
+				case COLUMN_EMAIL: return user->getEmail();
 				default: return Util::emptyString;
 			}
 		}
 
-		static int compareItems(UserInfo* a, UserInfo* b, int col) {
+		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
 			if(a == NULL || b == NULL){
 				dcdebug("UserInfo::compareItems: pointer == NULL\n");
 				return 0;
 			}
 			switch(col) {
 				case COLUMN_NICK:
-					if(a->user->isSet(User::OP) && !b->user->isSet(User::OP)) {
+					if(a->getOp() && !b->getOp()) {
 						return -1;
-					} else if(!a->user->isSet(User::OP) && b->user->isSet(User::OP)) {
+					} else if(!a->getOp() && b->getOp()) {
 						return 1;
 					}
 					if(a->stripIsp)
@@ -275,15 +279,17 @@ private:
 				case COLUMN_DESCRIPTION: return Util::stricmp(a->user->getDescription(), b->user->getDescription());
 				case COLUMN_TAG: return Util::stricmp(a->user->getTag(), b->user->getTag());
 				case COLUMN_ISP: return Util::stricmp(a->user->getIsp(), b->user->getIsp());
+				case COLUMN_CONNECTION: return Util::stricmp(a->user->getConnection(), b->user->getConnection());
+				case COLUMN_EMAIL: return Util::stricmp(a->user->getEmail(), b->user->getEmail());
 				default: return 0;
 			}
 		}
 
-		void update() { shared = Util::formatBytes(user->getBytesShared()); }
+		void update() { shared = Util::formatBytes(user->getBytesShared()); op = user->isSet(User::OP); }
 
 		GETSETREF(string, shared, Shared);
+		GETSETREF(bool, op, Op);
 		bool stripIsp;
-
 	};
 
 	class PMInfo {
@@ -398,7 +404,8 @@ private:
 	CEdit ctrlMessage;
 	CEdit ctrlFilter;
 	CComboBox ctrlFilterSel;
-	TypedListViewCtrl<UserInfo, IDC_USERS> ctrlUsers;
+	typedef TypedListViewCtrl<UserInfo, IDC_USERS> CtrlUsers;
+	CtrlUsers ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
 
 	CHARFORMAT2 selFormat;
@@ -424,7 +431,9 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
-	bool updateUser(const User::Ptr& u, bool sorted = false);
+	int findUser(const User::Ptr& aUser);
+
+	bool updateUser(const User::Ptr& u);
 	void removeUser(const User::Ptr& u);
 	void updateUserList();
 	void addAsFavorite();

@@ -32,6 +32,7 @@
 #define IDC_OPEN_LOG_DIR                120
 #define IDC_OPEN_MY_LIST                121
 #define IDC_HEADER_MENU                 122
+#define IDC_SEARCH_BY_TTH               123
 #define IDC_SEARCH_RELEASEALTERNATES    127
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
@@ -423,6 +424,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1261
-#define _APS_NEXT_SYMED_VALUE           123
+#define _APS_NEXT_SYMED_VALUE           124
 #endif
 #endif

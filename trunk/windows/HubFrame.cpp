@@ -36,10 +36,11 @@
 
 HubFrame::FrameMap HubFrame::frames;
 
-int HubFrame::columnSizes[] = { 100, 75, 75, 100, 100};
-int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_ISP, COLUMN_TAG};
+int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 75, 100};
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_ISP, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-ResourceManager::DESCRIPTION, ResourceManager::ISP, ResourceManager::TAG};
+ResourceManager::DESCRIPTION, ResourceManager::ISP, ResourceManager::TAG,
+ResourceManager::CONNECTION, ResourceManager::EMAIL };
 
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -389,6 +390,28 @@ void HubFrame::onEnter() {
 	}
 }
 
+struct CompareItems {
+	CompareItems(int aCol) : col(aCol) { }
+	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) {
+		return HubFrame::UserInfo::compareItems(&a, &b, col) == -1;
+	}
+	int col;
+};
+
+int HubFrame::findUser(const User::Ptr& aUser) {
+	if(ctrlUsers.getSortColumn() != -1) {
+		UserInfo ui(aUser, stripIsp);
+		pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
+			equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
+		for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
+			if(i->getUser() == aUser)
+				return i - ctrlUsers.begin();
+		}
+		return -1;
+	}
+	return ctrlUsers.findItem(aUser->getNick());
+}
+
 void HubFrame::addAsFavorite() {
 	FavoriteHubEntry aEntry;
 	char buf[256];
@@ -429,35 +452,25 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 }
 
 
-bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
-	int i = -1;
-	string nick;
-	if(stripIsp)
-		nick = u->getShortNick();
-	else
-		nick = u->getNick();
-
-	while( ( i = ctrlUsers.findItem(nick, i) ) != -1 ) {
-		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
-		if( Util::stricmp(u->getNick(), ui->user->getNick()) == 0) {
-			ctrlUsers.getItemData(i)->update();
-			ctrlUsers.updateItem(i);
-			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-			
-			return false;
-		}
+bool HubFrame::updateUser(const User::Ptr& u) {
+	int i = findUser(u);
+	
+	if(i != -1){
+		ctrlUsers.getItemData(i)->update();
+		ctrlUsers.updateItem(i);
+		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
+		
+		return false;
 	}
 
 	UserMap::iterator j = usermap.begin();
 	for(; j != usermap.end(); ++j) {
 		if(Util::stricmp(u->getNick(), j->second->user->getNick()) == 0) {
-			delete j->second;
-			j->second = NULL;
-			usermap.erase(j);
-			break;
+			return false;
 		}
 
 	}
+	
 	UserInfo *ui = new UserInfo(u, stripIsp);
 	usermap.insert( UserPair(Util::toLower(u->getShortNick()), ui) );
 	bool add = false;
@@ -471,11 +484,7 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 	}
 	
 	if( add ){
-		if(sorted) {
-			ctrlUsers.insertItem(ui, getImage(u));
-		} else {
-			ctrlUsers.insertItem(ctrlUsers.GetItemCount(), ui, getImage(u));
-		}
+		ctrlUsers.insertItem(ui, getImage(u));
 	}
 
 	return true;
@@ -492,7 +501,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				User::Ptr& u = i->first;
 				switch(i->second) {
 				case UPDATE_USER:
-					if(updateUser(u, true)) {
+					if(updateUser(u)) {
 						if(showJoins)
 							addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
 					} else {
@@ -811,8 +820,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ctrlClient.GetWindowRect(&rc);
 
 	bool doMenu = false;
-	bool doMcMenu = false;
-
+	
 	WinUtil::AppendSearchMenu(searchMenu);
 
 	if (PtInRect(&rc, pt)) {
@@ -829,22 +837,25 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		}
 
 		// Nickname click, let's see if we can find one like it in the name list...
-		int pos = ctrlUsers.findItem(x.substr(start, end - start));
-		if(pos != -1) {
-			int items = ctrlUsers.GetItemCount();
-			ctrlUsers.SetRedraw(FALSE);
-			for(int i = 0; i < items; ++i) {
-				ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
+		string nick = x.substr(start, end - start);
+		UserMap::iterator i = usermap.begin();
+        if(stripIsp){
+			for(; i != usermap.end(); ++i){
+				if(Util::stricmp(nick, i->second->user->getShortNick()) == 0){
+					doMenu = true;
+					break;
+				}
 			}
-			ctrlUsers.SetRedraw(TRUE);
-			ctrlUsers.EnsureVisible(pos, FALSE);
-
-			ctrlClient.ClientToScreen(&pt);
-			doMenu = true; 
 		} else {
-			doMcMenu = true;
+			for(; i != usermap.end(); ++i){
+				if(Util::stricmp(nick, i->second->user->getNick()) == 0){
+					doMenu = true;
+					break;
+				}
+			}
 		}
 
+		ctrlClient.ClientToScreen(&pt);
 	} else {
 		// Get the bounding rectangle of the client area. 
 		ctrlUsers.GetWindowRect(&rc);
@@ -870,7 +881,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		return TRUE;
 	}
 
-	if(doMcMenu) {
+	if(!doMenu) {
 		CHARRANGE cr;
 		ctrlClient.GetSel(cr);
 		if(cr.cpMax != cr.cpMin) {
