@@ -449,7 +449,13 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 	
 	if( !SETTING(SKIPLIST_DOWNLOAD).empty() ){
 		int pos = aFile.rfind("\\")+1;
-		if(Wildcard::patternMatch(aFile.substr(pos), SETTING(SKIPLIST_DOWNLOAD), '|') )
+		string tmp;
+		if(utf8)
+			tmp = aFile.substr(pos);
+		else
+			tmp = Text::acpToUtf8(aFile.substr(pos));
+
+		if(Wildcard::patternMatch(tmp, SETTING(SKIPLIST_DOWNLOAD), '|') )
 			return;
 	}
 
