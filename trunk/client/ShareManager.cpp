@@ -1756,7 +1756,8 @@ bool ShareManager::refresh( const string& aDir ){
 		result = true;
 	}
 
-	refresh(false, true, false, false, true);
+	if(result)
+		refresh(false, true, false, false, true);
 	
 	return result;
 }

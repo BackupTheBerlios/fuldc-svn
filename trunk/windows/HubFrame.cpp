@@ -664,7 +664,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		if(!closing && BOOLSETTING(HUBFRAME_CONFIRMATION)) {
-			if(IDNO == MessageBox(CTSTRING(CONFIRM_CLOSE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION))
+			if(IDNO == MessageBox(CTSTRING(CONFIRM_CLOSE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2))
 				return 0;
 		}
 

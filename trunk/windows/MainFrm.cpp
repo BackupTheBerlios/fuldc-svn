@@ -650,7 +650,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 							MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
 						} else {
 							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
-							if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO) == IDYES) {
+							if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO | MB_DEFBUTTON1) == IDYES) {
 								WinUtil::openLink(Text::toT(url));
 							}
 						}

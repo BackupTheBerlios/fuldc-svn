@@ -264,7 +264,7 @@ SettingsManager::SettingsManager()
 	setDefault(IGNORE_TTH_INCONSISTENCY, false);
 	setDefault(ADD_FINISHED_DOWNLOADS, true);
 	setDefault(ADD_FINISHED_UPLOADS, true);
-	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,1,1,1");
+	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,0,1,1");
 	setDefault(REFRESH_INCOMING_BETWEEN, false);
 	setDefault(REFRESH_SHARE_BETWEEN, false);
 	setDefault(REFRESH_INCOMING_BEGIN, 0);
