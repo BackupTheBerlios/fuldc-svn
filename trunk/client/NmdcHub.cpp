@@ -518,6 +518,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			StringList& sl = t.getTokens();
 
 			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
+				if(it->empty())
+					continue;
 				v.push_back(ClientManager::getInstance()->getUser(*it, this));
 			}
 
@@ -551,6 +553,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			StringTokenizer<string> t(fromNmdc(param), "$$");
 			StringList& sl = t.getTokens();
 			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
+				if(it->empty())
+					continue;
 				v.push_back(ClientManager::getInstance()->getUser(*it, this));
 				v.back()->setFlag(User::OP);
 			}

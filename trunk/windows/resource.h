@@ -551,10 +551,14 @@
 #define IDC_BIND_ADDRESS                1323
 #define IDC_SETTINGS_BIND_ADDRESS       1324
 #define IDC_WINDOWS_STARTUP             1325
+#define IDC_IPADDRESS1                  1325
 #define IDC_SETTINGS_AUTO_OPEN          1326
 #define IDC_SETTINGS_WINDOWS_OPTIONS    1327
 #define IDC_WINDOWS_OPTIONS             1328
 #define IDD_WINDOWSPAGE                 1329
+#define IDC_SET_MINISLOT_SIZE           1330
+#define IDC_SETTINGS_TEXT_MINISLOT      1331
+#define IDC_SETTINGS_KB2                1332
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -604,7 +608,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1324
+#define _APS_NEXT_CONTROL_VALUE         1326
 #define _APS_NEXT_SYMED_VALUE           137
 #endif
 #endif

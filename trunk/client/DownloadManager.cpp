@@ -265,7 +265,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
-			d->setFlag(Download::FLAG_UTF8);
+			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
+				d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 

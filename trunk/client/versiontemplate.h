@@ -17,8 +17,8 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.672"
-#define VERSIONFLOAT 0.672
+#define VERSIONSTRING "0.673"
+#define VERSIONFLOAT 0.673
 
 #define FULDC "fulDC"
 #ifdef _DEBUG
@@ -28,8 +28,3 @@
 #endif
 
 /* Update the .rc file as well... */
-
-/**
- * @file
- * $Id: version.h,v 1.16 2004/02/25 00:27:38 trem Exp $
- */

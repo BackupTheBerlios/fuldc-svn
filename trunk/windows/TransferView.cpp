@@ -832,6 +832,8 @@ LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
 		QueueItem::StringIter qi = queue.find(&tmp);
 
+		//create a copy of the tth to avoid holding the filequeue lock while calling
+		//into searchframe, searchmanager and all of that
 		TTHValue *val = NULL;
 		if(qi != queue.end() && qi->second->getTTH()) {
 			val = new TTHValue(*qi->second->getTTH());
