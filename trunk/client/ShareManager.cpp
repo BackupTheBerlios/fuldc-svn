@@ -943,11 +943,6 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 		string tmp = SimpleXML::utf8Header;
 		StringOutputStream sos(tmp);
 		xml->toXML(&sos);
-		try {
-			File f(Util::getAppPath() + "test.xml", File::WRITE, File::CREATE | File::TRUNCATE);
-			f.write(tmp);
-		} catch (const Exception&) {
-		}
 		mis = new MemoryInputStream(tmp);
 	}
 	
