@@ -41,24 +41,24 @@ public:
 	}
 	
 	//performs some formatting of the string, strips <nick>
-	void ShowPm(const tstring& nick, const tstring& msg);
+	void ShowPm(const tstring& nick, const tstring& msg, HWND owner);
 	
 	//retrieves nick from <nick> and removes <nick> from msg
-	void ShowMC(const tstring& msg );
+	void ShowMC(const tstring& msg, HWND owner);
 
 	//the caller have to separate nick and format msg neatly
-	void ShowMC(const tstring& nick, const tstring& msg);
+	void ShowMC(const tstring& nick, const tstring& msg, HWND owner);
 	
 	//maybe change this in the future, couldn't think of any other
 	//important status messages
-	void ShowDisconnected(const tstring& hub);
+	void ShowDisconnected(const tstring& hub, HWND owner);
 
 	//since we create a new string in onAction use a pointer here
 	//and take care of cleanup
 	void ShowDownloadComplete(tstring *msg);
 
 	//remove the specified popup in list and move everyone else
-	void Remove(int pos = 0);
+	void Remove(int pos, bool clicked = false);
 
 	//remove the popups that are scheduled to be removed
 	void AutoRemove();
@@ -111,7 +111,7 @@ private:
 	virtual void on(QueueManagerListener::ReleaseDone, string msg) throw();
 
 	//call this with a preformatted message
-	void Show(const tstring &aMsg);
+	void Show(const tstring &aMsg, HWND owner = NULL);
 	
 };
 

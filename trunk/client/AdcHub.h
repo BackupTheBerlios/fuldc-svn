@@ -40,6 +40,7 @@ public:
 	virtual void password(const string& pwd);
 	virtual void info();
 	virtual string checkNick(const string& nick);
+	virtual string getHubURL();
 
 	virtual size_t getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };

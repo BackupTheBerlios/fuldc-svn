@@ -497,7 +497,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == DOWNLOAD_COMPLETE) {
 		PopupManager::getInstance()->ShowDownloadComplete((tstring*)lParam);
 	} else if(wParam == WM_CLOSE) {
-		PopupManager::getInstance()->Remove((int)lParam);
+		PopupManager::getInstance()->Remove((int)lParam, true);
 	} else if(wParam == REMOVE_POPUP){
 		PopupManager::getInstance()->AutoRemove();
 	}
@@ -745,7 +745,7 @@ void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
 		FavoriteHubEntry* entry = *i;
 		if(entry->getConnect()) {
 			if(!entry->getNick().empty() || !SETTING(NICK).empty())
-				HubFrame::openWindow(Text::toT(entry->getServer()), Text::toT(entry->getNick()), Text::toT(entry->getPassword()), Text::toT(entry->getUserDescription()));
+				HubFrame::openWindow(Text::toT(entry->getServer()));
 			else
 				missedAutoConnect = true;
 		}

@@ -281,6 +281,7 @@ string ResourceManager::strings[] = {
 "Ratio", 
 "Re-add source", 
 "Really exit?", 
+"Really remove?", 
 "Redirect", 
 "Redirect request received to a hub that's already connected", 
 "Redirect user(s)", 
@@ -329,6 +330,7 @@ string ResourceManager::strings[] = {
 "Command", 
 "Enable safe and compressed transfers", 
 "Confirm application exit", 
+"Confirm favorite hub removal", 
 "Connection Settings (see the readme / newbie help if unsure)", 
 "Connection Type", 
 "Default away message", 
@@ -655,6 +657,8 @@ string ResourceManager::strings[] = {
 "Strip ISP", 
 "Log Chat", 
 "Name", 
+"Don't display popups for active window", 
+"Activate window when clicking popup", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -936,6 +940,7 @@ string ResourceManager::names[] = {
 "Ratio", 
 "ReaddSource", 
 "ReallyExit", 
+"ReallyRemove", 
 "Redirect", 
 "RedirectAlreadyConnected", 
 "RedirectUser", 
@@ -984,6 +989,7 @@ string ResourceManager::names[] = {
 "SettingsCommand", 
 "SettingsCompressTransfers", 
 "SettingsConfirmExit", 
+"SettingsConfirmHubRemoval", 
 "SettingsConnectionSettings", 
 "SettingsConnectionType", 
 "SettingsDefaultAwayMsg", 
@@ -1310,4 +1316,6 @@ string ResourceManager::names[] = {
 "FhStripIsp", 
 "FhLogChat", 
 "FolderName", 
+"PopupDontShowOnActive", 
+"PopupActivateOnClick", 
 };

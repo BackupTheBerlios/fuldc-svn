@@ -176,10 +176,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	return 1;
 }
 
-void HubFrame::openWindow(const tstring& aServer, const tstring& aNick /* = Util::emptyString */, const tstring& aPassword /* = Util::emptyString */, const tstring& aDescription /* = Util::emptyString */) {
+void HubFrame::openWindow(const tstring& aServer) {
 	FrameIter i = frames.find(aServer);
 	if(i == frames.end()) {
-		HubFrame* frm = new HubFrame(aServer, aNick, aPassword, aDescription);
+		HubFrame* frm = new HubFrame(aServer);
 		frames[aServer] = frm;
 		frm->CreateEx(WinUtil::mdiClient);
 	} else {
@@ -1170,17 +1170,13 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		server = redirect;
 		frames[server] = this;
 
-		// Is the redirect hub a favorite? Then honor settings for it.
-		FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
-		if(hub) {
-			client->setNick(hub->getNick(true));
-			client->setDescription(hub->getUserDescription());
-			client->setPassword(hub->getPassword());
-		}
-		// else keep current settings
-
+		// the client is dead, long live the client!
+		client->removeListener(this);
+		ClientManager::getInstance()->putClient(client);
+		clearUserList();
+		client = ClientManager::getInstance()->getClient(Text::fromT(server));
 		client->addListener(this);
-		//client->connect(redirect);
+		client->connect();
 	}
 	return 0;
 }
@@ -1229,7 +1225,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 
 	if(BOOLSETTING(POPUP_ON_HUBSTATUS)) {
 		if( aLine.find(_T("Disconnected")) != tstring::npos ) {
-			PopupManager::getInstance()->ShowDisconnected(server);
+			PopupManager::getInstance()->ShowDisconnected(server, m_hWnd);
 		}
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES) && inChat) {

@@ -31,6 +31,7 @@
 #include "TimerManager.h"
 #include "Util.h"
 #include "FastAlloc.h"
+#include "Text.h"
 
 class HashManagerListener {
 public:
@@ -186,53 +187,27 @@ private:
 
 		void rebuild();
 
-		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
-			TTHIter i = indexTTH.find(aFileName);
-			if(i != indexTTH.end()) {
-				if(i->second->getSize() != aSize || i->second->getTimeStamp() != aTimeStamp) {
-					delete i->second;
-					indexTTH.erase(i);
-					dirty = true;
-					return false;
-				}
-				return true;
-			} 
-			return false;
-		}
+		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
+		bool checkTTH(const string& aFileName, int64_t aSize);
 
-		bool checkTTH(const string& aFileName, int64_t aSize) {
-			TTHIter i = indexTTH.find(aFileName);
-			if(i != indexTTH.end()) {
-				if(i->second->getSize() != aSize ) {
-					delete i->second;
-					indexTTH.erase(i);
-					dirty = true;
-					return false;
-				}
-				return true;
-			} 
-			return false;
-		}
-
-		TTHValue* getTTH(const string& aFileName) {
-			TTHIter i = indexTTH.find(aFileName);
-			if(i != indexTTH.end()) {
-				i->second->setUsed(true);
-				return &(i->second->getRoot());
-			}
-			return NULL;
-		}
-
+		TTHValue* getTTH(const string& aFileName);
 		bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
 		public:
-			FileInfo(const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
-			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed) { }
+			struct StringComp {
+				const string& str;
+				StringComp(const string& aStr) : str(aStr) { }
+				bool operator()(FileInfo* a) { return a->getFileName() == str; }	
+			};
+
+			FileInfo(const string& aFileName, const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
+			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), fileName(Text::toLower(Util::getFileName(aFileName))) { }
 
 			TTHValue& getRoot() { return root; }
 			void setRoot(const TTHValue& aRoot) { root = aRoot; }
+			bool operator ==(const string& aName) { return fileName == aName; };			
 		private:
 			TTHValue root;
 			GETSET(int64_t, size, Size)
@@ -240,14 +215,18 @@ private:
 			GETSET(size_t, blockSize, BlockSize);
 			GETSET(u_int32_t, timeStamp, TimeStamp);
 			GETSET(bool, used, Used);
+			GETSET(string, fileName, FileName);
 		};
 
-		typedef HASH_MAP_X(string, FileInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) TTHMap;
-		typedef TTHMap::iterator TTHIter;
+		typedef vector<FileInfo*> FileInfoList;
+		typedef FileInfoList::iterator FileInfoIter;
 
+		typedef HASH_MAP<string, FileInfoList> DirMap;
+		typedef DirMap::iterator DirIter;
+		
 		friend class HashLoader;
 
-		TTHMap indexTTH;
+		DirMap indexTTH;
 
 		string indexFile;
 		string dataFile;

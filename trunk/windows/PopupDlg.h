@@ -46,10 +46,11 @@ public:
 		DeleteObject(font);
 	}
 
-	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/){
+	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
 		CRect rc;
 		GetWindowRect(rc);
 		::PostMessage(WinUtil::mainWnd, WM_SPEAKER, WM_CLOSE, (LPARAM)rc.bottom);
+		bHandled = TRUE;
 		return 0;
 	}
 
@@ -134,6 +135,7 @@ public:
 	}
 
 	u_int32_t visible;
+	HWND owner;
 
 private:
 	tstring  msg;

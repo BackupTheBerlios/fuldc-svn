@@ -46,7 +46,6 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::ROTATE_LOG,						ResourceManager::ROTATE_LOG },
 	{ SettingsManager::HUBFRAME_CONFIRMATION,			ResourceManager::HUBFRAME_CONFIRMATION },
 	{ SettingsManager::QUEUE_REMOVE_CONFIRMATION,		ResourceManager::QUEUE_REMOVE_CONFIRMATION },
-	{ SettingsManager::FAVORITES_REMOVE_CONFIRMATION,	ResourceManager::FAVORITES_REMOVE_CONFIRMATION },
 	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND },
 	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC }, 
 	{ SettingsManager::TOGGLE_ACTIVE_WINDOW,			ResourceManager::TOGGLE_ACTIVE_WINDOW },

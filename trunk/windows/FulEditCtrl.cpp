@@ -366,7 +366,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 
 	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
 		matchedPopup = true;
-		PopupManager::getInstance()->ShowMC(line);
+		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
 	}
 	if(cs->getTab() && isSet(TAB))
 		matchedTab = true;
@@ -431,7 +431,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 
 	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
 		matchedPopup = true;
-		PopupManager::getInstance()->ShowMC(line);
+		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
 	}
 
 	if(cs->getTab() && isSet(TAB))
@@ -479,7 +479,7 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	//we have to check if the pointer was actually above the last char
 
 	//check xpos
-	if(mousePT.x < charPT.x || mousePT.x > (charPT.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font))) 
+	if( mousePT.x > ( charPT.x + 3 ) ) 
 		return 1;
 	
 	//check ypos
@@ -704,14 +704,16 @@ BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 }
 
 void CFulEditCtrl::FlashWindow() {
-	DWORD flashCount;
-	SystemParametersInfo(SPI_GETFOREGROUNDFLASHCOUNT, 0, &flashCount, 0);
-	FLASHWINFO flash;
-	flash.cbSize = sizeof(FLASHWINFO);
-	flash.dwFlags = FLASHW_ALL;
-	flash.uCount = flashCount;
-	flash.hwnd = WinUtil::mainWnd;
-	flash.dwTimeout = 0;
+	if( GetForegroundWindow() != WinUtil::mainWnd ) {
+		DWORD flashCount;
+		SystemParametersInfo(SPI_GETFOREGROUNDFLASHCOUNT, 0, &flashCount, 0);
+		FLASHWINFO flash;
+		flash.cbSize = sizeof(FLASHWINFO);
+		flash.dwFlags = FLASHW_ALL;
+		flash.uCount = flashCount;
+		flash.hwnd = WinUtil::mainWnd;
+		flash.dwTimeout = 0;
 
-	FlashWindowEx(&flash);
+		FlashWindowEx(&flash);
+	}
 }

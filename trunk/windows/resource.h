@@ -413,7 +413,6 @@
 #define IDC_BTN_FONT                    1246
 #define IDC_FREE_SLOTS_EXTENSIONS       1247
 #define IDC_MINISLOTS_EXTENSIONS        1247
-#define IDC_LASTLOG2                    1247
 #define IDC_FLASHWINDOW                 1247
 #define IDC_FREE_SLOTS_SIZE             1249
 #define IDC_MINISLOTS_SIZE              1249
@@ -476,7 +475,10 @@
 #define IDC_POPUP_APPEARANCE            1301
 #define IDC_                            1302
 #define IDC_STRIP_ISP                   1302
+#define IDC_POPUP_ACTIVATE_ON_CLICK     1302
 #define IDC_FH_STRIP_ISP                1303
+#define IDC_POPUP_REMOVE3               1303
+#define IDC_POPUP_DONT_SHOW_ACTIVE      1303
 #define IDC_FH_LOG_MAIN_CHAT            1304
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500

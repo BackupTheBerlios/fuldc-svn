@@ -137,6 +137,7 @@ public:
 	virtual void unlockUserList() { cs.leave(); };
 
 	virtual string checkNick(const string& aNick);
+	virtual string getHubURL();
 
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 

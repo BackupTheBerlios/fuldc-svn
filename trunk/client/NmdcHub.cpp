@@ -61,6 +61,8 @@ void NmdcHub::connect() {
 		disconnect();
 	}
 
+	reloadSettings();
+
 	state = STATE_LOCK;
 
 	if(getPort() == 0) {
@@ -600,6 +602,10 @@ string NmdcHub::checkNick(const string& aNick) {
 		tmp[i++]='_';
 	}
 	return tmp;
+}
+
+string NmdcHub::getHubURL() {
+	return getAddressPort();
 }
 
 void NmdcHub::myInfo() {

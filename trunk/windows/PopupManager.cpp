@@ -10,7 +10,7 @@
 
 PopupManager* Singleton< PopupManager >::instance = NULL;
 
-void PopupManager::Show(const tstring& aMsg ) {
+void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	if(!activated)
 		return;
 
@@ -19,6 +19,10 @@ void PopupManager::Show(const tstring& aMsg ) {
 	}
 
 	if(!minimized && BOOLSETTING(POPUP_MINIMIZED)) 
+		return;
+
+	
+	if( BOOLSETTING(POPUP_DONT_SHOW_ON_ACTIVE) && ( (HWND)::SendMessage(WinUtil::mdiClient, WM_MDIGETACTIVE, NULL, NULL) == owner ) )
 		return;
 	
 	
@@ -44,6 +48,7 @@ void PopupManager::Show(const tstring& aMsg ) {
 	
 	//Create a new popup
 	PopupWnd *p = new PopupWnd(aMsg, rc, hBitmap);
+	p->owner = owner;
 			
 	//move the window to the top of the z-order and display it
 	p->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
@@ -86,7 +91,7 @@ void PopupManager::AutoRemove(){
 
 		if((*i)->visible + SETTING(POPUP_TIMEOUT) * 1000 < GET_TICK()) {
 			//okay remove the first popup
-			Remove();
+			Remove(0);
 
 			//if list is empty there is nothing more to do
 			if(popups.empty())
@@ -98,7 +103,7 @@ void PopupManager::AutoRemove(){
 	}
 }
 
-void PopupManager::Remove(int pos) {
+void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
 	Lock l(cs);
 
 	CRect rcDesktop;
@@ -122,10 +127,13 @@ void PopupManager::Remove(int pos) {
 	}
 
 	//close the window and delete it
+	HWND w = p->owner;
 	p->SendMessage(WM_CLOSE, 0, 0);
 	delete p;
 	p = NULL;
 
+	if( clicked && BOOLSETTING(POPUP_ACTIVATE_ON_CLICK) )
+		::SendMessage(WinUtil::mdiClient, WM_MDIACTIVATE, (WPARAM)w, NULL);
 
 	//set offset one window position lower
 	dcassert(offset > 0);
@@ -148,21 +156,21 @@ void PopupManager::Remove(int pos) {
 	}
 }
 
-void PopupManager::ShowPm(const tstring& nick, const tstring& msg){
+void PopupManager::ShowPm(const tstring& nick, const tstring& msg, HWND owner){
 	int pos = msg.find_first_of(_T(">"))+1;
 	if(pos == tstring::npos )
 		pos = 0;
 
 	tstring s = TSTRING(POPUP_NEW_PM) + _T(" ") + nick + _T(" ") + TSTRING(POPUP_MSG) + msg.substr(pos);
-	Show(s);
+	Show(s, owner);
 }
 
-void PopupManager::ShowMC(const tstring& nick, const tstring& msg){
+void PopupManager::ShowMC(const tstring& nick, const tstring& msg, HWND owner){
 	tstring s = nick + _T(" ") + TSTRING(POPUP_SAYS) + msg;
-	Show(s);
+	Show(s, owner);
 }
 
-void PopupManager::ShowMC(const tstring& msg){
+void PopupManager::ShowMC(const tstring& msg, HWND owner){
 	int pos1 = msg.find_first_of(_T("<"));
 	int pos2 = msg.find_first_of(_T(">"));
 	
@@ -170,13 +178,13 @@ void PopupManager::ShowMC(const tstring& msg){
 	if(pos1 == tstring::npos || pos2 == tstring::npos)
 		return;
 
-	ShowMC(msg.substr(pos1+1, pos2-pos1-1), msg.substr(pos2+1));
+	ShowMC(msg.substr(pos1+1, pos2-pos1-1), msg.substr(pos2+1), owner);
 	
 }
 
-void PopupManager::ShowDisconnected(const tstring& hub) {
+void PopupManager::ShowDisconnected(const tstring& hub, HWND owner) {
 	tstring s = TSTRING(POPUP_DISCONNECTED) + hub;
-	Show(s);
+	Show(s, owner);
 }
 
 void PopupManager::ShowDownloadComplete(tstring *msg){

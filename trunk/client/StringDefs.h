@@ -284,6 +284,7 @@ enum Strings { // @DontAdd
 	RATIO, // "Ratio"
 	READD_SOURCE, // "Re-add source"
 	REALLY_EXIT, // "Really exit?"
+	REALLY_REMOVE, // "Really remove?"
 	REDIRECT, // "Redirect"
 	REDIRECT_ALREADY_CONNECTED, // "Redirect request received to a hub that's already connected"
 	REDIRECT_USER, // "Redirect user(s)"
@@ -332,6 +333,7 @@ enum Strings { // @DontAdd
 	SETTINGS_COMMAND, // "Command"
 	SETTINGS_COMPRESS_TRANSFERS, // "Enable safe and compressed transfers"
 	SETTINGS_CONFIRM_EXIT, // "Confirm application exit"
+	SETTINGS_CONFIRM_HUB_REMOVAL, // "Confirm favorite hub removal"
 	SETTINGS_CONNECTION_SETTINGS, // "Connection Settings (see the readme / newbie help if unsure)"
 	SETTINGS_CONNECTION_TYPE, // "Connection Type"
 	SETTINGS_DEFAULT_AWAY_MSG, // "Default away message"
@@ -658,5 +660,7 @@ enum Strings { // @DontAdd
 	FH_STRIP_ISP, // "Strip ISP"
 	FH_LOG_CHAT, // "Log Chat"
 	FOLDER_NAME, // "Name"
+	POPUP_DONT_SHOW_ON_ACTIVE, // "Don't display popups for active window"
+	POPUP_ACTIVATE_ON_CLICK, // "Activate window when clicking popup"
 	LAST // @DontAdd
 };
