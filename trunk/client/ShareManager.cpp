@@ -1563,7 +1563,6 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 			path = aPath + PATH_SEPARATOR + name;
 		
 		try{
-			HashManager::getInstance()->checkTTH(path, size);
 			lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, HashManager::getInstance()->getTTH(path, size)));
 		} catch (HashException&){
 		}

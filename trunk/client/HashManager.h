@@ -62,10 +62,6 @@ public:
 	 * Check if the TTH tree associated with the filename is current.
 	 */
 	bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
-	
-	//Same as above but this is used when loading the share from the xml and timestamps
-	//aren't availible
-	bool checkTTH(const string& aFileName, int64_t aSize);
 
 	void stopHashing(const string& baseDir) {
 		hasher.stopHashing(baseDir);
@@ -83,6 +79,10 @@ public:
 
 	void addTree(const string& aFileName, const TigerTree& tt) {
 		hashDone(aFileName, tt, -1);
+	}
+	void addTree(const TigerTree& tt) {
+		Lock l(cs);
+		store.addTree(tt);
 	}
 
 	void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {
@@ -116,9 +116,6 @@ private:
 		Hasher() : stop(false), running(false), rebuild(false), total(0) { }
 
 		void hashFile(const string& fileName, int64_t size) {
-#ifndef USE_TTH
-			return;
-#endif
 			Lock l(cs);
 			if(w.insert(make_pair(fileName, size)).second) {
 				s.signal();
@@ -185,6 +182,7 @@ private:
 	public:
 		HashStore();
 		void addFile(const string& aFileName, const TigerTree& tth, bool aUsed);
+		bool addTree(const TigerTree& tt);
 
 		void load();
 		void save();
@@ -192,7 +190,6 @@ private:
 		void rebuild();
 
 		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
-		bool checkTTH(const string& aFileName, int64_t aSize);
 
 		const TTHValue* getTTH(const string& aFileName);
 		bool getTree(const TTHValue& root, TigerTree& tth);

@@ -24,7 +24,7 @@
 #include "TimerManager.h"
 #include "CryptoManager.h"
 
-#include "File.h"
+#include "Streams.h"
 
 #define SMALL_BUFFER_SIZE 1024
 

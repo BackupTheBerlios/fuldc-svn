@@ -102,10 +102,8 @@ public:
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-	int64_t bytesLeft;
-	GETSET(bool, treeValid, TreeValid);
-	GETSET(Download*, oldDownload, OldDownload);
 	GETSET(TTHValue*, tth, TTH);
+	GETSET(bool, treeValid, TreeValid);
 
 private:
 	Download(const Download&);
@@ -265,7 +263,7 @@ private:
 	
 	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false, bool ntd = false);
-	void removeDownload(Download* aDown, bool full, bool finished = false);
+	void removeDownload(Download* aDown, bool finished);
 	void fileNotAvailable(UserConnection* aSource);
 	void noSlots(UserConnection* aSource);
 
@@ -300,7 +298,7 @@ private:
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
-	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
+	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 };

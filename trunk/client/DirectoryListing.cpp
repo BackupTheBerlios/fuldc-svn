@@ -265,13 +265,8 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view, b
 	int flags = (getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0) |
 		(view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
-	if(getUtf8()) {
-		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
-			aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
-	} else {
-		QueueManager::getInstance()->add(Text::acpToUtf8(getPath(aFile) + aFile->getName()), aFile->getSize(), user, aTarget, 
-			aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
-	}
+	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
+		aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 }
 
 DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directory* current) {
