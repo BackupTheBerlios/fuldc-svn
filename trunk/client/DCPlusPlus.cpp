@@ -76,13 +76,13 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	TimerManager::newInstance();
 	HashManager::newInstance();
 	HighlightManager::newInstance();
-	ShareManager::newInstance();
 	CryptoManager::newInstance();
 	SearchManager::newInstance();
 	ClientManager::newInstance();
 	ConnectionManager::newInstance();
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
+	ShareManager::newInstance();
 	HubManager::newInstance();
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
@@ -152,7 +152,6 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 
 void shutdown() {
 	ConnectionManager::getInstance()->shutdown();
-
 	HashManager::getInstance()->shutdown();
 
 	TimerManager::getInstance()->removeListeners();

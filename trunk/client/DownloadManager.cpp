@@ -305,7 +305,7 @@ void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSo
 	}
 
 	if(prepareFile(aSource, aFileLength)) {
-		aSource->setDataMode(aFileLength - aSource->getDownload()->getStartPos());
+		aSource->setDataMode();
 		aSource->startSend();
 	}
 }
@@ -585,10 +585,11 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 
 /** Download finished! */
 void DownloadManager::handleEndData(UserConnection* aSource) {
+
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
-	
+
 	if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 		d->getFile()->flush();
 		delete d->getFile();
@@ -750,6 +751,7 @@ noCRC:
 			// Huh??? Now what??? Oh well...let it be...
 		}
 	}
+
 	fire(DownloadManagerListener::Complete(), d);
 	
 	aSource->setDownload(NULL);

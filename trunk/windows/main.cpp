@@ -157,37 +157,6 @@ BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	return TRUE;
 }
 
-static void installUrlHandler() {
-	HKEY hk; 
-	char Buf[512];
-	string app = "\"" + Util::getAppName() + "\" %1";
-	Buf[0] = 0;
-
-	if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, "dchub\\Shell\\Open\\Command", 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
-		DWORD bufLen = sizeof(Buf);
-		DWORD type;
-		::RegQueryValueEx(hk, NULL, 0, &type, (LPBYTE)Buf, &bufLen);
-		::RegCloseKey(hk);
-	}
-
-	if(Util::stricmp(app.c_str(), Buf) != 0) {
-		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub", &hk);
-		char* tmp = "URL:Direct Connect Protocol";
-		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, strlen(tmp) + 1);
-		::RegSetValueEx(hk, "URL Protocol", 0, REG_SZ, (LPBYTE)"", 1);
-		::RegCloseKey(hk);
-
-		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub\\Shell\\Open\\Command", &hk);
-		::RegSetValueEx(hk, "", 0, REG_SZ, (LPBYTE)app.c_str(), app.length() + 1);
-		::RegCloseKey(hk); 
-
-		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub\\DefaultIcon", &hk);
-		app = Util::getAppName();
-		::RegSetValueEx(hk, "", 0, REG_SZ, (LPBYTE)app.c_str(), app.length() + 1);
-		::RegCloseKey(hk);
-	}
-} 
-
 static DWORD checkCommonControls() {
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
 
@@ -288,10 +257,6 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	
-	if(BOOLSETTING(URL_HANDLER)) {
-		installUrlHandler();
-	}
-
 	rc = wndMain.rcDefault;
 
 	if( (SETTING(MAIN_WINDOW_POS_X) != CW_USEDEFAULT) &&

@@ -119,6 +119,7 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void removeDir(HTREEITEM ht);
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
+	void changePriority(bool inc);
 
 	LRESULT onItemChangedQueue(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
@@ -154,6 +155,12 @@ public:
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
 			removeSelected();
+		} else if(kd->wVKey == VK_ADD){
+			// Increase Item priority
+			changePriority(true);
+		} else if(kd->wVKey == VK_SUBTRACT){
+			// Decrease item priority
+			changePriority(false);
 		} else if(kd->wVKey == VK_TAB) {
 			onTab();
 		}

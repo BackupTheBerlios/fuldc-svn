@@ -36,6 +36,8 @@
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
 #include "../client/HashManager.h"
+#include "../client/LogManager.h"
+#include "HubFrame.h"
 #include "../client/SimpleXML.h"
 
 #include "../regex/pme.h"
@@ -184,6 +186,7 @@ void WinUtil::init(HWND hWnd) {
 	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CSTRING(MENU_OPEN_DOWNLOADS_DIR));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	file.AppendMenu(MF_STRING, ID_FILE_QUICK_CONNECT, CSTRING(MENU_QUICK_CONNECT));
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FOLLOW_REDIRECT));
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -288,6 +291,10 @@ void WinUtil::init(HWND hWnd) {
 	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
 	monoFont = (HFONT)::GetStockObject(BOOLSETTING(USE_OEM_MONOFONT)?OEM_FIXED_FONT:ANSI_FIXED_FONT);
 
+	if(BOOLSETTING(URL_HANDLER)) {
+		registerDchubHandler();
+	}
+
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
 }
 
@@ -345,7 +352,7 @@ bool WinUtil::browseDirectory(string& target, HWND owner /* = NULL */) {
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
 	bi.lpszTitle = CSTRING(CHOOSE_FOLDER);
-	bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
@@ -560,14 +567,60 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 	return true;
 }
 
+void WinUtil::searchHash(TTHValue* aHash) {
+	 if(aHash != NULL) {
+		 SearchFrame::openWindow(aHash->toBase32(), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+	 }
+ }
+
+ void WinUtil::registerDchubHandler() {
+	HKEY hk;
+	char Buf[512];
+	string app = "\"" + Util::getAppName() + "\" %1";
+	Buf[0] = 0;
+
+	if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, "dchub\\Shell\\Open\\Command", 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
+		DWORD bufLen = sizeof(Buf);
+		DWORD type;
+		::RegQueryValueEx(hk, NULL, 0, &type, (LPBYTE)Buf, &bufLen);
+		::RegCloseKey(hk);
+	}
+
+	if(Util::stricmp(app.c_str(), Buf) != 0) {
+		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub", &hk);
+		char* tmp = "URL:Direct Connect Protocol";
+		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, strlen(tmp) + 1);
+		::RegSetValueEx(hk, "URL Protocol", 0, REG_SZ, (LPBYTE)"", 1);
+		::RegCloseKey(hk);
+
+		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub\\Shell\\Open\\Command", &hk);
+		::RegSetValueEx(hk, "", 0, REG_SZ, (LPBYTE)app.c_str(), app.length() + 1);
+		::RegCloseKey(hk);
+
+		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub\\DefaultIcon", &hk);
+		app = Util::getAppName();
+		::RegSetValueEx(hk, "", 0, REG_SZ, (LPBYTE)app.c_str(), app.length() + 1);
+		::RegCloseKey(hk);
+	}
+}
+
 void WinUtil::openLink(const string& url) {
 	CRegKey key;
 	char regbuf[MAX_PATH];
 	ULONG len = MAX_PATH;
-	if(key.Open(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", KEY_READ) == ERROR_SUCCESS) {
+	string x;
+
+	string::size_type i = url.find("://");
+	if(i != string::npos) {
+		x = url.substr(0, i);
+	} else {
+		x = "http";
+	}
+	x += "\\shell\\open\\command";
+	if(key.Open(HKEY_CLASSES_ROOT, x.c_str(), KEY_READ) == ERROR_SUCCESS) {
 		if(key.QueryStringValue(NULL, regbuf, &len) == ERROR_SUCCESS) {
 			/*
-			 * Various values:
+			 * Various values (for http handlers):
 			 *  C:\PROGRA~1\MOZILL~1\FIREFOX.EXE -url "%1"
 			 *  "C:\Program Files\Internet Explorer\iexplore.exe" -nohome
 			 *  "C:\Apps\Opera7\opera.exe"
@@ -611,6 +664,22 @@ void WinUtil::openLink(const string& url) {
 	}
 
 	::ShellExecute(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+}
+
+void WinUtil::parseDchubUrl(const string& aUrl) {
+	string server, file;
+	short port = 411;
+	Util::decodeUrl(aUrl, server, port, file);
+	if(!server.empty()) {
+		HubFrame::openWindow(server + ":" + Util::toString(port));
+	}
+	if(!file.empty()) {
+		try {
+			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(file), QueueItem::FLAG_CLIENT_VIEW);
+		} catch(const Exception&) {
+			// ...
+		}
+	}
 }
 
 void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 

@@ -139,6 +139,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_DIR_LIST, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onOpenDownloads)
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
+		COMMAND_ID_HANDLER(ID_FILE_QUICK_CONNECT, onQuickConnect)
 		COMMAND_RANGE_HANDLER(IDC_SWITCH_WINDOW_1, IDC_SWITCH_WINDOW_0, onSwitchWindow)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, onDropDown)
@@ -173,6 +174,7 @@ public:
 	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSwitchWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCloseDisconnected(WORD , WORD , HWND , BOOL& );
 	LRESULT onStaticFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

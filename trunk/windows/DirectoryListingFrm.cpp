@@ -29,7 +29,6 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 #include "stack"
-#include "SearchFrm.h"
 #include "../client/MerkleTree.h"
 
 DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
@@ -386,7 +385,8 @@ LRESULT DirectoryListingFrame::onCopyTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
 	if(ii != NULL) {
-		SearchFrame::openWindow(ii->getText(COLUMN_TTH), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+		TTHValue tmp(ii->getText(COLUMN_TTH));
+		WinUtil::searchHash(&tmp);
 	}
 	return 0;
 }

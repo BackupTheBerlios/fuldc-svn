@@ -242,7 +242,6 @@ private:
 	virtual void on(Sending, UserConnection*, int64_t) throw();
 	virtual void on(FileLength, UserConnection*, int64_t) throw();
 	virtual void on(MaxedOut, UserConnection*) throw();
-	virtual void on(ModeChange, UserConnection* aSource) throw() { }
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
 	virtual void on(Command::SND, UserConnection*, const Command&) throw();

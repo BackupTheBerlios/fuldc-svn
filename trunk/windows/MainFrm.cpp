@@ -37,6 +37,7 @@
 #include "FinishedULFrame.h"
 #include "TextFrame.h"
 #include "StatsFrame.h"
+#include "LineDlg.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
 
@@ -464,31 +465,7 @@ void MainFrame::parseCommandLine(const string& cmdLine)
 	string::size_type j;
 
 	if( (j = cmdLine.find("dchub://", i)) != string::npos) {
-		i = j + 8;
-		string server;
-		string user;
-		if( (j = cmdLine.find('/', i)) == string::npos) {
-			server = cmdLine.substr(i);
-		} else {
-			server = cmdLine.substr(i, j-i);
-			i = j + 1;
-			if( (j = cmdLine.find_first_of("\\/ ", i)) == string::npos) {
-				user = cmdLine.substr(i);
-			} else {
-				user = cmdLine.substr(i, j-i);
-			}
-		}
-
-		if(!server.empty()) {
-			HubFrame::openWindow(server);
-		}
-		if(!user.empty()) {
-			try {
-				QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user), QueueItem::FLAG_CLIENT_VIEW);
-			} catch(const Exception&) {
-				// ...
-			}
-		}
+		WinUtil::parseDchubUrl(cmdLine.substr(j));
 	}
 }
 
@@ -1022,6 +999,25 @@ LRESULT MainFrame::onSwitchWindow(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 
 LRESULT MainFrame::onCloseDisconnected(WORD , WORD , HWND , BOOL& ) {
 	HubFrame::closeDisconnected();
+	return 0;
+}
+
+LRESULT MainFrame::onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+	LineDlg dlg;
+	dlg.description = STRING(HUB_ADDRESS);
+	dlg.title = STRING(QUICK_CONNECT);
+	if(dlg.DoModal(m_hWnd) == IDOK){
+		if(SETTING(NICK).empty())
+			return 0;
+
+		string tmp = dlg.line;
+		// Strip out all the spaces
+		string::size_type i;
+		while((i = tmp.find(' ')) != string::npos)
+			tmp.erase(i, 1);
+
+		HubFrame::openWindow(tmp);
+	}
 	return 0;
 }
 

@@ -27,6 +27,7 @@
 #include "SearchManager.h"
 #include "SettingsManager.h"
 #include "HashManager.h"
+#include "DownloadManager.h"
 
 #include "Exception.h"
 #include "CriticalSection.h"
@@ -44,7 +45,7 @@ class File;
 class OutputStream;
 
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
-	private HashManagerListener
+	private HashManagerListener, private DownloadManagerListener
 {
 public:
 	StringList getDirectories();
@@ -62,8 +63,6 @@ public:
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);
 
-	void search(const string& name, int64_t& size);
-	
 	int64_t getShareSize() {
 		RLock l(cs);
 		int64_t tmp = 0;
@@ -313,10 +312,15 @@ private:
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
 
+	void addFinishedFile(Directory* aParent, const string& aName, int64_t aSize);
+
 	Directory* getDirectory(const string& fname);
 	Directory* addDirectoryFromXml(SimpleXML* xml, Directory* aParent, string& aName, string& aPath);
 
 	virtual int run();
+
+	// DownloadManagerListener
+	virtual void on(DownloadManagerListener::Complete, Download* d) throw();
 
 	// HashManagerListener
 	virtual void on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw();
@@ -334,7 +338,7 @@ private:
 	virtual void on(TimerManagerListener::Minute, u_int32_t tick) throw();
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
-
+	
 	void saveXmlList();
 };
 

@@ -811,7 +811,7 @@ LRESULT SearchFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
 
 		if(sr->getTTH() != NULL) {
-			SearchFrame::openWindow(sr->getTTH()->toBase32(), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+			WinUtil::searchHash(sr->getTTH());
 		}
 	} 
 
