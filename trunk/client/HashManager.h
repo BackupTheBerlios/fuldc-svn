@@ -37,8 +37,10 @@ public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> TTHDone;
+	typedef X<1> Finished;
 
 	virtual void on(TTHDone, const string& /* fileName */, TTHValue* /* root */) throw() = 0;
+	virtual void on(Finished) throw() = 0;
 };
 
 class HashLoader;
@@ -47,7 +49,7 @@ class HashManager : public Singleton<HashManager>, public Speaker<HashManagerLis
 	private TimerManagerListener 
 {
 public:
-	HashManager() {
+	HashManager(): fileCount(0) {
 		TimerManager::getInstance()->addListener(this);
 	}
 	virtual ~HashManager() {
@@ -199,6 +201,8 @@ private:
 	HashStore store;
 
 	CriticalSection cs;
+
+	int fileCount;
 
 	void hashDone(const string& aFileName, const TigerTree& tth, int64_t speed);
 

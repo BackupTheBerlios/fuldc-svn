@@ -17,8 +17,8 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.403"
-#define VERSIONFLOAT 0.403
+#define VERSIONSTRING "0.4032"
+#define VERSIONFLOAT 0.4032
 
 #ifdef _DEBUG
 #define FULVERSIONSTRING "6.49 svn$WCREV$"

@@ -33,6 +33,7 @@ TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t 
 	TTHValue* root = store.getTTH(aFileName, aSize, aTimeStamp);
 	if(root == NULL) {
 		hasher.hashFile(aFileName);
+		fileCount++;
 	}
 	return root;
 }
@@ -46,6 +47,7 @@ TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize) {
 	TTHValue* root = store.getTTH(aFileName, aSize);
 	if(root == NULL ) {
 		hasher.hashFile(aFileName);
+		fileCount++;
 	}
 	return root;
 }
@@ -60,6 +62,17 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 
 	if(root != NULL) {
 		fire(HashManagerListener::TTHDone(), aFileName, root);
+		
+		//don't want to hold a lock when firing the message
+		bool done = false;
+		{
+			Lock l(cs);
+			if( --fileCount == 0)
+				done = true;
+		}
+
+		if(done)
+			fire(HashManagerListener::Finished());
 	}
 
 	string fn = aFileName;

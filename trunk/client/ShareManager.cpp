@@ -52,6 +52,7 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
+	HashManager::getInstance()->addListener(this);
 	/* Common search words used to make search more efficient, should be more dynamic */
 	words.push_back("avi");
 	words.push_back("mp3");
@@ -80,6 +81,7 @@ ShareManager::~ShareManager() {
 	SettingsManager::getInstance()->removeListener(this);
 	TimerManager::getInstance()->removeListener(this);
 	DownloadManager::getInstance()->removeListener(this);
+	HashManager::getInstance()->removeListener(this);
 
 	join();
 
@@ -1335,6 +1337,46 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 			bloom.add(Util::toLower(name));
 		}
 	}
+}
+
+void ShareManager::on(HashManagerListener::Finished) {
+	try {
+		//try to keep the share locked as short as possible, the read lock shouldn't interfere with
+		//searches and hopefully not causing the client to stall.
+		
+		string indent, tmp, newXmlName;
+		{
+			RLock l(cs);
+			listN++;
+			newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
+			FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
+			newXmlFile.write(SimpleXML::utf8Header);
+			newXmlFile.write("<FileListing Version=\"1\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
+
+			for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+				i->second->toString(tmp, &newXmlFile, indent);
+			}
+			newXmlFile.write("</FileListing>");
+			newXmlFile.flush();
+		}
+		
+		WLock l(cs);
+
+		if(xFile != NULL) {
+			delete xFile;
+			xFile = NULL;
+			File::deleteFile(getBZXmlFile());
+		}
+		xFile = new File(newXmlName, File::READ, File::OPEN);
+		setBZXmlFile(newXmlName);
+		bzXmlListLen = File::getSize(newXmlName);
+
+	} catch (Exception) {
+		//don't have anything to do here =)
+	}
+
+	LogManager::getInstance()->message(STRING(HASHING_FINISHED));
+
 }
 
 void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {

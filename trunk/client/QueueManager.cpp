@@ -1247,7 +1247,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			QueueItem* qi = *i;
 			bool found = false;
 			if(qi->getTTH()) {
-				found = sr->getTTH() && (*qi->getTTH() == *sr->getTTH());
+				found = sr->getTTH() && (*qi->getTTH() == *sr->getTTH()) && (qi->getSize() == sr->getSize());
 			} else {
 				found = (Util::stricmp(qi->getTargetFileName(), sr->getFileName()) == 0);
 			}
