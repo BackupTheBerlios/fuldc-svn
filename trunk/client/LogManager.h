@@ -46,6 +46,7 @@ public:
 		string msg;
 		switch(area){
 			case UPLOAD:
+				//Util::formatTime(Util::formatParams(SETTING(LOG_FILE_UPLOAD), params), time(NULL));
 				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)), params);
 				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_POST_UPLOAD), time(NULL)), params);
 				break;
@@ -58,8 +59,8 @@ public:
 				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_PRIVATE_CHAT), time(NULL)), params);
 				break;
 			case CHAT:
-				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_MAIN_CHAT), time(NULL)), params);
-				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_MAIN_CHAT), time(NULL)), params);
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), time(NULL));
+				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params), time(NULL));
 				break;
 			case STATUS:
 				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_STATUS), time(NULL)), params);
