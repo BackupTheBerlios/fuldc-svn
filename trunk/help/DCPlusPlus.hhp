@@ -23,6 +23,13 @@ settings_general.html
 settings_logs_and_sound.html
 settings_sharing.html
 settings_usercommands.html
+settings_fuldc.html
+settings_fuldc_downloads.html
+settings_fuldc_sharing.html
+settings_fuldc_appearance.html
+settings_fuldc_popups.html
+settings_fuldc_tabs.html
+settings_fuldc_highlight.html
 chat_commands.html
 non-routable.html
 plusplus_tag.html
@@ -48,6 +55,13 @@ IDD_STARTPAGE=index.html
 IDD_UCPAGE=settings_usercommands.html
 IDD_UPLOADPAGE=settings_sharing.html
 IDR_ADLSEARCH=adlsearch.html
+IDD_FULADVANCEDPAGE=settings_fuldc.html
+IDD_FULDOWNLOADPAGE=settings_fuldc_downloads.html
+IDD_FULSHAREPAGE=settings_fuldc_sharing.html
+IDD_FULAPPEARANCEPAGE=settings_fuldc_appearance.html
+IDD_FULPOPUPPAGE=settings_fuldc_popups.html
+IDD_FULTABSPAGE=settings_fuldc_tabs.html
+IDD_HIGHLIGHTPAGE=settings_fuldc_highlight.html
 
 [MAP]
 #include ..\windows\resource.h

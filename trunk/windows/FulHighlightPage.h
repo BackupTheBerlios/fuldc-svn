@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <atlcrack.h>
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 #include "../client/SettingsManager.h"
@@ -14,11 +15,13 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	public:
 	FulHighlightPage(SettingsManager *s) : PropPage(s), bgColor(RGB(255,255,255)), fgColor(RGB(0, 0, 0)) {
 		SetTitle( CTSTRING(SETTINGS_FUL_HIGHLIGHT) );
+		m_psp.dwFlags |= PSP_HASHELP;
 	};
 	virtual ~FulHighlightPage();
 
 	BEGIN_MSG_MAP(FulHighlightPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_DELETE, onDelete)
 		COMMAND_ID_HANDLER(IDC_UPDATE, onUpdate)
@@ -31,6 +34,7 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
         COMMAND_ID_HANDLER(IDC_HAS_BG_COLOR, onClickedBox)		
 		COMMAND_ID_HANDLER(IDC_HAS_FG_COLOR, onClickedBox)
 		NOTIFY_HANDLER(IDC_ITEMS, LVN_ITEMCHANGED, onItemChanged)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -44,6 +48,8 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	LRESULT onSelSound(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBox(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }

@@ -5,6 +5,7 @@
 #include "../client/SettingsManager.h"
 
 #include "FulTabsPage.h"
+#include "WinUtil.h"
 
 
 PropPage::TextItem FulTabsPage::texts[] = {
@@ -104,4 +105,14 @@ LRESULT FulTabsPage::onClickedBox(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	::EnableWindow( GetDlgItem(button), IsDlgButtonChecked(wID) == BST_CHECKED );
 
 	return TRUE;
+}
+
+LRESULT FulTabsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULTABSPAGE);
+	return 0;
+}
+
+LRESULT FulTabsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULTABSPAGE);
+	return 0;
 }

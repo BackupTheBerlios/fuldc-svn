@@ -78,6 +78,39 @@
 					</OBJECT>
 			</UL>
 		</UL>
+		<LI> <OBJECT <TYPE="text/sitemap">
+			<param name="Name" value="fulDC">
+			<param name="Local" value"settings_fuldc.html">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT <TYPE="text/sitemap">
+				<param name="Name" value="Downloads">
+				<param name="Local" value"settings_fuldc_downloads.html">
+				</OBJECT>
+			<LI> <OBJECT <TYPE="text/sitemap">
+				<param name="Name" value="Sharing">
+				<param name="Local" value"settings_fuldc_sharing.html">
+				</OBJECT>
+			<LI> <OBJECT <TYPE="text/sitemap">
+				<param name="Name" value="Appearance">
+				<param name="Local" value"settings_fuldc_appearance.html">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT <TYPE="text/sitemap">
+					<param name="Name" value="Highlight">
+					<param name="Local" value"settings_fuldc_highlight.html">
+					</OBJECT>
+				<LI> <OBJECT <TYPE="text/sitemap">
+					<param name="Name" value="Popups">
+					<param name="Local" value"settings_fuldc_popups.html">
+					</OBJECT>
+				<LI> <OBJECT <TYPE="text/sitemap">
+					<param name="Name" value="Tabs">
+					<param name="Local" value"settings_fuldc_tabs.html">
+					</OBJECT>
+			</UL>
+		</UL>
+			
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Etiquette">

@@ -19,8 +19,8 @@ PropPage::TextItem FulHighlightPage::texts[] = {
 	{ IDC_ADD,			 ResourceManager::ADD						},
 	{ IDC_DELETE,		 ResourceManager::REMOVE					},
 	{ IDC_UPDATE,		 ResourceManager::SETTINGS_BTN_UPDATE		},
-	{ IDC_MOVE_UP,		 ResourceManager::SETTINGS_BTN_MOVEUP		},
-	{ IDC_MOVE_DOWN,	 ResourceManager::SETTINGS_BTN_MOVEDOWN		},
+	{ IDC_MOVEUP,		 ResourceManager::SETTINGS_BTN_MOVEUP		},
+	{ IDC_MOVEDOWN,		 ResourceManager::SETTINGS_BTN_MOVEDOWN		},
 	{ IDC_BGCOLOR,		 ResourceManager::SETTINGS_BTN_BGCOLOR		},
 	{ IDC_FGCOLOR,		 ResourceManager::SETTINGS_BTN_TEXTCOLOR	},
 	{ IDC_SELECT_SOUND,  ResourceManager::SETTINGS_SELECT_SOUND		},
@@ -319,4 +319,14 @@ LRESULT FulHighlightPage::onClickedBox(WORD /*wNotifyCode*/, WORD wID, HWND /*hW
 	ctrlButton.Detach();
 
 	return TRUE;
+}
+
+LRESULT FulHighlightPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_HIGHLIGHTPAGE);
+	return 0;
+}
+
+LRESULT FulHighlightPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_HIGHLIGHTPAGE);
+	return 0;
 }

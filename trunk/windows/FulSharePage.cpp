@@ -58,3 +58,13 @@ LRESULT FulSharePage::onSetCheck(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 void FulSharePage::write() {
 	PropPage::write((HWND)*this, items);
 }
+
+LRESULT FulSharePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULSHAREPAGE);
+	return 0;
+}
+
+LRESULT FulSharePage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULSHAREPAGE);
+	return 0;
+}

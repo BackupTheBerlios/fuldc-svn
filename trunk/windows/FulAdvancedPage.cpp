@@ -129,3 +129,13 @@ LRESULT FulAdvancedPage::onSelChangeShortcuts(WORD /* wNotifyCode */, WORD /* wI
 	}
 	return S_OK;
 }
+
+LRESULT FulAdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULADVANCEDPAGE);
+	return 0;
+}
+
+LRESULT FulAdvancedPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULADVANCEDPAGE);
+	return 0;
+}

@@ -19,6 +19,8 @@ PropPage::TextItem FulPopupsPage::texts[] = {
 	{ IDC_ST_MESSAGE_LENGTH,		ResourceManager::SETTINGS_ST_MESSAGE_LENGTH	},
 	{ IDC_POPUP_ACTIVATE_ON_CLICK,	ResourceManager::POPUP_ACTIVATE_ON_CLICK	},
 	{ IDC_POPUP_DONT_SHOW_ACTIVE,	ResourceManager::POPUP_DONT_SHOW_ON_ACTIVE	},
+	{ IDC_BTN_FONT,					ResourceManager::SETTINGS_BTN_FONT			},
+	{ IDC_BTN_TEXTCOLOR,			ResourceManager::SETTINGS_BTN_TEXTCOLOR		},
 	{ 0,							ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 
@@ -59,6 +61,16 @@ LRESULT FulPopupsPage::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	if(dlg.DoModal() == IDOK){
 		settings->set(SettingsManager::POPUP_FONT, Text::fromT(WinUtil::encodeFont(font)));
 	}
+	return 0;
+}
+
+LRESULT FulPopupsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULPOPUPPAGE);
+	return 0;
+}
+
+LRESULT FulPopupsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULPOPUPPAGE);
 	return 0;
 }
 

@@ -25,6 +25,7 @@
 
 #include "../client/WebShortcuts.h"
 
+#include <atlcrack.h>
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
@@ -33,6 +34,7 @@ class FulAdvancedPage : public CPropertyPage<IDD_FULADVANCEDPAGE>, public PropPa
 public:
 	FulAdvancedPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle( CTSTRING(SETTINGS_FUL_ADVANCED) );
+		m_psp.dwFlags |= PSP_HASHELP;
 	};
 
 	~FulAdvancedPage() { 
@@ -44,17 +46,21 @@ public:
 
 	BEGIN_MSG_MAP(FulAdvancedPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_ADD, BN_CLICKED, onClickedShortcuts)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_PROPERTIES, BN_CLICKED, onClickedShortcuts)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_REMOVE, BN_CLICKED, onClickedShortcuts)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_LIST, LVN_ITEMCHANGED, onSelChangeShortcuts)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_LIST, LVN_ITEMCHANGING, onSelChangeShortcuts)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_LIST, LVN_ITEMACTIVATE, onSelChangeShortcuts)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 	LRESULT onClickedShortcuts(WORD /* wNotifyCode */, WORD wID, HWND /* hWndCtl */, BOOL& /* bHandled */);
 	LRESULT onSelChangeShortcuts(WORD /* wNotifyCode */, WORD /* wID */, HWND /* hWndCtl */, BOOL& /* bHandled */);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 	
 	void updateListItem(int pos) {
 		dcassert(pos >= 0 && (unsigned int)pos < wsList.size());

@@ -10,13 +10,13 @@
 #include "FulDownloadPage.h"
 
 PropPage::TextItem FulDownloadPage::texts[] =  {
+	{ IDC_SB_SKIPLIST_DOWNLOAD,	ResourceManager::SETTINGS_SB_SKIPLIST_DOWNLOAD	},
+	{ IDC_ST_SKIPLIST_DOWNLOAD,	ResourceManager::SETTINGS_ST_SKIPLIST_DOWNLOAD	},
 	{ IDC_SB_PATHS,				ResourceManager::SETTINGS_SB_PATHS				},
 	{ IDC_SB_MAX_SOURCES,		ResourceManager::SETTINGS_SB_MAX_SOURCES		},
 	{ IDC_ST_PATHS,				ResourceManager::SETTINGS_ST_PATHS				},
 	{ IDC_ADD,					ResourceManager::ADD							},
 	{ IDC_REMOVE,				ResourceManager::REMOVE							},
-	{ IDC_SB_SKIPLIST_DOWNLOAD,	ResourceManager::SETTINGS_SB_SKIPLIST_DOWNLOAD	},
-	{ IDC_ST_SKIPLIST_DOWNLOAD, ResourceManager::SETTINGS_ST_SKIPLIST_DOWNLOAD	},
 	{ 0,						ResourceManager::SETTINGS_AUTO_AWAY				}
 
 };
@@ -29,7 +29,7 @@ PropPage::Item FulDownloadPage::items[] = {
 
 LRESULT FulDownloadPage::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 	PropPage::read((HWND)*this, items);
-
+	PropPage::translate((HWND)(*this), texts);
 	download = SettingsManager::getInstance()->getDownloadPaths();
 
 	ctrlDownload.Attach( GetDlgItem(IDC_DOWNLOAD_LIST) );
@@ -107,4 +107,14 @@ void FulDownloadPage::write() {
 	SettingsManager::getInstance()->setDownloadPaths( download );
 	
 	PropPage::write((HWND)*this, items);
+}
+
+LRESULT FulDownloadPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULDOWNLOADPAGE);
+	return 0;
+}
+
+LRESULT FulDownloadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULDOWNLOADPAGE);
+	return 0;
 }

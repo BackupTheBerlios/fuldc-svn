@@ -431,6 +431,7 @@
 #define IDC_MESSAGE_LENGTH              1262
 #define IDC_SB_SKIPLIST_DOWNLOAD        1263
 #define IDC_ST_SKIPLIST_DOWNLOAD        1264
+#define IDC_ST_SKIPLIST                 1264
 #define IDC_SB_SKIPLIST_SHARE           1265
 #define IDC_ST_SKIPLIST_SHARE           1266
 #define IDC_SB_REFRESH                  1267

@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>fulDC</title>
+		<meta content="text/html; charset=us-ascii" http-equiv="content-type">
+		<link type="text/css" rel="stylesheet" href="office11.css">
+	</head>
+	<body>
+		<h1>fulDC</h1>
+		<h2>Boolean Options</h2>
+		<div style="margin-left: 40px;">
+			<dl>
+				<dt>Expand Queue</dt>
+				<dd>
+					This controls how the download queue should look when the windows is opened. If 
+					enabled the queue will show all folders expanded otherwise only the root folders 
+					will be expanded.</dd>
+				<dt>Strip ISP(public hubs only, see favorite hub settings)</dt>
+				<dd>
+					Controls how nicks should be displayed, if enabled leading brackets will be 
+					removed from the nick. e.g [ISP]nick will be displayed as nick</dd>
+				<dt>Strip ISP in private messages.</dt>
+				<dd>
+					Strip ISP tag in private messages.</dd>
+				<dt>Set high priority no samples and subs when enqueued</dt>
+				<dd>
+					If enabled samples and subs will get a higher priority than other files to 
+					make sure they're downloaded first.</dd>
+				<dt>Create new mainchat log every midnight</dt>
+				<dd>
+					This option splits the mainchat logs in to smaller log files. A new file 
+					is created every day and named after the current date.</dd>
+				<dt>Confirm hub exit</dt>
+				<dd>
+					If enabled a dialog box will pop up asking if you really want to close the hub window.</dd>
+				<dt>confirm removal of files from queue</dt>
+				<dd>
+					If enabled a dialog box will pop up asking if you really want to remove the files.</dd>
+				<dt>play custom sounds on PM</dt>
+				<dd>
+					With this enabled add PM.wav and newPM.wav to your fuldc directory to have fuldc 
+					play those sounds when receiving private messages instead of the default sounds.</dd>
+				<dt>Remove topic (everywhere except hub window title)</dt>
+				<dd>
+					Removes everything after the last - found in the hub name. Enable this to get a 
+					cleaner look everywhere except hub window title.</dd>
+				<dt>Toggle window when selecting an active tab</dt>
+				<dd>
+					If this is activated, clicking on an active tab will deactivate that window 
+					and activate the next window in the tab order.</dd>
+			</dl>
+		</div>
+		
+		<h2>Web Shortcuts</h2>
+		<p>
+			Web shortcuts are used to get easy access to websites, usually sites where you can search 
+			for information about a specific subject.</p>
+		<div style="margin-left: 40px;">
+			<dl>
+				<dt>Add</dt>
+				<dd>
+					Used to add a new web shortcut to the list. This brings up a dialog with a few fields. 
+					Name is what is displayed in menus where web shortcuts can be used. Key is used in 
+					hub and pm windows, /&lt;key&gt; &lt;search term&gt; to open the specified url. Url 
+					is the url that should be opened when a web shortcut is used, specify %s in the url
+					where the search term should be inserted. Clean search string is used to remove 
+					info from the search string that's not necessary, for example 
+					"Movie.Name.2003.DVDRip.XviD-ABC" will become "Movie Name"</dd>
+				<dt>Properties</dt>
+				<dd>
+					Opens the same dialog as Add with the values for the selected web shortcut
+					filled in.</dd>
+				<dt>Remove</dt>
+				<dd>
+					Removes the selected web shortcut.</dd>
+			</dl>
+		</div>
+	</body>
+</html>

@@ -111,6 +111,27 @@
 				RelativePath=".\settings_favoritedirs.html">
 			</File>
 			<File
+				RelativePath=".\settings_fuldc.html">
+			</File>
+			<File
+				RelativePath=".\settings_fuldc_appearance.html">
+			</File>
+			<File
+				RelativePath=".\settings_fuldc_downloads.html">
+			</File>
+			<File
+				RelativePath=".\settings_fuldc_highlight.html">
+			</File>
+			<File
+				RelativePath=".\settings_fuldc_popups.html">
+			</File>
+			<File
+				RelativePath=".\settings_fuldc_sharing.html">
+			</File>
+			<File
+				RelativePath=".\settings_fuldc_tabs.html">
+			</File>
+			<File
 				RelativePath=".\settings_general.html">
 			</File>
 			<File
