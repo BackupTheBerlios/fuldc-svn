@@ -480,7 +480,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 					if(updateUser(u)) {
 						if(showJoins) {
 							if (!favShowJoins || u->isFavoriteUser()) {
-								addLine("*** " + STRING(JOINS) + u->getNick());
+								addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
 							}
 						}
 					}
@@ -1397,12 +1397,7 @@ void HubFrame::openLinksInTopic() {
 
 void HubFrame::removeUser(const User::Ptr& u) {
 	int j = -1;
-	string nick;
-	if(stripIsp)
-		nick = u->getShortNick();
-	else
-		nick = u->getNick();
-
+	string nick = (stripIsp ? u->getShortNick() : u->getNick());
 	while( ( j = ctrlUsers.findItem(nick, j) ) != -1 ) {
 		UserInfo* ui = ctrlUsers.getItemData(j);
 		if(Util::stricmp(u->getNick(), ui->user->getNick()) == 0 ) {
@@ -1423,8 +1418,8 @@ void HubFrame::removeUser(const User::Ptr& u) {
 	}
 
 	if(showJoins) {
-		if (!favShowJoins | u->isFavoriteUser()) {
-			addLine("*** " + STRING(JOINS) + u->getNick());
+		if (!favShowJoins || u->isFavoriteUser()) {
+			addLine("*** " + STRING(PARTS) + nick);
 		}
 	}
 }
