@@ -119,7 +119,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	f.close();
 
-	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of DC++. A file named \"exceptioninfo.txt\" has been generated in the same directory as DC++. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
+	MessageBox(NULL, "fulDC just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of fulDC. A file named \"exceptioninfo.txt\" has been generated in the same directory as fulDC. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "fulDC Has Crashed", MB_OK | MB_ICONERROR);
 
 #ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
@@ -275,10 +275,9 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
 	splash.SetFocus();
 	splash.RedrawWindow();
-	
-	
+
 	startup(callBack, (void*)splash.m_hWnd);
-	
+
 	splash.DestroyWindow();
 	dummy.DestroyWindow();
 
@@ -288,7 +287,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	if(BOOLSETTING(URL_HANDLER)) {
 		installUrlHandler();
 	}
-	
+
 	rc = wndMain.rcDefault;
 
 	if( (SETTING(MAIN_WINDOW_POS_X) != CW_USEDEFAULT) &&
@@ -343,7 +342,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		return FALSE;
 	}
 #endif
-
+	
 	HRESULT hRes = ::CoInitialize(NULL);
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
@@ -363,7 +362,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
 
-	LoadLibrary( CRichEditCtrl::GetLibraryName() );
+	HMODULE mod = LoadLibrary( CRichEditCtrl::GetLibraryName() );
 	try {
 		File f(Util::getAppName(), File::READ, File::OPEN);
 		TigerTree tth(TigerTree::calcBlockSize(f.getSize(), 1));
@@ -383,6 +382,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	_Module.Term();
 	::CoUninitialize();
+	::FreeLibrary(mod);
 #ifdef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
 #endif

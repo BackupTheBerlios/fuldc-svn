@@ -548,13 +548,17 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 		SimpleXML xml;
 		xml.fromXML(versionInfo);
 		xml.stepIn();
+
+		string url = links.homepage;
+
+		if(xml.findChild("URL")) {
+			url = xml.getChildData();
+		}
+
+		xml.resetCurrentChild();
 		if(xml.findChild("Version")) {
 			if(atof(xml.getChildData().c_str()) > VERSIONFLOAT) {
 				xml.resetCurrentChild();
-				string url;
-				if(xml.findChild("URL")) {
-					url = xml.getChildData();
-				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Title")) {
 					const string& title = xml.getChildData();
@@ -571,6 +575,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 						}
 					}
 				}
+			} else {
 				xml.resetCurrentChild();
 				if(xml.findChild("VeryOldVersion")) {
 					if(atof(xml.getChildData().c_str()) >= VERSIONFLOAT) {
@@ -580,20 +585,21 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 						PostMessage(WM_CLOSE);
 					}
 				}
-				xml.resetCurrentChild();
-				if(xml.findChild("BadVersions")) {
-					xml.stepIn();
-					while(xml.findChild("BadVersion")) {
-						double v = atof(xml.getChildAttrib("Version").c_str());
-						if(v == VERSIONFLOAT) {
-							string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
-							MessageBox((msg + "\r\nPlease get a new one at " + url).c_str());
-							oldshutdown = true;
-							PostMessage(WM_CLOSE);
-						}
+			}
+
+			xml.resetCurrentChild();
+			if(xml.findChild("BadVersions")) {
+				xml.stepIn();
+				while(xml.findChild("BadVersion")) {
+					double v = atof(xml.getChildAttrib("Version").c_str());
+					if(v == VERSIONFLOAT) {
+						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
+						MessageBox((msg + "\r\nPlease get a new one at " + url).c_str(), _T("Bad DC++ version"), MB_OK | MB_ICONEXCLAMATION);
+						oldshutdown = true;
+						PostMessage(WM_CLOSE);
 					}
-					xml.stepOut();
 				}
+				xml.stepOut();
 			}
 
 			xml.resetCurrentChild();
@@ -1035,7 +1041,7 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	lastDown = Socket::getTotalDown();
 }
 
-void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
+void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 	versionInfo += string((const char*)buf, len);
 }
 

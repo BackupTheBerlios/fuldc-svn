@@ -155,8 +155,8 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 			delete ctrlUsers.getItemData(i);
 		}
-		
 		checkButton(false);
+		m_hMenu = NULL;
 		MDIDestroy(m_hWnd);
 		return 0;
 	}

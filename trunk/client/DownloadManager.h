@@ -214,7 +214,7 @@ private:
 	
 	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
-	void removeDownload(Download* aDown, bool finished = false);
+	void removeDownload(Download* aDown, bool full, bool finished = false);
 	
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 

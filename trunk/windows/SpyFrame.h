@@ -80,6 +80,7 @@ public:
 			return 0;
 		} else {
 			checkButton(false);	
+			m_hMenu = NULL;
 			MDIDestroy(m_hWnd);
 			return 0;
 		}

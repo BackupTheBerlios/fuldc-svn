@@ -425,23 +425,25 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				continue;
 			if(Wildcard::patternMatch(name, SETTING(SKIPLIST_SHARE), '|'))
                                 continue;
-			if(name.find('$') != string::npos)
+			if(name.find('$') != string::npos) {
+				LogManager::getInstance()->message(STRING(FORBIDDEN_DOLLAR_FILE) + name + " (" + STRING(SIZE) + ": " + Util::toString(File::getSize(name)) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + aName + "\")");
 				continue;
+			}
 			if(!BOOLSETTING(SHARE_HIDDEN) && ((data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) || (name[0] == '.')) )
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-					string newName = aName + PATH_SEPARATOR + name;
-					if(Util::stricmp(newName + PATH_SEPARATOR, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
-						dir->directories[name] = buildTree(newName, dir);
-						dir->addSearchType(dir->directories[name]->getSearchTypes()); 
-					}
+				string newName = aName + PATH_SEPARATOR + name;
+				if(Util::stricmp(newName + PATH_SEPARATOR, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
+					dir->directories[name] = buildTree(newName, dir);
+					dir->addSearchType(dir->directories[name]->getSearchTypes()); 
+				}
 			} else {
-					// Not a directory, assume it's a file...make sure we're not sharing the settings file...
-					if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
+				// Not a directory, assume it's a file...make sure we're not sharing the settings file...
+				if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
 					(Util::stricmp(name.c_str(), "Favorites.xml") != 0)) {
 
-						dir->addSearchType(getMask(name));
-						dir->addType(getType(name));
+					dir->addSearchType(getMask(name));
+					dir->addType(getType(name));
 					int64_t size = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 					TTHValue* root = HashManager::getInstance()->getTTH(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));
 					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, root));
@@ -450,10 +452,10 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 						tthIndex.insert(make_pair(root, lastFileIter));
 
 					dir->size+=size;
-
+					
 					bloom.add(Util::toLower(name));
-					}
 				}
+			}
 		} while(FindNextFile(hFind, &data));
 		FindClose(hFind);
 	}
@@ -467,8 +469,10 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			if (name == "." || name == "..") {
 				continue;
 			}
-			if(name.find('$') != string::npos)
+			if(name.find('$') != string::npos) {
+				LogManager::getInstance()->message(STRING(FORBIDDEN_DOLLAR_DIRECTORY) + name + " (" + STRING(DIRECTORY) + ": \"" + aName + "\")");
 				continue;
+			}
 			if (name[0] == '.' && !BOOLSETTING(SHARE_HIDDEN)) {
 				continue;
 			}
@@ -798,9 +802,9 @@ static const char* typeCompressed[] = { ".zip", ".ace", ".rar" };
 static const char* typeDocument[] = { ".htm", ".doc", ".txt", ".nfo" };
 static const char* typeExecutable[] = { ".exe" };
 static const char* typePicture[] = { ".jpg", ".gif", ".png", ".eps", ".img", ".pct", ".psp", ".pic", ".tif", ".rle", ".bmp", ".pcx" };
-static const char* typeVideo[] = { ".mpg", ".mov", ".asf", ".avi", ".pxp", ".wmv", ".ogm" };
+static const char* typeVideo[] = { ".mpg", ".mov", ".asf", ".avi", ".pxp", ".wmv", ".ogm", ".mkv" };
 
-static const string type2Audio[] = { ".au", ".aiff" };
+static const string type2Audio[] = { ".au", ".aiff", ".flac" };
 static const string type2Picture[] = { ".ai", ".ps", ".pict" };
 static const string type2Video[] = { ".rm", ".divx", ".mpeg" };
 
