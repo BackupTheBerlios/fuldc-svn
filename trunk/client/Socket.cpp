@@ -364,10 +364,10 @@ void Socket::writeTo(const string& aIp, short aPort, const char* aBuffer, size_t
 		serv_addr.sin_port = htons(aPort);
 		serv_addr.sin_family = AF_INET;
 		
-		serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
+		serv_addr.sin_addr.s_addr = inet_addr(aIp.c_str());
 		
 		if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
-			host = gethostbyname(ip.c_str());
+			host = gethostbyname(aIp.c_str());
 			if (host == NULL) {
 				throw SocketException(STRING(UNKNOWN_ADDRESS));
 			}
