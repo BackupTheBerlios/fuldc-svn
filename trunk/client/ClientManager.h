@@ -69,31 +69,8 @@ public:
 		return false;
 	}
 	
-	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
-		Lock l(cs);
-
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if((*i)->isConnected()) {
-				(*i)->search(aSizeMode, aSize, aFileType, aString);
-			}
-		}
-	}
-
-	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
-		Lock l(cs);
-
-		for(StringIter it = who.begin(); it != who.end(); ++it) {
-			string& client = *it;
-			for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
-				Client* c = *j;
-				if(c->isConnected() && c->getIpPort() == client) {
-					c->search(aSizeMode, aSize, aFileType, aString);
-
-				}
-			}
-		}
-	}
-
+	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
+	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString);
 	void infoUpdated();
 
 	User::Ptr getUser(const CID& cid, bool createUser);
@@ -148,10 +125,8 @@ private:
 
 	Socket s;
 
-	u_int32_t lastInfo;
-
 	friend class Singleton<ClientManager>;
-	ClientManager() : lastInfo(0) { 
+	ClientManager() { 
 		TimerManager::getInstance()->addListener(this); 
 		if(SETTING(CLIENT_ID).empty())
 			SettingsManager::getInstance()->set(SettingsManager::CLIENT_ID, CID::generate().toBase32());

@@ -377,7 +377,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 			if(qi != NULL) {
 				if(qi->getTTH()) {
 					hasTTH = true;
-					searchString = "TTH:" + qi->getTTH()->toBase32();
+					searchString = qi->getTTH()->toBase32();
 				} else {
 					fn = qi->getTargetFileName();
 					sz = qi->getSize() - 1;
@@ -391,7 +391,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	}
 
 	if(hasTTH) {
-		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
+		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 	} else if(!fn.empty()) {
 		SearchManager::getInstance()->search(searchString, sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
 	}
@@ -1004,7 +1004,7 @@ void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) thr
 		QueueItem* q = fileQueue.find(aTarget);
 		if( (q != NULL) && (q->getPriority() != p) ) {
 			if( q->getStatus() != QueueItem::STATUS_RUNNING ) {
-				if(q->getPriority() == QueueItem::PAUSED) {
+				if(q->getPriority() == QueueItem::PAUSED || p == QueueItem::HIGHEST) {
 					// Problem, we have to request connections to all these users...
 					q->getOnlineUsers(ul);
 				}
@@ -1459,7 +1459,7 @@ void QueueManager::onTimerSearch() {
 		}
         
 		if(hasTTH) {
-			SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
+			SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 			lastSearchAlternates = GET_TICK();
 		} else if(!fn.empty()) {
 			SearchManager::getInstance()->search(searchString, sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);

@@ -68,7 +68,7 @@ const string SettingsManager::settingTags[] =
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "ToggleActiveWindow", "PopupActivateOnClick",
-	"PopupDontShowOnActive", 
+	"PopupDontShowOnActive", "DupeColor", "DropStupidConnection",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -225,6 +225,8 @@ SettingsManager::SettingsManager()
 	setDefault(TOGGLE_ACTIVE_WINDOW, false);
 	setDefault(POPUP_ACTIVATE_ON_CLICK, false);
 	setDefault(POPUP_DONT_SHOW_ON_ACTIVE, false);
+	setDefault(DUPE_COLOR, RGB(255, 128, 255));
+	setDefault(DROP_STUPID_CONNECTION, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

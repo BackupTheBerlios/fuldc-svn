@@ -32,6 +32,7 @@
 
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
+#include "../client/ShareManager.h"
 
 #define STATUS_MESSAGE_MAP 9
 #define VIEW_MESSAGE_MAP   10
@@ -66,6 +67,7 @@ public:
 	BEGIN_MSG_MAP(DirectoryListingFrame)
 		NOTIFY_HANDLER(IDC_FILES, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, ctrlList.onColumnClick)
+		NOTIFY_HANDLER(IDC_FILES, NM_CUSTOMDRAW, onCustomDraw)
 		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
@@ -118,6 +120,7 @@ public:
 	LRESULT onCopyTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void downloadList(const tstring& aTarget, bool view = false);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
@@ -221,7 +224,7 @@ private:
 			if(utf8) {
 				columns[COLUMN_FILENAME] = Text::toT(f->getName());
 			} else {
-				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(f->getName()));
+				columns[COLUMN_FILENAME] = Text::acpToWide(f->getName());
 			}
 			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
 			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
@@ -230,12 +233,17 @@ private:
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
 			if(f->getTTH() != NULL)
 				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
+
+			if( f->getTTH() )
+				dupe = ShareManager::getInstance()->isTTHShared( f->getTTH() );
+			else
+				dupe = false;
 		};
-		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
+		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d), dupe(false) { 
 			if(utf8) {
 				columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			} else {
-				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(d->getName()));
+				columns[COLUMN_FILENAME] = Text::acpToWide(d->getName());
 			}
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		};
@@ -269,9 +277,12 @@ private:
 				}
 			}
 		}
-
+		
+		bool isDupe() const { return dupe; }
 	private:
 		tstring columns[COLUMN_LAST];
+
+		bool dupe;
 	};
 	
 	CMenu targetMenu;
@@ -305,6 +316,7 @@ private:
 
 	bool updating;
 	bool searching;
+	bool mylist;
 
 	int statusSizes[8];
 	

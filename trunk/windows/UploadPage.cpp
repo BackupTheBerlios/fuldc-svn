@@ -195,6 +195,7 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 					ShareManager::getInstance()->renameDirectory(Text::fromT(buf), Text::fromT(virt.line));
 					ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
+
 					setDirty = true;
 				} else {
 					MessageBox(CTSTRING(SKIP_RENAME), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONINFORMATION | MB_OK);

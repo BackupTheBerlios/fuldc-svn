@@ -213,6 +213,7 @@ enum Strings { // @DontAdd
 	MENU_NOTEPAD, // "&Notepad\tCtrl+N"
 	MENU_OPEN_DOWNLOADS_DIR, // "Open downloads directory"
 	MENU_OPEN_FILE_LIST, // "Open file list...\tCtrl+L"
+	MENU_OPEN_OWN_LIST, // "Open own list"
 	MENU_PUBLIC_HUBS, // "&Public Hubs\tCtrl+P"
 	MENU_QUICK_CONNECT, // "&Quick Connect ...\tCtrl+Q"
 	MENU_README, // "Readme / Newbie help"
@@ -435,6 +436,7 @@ enum Strings { // @DontAdd
 	SIZE, // "Size"
 	SIZE_MAX, // "Max Size"
 	SIZE_MIN, // "Min Size"
+	SKIP_RENAME, // "New virtual name matches old name, skipping..."
 	SLOT_GRANTED, // "Slot granted"
 	SLOTS, // "Slots"
 	SLOTS_SET, // "Slots set"
@@ -585,6 +587,7 @@ enum Strings { // @DontAdd
 	SETTINGS_ENTIRE_WORD, // "Entire Word"
 	SETTINGS_TAB_COLOR, // "Change Tabcolor"
 	SETTINGS_LASTLOG, // "Lastlog"
+	SETTINGS_DUPES, // "Dupes Background Color"
 	BOLD, // "Bold"
 	ITALIC, // "Italic"
 	UNDERLINE, // "Underline"
@@ -668,6 +671,7 @@ enum Strings { // @DontAdd
 	FOLDER_NAME, // "Name"
 	POPUP_DONT_SHOW_ON_ACTIVE, // "Don't display popups for active window"
 	POPUP_ACTIVATE_ON_CLICK, // "Activate window when clicking popup"
-	SKIP_RENAME, // "New virtual name matches old name, skipping..."
+	DROP_STUPID_CONNECTION, // "Drop connections from own nick(stupid clients)"
+	DROP_STUPID_CONNECTION_LOG, // "Incoming connection dropped because user tried to use a fake nick, IP="
 	LAST // @DontAdd
 };

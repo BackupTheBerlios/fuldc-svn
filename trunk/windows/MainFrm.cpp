@@ -224,8 +224,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
 			  || Util::getOsMajor() >= 6 )  //Longhorn
 		 {
-			UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", "DC++ TCP Port Mapping", SearchManager::getInstance()->getPort() );
-			UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", "DC++ UDP Port Mapping", SearchManager::getInstance()->getPort() );
+			UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
+			UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", APPNAME " Search Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " UDP)", SearchManager::getInstance()->getPort() );
 		
 			if ( UPnP_UDPConnection->OpenPorts() || UPnP_TCPConnection->OpenPorts() )
 			{
@@ -239,15 +239,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			if ( ExternalIP.size() > 0 )
 			{
 				// woohoo, we got the external IP from the UPnP framework
-				// lets populate the  Active IP dialog textbox with the discovered IP and disable it
 				SettingsManager::getInstance()->set(SettingsManager::SERVER, ExternalIP );
 				SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, SettingsManager::CONNECTION_ACTIVE );
-				::EnableWindow(GetDlgItem(IDC_SERVER), FALSE);
 			}
 			else
 			{
 				//:-(  Looks like we have to rely on the user setting the external IP manually
-				// so lets log something to the log, and ungrey the Active IP dialog textbox
 			}
 		}
 		 else
@@ -262,7 +259,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		UPnP_TCPConnection = NULL;
 		UPnP_UDPConnection = NULL;
 	}
-	
+
 	if(SETTING(NICK).empty()) {
 		PostMessage(WM_COMMAND, IDC_HELP_README);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
@@ -690,8 +687,9 @@ LRESULT MainFrame::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	return 0;	
 }
 
-LRESULT MainFrame::onMenuHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_DISPLAY_TOC, NULL);
+LRESULT MainFrame::onMenuHelp(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled) {
+	UINT action = (wID == IDC_HELP_CONTENTS) ? HH_DISPLAY_TOC : HH_HELP_CONTEXT;
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), action, wID);
 	bHandled = TRUE;
 	return 0;	
 }
@@ -919,7 +917,6 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	bool isFile = false;
 	switch(wID) {
 	case IDC_HELP_README: site = Text::toT(Util::getAppPath() + "README.txt"); isFile = true; break;
-	case IDC_HELP_CHANGELOG: site = Text::toT(Util::getAppPath() + "changelog.txt"); isFile = true; break;
 	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
 	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
 	case IDC_HELP_TRANSLATIONS: site = links.translations; break;
@@ -972,30 +969,25 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
 
-LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring file;
-	
-	if(wID == IDC_OPEN_MY_LIST){
-		ShareManager::getInstance()->generateXmlList( true );
-		file = Text::toT(ShareManager::getInstance()->getBZXmlFile());
-		DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser("My List"));
-				
-		return 0;
-	}
-
-
 	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getAppPath() + "FileLists\\"), types)) {
 		tstring username;
-		if(file.rfind(_T('\\')) != tstring::npos) {
-			username = file.substr(file.rfind(_T('\\')) + 1);
-			if(username.rfind(_T('.')) != tstring::npos) {
-				username.erase(username.rfind(_T('.')));
+		if(file.rfind('\\') != string::npos) {
+			username = file.substr(file.rfind('\\') + 1);
+			if(username.rfind('.') != string::npos) {
+				username.erase(username.rfind('.'));
 			}
 			if(username.length() > 4 && Util::stricmp(username.c_str() + username.length() - 4, _T(".xml")) == 0)
 				username.erase(username.length()-4);
 			DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(Text::fromT(username)));
 		}
 	}
+	return 0;
+}
+
+LRESULT MainFrame::onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getUser(SETTING(NICK)));
 	return 0;
 }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.6665" Revision="1">
+<Language Name="Example Language" Author="arnetheduck" Version="0.667" Revision="1">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -209,6 +209,7 @@
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
 		<String Name="MenuOpenDownloadsDir">Open downloads directory</String>
 		<String Name="MenuOpenFileList">Open file list...	Ctrl+L</String>
+		<String Name="MenuOpenOwnList">Open own list</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
 		<String Name="MenuReadme">Readme / Newbie help</String>
@@ -431,6 +432,7 @@
 		<String Name="Size">Size</String>
 		<String Name="SizeMax">Max Size</String>
 		<String Name="SizeMin">Min Size</String>
+		<String Name="SkipRename">New virtual name matches old name, skipping...</String>
 		<String Name="SlotGranted">Slot granted</String>
 		<String Name="Slots">Slots</String>
 		<String Name="SlotsSet">Slots set</String>
@@ -581,6 +583,7 @@
 		<String Name="SettingsEntireWord">Entire Word</String>
 		<String Name="SettingsTabColor">Change Tabcolor</String>
 		<String Name="SettingsLastlog">Lastlog</String>
+		<String Name="SettingsDupes">Dupes Background Color</String>
 		<String Name="Bold">Bold</String>
 		<String Name="Italic">Italic</String>
 		<String Name="Underline">Underline</String>
@@ -664,6 +667,7 @@
 		<String Name="FolderName">Name</String>
 		<String Name="PopupDontShowOnActive">Don't display popups for active window</String>
 		<String Name="PopupActivateOnClick">Activate window when clicking popup</String>
-		<String Name="SkipRename">New virtual name matches old name, skipping...</String>
+		<String Name="DropStupidConnection">Drop connections from own nick(stupid clients)</String>
+		<String Name="DropStupidConnectionLog">Incoming connection dropped because user tried to use a fake nick, IP=</String>
 	</Strings>
 </Language>

@@ -26,10 +26,11 @@
 #include "CryptoManager.h"
 #include "ClientManager.h"
 #include "QueueManager.h"
+#include "LogManager.h"
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 	socket.addListener(this);
 
@@ -372,10 +373,13 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 		aSource->setUser(ClientManager::getInstance()->getUser(aNick));
 
-		if(Util::stricmp(aSource->getUser()->getNick(), aSource->getUser()->getClientNick()) == 0){
-			dcdebug("CM::onMyNick Incoming connection from stupid user %s\n", aSource->getUser()->getNick());
-			putConnection(aSource);
-			return;
+		if( BOOLSETTING(DROP_STUPID_CONNECTION) ) {
+			if(Util::stricmp(aSource->getUser()->getNick(), aSource->getUser()->getClientNick()) == 0){
+				dcdebug("CM::onMyNick Incoming connection from stupid user %s\n", aSource->getUser()->getNick());
+				LogManager::getInstance()->message(STRING(DROP_STUPID_CONNECTION_LOG) + aSource->getRemoteIp());
+				putConnection(aSource);
+				return;
+			}
 		}
 
 		// We don't need this connection for downloading...make it an upload connection instead...

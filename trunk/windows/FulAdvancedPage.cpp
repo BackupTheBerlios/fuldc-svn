@@ -39,17 +39,18 @@ PropPage::Item FulAdvancedPage::items[] = {
 };
 
 FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
-	{ SettingsManager::EXPAND_QUEUE,					ResourceManager::EXPAND_QUEUE },
-	{ SettingsManager::STRIP_ISP,						ResourceManager::STRIP_ISP },
-	{ SettingsManager::STRIP_ISP_PM,					ResourceManager::STRIP_ISP_PM },
-	{ SettingsManager::HIGH_PRIO_SAMPLE,				ResourceManager::HIGH_PRIO_SAMPLE },
-	{ SettingsManager::ROTATE_LOG,						ResourceManager::ROTATE_LOG },
-	{ SettingsManager::HUBFRAME_CONFIRMATION,			ResourceManager::HUBFRAME_CONFIRMATION },
-	{ SettingsManager::QUEUE_REMOVE_CONFIRMATION,		ResourceManager::QUEUE_REMOVE_CONFIRMATION },
-	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND },
-	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC }, 
-	{ SettingsManager::TOGGLE_ACTIVE_WINDOW,			ResourceManager::TOGGLE_ACTIVE_WINDOW },
-	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY }
+	{ SettingsManager::EXPAND_QUEUE,					ResourceManager::EXPAND_QUEUE				},
+	{ SettingsManager::STRIP_ISP,						ResourceManager::STRIP_ISP					},
+	{ SettingsManager::STRIP_ISP_PM,					ResourceManager::STRIP_ISP_PM				},
+	{ SettingsManager::HIGH_PRIO_SAMPLE,				ResourceManager::HIGH_PRIO_SAMPLE			},
+	{ SettingsManager::ROTATE_LOG,						ResourceManager::ROTATE_LOG					},
+	{ SettingsManager::HUBFRAME_CONFIRMATION,			ResourceManager::HUBFRAME_CONFIRMATION		},
+	{ SettingsManager::QUEUE_REMOVE_CONFIRMATION,		ResourceManager::QUEUE_REMOVE_CONFIRMATION	},
+	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND				},
+	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC				}, 
+	{ SettingsManager::TOGGLE_ACTIVE_WINDOW,			ResourceManager::TOGGLE_ACTIVE_WINDOW		},
+	{ SettingsManager::DROP_STUPID_CONNECTION,			ResourceManager::DROP_STUPID_CONNECTION		},
+	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 
 LRESULT FulAdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

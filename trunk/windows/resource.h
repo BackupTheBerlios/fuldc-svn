@@ -140,12 +140,13 @@
 #define IDD_HUB_LIST                    278
 #define IDC_LIST_ADD                    279
 #define IDC_LIST_DESC                   280
-#define IDC_LIST_DOWN					281
+#define IDC_LIST_DOWN                   281
 #define IDC_LIST_EDIT                   282
 #define IDC_LIST_LIST                   283
 #define IDC_LIST_REMOVE                 284
 #define IDC_LIST_UP                     285
 #define IDC_LIST_EDIT_BOX               286
+#define IDC_OPEN_OWN_LIST               287
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -494,6 +495,9 @@
 #define IDC_POPUP_REMOVE3               1303
 #define IDC_POPUP_DONT_SHOW_ACTIVE      1303
 #define IDC_FH_LOG_MAIN_CHAT            1304
+#define IDC_DUPES                       1304
+#define IDC_BUTTON1                     1305
+#define IDC_DUPE_COLOR                  1305
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -541,7 +545,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1304
+#define _APS_NEXT_CONTROL_VALUE         1306
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif

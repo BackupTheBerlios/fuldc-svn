@@ -1134,7 +1134,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 
 void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
 	RLock l(cs);
-	if(aFileType == SearchManager::TYPE_HASH) {
+	if(aFileType == SearchManager::TYPE_TTH) {
 		if(aString.compare(0, 4, "TTH:") == 0) {
 			TTHValue tth(aString.substr(4));
 			

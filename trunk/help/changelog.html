@@ -13,6 +13,30 @@
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
 
+<h2>0.667 <span style="color: gray;">(2004-11-15)</span></h2>
+<ul>
+  <li>Improved multiple hublist support (thanks garg)</li>
+  <li>Fixed some favdirs issues (thanks naga)</li>
+  <li>Fixed a status logging issue (thanks naga)</li>
+  <li>[bug 289] Fixed annoying login issue</li>
+  <li>Added possibility to rename shares (thanks naga and tremor)</li>
+  <li>[bug 106] Fixed show joins for fav users (thanks ullner)</li>
+  <li>Fixed some unnecessary connects when download slots are full</li>
+  <li>Fixed magnet registration issue (thanks garg)</li>
+  <li>Some code documentation work (thanks jonathan jansson)</li>
+  <li>Makedefs.py fixes (thanks garg)</li>
+  <li>A connection attempt is made when you grant a slot to potentially start the other fella's transfers (thanks sed)</li>
+  <li>Fixed passive search results issue with international nicks (thanks garg)</li>
+  <li>Fixed search frame extension vs tth again</li>
+  <li>FAQ added to the help file (thanks bsod)</li>
+  <li>Upgraded to zlib 1.2.2, fixing a security issue (thanks garg)</li>
+  <li>Added %[file] to the transfer view user commands (thanks naga)</li>
+  <li>Fixed myinfo update issue (thanks sulan)</li>
+  <li>Added option to use only up/down for command line history (thanks jonathan stone)</li>
+  <li>Improved installer (thanks bsod)</li>
+  <li>Fixed so that a connection attempt is made when changing a transfer to highest priority</li>
+</ul>
+
 <h2>0.666 <span style="color: gray;">(2004-11-03)</span></h2>
 <ul>
   <li>[bug 173] Fixed copy nick to clipboard (thanks trem)</li>
@@ -110,7 +134,6 @@ See the version history of DC++ below.
   <li>Files scheduled for viewing are always set to highest prio</li>
   <li>Added rudimentary automake and autoconf support for the client part, perhaps this will encourage someone to finish a nice linux port</li>
   <li>[bug 162] Fixed dupe usercommands on reconnect (thanks sed)</li>
-  <li>Links now clickable in PM's and notepad as well (thanks torgny nyblom)</li>
   <li>Links now clickable in PM's and notepad as well (thanks naga)</li>
   <li>Files are no longer hashed if the shared directory is removed while hashing</li>
   <li>Added hash progress dialog, hashing is run at a higher priority when dialog is shown</li>

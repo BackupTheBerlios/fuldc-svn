@@ -34,6 +34,7 @@
 #include "../client/CriticalSection.h"
 #include "../client/ClientManagerListener.h"
 #include "../client/TimerManager.h"
+#include "../client/ShareManager.h"
 
 #include "UCHandler.h"
 
@@ -58,6 +59,7 @@ public:
 	BEGIN_MSG_MAP(SearchFrame)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_GETDISPINFO, ctrlResults.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, ctrlResults.onColumnClick)
+		NOTIFY_HANDLER(IDC_RESULTS, NM_CUSTOMDRAW, onCustomDraw)
 		NOTIFY_HANDLER(IDC_HUB, LVN_GETDISPINFO, ctrlHubs.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_KEYDOWN, onKeyDown)
@@ -134,6 +136,7 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
@@ -232,6 +235,11 @@ private:
 
 		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) { 
 			sr->incRef(); update();
+
+			if( sr->getTTH() )
+				dupe = ShareManager::getInstance()->isTTHShared(sr->getTTH());
+			else
+				dupe = false;
 		};
 		~SearchInfo() { 
 			sr->decRef(); 
@@ -353,6 +361,10 @@ private:
 		GETSET(tstring, exactSize, ExactSize);
 		GETSET(tstring, ip, IP);
 		GETSET(tstring, tth, TTH);
+		
+		bool isDupe() const { return dupe; }
+	private:
+		bool dupe;
 	};
 
 	struct HubInfo : public FastAlloc<HubInfo> {

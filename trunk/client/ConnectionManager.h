@@ -75,10 +75,14 @@ public:
 	 * Set this ConnectionManager to listen at a different port.
 	 */
 	void setPort(short aPort) throw(SocketException) {
+		port = aPort;
 		socket.waitForConnections(aPort);
 	}
 	void disconnect() throw() {
 		socket.disconnect();
+	}
+	unsigned short getPort() {
+		return port;
 	}
 
 	// Ugly trick to use windows messages...
@@ -88,6 +92,7 @@ public:
 
 private:
 	CriticalSection cs;
+	short port;
 
 	/** Pending connections, i e users we're trying to connect to */
 	ConnectionQueueItem::List pendingDown;

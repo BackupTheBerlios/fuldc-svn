@@ -21,11 +21,13 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_BTN_TIME_STAMP_HELP, onTimeStampHelp)
+		COMMAND_ID_HANDLER(IDC_DUPE_COLOR, onSelectColor)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onSelectColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
@@ -34,6 +36,7 @@ public:
 	virtual void write();
 
 protected:
+	DWORD dupeColor;
 	static Item items[];
 	static TextItem texts[];
 };

@@ -45,7 +45,8 @@ void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aU
 
 DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(Text::toT(WinUtil::getInitialDir(aUser)))
+		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(Text::toT(WinUtil::getInitialDir(aUser))),
+		mylist(false)
 {
 	tstring tmp;
 	if(aFile.size() < 4) {
@@ -59,6 +60,12 @@ DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::P
 	} catch(const Exception& e) {
 		error = Text::toT(aUser->getFullNick() + ": " + e.getError());
 	}
+
+	tstring filename = Util::getFileName(aFile);
+	if( Util::stricmp(filename, _T("files.xml.bz2")) == 0 )
+		mylist = true;
+	else if ( Util::strnicmp(filename, _T("MyList"), 6) == 0 )
+		mylist = true;
 
 	downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
 }
@@ -946,6 +953,22 @@ LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARA
 		PostMessage(WM_COMMAND, inf.wID, 0);
 	}
 	return 0;
+}
+
+LRESULT DirectoryListingFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>( pnmh );
+
+	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
+		return CDRF_NOTIFYITEMDRAW;
+
+	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
+		ItemInfo *ii = reinterpret_cast<ItemInfo*>(plvcd->nmcd.lItemlParam);
+
+		if( !mylist && ii->isDupe() )
+			plvcd->clrTextBk = SETTING(DUPE_COLOR);
+	}
+
+	return CDRF_DODEFAULT;
 }
 /**
  * @file

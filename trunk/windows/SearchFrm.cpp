@@ -349,13 +349,10 @@ void SearchFrame::onEnter() {
 	{
 		Lock l(cs);
 		search = StringTokenizer<tstring>(s, _T(' ')).getTokens();
-		isHash = (ftype == SearchManager::TYPE_HASH);
+		isHash = (ftype == SearchManager::TYPE_TTH);
 	}
 
 	SetWindowText((TSTRING(SEARCH) + _T(" - ") + s).c_str());
-
-	if(ftype == SearchManager::TYPE_HASH)
-		s = _T("TTH:") + s;
 
 	SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
 		(SearchManager::TypeModes)ftype, mode);
@@ -1097,6 +1094,22 @@ LRESULT SearchFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 	WinUtil::setClipboard(si->getText(tmp));
 	
 	return 0;
+}
+
+LRESULT SearchFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>( pnmh );
+
+	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
+		return CDRF_NOTIFYITEMDRAW;
+
+	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
+		SearchInfo *ii = reinterpret_cast<SearchInfo*>(plvcd->nmcd.lItemlParam);
+
+		if( ii->isDupe() )
+			plvcd->clrTextBk = SETTING(DUPE_COLOR);
+	}
+
+	return CDRF_DODEFAULT;
 }
 /**
  * @file

@@ -14,6 +14,8 @@ PropPage::TextItem FulAppearancePage::texts[] = {
 	{ IDC_BTN_TEXTCOLOR,	  ResourceManager::SETTINGS_BTN_TEXTCOLOR		 },
 	{ IDC_BTN_TIME_STAMP_HELP,ResourceManager::SETTINGS_TIME_STAMP_HELP		 },
 	{ IDC_SB_TIME_STAMPS,	  ResourceManager::SETTINGS_SB_TIME_STAMPS		 },
+	{ IDC_DUPE_COLOR,		  ResourceManager::SETTINGS_BTN_COLOR			 },
+	{ IDC_DUPES,			  ResourceManager::SETTINGS_DUPES				 },
 	{ 0,					  ResourceManager::SETTINGS_AUTO_AWAY			 }
 };
 
@@ -27,15 +29,27 @@ LRESULT FulAppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	PropPage::read((HWND)*this, items);
 	PropPage::translate((HWND)(*this), texts);
 
+	dupeColor = SETTING(DUPE_COLOR);
+
 	return TRUE;
 }
 
 void FulAppearancePage::write() {
 	PropPage::write((HWND)*this, items);
+
+	settings->set(SettingsManager::DUPE_COLOR, static_cast<int>(dupeColor));
 }
 
 LRESULT FulAppearancePage::onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	MessageBox(CTSTRING(HELP_TIME_STAMPS), CTSTRING(TIME_STAMPS_HELP_CAPTION), MB_OK | MB_ICONINFORMATION);
+
+	return 0;
+}
+
+LRESULT FulAppearancePage::onSelectColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CColorDialog c(dupeColor, CC_FULLOPEN);
+	if( c.DoModal() == IDOK )
+		dupeColor = c.GetColor();
 
 	return 0;
 }

@@ -911,8 +911,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,6,6
- PRODUCTVERSION 0,6,6,6
+ FILEVERSION 0,6,6,7
+ PRODUCTVERSION 0,6,6,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -929,12 +929,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 6, 6, 6"
+            VALUE "FileVersion", "0, 6, 6, 7"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2004 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 6, 6, 6"
+            VALUE "ProductVersion", "0, 6, 6, 7"
         END
     END
     BLOCK "VarFileInfo"
@@ -1072,12 +1072,14 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_CHATBUFFERSIZE,15,26,90,14,ES_AUTOHSCROLL
-    GROUPBOX        "Mainchat buffer size",IDC_SB_CHATBUFFERSIZE,7,7,116,43
+    GROUPBOX        "Mainchat buffer size",IDC_SB_CHATBUFFERSIZE,7,7,115,43
     LTEXT           "Max size ~2.1 billion (2^31)",IDC_ST_CHATBUFFERSIZE,15,
                     15,92,8
     GROUPBOX        "Time stamps",IDC_SB_TIME_STAMPS,150,7,116,43
     EDITTEXT        IDC_EDIT_TIME_STAMPS,157,18,95,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Button1",IDC_BTN_TIME_STAMP_HELP,157,34,57,11
+    GROUPBOX        "Dupe Color",IDC_DUPES,7,58,116,35
+    PUSHBUTTON      "Select Color",IDC_DUPE_COLOR,15,71,90,14
 END
 
 
@@ -1106,7 +1108,7 @@ BEGIN
         VERTGUIDE, 15
         VERTGUIDE, 21
         VERTGUIDE, 105
-        VERTGUIDE, 129
+        VERTGUIDE, 123
         VERTGUIDE, 149
         VERTGUIDE, 157
         VERTGUIDE, 252

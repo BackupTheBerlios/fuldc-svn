@@ -80,6 +80,11 @@ public:
 		hits += aHits;
 	}
 
+	string getOwnListFile() {
+		generateXmlList(true);
+		return getBZXmlFile();
+	}
+
 	bool isTTHShared(TTHValue* tth){
 		HashFileIter i = tthIndex.find(tth);
 		return (i != tthIndex.end());

@@ -278,7 +278,7 @@ void HubFrame::onEnter() {
 				UserInfo* ui = findUser(param);
 				if(ui != NULL){
 					ui->grant();
-					addClientLine(ui->getText(COLUMN_NICK) + _T("granted"));
+					addClientLine(ui->getText(COLUMN_NICK) + _T(" granted"));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 				if(param.empty()) 

@@ -185,7 +185,7 @@ void WinUtil::init(HWND hWnd) {
 	file.CreatePopupMenu();
 
 	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CTSTRING(MENU_OPEN_FILE_LIST));
-	file.AppendMenu(MF_STRING, IDC_OPEN_MY_LIST, CTSTRING(MENU_OPEN_MY_LIST));
+	file.AppendMenu(MF_STRING, IDC_OPEN_OWN_LIST, CTSTRING(MENU_OPEN_OWN_LIST));
 	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CTSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -653,7 +653,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 
  void WinUtil::searchHash(TTHValue* aHash) {
 	 if(aHash != NULL) {
-		 SearchFrame::openWindow(Text::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+		 SearchFrame::openWindow(Text::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 	 }
  }
 
@@ -922,7 +922,7 @@ void WinUtil::search(tstring searchTerm, int searchMode, bool tth) {
 			if(0 == searchMode) {
 				SearchFrame* pChild = new SearchFrame();
 				if(tth)
-					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_HASH);
+					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_TTH);
 				else
 					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
 				pChild->CreateEx(WinUtil::mdiClient);
