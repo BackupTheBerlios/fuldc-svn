@@ -367,40 +367,33 @@ QueueManager::~QueueManager() throw() {
 };
 
 void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
-	string fn;
-	string searchString;
-	bool online = false;
+	Lock l(cs);
+	QueueItem::UserMap& um = userQueue.getRunning();
 
-	{
-		Lock l(cs);
-		QueueItem::UserMap& um = userQueue.getRunning();
+	for(QueueItem::UserIter j = um.begin(); j != um.end(); ++j) {
+		QueueItem* q = j->second;
+		dcassert(q->getCurrentDownload() != NULL);
+		q->setDownloadedBytes(q->getCurrentDownload()->getPos());
+	}
+	if(!um.empty())
+		setDirty();
 
-		for(QueueItem::UserIter j = um.begin(); j != um.end(); ++j) {
-			QueueItem* q = j->second;
-			dcassert(q->getCurrentDownload() != NULL);
-			q->setDownloadedBytes(q->getCurrentDownload()->getPos());
+	if(BOOLSETTING(AUTO_SEARCH) && (aTick >= nextSearch) && (fileQueue.getSize() > 0)) {
+		// We keep 30 recent searches to avoid duplicate searches
+		while((recent.size() > fileQueue.getSize()) || (recent.size() > 30)) {
+			recent.erase(recent.begin());
 		}
-		if(!um.empty())
-			setDirty();
 
-		if(BOOLSETTING(AUTO_SEARCH) && (aTick >= nextSearch) && (fileQueue.getSize() > 0)) {
-			// We keep 30 recent searches to avoid duplicate searches
-			while((recent.size() > fileQueue.getSize()) || (recent.size() > 30)) {
-				recent.erase(recent.begin());
-			}
-
-			QueueItem* qi = fileQueue.findAutoSearch(recent);
-			if(qi != NULL) {
-				dcassert(qi->getTTH());
-				searchString = qi->getTTH()->toBase32();
-				online = qi->hasOnlineUsers();
-				recent.push_back(qi->getTarget());
-				nextSearch = aTick + (online ? 120000 : 300000);
-			}
+		QueueItem* qi = fileQueue.findAutoSearch(recent);
+		if(qi != NULL) {
+			dcassert(qi->getTTH());
+			string searchString = qi->getTTH()->toBase32();
+			bool online = qi->hasOnlineUsers();
+			recent.push_back(qi->getTarget());
+			nextSearch = aTick + (online ? 120000 : 300000);
+			SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 		}
 	}
-
-	SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 }
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
