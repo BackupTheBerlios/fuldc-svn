@@ -548,7 +548,10 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		SetWindowText(x->c_str());
 		delete x;
 	} else if(wParam == STATS) {
-		ctrlStatus.SetText(1, (Util::toStringW(client->getUserCount()) + _T(" ") + TSTRING(HUB_USERS)).c_str());
+		if(ctrlUsers.GetItemCount() == usermap.size())
+			ctrlStatus.SetText(1, (Util::toStringW(client->getUserCount()) + _T(" ") + TSTRING(HUB_USERS)).c_str());
+		else
+			ctrlStatus.SetText(1, (Util::toStringW(ctrlUsers.GetItemCount()) + _T("/") + Util::toStringW(client->getUserCount()) + _T(" ") + TSTRING(HUB_USERS)).c_str());
 		ctrlStatus.SetText(2, Util::formatBytesW(client->getAvailable()).c_str());
 		if(client->getUserCount() > 0)
 			ctrlStatus.SetText(3, (Util::formatBytesW(client->getAvailable() / client->getUserCount()) + _T("/") + CTSTRING(USER)).c_str());
@@ -600,9 +603,9 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 		int tmp = (sr.Width()) > 332 ? 232 : ((sr.Width() > 132) ? sr.Width()-100 : 32);
 		
-		w[0] = sr.right - tmp -30;
-		w[1] = w[0] + (tmp-100)/2;
-		w[2] = w[0] + (tmp-100);
+		w[0] = sr.right - tmp -80;
+		w[1] = w[0] + (tmp-50)/2;
+		w[2] = w[0] + (tmp-50);
 		w[3] = w[2] + 96;
 		w[4] = w[3] + 16;
 		
