@@ -38,7 +38,7 @@
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
-				AssemblerOutput="4"
+				AssemblerOutput="0"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"

@@ -105,7 +105,7 @@
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
-				AssemblerOutput="4"
+				AssemblerOutput="0"
 				WarningLevel="4"
 				DebugInformationFormat="3"
 				CallingConvention="1"

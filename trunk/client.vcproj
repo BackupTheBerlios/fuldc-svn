@@ -95,7 +95,7 @@
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdinc.h"
 				PrecompiledHeaderFile="$(IntDir)/client.pch"
-				AssemblerOutput="4"
+				AssemblerOutput="0"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -111,7 +111,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="SubWCRev.exe . client/versiontemplate.h client/version.h"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
