@@ -120,9 +120,9 @@ void UploadPage::write()
 	TCHAR buf[MAX_PATH];
 
 	for(int i = 0; i < size; ++i){
-		ctrlDirectories.GetItemText(i, 0, buf, MAX_PATH);
+		ctrlDirectories.GetItemText(i, 1, buf, MAX_PATH);
 		string tmp = Text::fromT(buf);
-		ShareManager::getInstance()->setIncoming( tmp, ctrlDirectories.GetCheckState(i) );
+		ShareManager::getInstance()->setIncoming( tmp, ctrlDirectories.GetCheckState(i) ? true : false );
 		
 	}
 

@@ -183,8 +183,12 @@ void TransferView::runUserCommand(UserCommand& uc) {
 LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CTSTRING(CONNECTING_FORCED));
-		ctrlTransfers.getItemData(i)->user->connect();
+		ItemInfo *ii = ctrlTransfers.getItemData(i);
+		ii->statusString = CTSTRING(CONNECTING_FORCED);
+		ii->updateMask |= ItemInfo::MASK_STATUS;
+		ii->update();
+		ctrlTransfers.updateItem( ii );
+		ii->user->connect();
 	}
 	return 0;
 }

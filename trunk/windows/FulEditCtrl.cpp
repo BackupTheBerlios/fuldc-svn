@@ -430,7 +430,7 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		return 1;
 	
 	//check ypos
-	if( mousePT.y > (charPT.y + WinUtil::getTextHeight(m_hWnd, WinUtil::font)) )
+	if( mousePT.y > (charPT.y + ( WinUtil::getTextHeight(m_hWnd, WinUtil::font) * 1.5 ) ) )
 		return 1;
 	
 

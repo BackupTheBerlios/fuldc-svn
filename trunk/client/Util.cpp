@@ -543,10 +543,8 @@ int Util::strnicmp(const char* a, const char* b, size_t n) {
 		a+= na < 0 ? 1 : na;
 		b+= nb < 0 ? 1 : nb;
 	}
-	wchar_t ca = 0, cb = 0;
-	Text::utf8ToWc(a, ca);
-	Text::utf8ToWc(b, cb);
-	return (int)cb - (int)ca;
+	
+	return 0;
 }
 
 string Util::encodeURI(const string& aString, bool reverse) {
