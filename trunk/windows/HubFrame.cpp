@@ -143,8 +143,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	mcMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CSTRING(SEARCH_SITES));
 	
 
-	showJoins = BOOLSETTING(SHOW_JOINS);
-
 	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
@@ -175,11 +173,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
 	if(fhe != NULL){
-		showJoins = fhe->getShowJoins();
-		showUserList = fhe->getShowUserlist();
-		ctrlShowUsers.SetCheck(showUserList ? BST_CHECKED : BST_UNCHECKED);
-		
-
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
 		
@@ -194,10 +187,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	return 1;
 }
 
-void HubFrame::openWindow(const string& aServer, const string& aNick /* = Util::emptyString */, const string& aPassword /* = Util::emptyString */, const string& aDescription /* = Util::emptyString */, bool aStripIsp) {
+void HubFrame::openWindow(const string& aServer, const string& aNick /* = Util::emptyString */, const string& aPassword /* = Util::emptyString */, const string& aDescription /* = Util::emptyString */) {
 	FrameIter i = frames.find(aServer);
 	if(i == frames.end()) {
-		HubFrame* frm = new HubFrame(aServer, aNick, aPassword, aDescription, aStripIsp);
+		HubFrame* frm = new HubFrame(aServer, aNick, aPassword, aDescription);
 		frames[aServer] = frm;
 		frm->CreateEx(WinUtil::mdiClient);
 	} else {
@@ -482,10 +475,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				User::Ptr& u = i->first;
 				switch(i->second) {
 				case UPDATE_USER:
-					if(updateUser(u)) {
-						if(showJoins)
-							addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
-					} 
+					if(updateUser(u) && showJoins)
+						addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
 					break;
 				case UPDATE_USERS:
 					updateUser(u);
@@ -601,7 +592,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 			SetSinglePaneMode(SPLIT_PANE_LEFT);
 	} else {
 		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-		SetSinglePaneMode(SPLIT_PANE_NONE);
+			SetSinglePaneMode(SPLIT_PANE_NONE);
 	}
 	SetSplitterRect(rc);
 	
@@ -1141,21 +1132,11 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
-	if(wParam == BST_CHECKED) {
-		User::NickMap& lst = client->lockUserList();
-		ctrlUsers.SetRedraw(FALSE);
-		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
-			updateUser(i->second);
-		}
-		client->unlockUserList();
-		ctrlUsers.SetRedraw(TRUE);
-		ctrlUsers.resort();
+	if(wParam == BST_CHECKED)
 		showUserList = true;
-
-	} else {
+	 else
 		showUserList = false;
-	}
-
+	
 	UpdateLayout(FALSE);
 	return 0;
 }
@@ -1274,7 +1255,7 @@ void HubFrame::on(BadPassword, Client*) throw() {
 	client->setPassword(Util::emptyString);
 }
 void HubFrame::on(UserUpdated, Client*, const User::Ptr& user) throw() { 
-	if(getUserInfo() && !user->isSet(User::HIDDEN)) 
+	if(!user->isSet(User::HIDDEN)) 
 		speak(UPDATE_USER, user);
 }
 void HubFrame::on(UsersUpdated, Client*, const User::List& aList) throw() {
@@ -1290,8 +1271,7 @@ void HubFrame::on(UsersUpdated, Client*, const User::List& aList) throw() {
 }
 
 void HubFrame::on(UserRemoved, Client*, const User::Ptr& user) throw() {
-	if(getUserInfo()) 
-		speak(REMOVE_USER, user);
+	speak(REMOVE_USER, user);
 }
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() { 

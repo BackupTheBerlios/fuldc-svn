@@ -132,7 +132,7 @@ public:
 	void onTab();
 	void runUserCommand(::UserCommand& uc);
 
-	static void openWindow(const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString, const string& description = Util::emptyString, bool StripIsp = false);
+	static void openWindow(const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString, const string& description = Util::emptyString);
 	static void closeDisconnected();
 	static void setClosing();
 	
@@ -291,16 +291,25 @@ private:
 		string msg;
 	};
 
-	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription, bool aStripIsp) : 
+	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
 	waitingForPW(false), extraSort(false), server(aServer), closed(false), closing(false), 
-		updateUsers(false), curCommandPosition(0), 
+		updateUsers(true), curCommandPosition(0), 
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
 		clientContainer("edit", this, EDIT_MESSAGE_MAP),
 		ctrlFilterContainer("edit", this, FILTER_MESSAGE_MAP),
 		ctrlFilterSelContainer("COMBOBOX", this, FILTER_MESSAGE_MAP)
 	{
-		stripIsp = aNick.empty() ? BOOLSETTING(STRIP_ISP) : aStripIsp;
+		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(aServer);
+		if(fhe != NULL) {
+			stripIsp     = fhe->getStripIsp();
+			showJoins    = fhe->getShowJoins();
+			showUserList = fhe->getShowUserlist();
+		} else {
+			stripIsp     = BOOLSETTING(STRIP_ISP);
+			showJoins    = BOOLSETTING(SHOW_JOINS);
+			showUserList = true;
+		}
 		client = ClientManager::getInstance()->getClient(aServer);
 		client->setNick(aNick.empty() ? SETTING(NICK) : aNick);
         if (!aDescription.empty())
@@ -309,8 +318,7 @@ private:
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
-		showUserList = BOOLSETTING(GET_USER_INFO);
-
+		
 		tabList.push_back("/away");
 		tabList.push_back("/back");
         tabList.push_back("/clear");

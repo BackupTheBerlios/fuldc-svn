@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="windows-1252" standalone="yes" ?> 
 <help>
 	<away>away [away message] - Set away mode.</away>
 	<back>back - set back if in away mode. </back>

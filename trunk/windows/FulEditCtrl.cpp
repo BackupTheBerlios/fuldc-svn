@@ -15,21 +15,34 @@
 #include "WinUtil.h"
 #include "EmoticonManager.h"
 
+struct StreamInfo
+{
+	StreamInfo(): pos(0) {}
+	StreamInfo(string *aMsg): pos(0) {
+		msg = aMsg;
+	}
+	string *msg;
+	int pos;
+};
+
+
 static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
 {
-	string *pstr = (string *)dwCookie;
+	StreamInfo *pstr = (StreamInfo *)dwCookie;
 
-	if( pstr->length() < cb )
+	if( pstr->msg->length() < cb )
 	{
-		*pcb = pstr->length();
-		memcpy(pbBuff, pstr->c_str(), *pcb );
-		//delete pstr;
+		*pcb = (pstr->msg->length() - pstr->pos);
+		memcpy(pbBuff, pstr->msg->substr(pstr->pos).c_str(), *pcb );
+		pstr->pos += (*pcb);
+		if((*pcb) == 0)
+			delete pstr;
 	}
 	else
 	{
 		*pcb = cb;
-		memcpy(pbBuff, pstr->c_str(), *pcb );
-		*pstr = pstr->substr( cb );
+		memcpy(pbBuff, pstr->msg->substr(pstr->pos).c_str(), *pcb );
+		pstr->pos += cb;
 	}
 	return 0;
 }
@@ -227,15 +240,11 @@ void CFulEditCtrl::AddInternalLine(string & aLine) {
 	AppendText(aLine.c_str());
 	Colorize(length);
 	//StringMapIter i = EmoticonManager::getInstance()->getEmoticons()->begin();
-	//string tmp = i->second;
-	//InsertText(GetTextLengthEx(GTL_NUMCHARS), tmp.c_str());
-	//InsertText(GetTextLengthEx(GTL_NUMCHARS), i->second.c_str());
-	//LogManager::getInstance()->log("richedittest", i->second);
+	
 	//SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 
-	//EDITSTREAM es = {(DWORD)new string(i->second), 0, EditStreamCallBack};
-	//StreamIn(SF_RTF | SFF_SELECTION, es);
-	//ScrollEnd();
+	//EDITSTREAM es = {(DWORD)new StreamInfo(&i->second), 0, EditStreamCallBack};
+	//StreamIn(SF_RTF , es);
 	SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 	
 	ScrollCaret();
