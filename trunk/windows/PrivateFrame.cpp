@@ -560,8 +560,17 @@ LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	tstring path = Text::toT(SETTING(LOG_DIRECTORY) + user->getNick() + ".log");
-	ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	StringMap params;
+	params["user"] = user->getNick();
+	params["hub"] = user->getClientName();
+	params["hubaddr"] = user->getClientAddressPort();
+	params["mynick"] = user->getClientNick(); 
+	params["mycid"] = user->getClientCID().toBase32(); 
+	params["cid"] = user->getCID().toBase32(); 
+	
+	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
+	if(!path.empty())
+		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return 0;
 }
 

@@ -1469,16 +1469,15 @@ void HubFrame::updateUserList() {
 }
 
 LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	tstring path = Text::toT(SETTING(LOG_DIRECTORY));
 	
-
 	StringMap params;
 	params["hub"] = client->getName();
 	params["hubaddr"] = client->getAddressPort();
 	params["mynick"] = client->getNick(); 
 
-	path += Text::toT(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params));
-	ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
+	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::CHAT, params));
+	if(!path.empty())
+		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
 		
 	return 0;
 }

@@ -72,6 +72,35 @@ public:
 		log(path, msg);
 	}
 
+	string getLogFilename(LogArea area, StringMap& params) {
+		string path = SETTING(LOG_DIRECTORY);
+		switch(area){
+			case UPLOAD:
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_UPLOAD), params), time(NULL));
+				break;
+			case DOWNLOAD:
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_DOWNLOAD), params), time(NULL));
+				break;
+			case PM:
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params), time(NULL));
+				break;
+			case CHAT:
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), time(NULL));
+				break;
+			case STATUS:
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_STATUS), params), time(NULL));
+				break;	
+			case SYSTEM:
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_SYSTEM), params), time(NULL));
+				break;
+			default:
+				path = Util::emptyString;
+				break;
+		}
+
+		return path;
+	}
+
 	void message(const string& msg) {
 		if(BOOLSETTING(LOG_SYSTEM)) {
 			StringMap params;
