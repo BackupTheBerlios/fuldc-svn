@@ -308,7 +308,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 
 	if(cs->getPopup() && !matchedPopup) {
 		matchedPopup = true;
-		PopupManager::getInstance()->ShowMC(line, m_hWnd);
+		PopupManager::getInstance()->ShowMC(line);
 	}
 	if(cs->getTab())
 		matchedTab = true;
@@ -371,7 +371,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 
 		if(cs->getPopup() && !matchedPopup) {
 			matchedPopup = true;
-			PopupManager::getInstance()->ShowMC(line, m_hWnd);
+			PopupManager::getInstance()->ShowMC(line);
 		}
 
 		if(cs->getTab())

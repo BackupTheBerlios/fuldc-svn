@@ -142,6 +142,7 @@ private:
 	HBITMAP bmp;
 	LOGFONT logFont;
 	HFONT   font;
+
 };
 
 

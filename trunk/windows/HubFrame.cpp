@@ -1241,7 +1241,7 @@ void HubFrame::addClientLine(const string& aLine, bool inChat /* = true */) {
 
 	if(BOOLSETTING(POPUP_ON_HUBSTATUS)) {
 		if( aLine.find("Disconnected") != string::npos ) {
-			PopupManager::getInstance()->ShowDisconnected(server, m_hWnd);
+			PopupManager::getInstance()->ShowDisconnected(server);
 		}
 	}
 

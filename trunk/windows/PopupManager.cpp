@@ -9,7 +9,7 @@
 
 PopupManager* Singleton< PopupManager >::instance = NULL;
 
-void PopupManager::Show(HWND &hWnd, const string& aMsg ) {
+void PopupManager::Show(const string& aMsg ) {
 	Lock l(cs);
 
 	if(!activated)
@@ -40,8 +40,9 @@ void PopupManager::Show(HWND &hWnd, const string& aMsg ) {
 	//Create a new popup
 	PopupWnd *p = new PopupWnd(hWnd, aMsg, rc, hBitmap);
 			
-	//Set the correct font and display the window
-	p->ShowWindow(SW_SHOW);
+	//move the window to the top of the z-order and display it
+	p->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
+	
 		
 	//restore focus to window
 	::SetFocus(gotFocus);
@@ -142,28 +143,22 @@ void PopupManager::Remove(int pos) {
 	}
 }
 
-void PopupManager::ShowPm(const string& nick, const string& msg, HWND hWnd /* = NULL */){
+void PopupManager::ShowPm(const string& nick, const string& msg){
 	dcdebug("%s\n", msg);
 	int pos = msg.find_first_of(">")+1;
 	if(pos == string::npos )
 		pos = 0;
 
 	string s = "New PM from: " + nick + " Msg:\r\n" + msg.substr(pos);
-	if(hWnd == NULL)
-		Show(this->hWnd, s);
-	else
-		Show(hWnd, s);
+	Show(s);
 }
 
-void PopupManager::ShowMC(const string& nick, const string& msg, HWND hWnd /* = NULL */){
+void PopupManager::ShowMC(const string& nick, const string& msg){
 	string s = nick + " says:\r\n" + msg;
-	if(hWnd == NULL)
-		Show(this->hWnd, s);
-	else
-		Show(hWnd, s);
+	Show(s);
 }
 
-void PopupManager::ShowMC(const string& msg, HWND hWnd /* = NULL */){
+void PopupManager::ShowMC(const string& msg){
 	int pos1 = msg.find_first_of("<");
 	int pos2 = msg.find_first_of(">");
 	
@@ -171,16 +166,13 @@ void PopupManager::ShowMC(const string& msg, HWND hWnd /* = NULL */){
 	if(pos1 == string::npos || pos2 == string::npos)
 		return;
 
-	ShowMC(msg.substr(pos1+1, pos2-pos1-1), msg.substr(pos2+1), hWnd);
+	ShowMC(msg.substr(pos1+1, pos2-pos1-1), msg.substr(pos2+1));
 	
 }
 
-void PopupManager::ShowDisconnected(const string& hub, HWND hWnd /* = NULL */) {
+void PopupManager::ShowDisconnected(const string& hub) {
 	string s = "you've been disconnected from:\r\n " + hub;
-	if(hWnd == NULL)
-		Show(this->hWnd, s);
-	else
-		Show(hWnd, s);
+	Show(s);
 }
 
 void PopupManager::ShowDownloadComplete(string *msg){
@@ -196,5 +188,5 @@ void PopupManager::ShowDownloadComplete(string *msg){
 	}
 	
 	delete msg;
-	Show(hWnd, s);
+	Show(s);
 }

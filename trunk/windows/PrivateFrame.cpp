@@ -122,7 +122,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 						MessageBeep(MB_OK);
 				}
 				if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM)) {
-					PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage, p->m_hWnd);
+					PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
 				}
 				break;
 			}
@@ -145,7 +145,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 			}
 
 			if (BOOLSETTING(POPUP_ON_PM)) {
-				PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage, p->m_hWnd);
+				PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
 			}
 		}
 	} else {
@@ -156,7 +156,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 				MessageBeep(MB_OK);
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM)) {
-			PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage, i->second->m_hWnd);
+			PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
 		}
 		i->second->addLine(aMessage);
 

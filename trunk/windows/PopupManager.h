@@ -25,7 +25,6 @@ public:
 		TimerManager::getInstance()->addListener(this);
 		QueueManager::getInstance()->addListener(this);
 
-		hBitmap = NULL;
 		hBitmap = (HBITMAP)::LoadImage(NULL, "icons\\popup.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		if(hBitmap != NULL){
 			BITMAP bm;
@@ -47,17 +46,17 @@ public:
 	}
 
 	//performs some formatting of the string, strips <nick>
-	void ShowPm(const string& nick, const string& msg, HWND hWnd = NULL);
+	void ShowPm(const string& nick, const string& msg);
 	
 	//retrieves nick from <nick> and removes <nick> from msg
-	void ShowMC(const string& msg, HWND hWnd = NULL );
+	void ShowMC(const string& msg );
 
 	//the caller have to separate nick and format msg neatly
-	void ShowMC(const string& nick, const string& msg, HWND hWnd = NULL);
+	void ShowMC(const string& nick, const string& msg);
 	
 	//maybe change this in the future, couldn't think of any other
 	//important status messages
-	void ShowDisconnected(const string& hub, HWND hWnd = NULL);
+	void ShowDisconnected(const string& hub);
 
 	//since we create a new string in onAction use a pointer here
 	//and take care of cleanup
@@ -103,7 +102,7 @@ private:
 	virtual void onAction(QueueManagerListener::Types type, string msg) throw();
 
 	//call this with a preformatted message
-	void Show(HWND &hWnd, const string &aMsg);
+	void Show(const string &aMsg);
 	
 };
 
