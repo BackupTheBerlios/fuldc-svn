@@ -537,10 +537,12 @@ void ShareManager::removeTTH(TTHValue* tth, const Directory::File::Iter& iter) {
 	}
 }
 
-void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, bool incoming /* = false */) throw(ShareException) {
+void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, 
+						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) {
 	update = aUpdate;
 	refreshDirs = dirs;
 	refreshIncoming = incoming;
+	refreshDir = dir;
 	join();
 	start();
 	if(block) {
@@ -553,6 +555,32 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, b
 int ShareManager::run() {
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
 	{
+		if( refreshDir && !refreshDirs ){
+			Directory::Map newDirs;
+			{
+				RLock l(cs);
+				Directory::MapIter i = directories.find( refreshPath );
+				if( i != directories.end() ){
+					Directory* dp = buildTree(i->first, NULL);
+					dp->setName(findVirtual(i->first)->first);
+					newDirs.insert(make_pair(i->first, dp));
+				}
+			}
+			{
+				WLock l(cs);
+				StringPairList dirs = virtualMap;
+				removeDirectory( refreshPath );
+				virtualMap = dirs;
+
+				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
+					addTree(i->first, i->second);
+					directories.insert(*i);
+				}
+			}
+
+			refreshDir = false;
+			refreshPath = Util::emptyString;
+		}
 
 		if(refreshIncoming && !refreshDirs) {
 			lastIncomingUpdate = GET_TICK();
@@ -584,7 +612,6 @@ int ShareManager::run() {
 			}
 				refreshIncoming = false;
 		}
-
 
 		if(refreshDirs) {
 			lastFullUpdate = GET_TICK();
@@ -1456,6 +1483,30 @@ void ShareManager::setIncoming( const string& aDir, bool incoming /*= true*/ ) {
 		tmp += PATH_SEPARATOR;
 
 	incomingMap[tmp] = incoming;
+}
+
+bool ShareManager::refresh( const string& aDir ){
+	string path = aDir;
+
+	if(path[ path.length() -1 ] != PATH_SEPARATOR)
+		path += PATH_SEPARATOR;
+
+	Directory::MapIter i = directories.find( path );
+
+	if( i == directories.end() ) {
+		
+		for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
+			if( Util::stricmp( j->first, aDir ) == 0 ) {
+				refreshPath = j->second;
+				return false;
+			}
+		}
+	} else {
+		refreshPath = path;
+	}
+
+	refresh(false, true, false, false, true);
+	return true;
 }
 
 /**

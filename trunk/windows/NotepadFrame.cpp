@@ -36,6 +36,8 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB | CFulEditCtrl::STRIP_ISP |
 		CFulEditCtrl::HANDLE_SCROLL | CFulEditCtrl::HANDLE_URLS);
 
+	ctrlPad.SendMessage(EM_SETEDITSTYLE, SES_EMULATESYSEDIT, SES_EMULATESYSEDIT);
+	
 	string tmp;
 	try {
 		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ, File::OPEN).read();

@@ -35,12 +35,12 @@ DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
 void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser, const tstring& start) {
 	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser, start);
 
-	frames.insert( FramePair(aUser->getNick(), frame) );
-	
 	if(BOOLSETTING(POPUNDER_FILELIST))
 		WinUtil::hiddenCreateEx(frame);
 	else
 		frame->CreateEx(WinUtil::mdiClient);
+
+	frames.insert( FramePair( frame->m_hWnd, frame ) );
 		
 }
 

@@ -570,6 +570,7 @@ BEGIN
     LTEXT           "Current file...",IDC_CURRENT_FILE,7,19,416,8
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // DESIGNINFO
@@ -854,13 +855,13 @@ BEGIN
     "C",            IDC_CONNECT,            VIRTKEY, ALT, NOINVERT
 END
 
-IDR_HUBFRAME ACCELERATORS 
+IDR_HUB ACCELERATORS 
 BEGIN
     "F",            IDC_FIND,               VIRTKEY, ALT, NOINVERT
     VK_F3,          IDC_FIND,               VIRTKEY, NOINVERT
 END
 
-IDR_PRIVATEFRAME ACCELERATORS 
+IDR_PRIVATE ACCELERATORS 
 BEGIN
     "F",            IDC_FIND,               VIRTKEY, ALT, NOINVERT
     VK_F3,          IDC_FIND,               VIRTKEY, NOINVERT

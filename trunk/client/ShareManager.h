@@ -55,7 +55,8 @@ public:
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
 	void removeDirectory(const string& aName);	
 	string translateFileName(const string& aFile, bool adc) throw(ShareException);
-	void refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false) throw(ShareException);
+	void refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
+	bool refresh( const string& aDir );
 	void setDirty() { xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
@@ -225,6 +226,9 @@ private:
 	bool refreshDirs;
 	bool update;
 	bool refreshIncoming;
+	bool refreshDir;
+
+	string refreshPath;
 	
 	int listN;
 

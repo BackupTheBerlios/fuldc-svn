@@ -137,7 +137,7 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlList.SetRedraw(FALSE);
 		clearList();
-		FrameIter i = frames.find(dl->getUser()->getNick());
+		FrameIter i = frames.find( m_hWnd );
 		if(i != frames.end())
 			frames.erase(i);
 
@@ -310,8 +310,8 @@ private:
 	
 	DirectoryListing* dl;
 
-	typedef multimap< string, DirectoryListingFrame* > FrameMap;
-	typedef pair< string, DirectoryListingFrame* > FramePair;
+	typedef multimap< HWND , DirectoryListingFrame* > FrameMap;
+	typedef pair< HWND , DirectoryListingFrame* > FramePair;
 	typedef FrameMap::iterator FrameIter;
 
 	static FrameMap frames;

@@ -1158,9 +1158,9 @@ LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	
 	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, CTSTRING(SETTINGS_ST_REFRESH_INCOMING));
 	dropMenu.AppendMenu(MF_SEPARATOR);
-	//int j = 1;
-	//for(StringPairIter i = l.begin(); i != l.end(); ++i, ++j)
-	//	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, (i->first).c_str());
+	int j = 1;
+	for(StringPairIter i = l.begin(); i != l.end(); ++i, ++j)
+		dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, Text::toT(i->first).c_str());
 	
 	POINT pt;
 	pt.x = tb->rcButton.right;
@@ -1176,11 +1176,11 @@ LRESULT MainFrame::onRefreshMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/
 	{
 		ShareManager::getInstance()->setDirty();
 		if(wParam == 0){
-			//ShareManager::getInstance()->refresh(false, true, false, true, false, false);
+			ShareManager::getInstance()->refresh( false, true, false, true );
 		} else if(wParam > 1){
-			//int id = wParam - 2;
-			//TStringList l = ShareManager::getInstance()->getDirectories();
-			//ShareManager::getInstance()->refresh(l[id]);
+			int id = wParam - 2;
+			StringPairList l = ShareManager::getInstance()->getDirectories();
+			ShareManager::getInstance()->refresh( l[id].second );
 		}
 	} catch(ShareException) {
 		//...
