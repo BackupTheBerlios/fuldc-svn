@@ -355,7 +355,7 @@ void HubFrame::onEnter() {
 struct CompareItems {
 	CompareItems(int aCol) : col(aCol) { }
 	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) const {
-		return HubFrame::UserInfo::compareItems(&a, &b, col) == -1;
+		return HubFrame::UserInfo::compareItems(&a, &b, col) < 0;
 	}
 	const int col;
 };

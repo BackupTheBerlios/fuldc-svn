@@ -176,7 +176,7 @@ public:
 	struct CompFirst {
 		CompFirst() { } 
 		bool operator()(T& a, const tstring& b) {
-			return Util::stricmp(a.getText(0), b) == -1;
+			return Util::stricmp(a.getText(0), b) < 0;
 		}
 	};
 	int findItem(const tstring& b, int start = -1, bool aPartial = false) {
@@ -248,7 +248,7 @@ public:
 		comp = T::compareItems(a, b, sortColumn);
 		if(!sortAscending)
 			comp = -comp;
-		if(comp == 1)
+		if(comp > 0)
 			mid++;
 
 		return mid;

@@ -40,7 +40,7 @@ public:
 		typedef File* Ptr;
 		struct FileSort {
 			bool operator()(const Ptr& a, const Ptr& b) const {
-				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) == -1;
+				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) < 0;
 			}
 		};
 		typedef vector<Ptr> List;
@@ -77,7 +77,7 @@ public:
 		typedef Directory* Ptr;
 		struct DirSort {
 			bool operator()(const Ptr& a, const Ptr& b) const {
-				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) == -1;
+				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) < 0;
 			}
 		};
 		typedef vector<Ptr> List;
