@@ -97,9 +97,9 @@ public:
 		MESSAGE_HANDLER(SERVER_SOCKET_MESSAGE, onServerSocket)
 		MESSAGE_HANDLER(WM_APPCOMMAND, onAppCommand)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
-		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
+		COMMAND_ID_HANDLER(ID_FILE_CONNECT, onStaticFrame)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
-		COMMAND_ID_HANDLER(ID_FILE_SEARCH, OnFileSearch)
+		COMMAND_ID_HANDLER(ID_FILE_SEARCH, onStaticFrame)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TRANSFER_VIEW, OnViewTransferView)
@@ -108,13 +108,13 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVert)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
-		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
-		COMMAND_ID_HANDLER(IDC_FAVUSERS, onFavoriteUsers)
-		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
-		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
-		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onSearchSpy)
-		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onFileADLSearch)
-		COMMAND_ID_HANDLER(IDC_NET_STATS, onNetStats)
+		COMMAND_ID_HANDLER(IDC_FAVORITES, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_FAVUSERS, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_NOTEPAD, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_QUEUE, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_NET_STATS, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_HELP_FULPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
@@ -133,12 +133,12 @@ public:
 		COMMAND_ID_HANDLER(IDC_TRAY_QUIT, onTrayQuit)
 		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
-		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
-		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onFinishedUploads)
+		COMMAND_ID_HANDLER(IDC_FINISHED, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_PM, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_DIR_LIST, onCloseWindows)
-		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onOpenDownloads)
+		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
 		COMMAND_RANGE_HANDLER(IDC_SWITCH_WINDOW_1, IDC_SWITCH_WINDOW_0, onSwitchWindow)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
@@ -157,19 +157,10 @@ public:
 
 	LRESULT onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onFavoriteUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onNetStats(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLink(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -177,16 +168,14 @@ public:
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onFinishedUploads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSwitchWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCloseDisconnected(WORD , WORD , HWND , BOOL& );
-	
-	
+	LRESULT onStaticFrame(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const string& cmdLine);
@@ -353,6 +342,7 @@ private:
 	StringList lastLinesList;
 	string lastLines;
 	CToolTipCtrl ctrlLastLines;
+	CToolBarCtrl ctrlToolBar;
 
 	CStatusBarCtrl ctrlStatus;
 	FlatTabCtrl ctrlTab;

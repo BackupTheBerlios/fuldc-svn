@@ -816,6 +816,7 @@ END
 IDR_PRIVATEFRAME ACCELERATORS 
 BEGIN
     "F",            IDC_FIND,               VIRTKEY, ALT, NOINVERT
+    VK_F3,          IDC_FIND,               VIRTKEY, NOINVERT
 END
 
 

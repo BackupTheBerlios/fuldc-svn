@@ -250,13 +250,12 @@ void MainFrame::startSocket() {
 }
 
 HWND MainFrame::createToolbar() {
-	CToolBarCtrl ctrlToolbar;
 	largeImages.CreateFromImage("icons\\toolbar20.bmp", 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	largeImagesHot.CreateFromImage("icons\\toolbar20-highlight.bmp", 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	
-	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrlToolbar.SetImageList(largeImages);
-	ctrlToolbar.SetHotImageList(largeImagesHot);
+	ctrlToolBar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
+	ctrlToolBar.SetImageList(largeImages);
+	ctrlToolBar.SetHotImageList(largeImagesHot);
 
 	const int numButtons = 22;
 
@@ -268,7 +267,7 @@ HWND MainFrame::createToolbar() {
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = ID_FILE_CONNECT;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
@@ -292,13 +291,13 @@ HWND MainFrame::createToolbar() {
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FAVORITES;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FAVUSERS;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
@@ -307,19 +306,19 @@ HWND MainFrame::createToolbar() {
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_QUEUE;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FINISHED;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FINISHED_UL;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
@@ -334,13 +333,13 @@ HWND MainFrame::createToolbar() {
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FILE_ADL_SEARCH;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_SEARCH_SPY;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
@@ -373,13 +372,13 @@ HWND MainFrame::createToolbar() {
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_NOTEPAD;
 	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
-	ctrlToolbar.SetButtonStructSize();
-	ctrlToolbar.AddButtons(numButtons, tb);
-	ctrlToolbar.AutoSize();
+	ctrlToolBar.SetButtonStructSize();
+	ctrlToolBar.AddButtons(numButtons, tb);
+	ctrlToolBar.AutoSize();
 
-	return ctrlToolbar.m_hWnd;
+	return ctrlToolBar.m_hWnd;
 }
 
 
@@ -483,51 +482,30 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	return true;
 }
 
-LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	SearchFrame::openWindow();
-	return 0;
-}	
+LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int ret = 0;
+	switch(wID){
+		case ID_FILE_CONNECT:		ret = PublicHubsFrame::openWindow(); break;
+		case IDC_FAVORITES:			ret = FavoriteHubsFrame::openWindow(); break;
+		case IDC_FAVUSERS:			ret = UsersFrame::openWindow(); break;
+		case IDC_QUEUE:				ret = QueueFrame::openWindow(); break;
+		case IDC_FINISHED:			ret = FinishedFrame::openWindow(); break;
+		case IDC_FINISHED_UL:		ret = FinishedULFrame::openWindow(); break;
+		case ID_FILE_SEARCH:			  SearchFrame::openWindow(); break;
+		case IDC_FILE_ADL_SEARCH:	ret = ADLSearchFrame::openWindow(); break;
+		case IDC_SEARCH_SPY:		ret = SpyFrame::openWindow(); break;
+		case IDC_NOTEPAD:			ret = NotepadFrame::openWindow(); break;
+		case IDC_NET_STATS:			ret = StatsFrame::openWindow(); break;
+	}
+	if(ret == 1)
+		ctrlToolBar.CheckButton(wID, TRUE);
+	else if(ret == -1)
+		ctrlToolBar.CheckButton(wID, FALSE);
 
-LRESULT MainFrame::onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	FavoriteHubsFrame::openWindow();
+
 	return 0;
 }
 
-LRESULT MainFrame::onFavoriteUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	UsersFrame::openWindow();
-	return 0;
-}
-
-LRESULT MainFrame::onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	NotepadFrame::openWindow();
-	return 0;
-}
-
-LRESULT MainFrame::onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	QueueFrame::openWindow();
-	return 0;
-}
-
-LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	PublicHubsFrame::openWindow();
-	return 0;
-}
-
-LRESULT MainFrame::onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	SpyFrame::openWindow();
-	return 0;
-}
-
-LRESULT MainFrame::onNetStats(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	StatsFrame::openWindow();
-	return 0;
-}
-
-LRESULT MainFrame::onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
-{
-	ADLSearchFrame::openWindow();
-	return 0;
-}
 
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CAboutDlg dlg;
@@ -949,16 +927,6 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
 	UpdateLayout();
 	SettingsManager::getInstance()->set(SettingsManager::SHOW_TOOLBAR, bVisible);
-	return 0;
-}
-
-LRESULT MainFrame::onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	FinishedFrame::openWindow();
-	return 0;
-}
-
-LRESULT MainFrame::onFinishedUploads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	FinishedULFrame::openWindow();
 	return 0;
 }
 

@@ -32,17 +32,20 @@ public:
 	~StaticFrame() { frame = NULL; };
 
 	static T* frame;
-	static void openWindow() {
+	static int openWindow() {
 		if(frame == NULL) {
 			frame = new T();
 			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, ResourceManager::getInstance()->getString(ResourceManager::Strings(title)).c_str());
+			return 1;
 		} else {
 			
-			if( (HWND)::SendMessage(WinUtil::mdiClient, WM_MDIGETACTIVE, 0, 0) == frame->m_hWnd)
+			if( (HWND)::SendMessage(WinUtil::mdiClient, WM_MDIGETACTIVE, 0, 0) == frame->m_hWnd){
 				frame->PostMessage(WM_CLOSE);
-			else{
+				return -1;
+			} else {
 				frame->SendMessage(WM_MDIACTIVATE, (WPARAM)frame->m_hWnd, 0);
 				::SetWindowPos(frame->m_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+				return 0;
 			}
 		}
 	}
