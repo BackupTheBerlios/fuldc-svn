@@ -66,6 +66,19 @@ void Util::initialize() {
 
 	sgenrand((unsigned long)time(NULL));
 
+#ifdef _WIN32
+	TCHAR buf[MAX_PATH+1];
+	GetModuleFileName(NULL, buf, MAX_PATH);
+	appPath = Text::fromT(buf);
+	appPath.erase(appPath.rfind('\\') + 1);
+#else // _WIN32
+	char* home = getenv("HOME");
+	if (home) {
+		appPath = Text::fromT(home);
+		appPath += "/.dc++/";
+	}
+#endif // _WIN32
+
 	try {
 		// This product includes GeoIP data created by MaxMind, available from http://maxmind.com/
 		// Updates at http://www.maxmind.com/app/geoip_country
@@ -94,19 +107,6 @@ void Util::initialize() {
 		}
 	} catch(const FileException&) {
 	}
-
-#ifdef _WIN32
-	TCHAR buf[MAX_PATH+1];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	appPath = Text::fromT(buf);
-	appPath.erase(appPath.rfind('\\') + 1);
-#else // _WIN32
-	char* home = getenv("HOME");
-	if (home) {
-		appPath = Text::fromT(home);
-		appPath += "/.dc++/";
-	}
-#endif // _WIN32
 }
 
 string Util::getConfigPath() {
