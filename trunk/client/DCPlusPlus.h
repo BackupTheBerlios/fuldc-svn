@@ -28,6 +28,8 @@
 #ifdef _WIN32
 // Warning C4130: '==' : logical operation on address of string constant
 #pragma warning (disable: 4130)
+//Warning C4127: conditional expression is constant
+//#pragma warning (disable: 4127)
 #endif
 
 inline void CDECL debugTrace(const char* format, ...)

@@ -20,19 +20,6 @@
 #define _WEBSHORTCUTS_H
 
 #include "Singleton.h"
-#include "Speaker.h"
-
-class WebShortcutsListener {
-public:
-	typedef WebShortcutsListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		CHANGED
-	};
-
-	virtual void onAction(Types) throw() {}
-};
 
 class WebShortcut {
 public:
@@ -49,14 +36,10 @@ public:
 	string url;
 };
 
-class WebShortcuts : public Speaker<WebShortcutsListener>, public Singleton<WebShortcuts> {
+class WebShortcuts : public Singleton<WebShortcuts> {
 public:
 	void load();
 	void save();
-
-	void propagateChanges() {
-		fire(WebShortcutsListener::CHANGED);
-	}
 
 	WebShortcut* getShortcutByName(const string& name);
 	WebShortcut* getShortcutByKey(const string& key);

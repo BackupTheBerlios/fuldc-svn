@@ -197,7 +197,12 @@ public:
 		return x;
 	}
 
-	const string& getName() const { return name; };
+	const string& getName(bool topic = true) const { 
+		if(topic)
+			return name;
+		else
+			return shortName;
+	};
 	bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
 
 	GETSET(int, supportFlags, SupportFlags);
@@ -275,6 +280,7 @@ private:
 	} state;
 
 	string name;
+	string shortName;
 
 	u_int32_t lastActivity;
 

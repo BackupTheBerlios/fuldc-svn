@@ -58,16 +58,7 @@ void User::updated(User::Ptr& aUser) {
 const string& User::getClientName(bool topic) const {
 	RLock l(cs);
 	if(client) {
-		if(topic){
-			return client->getName();
-		} else {
-			string tmp = client->getName();
-			int i = 0;
-			if( (i = tmp.find(" - ")) != string::npos)
-				return tmp.substr(0, i);
-			else
-				return tmp;
-		}
+		return client->getName(topic);
 	} else if(!getLastHubName().empty()) {
 		return getLastHubName();
 	} else {

@@ -348,6 +348,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
 		name = param;
+		int i = 0;
+		if( (i = param.find(" - ")) != string::npos)
+			shortName = param.substr(0, i);
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::HUB_NAME, this);
 	} else if(cmd == "$Supports") {
 		StringTokenizer st(param, ' ');

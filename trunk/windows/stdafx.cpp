@@ -34,7 +34,7 @@
 #endif
 
 #ifdef _STLP_NO_IOSTREAMS
-#error You're using the STLPort from the DC++ homepage, that uses a different configuration than the original one. Please download the correct one from www.stlport.org and build it with iostreams.
+#error You haven't built stlport with iostream support.
 #endif
 
 /**

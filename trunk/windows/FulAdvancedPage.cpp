@@ -89,7 +89,7 @@ LRESULT FulAdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 void FulAdvancedPage::write() {
 	WebShortcuts::getInstance()->replaceList(wsList);
-	WebShortcuts::getInstance()->propagateChanges();
+	WebShortcuts::getInstance()->save();
 
 	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_FUL_ADVANCED_BOOLEANS));
 }

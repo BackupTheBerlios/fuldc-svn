@@ -403,7 +403,6 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 					   const string& aTempTarget /* = Util::emptyString */, bool addBad /* = true */) throw(QueueException, FileException) 
 {
 	bool wantConnection = true;
-	bool alternates = false;
 	dcassert((aFile != USER_LIST_NAME) || (aFlags &QueueItem::FLAG_USER_LIST));
 
 	// Check that we're not downloading from ourselves...
@@ -447,27 +446,19 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 				if(q->getTTH() == NULL) {
 					q->setTTH(new TTHValue(*root));
 				} else if(!(*root == *q->getTTH())) {
-				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
-			}
+					throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
+				}
 			}
 			q->setFlag(aFlags);
-
+			
 			// We don't add any more sources to user list downloads...
 			if(q->isSet(QueueItem::FLAG_USER_LIST))
 				return;
-
-			regex::match_results result;
-			regexp.match(target, result, target.length()-4);
-			if(result.backref(0).matched) {
-				wantConnection = addAlternates(aFile, aUser);
-				alternates = true;
-			}
-
 		}
 
-		if(!alternates)
-			wantConnection = addSource(q, aFile, aUser, addBad, utf8);
+		wantConnection = addSource(q, aFile, aUser, addBad, utf8);
 	}
+
 	if(wantConnection && aUser->isOnline())
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
@@ -761,7 +752,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 					if(aDownload->getSource() == "files.xml.bz2") {
 						q->setFlag(QueueItem::FLAG_XML_BZLIST);
 					} else if(aDownload->getSource() == "MyList.bz2") {
-					q->setFlag(QueueItem::FLAG_BZLIST);
+						q->setFlag(QueueItem::FLAG_BZLIST);
 					}
 				}
 				fire(QueueManagerListener::FINISHED, q);
@@ -859,7 +850,6 @@ void QueueManager::remove(const string& aTarget) throw() {
 		Lock l(cs);
 
 		QueueItem* q = fileQueue.find(aTarget);
-		
 		if(q != NULL) {
 			name = q->getTarget();
 			size = q->getSize();
@@ -1035,7 +1025,7 @@ void QueueManager::saveQueue() throw() {
 
 		File ff(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		BufferedOutputStream<false> f(&ff);
-		
+
 		f.write(SimpleXML::w1252Header);
 		f.write(STRINGLEN("<Downloads>\r\n"));
 		string tmp;
@@ -1193,20 +1183,20 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				cur = qi;
 		} else if(cur != NULL && name == sSource) {
 			const string& nick = getAttrib(attribs, sNick, 0);
-				if(nick.empty())
+			if(nick.empty())
 				return;
 			const string& path = getAttrib(attribs, sPath, 1);
-				if(path.empty())
+			if(path.empty())
 				return;
 			const string& utf8 = getAttrib(attribs, sUtf8, 2);
 			bool isUtf8 = (utf8 == "1");
-				User::Ptr user = ClientManager::getInstance()->getUser(nick);
-				try {
+			User::Ptr user = ClientManager::getInstance()->getUser(nick);
+			try {
 				if(qm->addSource(cur, path, user, false, isUtf8) && user->isOnline())
-						ConnectionManager::getInstance()->getDownloadConnection(user);
-				} catch(const Exception&) {
+					ConnectionManager::getInstance()->getDownloadConnection(user);
+			} catch(const Exception&) {
 				return;
-				}
+			}
 		} else if(cur == NULL && name == sDirectory) {
 			const string& targetd = getAttrib(attribs, sTarget, 0);
 			if(targetd.empty())
@@ -1220,9 +1210,9 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				return;
 
 			qm->addDirectory(source, ClientManager::getInstance()->getUser(nick), targetd, p);
-			} 
 		}
-		}
+	}
+}
 
 void QueueLoader::endTag(const string& name, const string&) {
 	if(inDownloads) {
@@ -1344,6 +1334,12 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 			if(found) {
 				try {
 					addSource(qi, sr->getFile(), sr->getUser(), false, false);
+
+					regex::match_results result;
+					regexp.match(sr->getFile(), result, sr->getFile().length()-4);
+					if(result.backref(0).matched) {
+						addAlternates(sr->getFile(), sr->getUser());
+					}
 
 					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (exact || (Util::stricmp(qi->getTargetFileName(), fileName) == 0)) ){
 						if(qi->getSources().size() < SETTING(MAX_AUTO_MATCH_SOURCES))

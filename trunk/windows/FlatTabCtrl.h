@@ -707,10 +707,10 @@ private:
 
 		if(tab->dirty) {
 			HFONT f = dc.SelectFont(WinUtil::boldFont);
-			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->len);
+			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->name.length());
 			dc.SelectFont(f);		
 		} else {
-			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->len);
+			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->name.length());
 		}
 	
 		//restore the old tools

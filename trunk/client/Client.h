@@ -89,7 +89,7 @@ public:
     
 	virtual int getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
-	virtual const string& getName() const = 0;
+	virtual const string& getName(bool topic = true) const = 0;
 	virtual bool getOp() const = 0;
 
 	virtual User::NickMap& lockUserList() = 0;
