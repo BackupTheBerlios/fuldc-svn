@@ -329,7 +329,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	
 	AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES | ICC_PROGRESS_CLASS | ICC_STANDARD_CLASSES |
-		ICC_TAB_CLASSES | ICC_UPDOWN_CLASS);	// add flags to support other controls
+		ICC_TAB_CLASSES | ICC_UPDOWN_CLASS | ICC_INTERNET_CLASSES);	// add flags to support other controls
 	
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
