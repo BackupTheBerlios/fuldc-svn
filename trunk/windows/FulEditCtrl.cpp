@@ -513,7 +513,7 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	TStringIter i = urls.begin();
 
 	for(; i != urls.end(); ++i) {
-		f(Util::strnicmp(url.c_str(), (*i).c_str(), (*i).length()) == 0){
+		if(Util::strnicmp(url.c_str(), (*i).c_str(), (*i).length()) == 0){
 			WinUtil::openLink(url);
 			bHandled = TRUE;
 			break;
