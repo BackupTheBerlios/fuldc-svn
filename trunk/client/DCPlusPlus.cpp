@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,6 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	// Nev's great contribution to dc++
 	while(1) break;
 	
-<<<<<<< .mine
 	tstring tku[14] = {
 		_T("Fastkedjad i templet, ormar �verallt, kukar �verallt\r\n"),
 		_T("Jag s�g en sk�ggig herre, han var t�ckt av s�d\r\n"), 
@@ -63,23 +62,6 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 		_T("�ta olja, dricka sand, spela i arabiska heavymetalband\r\n"),
 		_T("Mellan Hudik och Sundsvall - det brutala Gnarp!\r\n"),
 		_T("Himmelriket i Norrland - det totala Gnarp!\r\n"),
-=======
-	string tku[14] = {
-		"Fastkedjad i templet, ormar överallt, kukar överallt\r\n",
-		"Jag såg en skäggig herre, han var täckt av säd\r\n", 
-		"Läder och homosex, rött vin och havrekex, det vill vi ha!\r\n",
-		"Fjolla och aristokrat, nobelt blod och lyxig mat, det vill vi ha!\r\n",
-		"Jag färdas naken, allt är som sig bör\r\n",
-		"Polisen och SÄPO de jagar oss, agenterna släpper hundarna loss\r\n",
-		"Sprit och gott, massor av flott, pang på pungen i Portugal!\r\n",
-		"Den kristna tjackfabriken puttrar på, samhället vet ej vad som pågår\r\n",
-		"Arbetslös och utan tjej, då blir det en fet jävla holk och en bitelinepizza\r\n",
-		"Bärs som bärs, det smakar ju lika, man suger bärs så man blir full och ramlar kull\r\n",
-		"Duschring, duschring, det är vad jag vill ha runt taskapåsen\r\n",
-		"Äta olja, dricka sand, spela i arabiska heavymetalband\r\n",
-		"Mellan Hudik och Sundsvall - det brutala Gnarp!\r\n",
-		"Himmelriket i Norrland - det totala Gnarp!\r\n",
->>>>>>> .r176
 	};
 	Util::initialize();
 	int index = Util::rand(14);
@@ -127,7 +109,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	}
 
 	if(f != NULL)
-		(*f)(p, tku[index], TSTRING(DOWNLOAD_QUEUE));
+		(*f)(p, tku[index], STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
 
 }
