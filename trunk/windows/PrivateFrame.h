@@ -103,7 +103,7 @@ public:
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	void addLine(const string& aLine);
+	void addLine(const string& aLine, bool bold = true);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
@@ -220,7 +220,7 @@ private:
 			SetWindowText(user->getFullNick().c_str());
 			setDisconnected(false);
 			if(offline){
-				addLine("*** " + STRING(USER_CAME_ONLINE));
+				addLine("*** " + STRING(USER_CAME_ONLINE), false);
 				offline = false;
 			}
 		} else {
@@ -229,7 +229,7 @@ private:
 			} else {
 				SetWindowText((user->getFullNick() + " [" + STRING(OFFLINE) + "]").c_str());
 			}
-			addLine("*** " + STRING(USER_WENT_OFFLINE));
+			addLine("*** " + STRING(USER_WENT_OFFLINE), false);
             setDisconnected(true);
 			offline = true;
 		}

@@ -372,7 +372,7 @@ public:
 			}
 			pos += n;
 			if(pos == bufSize) {
-				delete buf;
+				delete[] buf;
 				buf = NULL;
 			}
 		}

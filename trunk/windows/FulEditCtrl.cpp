@@ -117,7 +117,7 @@ void CFulEditCtrl::Colorize(int begin) {
 	SetSel(end, end);
 	
 	string line = buf;
-	delete buf;
+	delete[] buf;
 
 	logged = false;
 

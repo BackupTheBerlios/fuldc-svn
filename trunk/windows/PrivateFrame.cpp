@@ -289,7 +289,7 @@ void PrivateFrame::onEnter()
 		message = new char[ctrlMessage.GetWindowTextLength()+1];
 		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 		string s(message, ctrlMessage.GetWindowTextLength());
-		delete message;
+		delete[] message;
 
 		// save command in history, reset current buffer pointer to the newest command
 		curCommandPosition = prevCommands.size();		//this places it one position beyond a legal subscript
@@ -379,7 +379,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 }
 
-void PrivateFrame::addLine(const string& aLine) {
+void PrivateFrame::addLine(const string& aLine, bool bold) {
 	if(!created) {
 		if(BOOLSETTING(POPUNDER_PM))
 			WinUtil::hiddenCreateEx(this);
@@ -398,7 +398,8 @@ void PrivateFrame::addLine(const string& aLine) {
 	
 	addClientLine(CSTRING(LAST_CHANGE) + Util::getTimeString());
 
-	setDirty();
+	if(bold)
+		setDirty();
 }
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {

@@ -168,7 +168,7 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		ctrlHub.SetWindowText("");
 		string tmp = hub;
-		delete hub;
+		delete[] hub;
 		string::size_type i;
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
@@ -223,7 +223,7 @@ LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		ctrlHub.SetWindowText("");
 		string tmp = hub;
-		delete hub;
+		delete[] hub;
 		string::size_type i;
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);

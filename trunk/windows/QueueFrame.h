@@ -135,7 +135,7 @@ public:
 
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
-			if(IDNO == MessageBox(CSTRING(CONFIRM_REMOVE), CSTRING(CONFIRM_REMOVE_CAPTION), MB_YESNO | MB_ICONQUESTION) ) 
+			if(IDNO == MessageBox(CSTRING(CONFIRM_REMOVE), CSTRING(CONFIRM_CAPTION), MB_YESNO | MB_ICONQUESTION) ) 
 				return 0;
 		}
 		usingDirMenu ? removeSelectedDir() : removeSelected();
@@ -155,7 +155,7 @@ public:
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
 			if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
-				if(IDNO == MessageBox(CSTRING(CONFIRM_REMOVE), CSTRING(CONFIRM_REMOVE_CAPTION), MB_YESNO | MB_ICONQUESTION) ) 
+				if(IDNO == MessageBox(CSTRING(CONFIRM_REMOVE), CSTRING(CONFIRM_CAPTION), MB_YESNO | MB_ICONQUESTION) ) 
 					return 0;
 			}
 			removeSelected();
@@ -175,7 +175,7 @@ public:
 		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
 			if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
-				if(IDNO == MessageBox(CSTRING(CONFIRM_REMOVE), CSTRING(CONFIRM_REMOVE_CAPTION), MB_YESNO | MB_ICONQUESTION) ) 
+				if(IDNO == MessageBox(CSTRING(CONFIRM_REMOVE), CSTRING(CONFIRM_CAPTION), MB_YESNO | MB_ICONQUESTION) ) 
 					return 0;
 			}
 			removeSelectedDir();

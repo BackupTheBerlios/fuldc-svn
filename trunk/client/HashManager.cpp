@@ -553,7 +553,7 @@ int HashManager::Hasher::run() {
 				VirtualFree(buf, 0, MEM_RELEASE);
 #endif
 			} else {
-				delete buf;
+				delete[] buf;
 			}
 			buf = NULL;
 		}

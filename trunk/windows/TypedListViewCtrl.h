@@ -163,14 +163,8 @@ public:
 		return insertItem(getSortPos(item), item, image);
 	}
 	int insertItem(int i, T* item, int image) {
-		int res = InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i, 
+		return InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i, 
 			LPSTR_TEXTCALLBACK, 0, 0, image, (LPARAM)item);
-
-		for(int j = 0; j < columnList.size(); ++j){
-			SetItem(i, j, LVIF_IMAGE, NULL, image, 0, 0, 0);
-		}
-
-		return res;
 	}
 	T* getItemData(int iItem) { return (T*)GetItemData(iItem); }
 	T* getSelectedItem() { return (GetSelectedCount() > 0 ? getItemData(GetNextItem(-1, LVNI_SELECTED)) : NULL); }
@@ -302,11 +296,13 @@ public:
 		if(!ci->visible){
 			removeColumn(ci);
 		} else {
-			InsertColumn(wParam, ci->name.c_str(), ci->format, ci->width, -1);
+			int pos = GetHeader().GetItemCount();
+			//InsertColumn(wParam, ci->name.c_str(), ci->format, ci->width, -1);
+			InsertColumn(pos, ci->name.c_str(), ci->format, ci->width, wParam);
 			LVCOLUMN lvcl = { 0 };
 			lvcl.mask = LVCF_ORDER;
 			lvcl.iOrder = ci->pos;
-			SetColumn(wParam, &lvcl);
+			SetColumn(pos, &lvcl);
 		}
 
 		SetRedraw();

@@ -566,7 +566,8 @@ string ResourceManager::strings[] = {
 "User came online", 
 "Begins,Contains,Ends,Equals", 
 "Do you really want to remove this item?", 
-"Confirm Removal", 
+"Confirmation", 
+"Do you really want to close this hub?", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1133,5 +1134,6 @@ string ResourceManager::names[] = {
 "UserCameOnline", 
 "HighlightMatchTypes", 
 "ConfirmRemove", 
-"ConfirmRemoveCaption", 
+"ConfirmCaption", 
+"ConfirmClose", 
 };

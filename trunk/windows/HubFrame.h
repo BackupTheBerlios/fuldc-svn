@@ -128,7 +128,7 @@ public:
 	
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void addLine(string aLine);
+	void addLine(string aLine, bool bold = true											);
 	void addClientLine(const string& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
@@ -229,6 +229,7 @@ private:
 		COLUMN_EMAIL, 
 		COLUMN_LAST
 	};
+	
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
@@ -236,11 +237,7 @@ private:
 
 		const string& getText(int col) const {
 			switch(col) {
-				case COLUMN_NICK: 
-					if(stripIsp) 
-						return user->getShortNick();
-					else
-						return user->getNick();
+				case COLUMN_NICK: 	return stripIsp ? user->getShortNick() : user->getNick();
 				case COLUMN_SHARED: return shared;
 				case COLUMN_DESCRIPTION: return user->getDescription();
 				case COLUMN_TAG: return user->getTag();
@@ -365,8 +362,7 @@ private:
 	bool timeStamps;
 	bool showJoins;
 	bool favShowJoins;
-	string complete;
-
+	
 	string lastKick;
 	string lastRedir;
 	string lastServer;
@@ -396,11 +392,12 @@ private:
 	CMenu searchMenu;
 	CMenu copyMenu;
 
+	string complete;
 	string searchTerm;
 	string filter;
-	//typedef list< UserInfo* > FilterList;
 	typedef multimap< string, UserInfo* > UserMap;
 	typedef pair< string, UserInfo* > UserPair;
+	typedef UserMap::iterator UserIter;
 	UserMap usermap; //save all userinfo items that don't match the filter here
 	string curNick;
 	
@@ -413,16 +410,13 @@ private:
 	CtrlUsers ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
 
-	CHARFORMAT2 selFormat;
-
 	bool closed;
 	static bool closing;
 
 	StringMap ucParams;
 	StringMap tabParams;
 	bool tabMenuShown;
-	StringList watchList;
-
+	
 	typedef vector<pair<User::Ptr, Speakers> > UpdateList;
 	typedef UpdateList::iterator UpdateIter;
 	UpdateList updateList;
@@ -453,8 +447,7 @@ private:
 			updateList.clear();
 		}
 
-		UserMap::iterator i = usermap.begin();
-		for(; i != usermap.end(); ++i)
+		for(UserIter i = usermap.begin(); i != usermap.end(); ++i)
 			delete i->second;
 
 		usermap.clear();

@@ -569,6 +569,7 @@ enum Strings { // @DontAdd
 	USER_CAME_ONLINE, // "User came online"
 	HIGHLIGHT_MATCH_TYPES, // "Begins,Contains,Ends,Equals"
 	CONFIRM_REMOVE, // "Do you really want to remove this item?"
-	CONFIRM_REMOVE_CAPTION, // "Confirm Removal"
+	CONFIRM_CAPTION, // "Confirmation"
+	CONFIRM_CLOSE, // "Do you really want to close this hub?"
 	LAST // @DontAdd
 };
