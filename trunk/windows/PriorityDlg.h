@@ -29,17 +29,17 @@ public:
 
 		//lägg till strängarna som ska visas i comboboxen
 		ctrlPriority.Attach(GetDlgItem(IDC_PRIORITY));
-		ctrlPriority.AddString(_T("Paused"));
-		ctrlPriority.AddString(_T("Lowest"));
-		ctrlPriority.AddString(_T("Low"));
-		ctrlPriority.AddString(_T("Normal"));
-		ctrlPriority.AddString(_T("High"));
-		ctrlPriority.AddString(_T("Highest"));
+		ctrlPriority.AddString(CTSTRING(PAUSED));
+		ctrlPriority.AddString(CTSTRING(LOWEST));
+		ctrlPriority.AddString(CTSTRING(LOW));
+		ctrlPriority.AddString(CTSTRING(NORMAL));
+		ctrlPriority.AddString(CTSTRING(HIGH));
+		ctrlPriority.AddString(CTSTRING(HIGHEST));
 
 		//Sätt förvalt till normal
 		ctrlPriority.SetCurSel(3);
 	
-		SetWindowText(_T("Set Priority"));
+		SetWindowText(CTSTRING(SET_PRIORITY));
 
 		CenterWindow(GetParent());
 		return FALSE;

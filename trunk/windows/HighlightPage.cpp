@@ -71,7 +71,7 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlMatchType.Attach(GetDlgItem(IDC_MATCHTYPE));
 
 	//add alternatives
-	StringTokenizer<tstring> s(Text::toT(STRING(HIGHLIGHT_MATCH_TYPES)), _T(","));
+	StringTokenizer<tstring> s(Text::toT(STRING(HIGHLIGHT_MATCH_TYPES)), _T(','));
 	TStringList l = s.getTokens();
 	for(TStringIter i = l.begin(); i != l.end(); ++i)
 		ctrlMatchType.AddString((*i).c_str());
@@ -100,14 +100,14 @@ LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	getValues(cs);
 
 	if(cs->getMatch().empty()){
-		MessageBox(CTSTRING(ADD_EMPTY), _T(""), MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(CTSTRING(ADD_EMPTY), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONEXCLAMATION);
 		return TRUE;
 	}
 
 	if(cs->getMatch().find(_T("$Re:")) == 0) {
 		PME reg(cs->getMatch().substr(4));
 		if(! reg.IsValid()){
-			MessageBox(CTSTRING(BAD_REGEXP), _T(""), MB_OK | MB_ICONEXCLAMATION);
+			MessageBox(CTSTRING(BAD_REGEXP), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONEXCLAMATION);
 			return TRUE;
 		}
 	}

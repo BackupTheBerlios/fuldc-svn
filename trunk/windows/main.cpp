@@ -42,7 +42,7 @@ static char buf[DEBUG_BUFSIZE];
 #ifndef _DEBUG
 
 FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
-	MessageBox(WinUtil::mainWnd, _T("DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("DC++ Has Crashed"), MB_OK | MB_ICONERROR);
+	MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an unhandled exception and will terminate. Please do not report this as a bug, as fulDC was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("fulDC Has Crashed"), MB_OK | MB_ICONERROR);
 	exit(-1);
 }
 
@@ -76,7 +76,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 	if(File::getSize(Util::getAppPath() + "DCPlusPlus.pdb") == -1) {
 		// No debug symbols, we're not interested...
-		::MessageBox(WinUtil::mainWnd, _T("DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution..."), _T("DC++ has crashed"), MB_OK);
+		::MessageBox(WinUtil::mainWnd, _T("fulDC has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution..."), _T("fulDC has crashed"), MB_OK);
 #ifndef _DEBUG
 		exit(1);
 #else
@@ -190,7 +190,7 @@ static DWORD checkCommonControls() {
 	}
 
 	if(dwVersion < PACKVERSION(5,80)) {
-		MessageBox(NULL, _T("Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T("User Interface Warning"), MB_OK);
+		MessageBox(NULL, _T("Your version of windows common controls is too old for fulDC to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T("User Interface Warning"), MB_OK);
 	}
 
 	return dwVersion;

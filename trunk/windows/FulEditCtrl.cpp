@@ -244,7 +244,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, tstring &lin
 			index = line.find(searchString, pos);
 		}else {
 			//index = Util::findSubString(line, searchString, pos);	
-			index = Util::toLower(line).find(Util::toLower(searchString), pos);
+			index = Text::toLower(line).find(Text::toLower(searchString), pos);
 		}
 	}
 	//return if no matches where found
@@ -501,7 +501,7 @@ LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 		//if we find the end of the document, notify the user and return
 		int result = (int)SendMessage(EM_FINDTEXT, (WPARAM)flags, (LPARAM)&ft);
 		if(-1 == result){
-			MessageBox(CTSTRING(FINISHED_SEARCHING), _T("fulDC"), MB_OK | MB_ICONINFORMATION);
+			MessageBox(CTSTRING(FINISHED_SEARCHING), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONINFORMATION);
 			curFindPos = 0;
 			return 0;
 		}

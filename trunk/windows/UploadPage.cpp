@@ -214,7 +214,7 @@ void UploadPage::addDirectory(const tstring& aPath){
 			ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		}
 	} catch(const ShareException& e) {
-		MessageBox(Text::toT(e.getError()).c_str(), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
+		MessageBox(Text::toT(e.getError()).c_str(), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONSTOP | MB_OK);
 	}
 }
 

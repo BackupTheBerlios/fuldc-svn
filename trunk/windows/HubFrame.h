@@ -248,14 +248,18 @@ private:
 					return 1;
 				}
 			}
+			if(col == COLUMN_SHARED){
+				return a->user->getBytesShared() > b->user->getBytesShared() ? 1 : -1;
+			}
 			return Util::stricmp(a->columns[col], b->columns[col]);	
 		}
 
 		void update() { 
-			columns[COLUMN_NICK] = Text::toT(user->getNick());
+			columns[COLUMN_NICK] = Text::toT( stripIsp ? user->getShortNick() : user->getNick() );
 			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(user->getBytesShared()));
 			columns[COLUMN_DESCRIPTION] = Text::toT(user->getDescription());
 			columns[COLUMN_TAG] = Text::toT(user->getTag());
+			columns[COLUMN_ISP] = Text::toT(user->getIsp());
 			columns[COLUMN_CONNECTION] = Text::toT(user->getConnection());
 			columns[COLUMN_EMAIL] = Text::toT(user->getEmail());
 			op = user->isSet(User::OP); 

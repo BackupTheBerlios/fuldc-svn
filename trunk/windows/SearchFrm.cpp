@@ -274,12 +274,12 @@ void SearchFrame::onEnter() {
 		if(Util::strnicmp(f, _T("$Re:"), 4) == 0){
 			filterRegExp.Init(f.substr(4), _T("i"));
 			if(!filterRegExp.IsValid()) {
-				MessageBox(CTSTRING(BAD_REGEXP), _T(""), MB_OK | MB_ICONEXCLAMATION);
+				MessageBox(CTSTRING(BAD_REGEXP), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONEXCLAMATION);
 				return;
 			}
 			useRegExp = true;
 		} else {
-			StringTokenizer<tstring> t(Util::toLower(f), ' ');
+			StringTokenizer<tstring> t(Text::toLower(f), ' ');
 			filterList = t.getTokens();
 			useRegExp = false;
 		}
@@ -393,7 +393,7 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	}
 
 	if(!filterList.empty()){
-		tstring file = Text::toT(Util::toLower(aResult->getFile()));
+		tstring file = Text::toT(Text::toLower(aResult->getFile()));
 		TStringIter i = filterList.begin();
 		for(; i != filterList.end(); ++i){
 			if(file.find(*i) != string::npos){

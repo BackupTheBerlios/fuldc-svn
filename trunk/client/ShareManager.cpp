@@ -482,7 +482,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 }
 
 void ShareManager::addTree(const string& fullName, Directory* dir) {
-	bloom.add(Util::toLower(dir->getName()));
+	bloom.add(Text::toLower(dir->getName()));
 
 	for(Directory::MapIter i = dir->directories.begin(); i != dir->directories.end(); ++i) {
 		Directory* d = i->second;
@@ -524,7 +524,7 @@ void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	dir->addType(getType(f.getName()));
 
 	tthIndex.insert(make_pair(f.getTTH(), i));
-	bloom.add(Util::toLower(f.getName()));
+	bloom.add(Text::toLower(f.getName()));
 }
 
 void ShareManager::removeTTH(TTHValue* tth, const Directory::File::Iter& iter) {
@@ -789,7 +789,10 @@ static bool checkType(const string& aString, int aType) {
 		return false;
 	
 	const char* c = aString.c_str() + aString.length() - 3;
-	u_int32_t type = '.' | (Util::toLower(c[0]) << 8) | (Util::toLower(c[1]) << 16) | (((u_int32_t)Util::toLower(c[2])) << 24);
+	if(!Text::isAscii(c))
+		return false;
+
+	u_int32_t type = '.' | (Text::asciiToLower(c[0]) << 8) | (Text::asciiToLower(c[1]) << 16) | (((u_int32_t)Text::asciiToLower(c[2])) << 24);
 
 	switch(aType) {
 	case SearchManager::TYPE_AUDIO:
@@ -1016,7 +1019,7 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 		}
 		return;
 	}
-	StringTokenizer<string> t(Util::toLower(aString), '$');
+	StringTokenizer<string> t(Text::toLower(aString), '$');
 	StringList& sl = t.getTokens();
 	if(!bloom.match(sl))
 		return;
@@ -1351,7 +1354,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	Directory * dir = new Directory(aName, aParent);
 	dir->addType(SearchManager::TYPE_DIRECTORY);
 	dir->addSearchType(getMask(dir->getName()));
-	bloom.add(Util::toLower(dir->getName()));
+	bloom.add(Text::toLower(dir->getName()));
 
 	xml->stepIn();
 

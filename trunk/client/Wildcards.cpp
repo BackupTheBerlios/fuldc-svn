@@ -268,14 +268,14 @@ int Wildcard::asterisk (const wchar_t **wildcard, const wchar_t **test) {
 
 
 bool Wildcard::patternMatch(const string& text, const string& pattern) {
-	string sText = Util::toLower(text);
-	string sPattern = Util::toLower(pattern);
+	string sText = Text::toLower(text);
+	string sPattern = Text::toLower(pattern);
 	return ( wildcardfit(sPattern.c_str(), sText.c_str()) == 1 );
 }
 
 bool Wildcard::patternMatch(const wstring& text, const wstring& pattern) {
-	wstring sText = Util::toLower(text);
-	wstring sPattern = Util::toLower(pattern);
+	wstring sText = Text::toLower(text);
+	wstring sPattern = Text::toLower(pattern);
 	return (wildcardfit(sPattern.c_str(), sText.c_str()) == 1 );
 }
 

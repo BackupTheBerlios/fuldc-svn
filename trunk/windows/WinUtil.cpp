@@ -534,7 +534,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
 		if(param.empty()) {
 			int slots = SettingsManager::getInstance()->get(SettingsManager::SLOTS);
-			status = _T("Current number of slots: ") + Util::toStringW(slots);
+			status = TSTRING(CURRENT_SLOTS) + _T(" ") + Util::toStringW(slots);
 		}else {
 			int j = Util::toInt(param);
 			if(j > 0) {
@@ -568,22 +568,22 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	} else if(Util::stricmp(cmd.c_str(), _T("dslots")) == 0) {
 		if(param.empty()) {
 			int slots = SettingsManager::getInstance()->get(SettingsManager::DOWNLOAD_SLOTS);
-			status = _T("Current number of download slots: ") + Util::toStringW(slots);
+			status = TSTRING(CURRENT_DSLOTS) + _T(" ") + Util::toStringW(slots);
 		} else {
 			int nr = Util::toInt(param);
 			if( nr >= 0 ){
 				SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_SLOTS, nr);
-				status = _T("Download slots set");
+				status = TSTRING(DSLOTS_SET);
 			} else {
-				status = _T("Invalid number of slots");
+				status = TSTRING(INVALID_SLOTS);
 			}
 		} 
 	}else if(Util::stricmp(cmd.c_str(), _T("fuldc")) == 0) {
 		message = _T("http://ful.dcportal.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
 	} else if(Util::stricmp(cmd.c_str(), _T("fuptime")) == 0) {
-		message = _T("fulDC uptime: ") + Util::formatTimeW(GET_TIME() - WinUtil::startTime, false);
+		message = TSTRING(FULDC_UPTIME) + _T(" ") + Util::formatTimeW(GET_TIME() - WinUtil::startTime, false);
 	} else if(Util::stricmp(cmd.c_str(), _T("uptime")) == 0) {
-		message = _T("System uptime: ") + WinUtil::Uptime();
+		message = TSTRING(SYSTEM_UPTIME) + _T(" ") + WinUtil::Uptime();
 	} else if(WebShortcuts::getInstance()->getShortcutByKey(cmd) != NULL) {
 		WinUtil::SearchSite(WebShortcuts::getInstance()->getShortcutByKey(cmd), param);
 	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
@@ -737,13 +737,13 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 int WinUtil::getIconIndex(const tstring& aFileName) {
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
-		string x = Util::toLower(Util::getFileExt(Text::fromT(aFileName)));
+		string x = Text::toLower(Util::getFileExt(Text::fromT(aFileName)));
 		if(!x.empty()) {
 			ImageIter j = fileIndexes.find(x);
 			if(j != fileIndexes.end())
 				return j->second;
 		}
-		tstring fn = Text::toT(Util::toLower(Util::getFileName(Text::fromT(aFileName))));
+		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
 		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
 		::DestroyIcon(fi.hIcon);
@@ -771,7 +771,7 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 		TStringList strStoplist = t.getTokens();
 		
 		// To lower case
-		strSearch = Util::toLower(strSearch);
+		strSearch = Text::toLower(strSearch);
 		// Loop all words and remove those that exists in the search string
 		for (unsigned int i = 0; i < strStoplist.size(); i++) {
 			tstring::size_type pos = strSearch.find(strStoplist[i]);
@@ -1036,10 +1036,10 @@ tstring WinUtil::Help(const tstring& cmd) {
 		xml.stepIn();
 
 		bool found = false;
-		if(Util::toLower(command).find("dc++") != string::npos)
+		if(Text::toLower(command).find("dc++") != string::npos)
 			found = xml.findChild("dc");
 		else
-			found = xml.findChild(Util::toLower(command));
+			found = xml.findChild(Text::toLower(command));
 
 		if(found)
 			ret = Text::toT(xml.getChildData());

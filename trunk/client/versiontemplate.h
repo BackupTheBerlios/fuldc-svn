@@ -20,6 +20,7 @@
 #define VERSIONSTRING "0.40325"
 #define VERSIONFLOAT 0.40325
 
+#define FULDC "fulDC"
 #ifdef _DEBUG
 #define FULVERSIONSTRING "6.51 svn$WCREV$"
 #else

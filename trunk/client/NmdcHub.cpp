@@ -127,7 +127,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				reconnect = false;
 			}
 		}
-		Speaker<NmdcHubListener>::fire(NmdcHubListener::Message(), this, Util::validateMessage(aLine, true));
+		Speaker<NmdcHubListener>::fire(NmdcHubListener::Message(), this, Util::validateMessage(Text::acpToUtf8(aLine), true));
 		return;
 	}
 

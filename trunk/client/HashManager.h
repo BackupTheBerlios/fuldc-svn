@@ -139,7 +139,7 @@ private:
 		void remove( const string & aPath );
 
 	private:
-		typedef set<string, noCaseStringLess> WorkSet;
+		typedef set<string> WorkSet;	// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless
 		typedef WorkSet::iterator WorkIter;
 
 		WorkSet w;

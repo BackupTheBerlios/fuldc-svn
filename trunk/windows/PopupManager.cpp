@@ -157,12 +157,12 @@ void PopupManager::ShowPm(const tstring& nick, const tstring& msg){
 	if(pos == tstring::npos )
 		pos = 0;
 
-	tstring s = _T("New PM from: ") + nick + _T(" Msg:\r\n") + msg.substr(pos);
+	tstring s = TSTRING(POPUP_NEW_PM) + _T(" ") + nick + _T(" ") + TSTRING(POPUP_MSG) + msg.substr(pos);
 	Show(s);
 }
 
 void PopupManager::ShowMC(const tstring& nick, const tstring& msg){
-	tstring s = nick + _T(" says:\r\n") + msg;
+	tstring s = nick + _T(" ") + TSTRING(POPUP_SAYS) + msg;
 	Show(s);
 }
 
@@ -179,12 +179,12 @@ void PopupManager::ShowMC(const tstring& msg){
 }
 
 void PopupManager::ShowDisconnected(const tstring& hub) {
-	tstring s = _T("you've been disconnected from:\r\n ") + hub;
+	tstring s = TSTRING(POPUP_DISCONNECTED) + hub;
 	Show(s);
 }
 
 void PopupManager::ShowDownloadComplete(tstring *msg){
-	tstring s = _T("Download complete:\r\n");
+	tstring s = TSTRING(POPUP_DOWNLOAD_COMPLETE);
 	
 	//if we have a whole path remove everything but the last directory
 	if(msg->at(msg->length()-1) == _T('\\')){

@@ -145,7 +145,7 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 LRESULT FavoriteHubsFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	if(BOOLSETTING(FAVORITES_REMOVE_CONFIRMATION)) {
-		if(IDNO == MessageBox(CTSTRING(CONFIRM_REMOVE), CTSTRING(CONFIRM_CAPTION), MB_YESNO | MB_ICONQUESTION))
+		if(IDNO == MessageBox(CTSTRING(CONFIRM_REMOVE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION))
 			return 0;
 	}
 
@@ -191,7 +191,7 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 bool FavoriteHubsFrame::checkNick() {
 	if(SETTING(NICK).empty()) {
-		MessageBox(CTSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
+		MessageBox(CTSTRING(ENTER_NICK), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONSTOP | MB_OK);
 		return false;
 	}
 	return true;

@@ -579,8 +579,18 @@
 		<String Name="UserCameOnline">User came online</String>
 		<String Name="HighlightMatchTypes">Begins,Contains,Ends,Equals</String>
 		<String Name="ConfirmRemove">Do you really want to remove this item?</String>
-		<String Name="ConfirmCaption">Confirmation</String>
 		<String Name="ConfirmClose">Do you really want to close this hub?</String>
 		<String Name="HighlightlistHeader">String to match</String>
+		<String Name="PopupNewPm">New PM from:</String>
+		<String Name="PopupMsg">Msg:\r\n</String>
+		<String Name="PopupSays">says:\r\n</String>
+		<String Name="PopupDisconnected">You've been disconnected from:\r\n</String>
+		<String Name="PopupDownloadComplete">Download complete:\r\n</String>
+		<String Name="CurrentSlots">Current number of open slots:</String>
+		<String Name="CurrentDslots">Current number of download slots:</String>
+		<String Name="DslotsSet">Download slots set</String>
+		<String Name="InvalidSlots">Invalid number of slots</String>
+		<String Name="FuldcUptime">fulDC uptime:</String>
+		<String Name="SystemUptime">System uptime:</String>
 	</Strings>
 </Language>

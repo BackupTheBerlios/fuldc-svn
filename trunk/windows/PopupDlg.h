@@ -72,7 +72,7 @@ public:
 		label.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 			SS_CENTER | SS_NOPREFIX);
 
-		SetWindowText(_T("fulDC"));
+		SetWindowText(_T(FULDC));
 
 		label.SetFont(WinUtil::font);
 		label.SetWindowText(msg.c_str());

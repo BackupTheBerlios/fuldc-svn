@@ -450,7 +450,7 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 	}
 	
 	UserInfo *ui = new UserInfo(u, stripIsp);
-	usermap.insert( UserPair(Text::toT(Util::toLower(u->getShortNick())), ui) );
+	usermap.insert( UserPair(Text::toT(Text::toLower(u->getShortNick())), ui) );
 	bool add = false;
 	
 	if(filter.empty()){
@@ -632,7 +632,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		if(!closing && BOOLSETTING(HUBFRAME_CONFIRMATION)) {
-			if(IDNO == MessageBox(CTSTRING(CONFIRM_CLOSE), CTSTRING(CONFIRM_CAPTION), MB_YESNO | MB_ICONQUESTION))
+			if(IDNO == MessageBox(CTSTRING(CONFIRM_CLOSE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION))
 				return 0;
 		}
 
@@ -959,7 +959,7 @@ void HubFrame::onTab() {
 				i = tabList.begin();
 			}
 						
-			if(Util::toLower(*i).find(Util::toLower(complete)) == 0 ){
+			if(Text::toLower(*i).find(Text::toLower(complete)) == 0 ){
 				ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
 				ctrlMessage.ReplaceSel((*i).c_str());
 				return;
@@ -1008,7 +1008,7 @@ void HubFrame::onTab() {
 				curUser = usermap.begin();
 		}
 		
-		if( Util::toLower(curUser->first).find(Util::toLower(complete)) == 0 ){
+		if( Text::toLower(curUser->first).find(Text::toLower(complete)) == 0 ){
 				found = true;
 				break;
 		}
