@@ -1260,7 +1260,8 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 
 			if(found) {
 				try {
-					addSource(qi, sr->getFile(), sr->getUser(), false, false);
+					if(addSource(qi, sr->getFile(), sr->getUser(), false, false) && sr->getUser()->isOnline())
+						ConnectionManager::getInstance()->getDownloadConnection(sr->getUser());
 
 					regex::match_results result;
 					regexp.match(sr->getFile(), result, sr->getFile().length()-4);
@@ -1269,11 +1270,9 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 					}
 
 					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH)) {
-						if((int)qi->getSources().size() < SETTING(MAX_AUTO_MATCH_SOURCES))
+						if((int)qi->countOnlineUsers() < SETTING(MAX_AUTO_MATCH_SOURCES))
 							addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 					}
-				} catch (QueueException&) {
-					//...
 				} catch(const Exception&) {
 					// ...
 				}
@@ -1360,7 +1359,6 @@ bool QueueManager::addAlternates(string aFile, User::Ptr aUser) {
 			if( i->first.find(file) != string::npos) {
 				string file = path + i->first.substr(i->first.find_last_of("\\"));
 				if(!i->second->isSource(aUser, file)) {
-					 //wantConnection = addSource(i->second, file , aUser, false);
 					wantConnection = addSource(i->second, file, aUser, false, i->second->isSet(QueueItem::FLAG_SOURCE_UTF8));
 				}	
 			}
