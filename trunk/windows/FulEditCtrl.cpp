@@ -12,6 +12,27 @@
 #include <MMSystem.h>
 
 #include "WinUtil.h"
+#include "EmoticonManager.h"
+
+static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
+{
+	string *pstr = (string *)dwCookie;
+
+	if( pstr->length() < cb )
+	{
+		*pcb = pstr->length();
+		memcpy(pbBuff, pstr->c_str(), *pcb );
+		delete pstr;
+	}
+	else
+	{
+		*pcb = cb;
+		memcpy(pbBuff, pstr->c_str(), *pcb );
+		*pstr = pstr->substr( cb );
+	}
+	return 0;
+}
+
 
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
@@ -204,8 +225,18 @@ void CFulEditCtrl::AddInternalLine(string & aLine) {
 	int length = GetTextLengthEx(GTL_NUMCHARS)+1;
 	AppendText(aLine.c_str());
 	Colorize(length);
+	//StringMapIter i = EmoticonManager::getInstance()->getEmoticons()->begin();
+	//string tmp = i->second;
+	//InsertText(GetTextLengthEx(GTL_NUMCHARS), tmp.c_str());
+	//AppendText(tmp.c_str());
+	//SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
+
+	//EDITSTREAM es = {(DWORD)new string("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1053{\\fonttbl{\\f0\\fnil\\fcharset0 Microsoft Sans Serif;}}{\\colortbl ;\\red255\\green0\\blue0;}\\viewkind4\\uc1\\pard\\cf1\\f0\\fs17 hej\\par}"), 0, EditStreamCallBack };
+	//EDITSTREAM es = {(DWORD)new string(i->second), 0, EditStreamCallBack};
+	//StreamIn(SF_RTF | SFF_SELECTION, es);
 	//ScrollEnd();
 	SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
+	
 	ScrollCaret();
 }
 

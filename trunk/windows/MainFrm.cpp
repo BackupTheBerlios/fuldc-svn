@@ -39,6 +39,7 @@
 #include "StatsFrame.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
+#include "EmoticonManager.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -999,7 +1000,7 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	lastDown = Socket::getTotalDown();
 }
 
-void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const BYTE* buf, int len) throw() {
+void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
 	versionInfo += string((const char*)buf, len);
 }
 

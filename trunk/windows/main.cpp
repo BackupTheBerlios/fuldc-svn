@@ -24,6 +24,7 @@
 #include "ExtendedTrace.h"
 #include "WinUtil.h"
 #include "SingleInstance.h"
+#include "EmoticonManager.h"
 
 #include "../client/MerkleTree.h"
 
@@ -324,6 +325,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		return FALSE;
 	}
 #endif
+
+	EmoticonManager::newInstance();
+	EmoticonManager::getInstance()->load(NULL);
 	
 	HRESULT hRes = ::CoInitialize(NULL);
 #ifdef _DEBUG

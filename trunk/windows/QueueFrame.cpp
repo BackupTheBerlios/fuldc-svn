@@ -272,6 +272,8 @@ void QueueFrame::QueueItemInfo::update() {
 						tmp += STRING(ROLLBACK_INCONSISTENCY);
 					} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
 						tmp += STRING(SFV_INCONSISTENCY);
+					} else if(j->isSet(QueueItem::Source::FLAG_BAD_TREE)) {
+						tmp += STRING(INVALID_TREE);
 					}
 					tmp += ')';
 				}

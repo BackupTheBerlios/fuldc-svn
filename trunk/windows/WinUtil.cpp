@@ -975,30 +975,19 @@ string WinUtil::Help(const string& command) {
 string WinUtil::Uptime() {
 	HQUERY    m_hQuery;
 	HCOUNTER  m_hCounter;
-	PDH_STATUS   pdhStatus = ERROR_SUCCESS;
 	string ret = Util::emptyString;
 	
-	pdhStatus = PdhOpenQuery( NULL, 0, &m_hQuery ) ;
+	if ( PdhOpenQuery( NULL, 0, &m_hQuery ) == ERROR_SUCCESS ) {
+		ret = "PdhOpenQuery";
+		if(PdhAddCounter( m_hQuery, "\\System\\System Up Time", 0, &m_hCounter ) == ERROR_SUCCESS) {
+			ret = "PdhAddCounter";
+			PDH_FMT_COUNTERVALUE  pdhCounterValue;
 
-	if ( pdhStatus == ERROR_SUCCESS )
-		pdhStatus = PdhAddCounter( m_hQuery, "\\System\\System Up Time", 0, &m_hCounter ) ;
-	
-	if(pdhStatus == ERROR_SUCCESS) {
-		PDH_STATUS            pdhStatus  = ERROR_SUCCESS;
-		LONG                  nRetVal    = 0;
-		PDH_FMT_COUNTERVALUE  pdhCounterValue;
-
-		pdhStatus = PdhCollectQueryData( m_hQuery );
-
-		if ( pdhStatus == ERROR_SUCCESS )
-		{
-			pdhStatus = PdhGetFormattedCounterValue( m_hCounter, 
-				PDH_FMT_LARGE, 
-				NULL, 
-				&pdhCounterValue );
-
-			if ( pdhStatus == ERROR_SUCCESS )
-				ret = Util::formatTime(pdhCounterValue.largeValue, false);
+			if ( PdhCollectQueryData( m_hQuery ) == ERROR_SUCCESS )	{
+				ret = "PdhCollectQueryData";
+				if ( PdhGetFormattedCounterValue( m_hCounter, PDH_FMT_LARGE, NULL, &pdhCounterValue ) == ERROR_SUCCESS )
+					ret = Util::formatTime(pdhCounterValue.largeValue, false);
+			}
 		}
 	}
 	
