@@ -832,7 +832,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
 		if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
 			ctrlDirs.SelectItem(ht);
-		if(QueueManager::getInstance()->hasNotification(Text::fromT(getDir(ht))))
+		if(ht != NULL && QueueManager::getInstance()->hasNotification(Text::fromT(getDir(ht))))
 			dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_CHECKED);
 		else
 			dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_UNCHECKED);

@@ -44,6 +44,7 @@
 
 #include <direct.h>
 #include <pdh.h>
+#include <WinInet.h>
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
@@ -875,7 +876,7 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 
 
 	HRESULT res = UrlCanonicalize(buf, escapedBuf, &escapedSize, URL_DONT_SIMPLIFY | URL_ESCAPE_UNSAFE);
-
+	
 	if( S_OK == res)
 		WinUtil::openLink(escapedBuf);
 	
