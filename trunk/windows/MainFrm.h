@@ -35,6 +35,7 @@
 #include "SingleInstance.h"
 #include "TransferView.h"
 #include "upnp.h"
+#include "HashProgressDlg.h"
 
 #define SERVER_SOCKET_MESSAGE (WM_APP + 1235)
 
@@ -310,6 +311,8 @@ private:
 	string versionInfo;
 	CImageList images;
 	CImageList largeImages, largeImagesHot;
+
+	HashProgressDlg hashProgress;
 	
 	UINT trayMessage;
 	/** Is the tray icon visible? */

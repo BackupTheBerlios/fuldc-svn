@@ -14,9 +14,6 @@ make changes to pcre.in. */
 #define PCRE_MINOR          5
 #define PCRE_DATE           01-December-2003
 
-//add utf8 support 
-#define SUPPORT_UTF8
-
 /* Win32 uses DLL by default */
 
 #ifdef _WIN32

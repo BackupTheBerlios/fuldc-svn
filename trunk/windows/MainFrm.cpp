@@ -38,7 +38,6 @@
 #include "TextFrame.h"
 #include "StatsFrame.h"
 #include "LineDlg.h"
-#include "HashProgressDlg.h"
 #include "UPnP.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
@@ -52,7 +51,7 @@
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
-closing(false), missedAutoConnect(false) 
+closing(false), missedAutoConnect(false), hashProgress(false)
 { 
 	memset(statusSizes, 0, sizeof(statusSizes));
 	
@@ -540,7 +539,11 @@ LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 }
 
 LRESULT MainFrame::onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	HashProgressDlg(false).DoModal(m_hWnd);
+	if( !hashProgress.IsWindow() ){
+		hashProgress.Create( m_hWnd );
+		hashProgress.ShowWindow( SW_SHOW );
+	}
+	
 	return 0;
 }
 
@@ -824,7 +827,6 @@ LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 }
 
 LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	HubFrame::setClosing();
 	
 	if(c != NULL) {
 		c->removeListener(this);
@@ -836,6 +838,11 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CTSTRING(REALLY_EXIT), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) ) {
 			string tmp1;
 			string tmp2;
+
+			HubFrame::setClosing();
+
+			if( hashProgress.IsWindow() )
+				hashProgress.DestroyWindow();
 
 			WINDOWPLACEMENT wp;
 			wp.length = sizeof(wp);

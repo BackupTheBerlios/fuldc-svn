@@ -140,7 +140,6 @@ LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	tstring target;
 	if(WinUtil::browseDirectory(target, m_hWnd)) {
 		addDirectory(target);
-		HashProgressDlg(true).DoModal();
 	}
 	
 	return 0;
@@ -218,6 +217,8 @@ void UploadPage::addDirectory(const tstring& aPath){
 	} catch(const ShareException& e) {
 		MessageBox(Text::toT(e.getError()).c_str(), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONSTOP | MB_OK);
 	}
+
+	::PostMessage( WinUtil::mainWnd, WM_COMMAND, IDC_HASH_PROGRESS, 0);
 }
 
 /**

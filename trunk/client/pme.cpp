@@ -69,7 +69,7 @@ PME::compile(const std::string & s ///< string to compile into regular expressio
 	const char * errorptr;
 	int erroroffset;
 	
-	re = pcre_compile(s.c_str(), _opts | PCRE_UTF8, &errorptr, &erroroffset, 0);
+	re = pcre_compile(s.c_str(), _opts, &errorptr, &erroroffset, 0);
 
 	if ( re != NULL ) {
 		nValid = 1;
@@ -125,7 +125,7 @@ PME::PME(const std::wstring & s ///< string to copmile into regular expression
 	reset ( );
 	m_isglobal = 0;
 	_opts = opts;
-	compile(Text::wideToUtf8(s));
+	compile(Text::wideToAcp(s));
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -151,8 +151,8 @@ PME::PME ( const std::wstring & s, ///< string to compile into regular expressio
 {
 	reset ( );
 	m_isglobal = 0;
-	_opts = DeterminePcreOptions ( Text::wideToUtf8(opts) );
-	compile ( Text::wideToUtf8(s) );
+	_opts = DeterminePcreOptions ( Text::wideToAcp(opts) );
+	compile ( Text::wideToAcp(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -181,7 +181,7 @@ PME::PME(const wchar_t * s, ///< string to compile into regular expression
 	reset ( );
 	m_isglobal = 0;
 	_opts = opts;
-	compile( Text::wideToUtf8(s) );
+	compile( Text::wideToAcp(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -208,8 +208,8 @@ PME::PME ( const wchar_t * s, ///< string to compile into regular expression
 {
 	reset ( );
 	m_isglobal = 0;
-	_opts = DeterminePcreOptions ( Text::wideToUtf8(opts) );
-	compile ( Text::wideToUtf8(s) );
+	_opts = DeterminePcreOptions ( Text::wideToAcp(opts) );
+	compile ( Text::wideToAcp(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -304,7 +304,7 @@ PME::match(const std::wstring & s, ///< s String to match against
 		   unsigned offset ///< offset Offset at which to start matching
 		   )
 {
-	return match( Text::wideToUtf8(s), offset );
+	return match( Text::wideToAcp(s), offset );
 }
 
 std::string
@@ -445,7 +445,7 @@ PME::split(const std::string & s, unsigned maxfields)
 int
 PME::split(const std::wstring & s, unsigned maxfields)
 {
-	return split( Text::wideToUtf8( s ), maxfields );
+	return split( Text::wideToAcp( s ), maxfields );
 }
 
 
@@ -544,7 +544,7 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 std::wstring PME::sub ( const std::wstring & s, const std::wstring & r,
 					  int dodollarsubstitution )
 {
-	return Text::utf8ToWide( sub( Text::wideToUtf8( s ), Text::wideToUtf8( r ), dodollarsubstitution ) );
+	return Text::acpToWide( sub( Text::wideToAcp( s ), Text::wideToAcp( r ), dodollarsubstitution ) );
 }
 
 
@@ -610,7 +610,7 @@ void PME::Init(const std::string & s, unsigned opts )
 
 void PME::Init(const std::wstring & s, unsigned opts )
 {
-	Init( Text::wideToUtf8( s ), opts );
+	Init( Text::wideToAcp( s ), opts );
 }
 
 void PME::Init(const std::string & s, const std::string & opts )
@@ -629,5 +629,5 @@ void PME::Init(const std::string & s, const std::string & opts )
 
 void PME::Init(const std::wstring & s, const std::wstring & opts )
 {
-	Init( Text::wideToUtf8( s ), Text::wideToUtf8(opts) );
+	Init( Text::wideToAcp( s ), Text::wideToAcp(opts) );
 }
