@@ -181,6 +181,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 
 	ctrlResults.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlResults.setSortColumn(COLUMN_FILENAME);
 	ctrlResults.setVisible(SETTING(SEARCHFRAME_VISIBLE));
 
 	ctrlResults.SetBkColor(WinUtil::bgColor);
@@ -215,7 +216,8 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 	resultsMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, "Copy");
-	
+	resultsMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
+
 	if(!initialString.empty()) {
 		search = StringTokenizer(initialString, ' ').getTokens();
 		lastSearches.push_back(initialString);

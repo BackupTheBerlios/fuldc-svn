@@ -122,6 +122,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
 	m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+	m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
+	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
+	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
+	m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
 	
 	// remove old menu
 	SetMenu(NULL);

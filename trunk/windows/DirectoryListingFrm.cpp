@@ -65,7 +65,7 @@ DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Pt
 
 	dl = new DirectoryListing(aUser);
 	try {
-		dl->loadFile(aFile);
+		dl->loadFile(aFile, true);
 	} catch(const Exception& e) {
 		error = aUser->getFullNick() + ": " + e.getError();
 	}
@@ -93,13 +93,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlTree.SetBkColor(WinUtil::bgColor);
 	ctrlTree.SetTextColor(WinUtil::textColor);
 	
-	ctrlList.InsertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
-	ctrlList.InsertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
-	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
-	ctrlList.InsertColumn(COLUMN_TTH, CSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
+	ctrlList.insertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
+	ctrlList.insertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
+	ctrlList.insertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
+	ctrlList.insertColumn(COLUMN_TTH, CSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
 
 	ctrlList.setSortColumn(COLUMN_FILENAME);
-
+	
 	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
 	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 
@@ -147,7 +147,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		StringIter i = tok.getTokens().begin();
 		GoToDirectory(treeRoot, i, tok.getTokens().end());
 	} else {
-	ctrlTree.SelectItem(treeRoot);
+		ctrlTree.SelectItem(treeRoot);
 	}
 	
 	fileMenu.CreatePopupMenu();
@@ -185,7 +185,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	string tmp;
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
-		const string& name = dl->getUtf8() ? Util::toUtf8((*i)->getName(), tmp) : (*i)->getName();
+		const string& name = dl->getUtf8() ? Util::toAcp((*i)->getName(), tmp) : (*i)->getName();
 		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
 		if((*i)->getAdls())
 			ctrlTree.SetItemState(ht, TVIS_BOLD, TVIS_BOLD);
@@ -200,7 +200,7 @@ void DirectoryListingFrame::updateStatus() {
 		if(cnt == 0) {
 			cnt = ctrlList.GetItemCount ();
 			total = ctrlList.forEachT(ItemInfo::TotalSize()).total;
-				} else {
+		} else {
 			total = ctrlList.forEachSelectedT(ItemInfo::TotalSize()).total;
 		}
 
@@ -808,7 +808,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 			ctrlList.SetItemState(foundFile, LVIS_SELECTED | LVIS_FOCUSED, (UINT)-1);
 		} else {
 			ctrlTree.SetFocus();
-	}
+		}
 	} else {
 		ctrlTree.SelectItem(oldDir);
 		MessageBox(CSTRING(NO_MATCHES), CSTRING(SEARCH_FOR_FILE));

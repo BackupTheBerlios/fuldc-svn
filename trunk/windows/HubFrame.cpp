@@ -102,7 +102,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		ctrlUsers.insertColumn(j, STRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
-	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlUsers.setColumnOrderArray(COLUMN_LAST, columnIndexes);
 	ctrlUsers.setVisible(SETTING(HUBFRAME_VISIBLE));
 	
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
@@ -399,13 +399,27 @@ struct CompareItems {
 };
 
 int HubFrame::findUser(const User::Ptr& aUser) {
-	if(ctrlUsers.getSortColumn() != -1) {
+	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
+		// Sort order of the other columns changes too late when the user's updated
 		UserInfo ui(aUser, stripIsp);
-		pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
-			equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
-		for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
-			if(i->getUser() == aUser)
-				return i - ctrlUsers.begin();
+		{
+			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
+				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
+			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
+				if(i->getUser() == aUser)
+					return i - ctrlUsers.begin();
+			}
+		}
+		if(aUser->isSet(User::OP)) {
+			// Might still be sorted as a non-op...search again...
+			ui.setOp(false);
+			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
+				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
+			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
+				if(i->getUser() == aUser)
+					return i - ctrlUsers.begin();
+			}
+
 		}
 		return -1;
 	}
@@ -837,25 +851,21 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		}
 
 		// Nickname click, let's see if we can find one like it in the name list...
-		string nick = x.substr(start, end - start);
-		UserMap::iterator i = usermap.begin();
-        if(stripIsp){
-			for(; i != usermap.end(); ++i){
-				if(Util::stricmp(nick, i->second->user->getShortNick()) == 0){
-					doMenu = true;
-					break;
-				}
+		int pos = ctrlUsers.findItem(x.substr(start, end - start));
+		if(pos != -1) {
+			int items = ctrlUsers.GetItemCount();
+			ctrlUsers.SetRedraw(FALSE);
+			for(int i = 0; i < items; ++i) {
+				ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
 			}
-		} else {
-			for(; i != usermap.end(); ++i){
-				if(Util::stricmp(nick, i->second->user->getNick()) == 0){
-					doMenu = true;
-					break;
-				}
-			}
-		}
+			ctrlUsers.SetRedraw(TRUE);
+			ctrlUsers.EnsureVisible(pos, FALSE);
 
-		ctrlClient.ClientToScreen(&pt);
+			ctrlClient.ClientToScreen(&pt);
+			doMenu = true; 
+		} else {
+			bHandled = FALSE;
+		}
 	} else {
 		// Get the bounding rectangle of the client area. 
 		ctrlUsers.GetWindowRect(&rc);
@@ -865,6 +875,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		
 		if (PtInRect(&rc2, pt)) {
 			ctrlUsers.showMenu(pt);
+			return TRUE;
 		}else if (PtInRect(&rc, pt)) { 
 			doMenu = true;
 		}else{
@@ -1028,6 +1039,7 @@ void HubFrame::onTab() {
 
 	Lock l(updateCS);
 
+	UserMap::iterator curUser = usermap.find(curNick);
 	if(!up && curUser == usermap.end())
 		curUser = usermap.begin();
 
@@ -1036,11 +1048,11 @@ void HubFrame::onTab() {
 			if(curUser == usermap.begin())
 				curUser = usermap.end();
 			--curUser;
-		} else
+		} else{
 			++curUser;
-
-		if(curUser == usermap.end())
-			curUser = usermap.begin();
+			if(curUser == usermap.end())
+				curUser = usermap.begin();
+		}
 		
 		if( Util::findSubString(curUser->first, complete) == 0 ){
 				found = true;
@@ -1060,11 +1072,8 @@ void HubFrame::onTab() {
 		}
 		ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
 		string tmp = u->user->getShortNick();;
-		if(tmp[0] == '['){
-			int pos = tmp.find_last_of("]");
-			tmp = tmp.substr(pos+1);
-		}
 		ctrlMessage.ReplaceSel(tmp.c_str());
+		curNick = Util::toLower(tmp);
 		return;
 	}
 	
@@ -1073,7 +1082,7 @@ void HubFrame::onTab() {
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!complete.empty() && (wParam != VK_TAB && wParam != VK_SHIFT) && uMsg == WM_KEYDOWN){
 		complete.clear();
-		curUser = usermap.begin();
+		curNick.clear();
 	}
 
 	if (uMsg != WM_KEYDOWN) {
@@ -1441,9 +1450,6 @@ void HubFrame::removeUser(const User::Ptr& u) {
 	UserMap::iterator i = usermap.begin();
 	for(; i != usermap.end(); ++i) {
 		if(Util::stricmp(i->second->user->getNick(), u->getNick()) == 0){
-			if(i == curUser)
-				curUser = usermap.end();
-			
 			delete i->second;
 			i->second = NULL;
 			usermap.erase(i);

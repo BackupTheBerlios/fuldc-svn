@@ -622,7 +622,6 @@ int ShareManager::run() {
 
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
-
 				FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
 				newXmlFile.write(SimpleXML::utf8Header);
 				newXmlFile.write("<FileListing Version=\"1\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
@@ -642,7 +641,7 @@ int ShareManager::run() {
 			xFile = new File(newXmlName, File::READ, File::OPEN);
 			setBZXmlFile(newXmlName);
 			bzXmlListLen = File::getSize(newXmlName);
-			
+
 			string newBZName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".bz2";
 
 			{

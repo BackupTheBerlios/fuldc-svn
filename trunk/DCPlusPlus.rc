@@ -530,7 +530,7 @@ BEGIN
     GROUPBOX        "Minislots",IDC_STATIC,14,14,245,46
     LTEXT           "Free slots file extensions",IDC_STATIC,22,24,134,8
     EDITTEXT        IDC_FREE_SLOTS_EXTENSIONS,24,39,178,14,ES_AUTOHSCROLL
-    LTEXT           "Free slots file size in kB",IDC_STATIC,178,24,76,8
+    LTEXT           "Free slots file size in kiB",IDC_STATIC,178,24,76,8
     EDITTEXT        IDC_FREE_SLOTS_SIZE,211,38,40,14,ES_AUTOHSCROLL
     GROUPBOX        "Static ""download to"" directories",IDC_STATIC,14,66,
                     245,43
@@ -719,8 +719,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,3,0,7
- PRODUCTVERSION 0,3,0,7
+ FILEVERSION 0,4,0,0
+ PRODUCTVERSION 0,4,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -737,12 +737,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 3, 0, 7"
+            VALUE "FileVersion", "0, 4, 0, 0"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 3, 0, 7"
+            VALUE "ProductVersion", "0, 4, 0, 0"
         END
     END
     BLOCK "VarFileInfo"

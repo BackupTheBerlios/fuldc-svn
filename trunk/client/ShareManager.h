@@ -136,8 +136,6 @@ private:
 		typedef Directory* Ptr;
 		typedef HASH_MAP<string, Ptr> Map;
 		typedef Map::iterator MapIter;
-		typedef HASH_MULTIMAP_X(string, int64_t, noCaseStringHash, noCaseStringEq, noCaseStringLess) DupeMap;
-		typedef DupeMap::iterator DupeIter;
 
 		int64_t size;
 		Map directories;
@@ -208,7 +206,8 @@ private:
 		/** Set of flags that say which common search phrases a directory contains */
 		u_int32_t searchTypes;
 	};
-		
+	friend class Directory;
+
 	friend class Singleton<ShareManager>;
 	ShareManager();
 	
@@ -218,10 +217,10 @@ private:
 
 	struct TTHHash {
 		size_t operator()(const TTHValue* tth) const { return *(size_t*)tth; };
-		bool operator()(const TTHValue* a, const TTHValue* b) const { return memcmp(a, b, sizeof(*a)) == 0; };
+		bool operator()(const TTHValue* a, const TTHValue* b) const { return (*a) == (*b); };
 	};
 	struct TTHLess {
-		int operator()(const TTHValue* a, const TTHValue* b) { return memcmp(a, b, sizeof(*a)); };
+		int operator()(const TTHValue* a, const TTHValue* b) { return (*a) < (*b); };
 	};
 	typedef HASH_MAP_X(TTHValue*, Directory::File::Iter, TTHHash, TTHHash, TTHLess) HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;

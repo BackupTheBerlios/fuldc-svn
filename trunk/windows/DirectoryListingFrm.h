@@ -137,7 +137,7 @@ public:
 		if(i != frames.end())
 			frames.erase(i);
 
-		MDIDestroy(m_hWnd);
+		bHandled = FALSE;
 		return 0;
 	}
 	
@@ -218,6 +218,9 @@ private:
 			if(utf8)
 				Util::toAcp(columns[COLUMN_FILENAME]);
 			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
+			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
+				columns[COLUMN_TYPE].erase(0, 1);
+
 			columns[COLUMN_SIZE] = Util::formatBytes(f->getSize());
 			if(f->getTTH() != NULL)
                 columns[COLUMN_TTH] = f->getTTH()->toBase32();

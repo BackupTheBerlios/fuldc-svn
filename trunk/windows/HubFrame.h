@@ -54,7 +54,7 @@ public:
 	BEGIN_MSG_MAP(HubFrame)
 		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
-		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
+		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
@@ -320,8 +320,6 @@ private:
 		timeStamps = BOOLSETTING(TIME_STAMPS);
 		showUserList = BOOLSETTING(GET_USER_INFO);
 
-		curUser = usermap.end();
-
 		tabList.push_back("/away");
 		tabList.push_back("/back");
         tabList.push_back("/clear");
@@ -397,8 +395,8 @@ private:
 	typedef multimap< string, UserInfo* > UserMap;
 	typedef pair< string, UserInfo* > UserPair;
 	UserMap usermap; //save all userinfo items that don't match the filter here
-	UserMap::iterator curUser;
-
+	string curNick;
+	
 	CButton ctrlShowUsers;
 	CFulEditCtrl ctrlClient;
 	CEdit ctrlMessage;

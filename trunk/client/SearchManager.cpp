@@ -44,7 +44,7 @@ string SearchResult::toSR() const {
 	tmp.append(Util::toString(slots));
 	tmp.append(1, '\x05');
 	if(getTTH() == NULL) {
-	tmp.append(hubName);
+		tmp.append(hubName);
 	} else {
 		tmp.append("TTH:" + getTTH()->toBase32());
 	}

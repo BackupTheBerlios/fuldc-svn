@@ -17,9 +17,9 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.307"
-#define VERSIONFLOAT 0.307
-#define FULVERSIONSTRING "6.44 Beta 5"
+#define VERSIONSTRING "0.400"
+#define VERSIONFLOAT 0.400
+#define FULVERSIONSTRING "6.44 Beta 6"
 
 /* Update the .rc file as well... */
 

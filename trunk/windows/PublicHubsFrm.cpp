@@ -64,13 +64,13 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
 	
-	ctrlHubs.setSort(2, ExListViewCtrl::SORT_INT, false);
+	ctrlHubs.setSort(COLUMN_USERS, ExListViewCtrl::SORT_INT, false);
 	ctrlHubs.SetFocus();
 
 	ctrlHub.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
 	ctrlHub.SetFont(WinUtil::systemFont);
-		
+	
 	ctrlHubContainer.SubclassWindow(ctrlHub.m_hWnd);
 	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |

@@ -47,12 +47,20 @@ public:
 		typedef List::iterator Iter;
 		
 		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)) { };
+			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)) 
+		{ 
+		};
 		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(NULL) { };
-			~File() {
-				delete tthRoot;
-			}
+			name(aName), size(aSize), parent(aDir), tthRoot(NULL)
+		{ 
+		};
+			
+		File(const File& rhs) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot)) 
+		{
+		}
+		~File() {
+			delete tthRoot;
+		}
 
 		bool getAdls() {
 			return getParent()->getAdls();
@@ -98,10 +106,10 @@ public:
 			}
 			return x;
 		}
-		
+
 		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
-		GETSET(bool, adls, Adls);		
+		GETSET(bool, adls, Adls);
 
 	private:
 		Directory(const Directory&);
@@ -122,10 +130,10 @@ public:
 		delete root;
 	};
 
-	void loadFile(const string& name);
+	void loadFile(const string& name, bool doAdl);
 
-	void load(const string& i);
-	void loadXML(const string& xml);
+	void load(const string& i, bool doAdl);
+	void loadXML(const string& xml, bool doAdl);
 
 	void download(const string& aDir, const string& aTarget);
 	void download(Directory* aDir, const string& aTarget);
@@ -148,10 +156,10 @@ private:
 	DirectoryListing(const DirectoryListing&);
 	DirectoryListing& operator=(const DirectoryListing&);
 
-	Directory* root;
+	Directory* root;	
 		
 	Directory* find(const string& aName, Directory* current);
-		
+	
 };
 
 inline bool operator==(DirectoryListing::Directory::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }

@@ -565,7 +565,7 @@ void WinUtil::openLink(const string& url) {
 				} else {
 					cmdLine.append(" \"" + url + '\"');
 				}
-				
+
 				STARTUPINFO si = { sizeof(si), 0 };
 				PROCESS_INFORMATION pi = { 0 };
 				AutoArray<char> buf(cmdLine.length() + 1);

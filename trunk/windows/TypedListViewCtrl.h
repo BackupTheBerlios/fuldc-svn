@@ -107,7 +107,25 @@ public:
 		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
 		if(di->item.mask & LVIF_TEXT) {
 			di->item.mask |= LVIF_DI_SETITEM;
-			di->item.pszText = const_cast<char*>(((T*)di->item.lParam)->getText(di->item.iSubItem).c_str());
+			int pos = di->item.iSubItem;
+			bool insert = false;
+			int j = 0;
+			CHAR *buf = new CHAR[512];
+			LVCOLUMN lvc;
+			lvc.pszText = buf;
+			lvc.cchTextMax = 512;
+			GetColumn(pos, &lvc);
+			for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++j){
+				if((Util::stricmp(buf, (*i)->name.c_str()) == 0)){
+					if((*i)->visible == true)
+						insert = true;
+					break;
+				}
+			}
+			if(insert)
+				di->item.pszText = const_cast<char*>(((T*)di->item.lParam)->getText(j).c_str());
+
+			delete[] buf;
 		}
 		return 0;
 	}
@@ -267,8 +285,10 @@ public:
 
 		if(!ci->visible){
 			removeColumn(ci);
+			resort();
 		} else {
 			InsertColumn(ci->pos, ci->name.c_str(), ci->format, ci->width, -1);
+			resort();
 		}
 
 		SetRedraw();
@@ -333,6 +353,15 @@ public:
 		}
 	}
 
+	BOOL setColumnOrderArray(int iCount, LPINT piArray ) {
+		for(int i = 0; i < iCount; ++i) {
+			columnList[i]->pos = *(piArray + i);
+		}
+
+		return SetColumnOrderArray(iCount, piArray);
+	}
+
+
 private:
 	CMenu headerMenu;
 
@@ -365,6 +394,8 @@ private:
 			if(Util::stricmp(ci->name.c_str(), lvcl.pszText) == 0){
 				ci->width = GetColumnWidth(k);
 				DeleteColumn(k);
+				if(sortColumn == ci->pos)
+					sortColumn = 0;
 				break;
 			}
 		}

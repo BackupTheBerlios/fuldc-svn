@@ -30,7 +30,7 @@
 
 #define SERVER_MESSAGE_MAP 7
 
-class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, public StaticFrame<FinishedULFrame, ResourceManager::FINISHED_UPLOADS>, 
+class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, public StaticFrame<FinishedULFrame, ResourceManager::FINISHED_UPLOADS>,
 	private FinishedManagerListener
 {
 public:
@@ -172,10 +172,11 @@ private:
 
 	enum {
 		COLUMN_FIRST,
-		COLUMN_DONE = COLUMN_FIRST,
-		COLUMN_FILE,
+		COLUMN_FILE = COLUMN_FIRST,
+		COLUMN_DONE,
 		COLUMN_PATH,
 		COLUMN_NICK,
+		COLUMN_HUB,
 		COLUMN_SIZE,
 		COLUMN_SPEED,
 		COLUMN_LAST
@@ -190,7 +191,7 @@ private:
 	int64_t totalTime;
 
 	bool closed;
-	
+
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 	
@@ -211,7 +212,7 @@ private:
 
 	void addEntry(FinishedItem* entry);
 	
-	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw();;
+	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw();
 };
 
 #endif // FINISHEDULFRAME_H
