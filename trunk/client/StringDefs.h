@@ -491,7 +491,7 @@ enum Strings { // @DontAdd
 	MUTED, // "Muted"
 	UNMUTED, // "Unmuted"
 	REMOVE_POPUPS, // "Automatically close popup windows"
-	SHOW_TOPIC, // "Show topic in hub column in transfer view"
+	REMOVE_TOPIC, // "Remove topic (everywhere except hub windowtitle)"
 	TOTAL_TIME_LEFT, // "Total Time Left"
 	MENU_OPEN_MY_LIST, // "Open my file list"
 	RESOLVE_IP, // "Resolve IP"

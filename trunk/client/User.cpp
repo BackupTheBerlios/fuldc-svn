@@ -136,7 +136,7 @@ void User::setClient(Client* aClient) {
 	}
 	else {
 		setLastHubAddress(aClient->getIpPort());
-		setLastHubName(aClient->getName());
+		setLastHubName(aClient->getName(BOOLSETTING(REMOVE_TOPIC)));
 		setFlag(ONLINE);
 		unsetFlag(QUIT_HUB);
 	}

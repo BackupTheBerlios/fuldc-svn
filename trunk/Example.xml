@@ -487,7 +487,7 @@
 		<String Name="Muted">Muted</String>
 		<String Name="Unmuted">Unmuted</String>
 		<String Name="RemovePopups">Automatically close popup windows</String>
-		<String Name="ShowTopic">Show topic in hub column in transfer view</String>
+		<String Name="RemoveTopic">Remove topic (everywhere except hub windowtitle)</String>
 		<String Name="TotalTimeLeft">Total Time Left</String>
 		<String Name="MenuOpenMyList">Open my file list</String>
 		<String Name="ResolveIp">Resolve IP</String>

@@ -204,7 +204,7 @@ SettingsManager::SettingsManager()
 	setDefault(CUSTOM_SOUND, false);
 	setDefault(TAB_SIZE, 20);
 	setDefault(REMOVE_POPUPS, true);
-	setDefault(SHOW_TOPIC, true);
+	setDefault(REMOVE_TOPIC, false);
 	setDefault(MAX_AUTO_MATCH_SOURCES, 5);
 	setDefault(MAX_MSG_LENGTH, 90);
 	setDefault(POPUP_MINIMIZED, false);

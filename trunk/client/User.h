@@ -27,6 +27,7 @@
 #include "Pointer.h"
 #include "CriticalSection.h"
 #include "CID.h"
+#include "SettingsManager.h"
 
 class Client;
 class FavoriteUser;
@@ -102,7 +103,7 @@ public:
 	string getFullNick() const { 
 		string tmp(getNick());
 		tmp += " (";
-		tmp += getClientName();
+		tmp += getClientName(BOOLSETTING(REMOVE_TOPIC));
 		tmp += ")";
 		return tmp;
 	}
