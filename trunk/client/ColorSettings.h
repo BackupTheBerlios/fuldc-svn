@@ -36,7 +36,7 @@ public:
 			bTimestamps = true;
 		}else if(match.compare(_T("$users$")) == 0) {
 			bUsers = true;
-		}else if(match.compare(_T("$mynick$")) == 0) {
+		}else if(match.find(_T("$mynick$")) != tstring::npos) {
 			bMyNick = true;
 		} else if(match.find(_T("$Re:")) == 0) {
 			bUsingRegexp = true;

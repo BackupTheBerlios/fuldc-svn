@@ -706,5 +706,14 @@
 		<String Name="NewIgnorePatternDescription">full nick, wildcard or a regexp</String>
 		<String Name="AlreadyIgnored">Pattern is already in the list</String>
 		<String Name="RemoveFile">Remove file from queue</String>
+		<String Name="PresetMyNick">My nick</String>
+		<String Name="PresetMyMessages">My messages</String>
+		<String Name="PresetBoldUsers">Bold users</String>
+		<String Name="PresetBoldTimestamp">Bold timestamps</String>
+		<String Name="PresetUrls">Urls</String>
+		<String Name="PresetMe">/me</String>
+		<String Name="PresetStatus">Status messages</String>
+		<String Name="PresetJoins">Joins</String>
+		<String Name="PresetParts">Parts</String>
 	</Strings>
 </Language>

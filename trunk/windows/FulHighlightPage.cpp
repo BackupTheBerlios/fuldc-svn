@@ -76,6 +76,23 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 	ctrlMatchType.SetCurSel(1);
 
+	presets.CreatePopupMenu();
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_MY_NICK));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_MY_MESSAGES));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_BOLD_TIMESTAMP));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_BOLD_USERS));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_URLS));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_ME));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_STATUS));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_JOINS));
+	presets.AppendMenu(MF_STRING, IDC_PRESETMENU, CTSTRING(PRESET_PARTS));
+
+	MENUINFO inf;
+	inf.cbSize = sizeof(MENUINFO);
+	inf.fMask = MIM_STYLE;
+	inf.dwStyle = MNS_NOTIFYBYPOS;
+	presets.SetMenuInfo(&inf);
+
 	return TRUE;
 }
 
@@ -159,7 +176,7 @@ LRESULT FulHighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		ctrlStrings.DeleteItem(sel);
 		int j = 0;
 		ColorIter i = highlights.begin();
-		for(; j <= sel; ++i, ++j);
+		for(; j < sel; ++i, ++j);
 
 		if(i != highlights.end())
 			highlights.erase(i);
@@ -211,6 +228,8 @@ void FulHighlightPage::clear() {
 	CheckDlgButton(IDC_SOUND,			BST_UNCHECKED);
 	CheckDlgButton(IDC_LASTLOG,			BST_UNCHECKED);
 	CheckDlgButton(IDC_FLASHWINDOW,		BST_UNCHECKED);
+	CheckDlgButton(IDC_HAS_FG_COLOR,	BST_UNCHECKED);
+	CheckDlgButton(IDC_HAS_BG_COLOR,	BST_UNCHECKED);
 
 	ctrlMatchType.SetCurSel(1);
 
@@ -222,7 +241,7 @@ void FulHighlightPage::clear() {
 	BOOL t;
 	onClickedBox(0, IDC_HAS_BG_COLOR, NULL, t);
 	onClickedBox(0, IDC_HAS_FG_COLOR, NULL, t);
-	onClickedBox(0, IDC_SELECT_SOUND, NULL, t);
+	onClickedBox(0, IDC_SOUND, NULL, t);
 }
 
 FulHighlightPage::~FulHighlightPage() {
@@ -330,5 +349,82 @@ LRESULT FulHighlightPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 LRESULT FulHighlightPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_HIGHLIGHTPAGE);
+	return 0;
+}
+
+LRESULT FulHighlightPage::onPreset(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	POINT pt;
+	if(GetCursorPos(&pt) != 0) {
+		presets.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_HORPOSANIMATION | TPM_VERPOSANIMATION,
+			pt.x, pt.y, m_hWnd);
+	}
+	return 0;
+}
+
+LRESULT FulHighlightPage::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	clear();
+	switch(wParam){
+		case 0:
+			SetDlgItemText(IDC_STRING, _T("$mynick$"));
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(200, 0, 0);
+			break;
+		case 1:
+			SetDlgItemText(IDC_STRING, _T("<$mynick$>"));
+			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
+			CheckDlgButton(IDC_WHOLELINE, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(115, 115, 118);
+			break;
+		case 2:
+			SetDlgItemText(IDC_STRING, _T("$ts$"));
+			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(115, 115, 118);
+			break;
+		case 3:
+			SetDlgItemText(IDC_STRING, _T("$users$"));
+			CheckDlgButton(IDC_INCLUDENICK, BST_CHECKED);
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(115, 115, 118);
+			break;
+		case 4:
+			SetDlgItemText(IDC_STRING, _T("$Re:http://\\S+|ftp://\\S+|https://\\S+|mms://\\S+|ftps://\\S+|www\\.\\S+"));
+			CheckDlgButton(IDC_UNDERLINE, BST_CHECKED);
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(102, 153, 204);
+			break;
+		case 5:
+			SetDlgItemText(IDC_STRING, _T("$Re:^\\[.*?\\] (\\*{2} .*)"));
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(255, 102, 0);
+			break;
+		case 6:
+			SetDlgItemText(IDC_STRING, _T("$Re:^\\[.*?\\] (\\*{3} .*)")); //will do for now
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			fgColor = RGB(255, 153, 204);
+			break;
+		case 7:
+			SetDlgItemText(IDC_STRING, _T("$Re:^\\[.*?\\] (\\*{3} Joins: .*)"));
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			fgColor = RGB(153, 153, 51);
+			break;
+		case 8:
+			SetDlgItemText(IDC_STRING, _T("$Re:^\\[.*?\\] (\\*{3} Parts: .*)"));
+			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);
+			CheckDlgButton(IDC_BOLD, BST_CHECKED);
+			fgColor = RGB(51, 102, 154);
+		default:
+			break;
+	}
+
+	BOOL t;
+	onClickedBox(0, IDC_HAS_BG_COLOR, NULL, t);
+	onClickedBox(0, IDC_HAS_FG_COLOR, NULL, t);
+	onClickedBox(0, IDC_SOUND, NULL, t);
 	return 0;
 }

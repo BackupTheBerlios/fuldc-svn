@@ -265,10 +265,15 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 	int index = tstring::npos;
 	tstring searchString;
 
-	if( cs->getMyNick() )
-		searchString = nick;
-	else
+	if( cs->getMyNick() ) {
+		tstring::size_type p = cs->getMatch().find(_T("$mynick$"));
+		if(p != tstring::npos) {
+			searchString = cs->getMatch();
+			searchString = searchString.replace(p, 8, nick);
+		} 
+	} else {
 		searchString = cs->getMatch();
+	}
 	
 	//we don't have any nick to search for
 	//happens in pm's have to find a solution for this

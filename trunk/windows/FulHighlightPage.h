@@ -23,6 +23,7 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	BEGIN_MSG_MAP(FulHighlightPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_DELETE, onDelete)
 		COMMAND_ID_HANDLER(IDC_UPDATE, onUpdate)
@@ -34,11 +35,14 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 		COMMAND_ID_HANDLER(IDC_SOUND, onClickedBox)
         COMMAND_ID_HANDLER(IDC_HAS_BG_COLOR, onClickedBox)		
 		COMMAND_ID_HANDLER(IDC_HAS_FG_COLOR, onClickedBox)
+		COMMAND_ID_HANDLER(IDC_PRESET, onPreset)
 		NOTIFY_HANDLER(IDC_ITEMS, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	LRESULT onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -48,8 +52,9 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	LRESULT onFgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSelSound(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBox(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onPreset(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
 	// Common PropPage interface
@@ -73,7 +78,9 @@ protected:
 	//reset all controls except listview
 	void clear();
 
-	vector<ColorSettings> highlights;
+	ColorList highlights;
+
+	CMenu presets;
 	
 };
 

@@ -115,7 +115,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_PUBLIC, false);
 	setDefault(OPEN_QUEUE, false);
 	setDefault(AUTO_SEARCH, true);
-	setDefault(TIME_STAMPS, false);
+	setDefault(TIME_STAMPS, true);
 	setDefault(CONFIRM_EXIT, false);
 	setDefault(IGNORE_OFFLINE, false);
 	setDefault(POPUP_OFFLINE, false);
