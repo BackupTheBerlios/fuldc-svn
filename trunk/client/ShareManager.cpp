@@ -170,6 +170,12 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 
 		if( !found )
 			throw ShareException("File Not Available");
+
+		i = 0;
+
+		while((i = file.find('/', i)) != string::npos) {
+			file[i] = '\\';
+		}
 		
 		return j->second + file;
 	}

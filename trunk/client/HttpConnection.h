@@ -67,7 +67,7 @@ private:
 	string file;
 	string server;
 	bool ok;
-	short port;
+	unsigned short port;
 	int64_t size;
 	bool moved302;
 

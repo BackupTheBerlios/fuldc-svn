@@ -788,7 +788,7 @@ void WinUtil::openLink(const tstring& url) {
 
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
-	short port = 411;
+	unsigned short port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
 		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
@@ -806,7 +806,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 
 void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	string server, file;
-	short port = -1; //make sure we get a port since adc doesn't have a standard one
+	unsigned short port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
 		HubFrame::openWindow(Text::toT("adc://" + server + ":" + Util::toString(port)));

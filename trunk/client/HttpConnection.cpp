@@ -79,7 +79,8 @@ void HttpConnection::on(BufferedSocketListener::Connected) throw() {
 	string sRemoteServer = server; 
 	if(!SETTING(HTTP_PROXY).empty()) 
 	{ 
-		string tfile;short tport; 
+		string tfile;
+		unsigned short tport; 
 		Util::decodeUrl(file, sRemoteServer, tport, tfile); 
 	} 
 	socket->write("Host: " + sRemoteServer + "\r\n"); 

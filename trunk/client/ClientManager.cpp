@@ -115,7 +115,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 		} else {
 			try {
 				string ip, file;
-				short port = 0;
+				unsigned short port = 0;
 				Util::decodeUrl(aSeeker, ip, port, file);
 				ip = Socket::resolve(ip);
 				if(port == 0) port = 412;

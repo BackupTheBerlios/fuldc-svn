@@ -184,7 +184,7 @@ private:
 
 	string address;
 	string addressPort;
-	short port;
+	unsigned short port;
 
 	CountType countType;
 
