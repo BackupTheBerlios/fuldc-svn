@@ -30,9 +30,11 @@ CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyStringT),
 	urls.push_back(_T("mms://"));
 	urls.push_back(_T("dchub://"));
 
-	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | HANDLE_URLS);
+	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | HANDLE_URLS | MENU_COPY | 
+			MENU_SEARCH | MENU_SEARCH_TTH | MENU_SEARCH_MENU );
 
 }
+
 CFulEditCtrl::~CFulEditCtrl(void)
 {
 	delete[] findBuffer;
@@ -42,10 +44,20 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	searchMenu.CreatePopupMenu();
 
 	menu.CreatePopupMenu();
-	menu.AppendMenu(MF_STRING, IDC_COPY, CTSTRING(COPY));
-	menu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
-	menu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
-	menu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
+	if( isSet(MENU_COPY) )
+		menu.AppendMenu(MF_STRING, IDC_COPY, CTSTRING(COPY));
+
+	if( isSet(MENU_PASTE) )
+		menu.AppendMenu(MF_STRING, IDC_PASTE, CTSTRING(PASTE));
+
+	if( isSet(MENU_SEARCH) )
+		menu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
+
+	if( isSet(MENU_SEARCH_TTH) )
+		menu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
+
+	if( isSet(MENU_SEARCH_MENU) )
+		menu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
 
 	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
 	MENUINFO inf;
@@ -583,17 +595,22 @@ LRESULT CFulEditCtrl::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		WinUtil::search(searchTerm, static_cast<int>(wParam)+1);
 		searchTerm = Util::emptyStringT;
 	} else if( menu.m_hMenu == m ){
-		switch( wParam ) {
-			case 0: 
+		UINT id = menu.GetMenuItemID( wParam );
+
+		switch( id ) {
+			case IDC_COPY: 
 				if(searchTerm.empty())
 					Copy();
 				else
 					WinUtil::setClipboard(searchTerm);
 				break;
-			case 1:
+			case IDC_PASTE:
+				Paste();
+				break;
+			case IDC_SEARCH:
 				WinUtil::search(searchTerm, 0, false);
 				break;
-			case 2:
+			case IDC_SEARCH_BY_TTH:
 				WinUtil::search(searchTerm, 0, true);
 				break;
 		}

@@ -612,5 +612,6 @@ enum Strings { // @DontAdd
 	BLEND_TABS, // "Blend tabs instead of using bold font when dirty(see appearance page)"
 	FILE_LEFT, // "file left"
 	CHANGED_PRIORITY, // "Changed priority for"
+	PASTE, // "Paste"
 	LAST // @DontAdd
 };

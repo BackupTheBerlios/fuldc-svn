@@ -609,6 +609,7 @@ string ResourceManager::strings[] = {
 "Blend tabs instead of using bold font when dirty(see appearance page)", 
 "file left", 
 "Changed priority for", 
+"Paste", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1218,4 +1219,5 @@ string ResourceManager::names[] = {
 "BlendTabs", 
 "FileLeft", 
 "ChangedPriority", 
+"Paste", 
 };

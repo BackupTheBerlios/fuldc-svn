@@ -15,19 +15,26 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_FINDREPLACE, onFind)
-		//MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
 	END_MSG_MAP()
 
 	CFulEditCtrl(void);
 	~CFulEditCtrl(void);
 
 	enum {
-		STRIP_ISP		= 0x01, //Activate strip isp
-		HANDLE_SCROLL	= 0x02, //Determines if the richedit will handle scrolling
-		POPUP			= 0x04, //if not set, will not popup messages on matches
-		SOUND			= 0x08, //if not set, will not play sound on matches
-		TAB				= 0x10, //if not set, will not color the tab on matches
-		HANDLE_URLS		= 0x20  //if not set, will not handle urls on LButtonDown
+		STRIP_ISP		= 1, //Activate strip isp
+		HANDLE_SCROLL	= 2, //Determines if the richedit will handle scrolling
+		POPUP			= 4, //if not set, will not popup messages on matches
+		SOUND			= 8, //if not set, will not play sound on matches
+		TAB				= 16, //if not set, will not color the tab on matches
+		HANDLE_URLS		= 32, //if not set, will not handle urls on LButtonDown
+		
+		//determines which choices should be shown in the context menu
+		//these need to be set before calling create
+		MENU_COPY			= 64,
+		MENU_PASTE			= 128,
+		MENU_SEARCH			= 256,
+		MENU_SEARCH_TTH		= 512,
+		MENU_SEARCH_MENU	= 1024
 	};
 
 	bool	AddLine(const tstring & line, bool timeStamps = false);

@@ -45,6 +45,7 @@
 #define IDC_CLOSE_ALL_SEARCH_FRAME      133
 #define IDD_HUBS                        134
 #define IDC_FILES                       135
+#define IDC_PASTE                       135
 #define IDC_PRIORITY                    136
 #define IDC_ITEMS                       137
 #define IDC_BOLD                        138
@@ -484,6 +485,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        257
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1294
-#define _APS_NEXT_SYMED_VALUE           135
+#define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif
