@@ -159,7 +159,9 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		item.iItem = i;
 		ctrlDirectories.GetItem(&item);
-		ShareManager::getInstance()->removeDirectory(Text::fromT(buf));
+		string t = Text::fromT(buf);
+		ShareManager::getInstance()->removeDirectory( t );
+		HashManager::getInstance()->remove( t );
 		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		ctrlDirectories.DeleteItem(i);
 	}

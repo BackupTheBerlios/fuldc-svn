@@ -105,6 +105,7 @@ public:
 	}
 
 	void remove( const string& aPath ){
+		Lock l(cs);
 		hasher.remove( aPath );
 	}
 

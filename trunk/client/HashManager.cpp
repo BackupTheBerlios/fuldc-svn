@@ -440,14 +440,13 @@ cleanup:
 
 void HashManager::Hasher::remove( const string & aPath ){
 	Lock l(cs);
-	WorkIter i,j; //i is the actual iterator, j is temp
+	WorkIter i; //i is the actual iterator, j is temp
 	
 	i = w.begin();
 
 	while( i != w.end() ){
 		if(Util::strnicmp(aPath, *i, aPath.length()) == 0){
-			j = i++;
-			w.erase(j);
+			w.erase(i++);
 		} else {
 			i++;
 		}

@@ -528,7 +528,9 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}	
 	} else if(Util::stricmp(cmd.c_str(), _T("unshare")) == 0) {
 		if(!param.empty()){
-			ShareManager::getInstance()->removeDirectory( Text::fromT(param) );
+			string t = Text::fromT(param);
+			ShareManager::getInstance()->removeDirectory( t );
+			HashManager::getInstance()->remove( t );
 			status = TSTRING(REMOVED) + _T(" ") + param;
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
