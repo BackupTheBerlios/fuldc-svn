@@ -285,7 +285,7 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queue.xml"), dirty(false), nextSearch(0),
+QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queue.xml"), dirty(true), nextSearch(0),
 	lastSearchAlternates(0){ 
 
 	TimerManager::getInstance()->addListener(this); 
@@ -448,6 +448,9 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			if(q->getSize() != aSize) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 			}
+			if(q->getTTH() != NULL && root == NULL)
+				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
+
 			if(root != NULL) {
 				if(q->getTTH() == NULL) {
 					q->setTTH(new TTHValue(*root));

@@ -1113,13 +1113,13 @@ tstring WinUtil::UselessInfo() {
 	mem.dwLength = sizeof(MEMORYSTATUSEX);
 	if( GlobalMemoryStatusEx(&mem) != 0){
 		result += _T("Memory\n");
-		result += _T("Physical memory (availible/total): ");
+		result += _T("Physical memory (available/total): ");
 		result += Util::formatBytesW( mem.ullAvailPhys ) + _T("/") + Util::formatBytesW( mem.ullTotalPhys );
 		result += _T("\n");
-		result += _T("Pagefile (availible/total): ");
+		result += _T("Pagefile (available/total): ");
 		result += Util::formatBytesW( mem.ullAvailPageFile ) + _T("/") + Util::formatBytesW( mem.ullTotalPageFile );
 		result += _T("\n");
-		result += _T("Virtual memory (availible/total): ");
+		result += _T("Virtual memory (available/total): ");
 		result += Util::formatBytesW( mem.ullAvailVirtual ) + _T("/") + Util::formatBytesW( mem.ullTotalVirtual );
 		result += _T("\n");
 		result += _T("Memory load: ");

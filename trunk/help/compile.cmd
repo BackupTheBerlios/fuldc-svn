@@ -12,9 +12,7 @@ exit 1
 if errorlevel 1 goto okay
 
 :bad
-echo hhc.exe returned an error
+exit 1
 
 :okay
-echo all done
-
-pause
+exit 0

@@ -7,15 +7,15 @@
 
 #include "PropPage.h"
 
-class FulPage : public CPropertyPage<IDD_FULPAGE>, public PropPage
+class FulSharePage : public CPropertyPage<IDD_FULSHAREPAGE>, public PropPage
 {
 public:
-	FulPage(SettingsManager *s) : PropPage(s) {
-		SetTitle( CTSTRING(SETTINGS_FUL) );
+	FulSharePage(SettingsManager *s) : PropPage(s) {
+		SetTitle( CTSTRING(SETTINGS_FUL_SHARE) );
 	};
-	~FulPage() {};
+	~FulSharePage() {};
 
-	BEGIN_MSG_MAP(FulPage)
+	BEGIN_MSG_MAP(FulSharePage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_ID_HANDLER(IDC_REFRESH_INCOMING, onSetCheck)
 		COMMAND_ID_HANDLER(IDC_REFRESH_SHARE, onSetCheck)

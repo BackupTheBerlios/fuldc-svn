@@ -857,7 +857,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
-		client->send(Util::formatParams(uc.getCommand(), ucParams));
+		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
 	} else {
 		int sel = -1;
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
@@ -865,7 +865,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 			StringMap tmp = ucParams;
 			u->user->getParams(tmp);
 			client->escapeParams(tmp);
-			client->send( Text::utf8ToAcp( Util::formatParams(uc.getCommand(), tmp) ) );
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
 		}
 	}
 	return;

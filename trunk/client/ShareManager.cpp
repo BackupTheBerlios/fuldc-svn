@@ -338,7 +338,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 	}
 }
 
-void ShareManager::removeDirectory(const string& aDirectory) {
+void ShareManager::removeDirectory(const string& aDirectory, bool duringRefresh) {
 	WLock l(cs);
 
 	string d(aDirectory);
@@ -358,6 +358,10 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 			break;
 		}
 	}
+
+	if(!duringRefresh)
+		HashManager::getInstance()->stopHashing(d);
+
 	setDirty();
 }
 
@@ -691,7 +695,7 @@ int ShareManager::run() {
 				WLock l(cs);
 				StringPairList dirs = virtualMap;
 				for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
-					removeDirectory(i->second);
+					removeDirectory(i->second, true);
 				}
 				bloom.clear();
 
@@ -1356,7 +1360,6 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, root)).first;
 			addFile(d, it);
 		}
-
 		setDirty();
 	}
 }

@@ -7,7 +7,7 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 
-#include "FulPage2.h"
+#include "FulDownloadPage.h"
 
 
 #ifdef _DEBUG
@@ -16,27 +16,25 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-PropPage::TextItem FulPage2::texts[] =  {
-	{ IDC_SB_MINISLOTS,		 ResourceManager::SETTINGS_SB_MINISLOTS		 },
-	{ IDC_SB_PATHS,			 ResourceManager::SETTINGS_SB_PATHS			 },
-	{ IDC_SB_MAX_SOURCES,	 ResourceManager::SETTINGS_SB_MAX_SOURCES	 },
-	{ IDC_ST_MINISLOTS_EXT,  ResourceManager::SETTINGS_ST_MINISLOTS_EXT	 },
-	{ IDC_ST_MINISLOTS_SIZE, ResourceManager::SETTINGS_ST_MINISLOTS_SIZE },
-	{ IDC_ST_PATHS,			 ResourceManager::SETTINGS_ST_PATHS			 },
-	{ IDC_ADD,				 ResourceManager::ADD						 },
-	{ IDC_REMOVE,			 ResourceManager::REMOVE					 },
-	{ 0,					 ResourceManager::SETTINGS_AUTO_AWAY		 }
+PropPage::TextItem FulDownloadPage::texts[] =  {
+	{ IDC_SB_PATHS,				ResourceManager::SETTINGS_SB_PATHS				},
+	{ IDC_SB_MAX_SOURCES,		ResourceManager::SETTINGS_SB_MAX_SOURCES		},
+	{ IDC_ST_PATHS,				ResourceManager::SETTINGS_ST_PATHS				},
+	{ IDC_ADD,					ResourceManager::ADD							},
+	{ IDC_REMOVE,				ResourceManager::REMOVE							},
+	{ IDC_SB_SKIPLIST_DOWNLOAD,	ResourceManager::SETTINGS_SB_SKIPLIST_DOWNLOAD	},
+	{ IDC_ST_SKIPLIST_DOWNLOAD, ResourceManager::SETTINGS_ST_SKIPLIST_DOWNLOAD	},
+	{ 0,						ResourceManager::SETTINGS_AUTO_AWAY				}
 
 };
 
-PropPage::Item FulPage2::items[] = {
-	{ IDC_FREE_SLOTS_EXTENSIONS, SettingsManager::FREE_SLOTS_EXTENSIONS, PropPage::T_STR }, 
-	{ IDC_FREE_SLOTS_SIZE, SettingsManager::FREE_SLOTS_SIZE, PropPage::T_INT }, 
-	{ IDC_MAX_SOURCES, SettingsManager::MAX_AUTO_MATCH_SOURCES, PropPage::T_INT }, 
-	{ 0, 0, PropPage::T_END }
+PropPage::Item FulDownloadPage::items[] = {
+	{ IDC_MAX_SOURCES,			SettingsManager::MAX_AUTO_MATCH_SOURCES,	PropPage::T_INT }, 
+	{ IDC_SKIPLIST_DOWNLOAD,	SettingsManager::SKIPLIST_DOWNLOAD,			PropPage::T_STR },
+	{ 0,						0,											PropPage::T_END }
 };
 
-LRESULT FulPage2::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
+LRESULT FulDownloadPage::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 	PropPage::read((HWND)*this, items);
 
 	download = SettingsManager::getInstance()->getDownloadPaths();
@@ -60,7 +58,7 @@ LRESULT FulPage2::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 	return 0;
 }
 
-LRESULT FulPage2::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT FulDownloadPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring path;
 	if(WinUtil::browseDirectory(path)){
 		if( path[ path.length() -1 ] != _T('\\') )
@@ -96,7 +94,7 @@ LRESULT FulPage2::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BO
 	return 0;
 }
 
-LRESULT FulPage2::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT FulDownloadPage::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int sel = ctrlDownload.GetSelectedIndex();
 
 	TCHAR buf[1000];
@@ -112,7 +110,7 @@ LRESULT FulPage2::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 }
 
-void FulPage2::write() {
+void FulDownloadPage::write() {
 	SettingsManager::getInstance()->setDownloadPaths( download );
 	
 	PropPage::write((HWND)*this, items);

@@ -410,31 +410,34 @@ BEGIN
     RTEXT           "Strip Isp",IDC_STATIC,12,65,40,8
 END
 
-IDD_FULPAGE DIALOGEX 0, 0, 275, 225
+IDD_FULSHAREPAGE DIALOGEX 0, 0, 275, 225
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "FulDC"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_SKIPLIST_DOWNLOAD,15,28,245,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_SKIPLIST_SHARE,15,71,245,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_INCOMING_REFRESH_TIME,15,137,37,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_SHARE_REFRESH_TIME,59,137,39,14,ES_AUTOHSCROLL
-    GROUPBOX        "Skiplist Downloads",IDC_SB_SKIPLIST_DOWNLOAD,7,7,261,40
-    GROUPBOX        "Refresh",IDC_SB_REFRESH,7,92,261,65
+    EDITTEXT        IDC_SKIPLIST_SHARE,12,79,250,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_INCOMING_REFRESH_TIME,12,145,37,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SHARE_REFRESH_TIME,56,145,39,14,ES_AUTOHSCROLL
+    GROUPBOX        "Refresh",IDC_SB_REFRESH,4,100,266,65
+    LTEXT           "Incoming",IDC_ST_REFRESH_INCOMING,12,135,30,8
+    GROUPBOX        "Skiplist Share",IDC_SB_SKIPLIST_SHARE,4,57,266,40
     LTEXT           "Skiplist (separate files with """"|""""):",
-                    IDC_ST_SKIPLIST_DOWNLOAD,15,18,106,8
-    LTEXT           "Incoming",IDC_ST_REFRESH_INCOMING,15,127,30,8
-    GROUPBOX        "Skiplist Share",IDC_SB_SKIPLIST_SHARE,7,49,261,40
-    LTEXT           "Skiplist (separate files with """"|""""):",
-                    IDC_ST_SKIPLIST_SHARE,15,60,106,8
-    LTEXT           "Share",IDC_ST_REFRESH_SHARE,60,127,20,8
+                    IDC_ST_SKIPLIST_SHARE,12,68,106,8
+    LTEXT           "Share",IDC_ST_REFRESH_SHARE,57,135,20,8
     CONTROL         "refresh incoming",IDC_REFRESH_INCOMING,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,100,150,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,108,150,10
     CONTROL         "refresh share",IDC_REFRESH_SHARE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,114,150,10
-    LTEXT           "refresh settings help",IDC_ST_REFRESH_HELP,174,101,87,
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,122,150,10
+    LTEXT           "refresh settings help",IDC_ST_REFRESH_HELP,176,109,87,
                     52
+    EDITTEXT        IDC_MINISLOTS_EXTENSIONS,12,28,178,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MINISLOTS_SIZE,222,28,40,14,ES_AUTOHSCROLL
+    GROUPBOX        "Minislots",IDC_SB_MINISLOTS,4,4,266,46
+    LTEXT           "Minislots file extensions",IDC_ST_MINISLOTS_EXT,12,14,
+                    134,8
+    LTEXT           "Minislots file size in KiB",IDC_ST_MINISLOTS_SIZE,190,
+                    14,72,8
 END
 
 IDD_WEB_SHORTCUTS DIALOGEX 0, 0, 264, 238
@@ -482,76 +485,72 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_ITEMS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | 
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
-                    WS_BORDER | WS_TABSTOP,14,22,190,76
+                    WS_BORDER | WS_TABSTOP,14,6,190,99
     CONTROL         "Bold",IDC_BOLD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,
-                    121,29,10
+                    125,29,10
     CONTROL         "Italic",IDC_ITALIC,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,133,31,10
+                    WS_TABSTOP,22,137,31,10
     CONTROL         "Underline",IDC_UNDERLINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,145,46,10
+                    WS_TABSTOP,22,149,46,10
     CONTROL         "Strikeout",IDC_STRIKEOUT,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,157,45,10
+                    WS_TABSTOP,22,161,45,10
     CONTROL         "Display Popup",IDC_POPUP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,169,61,10
+                    WS_TABSTOP,22,173,61,10
     CONTROL         "Play Sound",IDC_SOUND,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,181,51,10
+                    WS_TABSTOP,86,185,51,10
     CONTROL         "Include Nick",IDC_INCLUDENICK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,121,54,10
+                    WS_TABSTOP,86,125,54,10
     CONTROL         "Whole Line",IDC_WHOLELINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,133,54,10
+                    WS_TABSTOP,86,137,54,10
     CONTROL         "Case Sensitive",IDC_CASESENSITIVE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,86,145,68,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,86,149,68,10
     CONTROL         "Entire word",IDC_WHOLEWORD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,157,54,10
+                    WS_TABSTOP,86,161,54,10
     CONTROL         "Change Tabcolor",IDC_TABCOLOR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,169,70,10
-    LTEXT           "Match Type",IDC_ST_MATCH_TYPE,179,114,58,8
-    COMBOBOX        IDC_MATCHTYPE,177,125,66,30,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP,86,173,70,10
+    LTEXT           "Match Type",IDC_ST_MATCH_TYPE,179,118,58,8
+    COMBOBOX        IDC_MATCHTYPE,184,129,66,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Background Color",IDC_BGCOLOR,177,142,66,14,WS_DISABLED
-    PUSHBUTTON      "Text Color",IDC_FGCOLOR,177,160,66,14,WS_DISABLED
-    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,177,178,66,14,
+    PUSHBUTTON      "Background Color",IDC_BGCOLOR,184,146,66,14,WS_DISABLED
+    PUSHBUTTON      "Text Color",IDC_FGCOLOR,184,164,66,14,WS_DISABLED
+    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,184,182,66,14,
                     WS_DISABLED
-    EDITTEXT        IDC_STRING,22,197,221,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Add",IDC_ADD,215,17,50,14
-    PUSHBUTTON      "Update",IDC_UPDATE,215,35,50,14
-    PUSHBUTTON      "Delete",IDC_DELETE,215,53,50,14
-    PUSHBUTTON      "Move Up",IDC_MOVEUP,215,71,50,14
-    PUSHBUTTON      "Move Down",IDC_MOVEDOWN,215,89,50,14
-    GROUPBOX        "Settings",IDC_SB_SETTINGS,14,108,239,109
-    GROUPBOX        "Highlight Settings",IDC_SB_HIGHLIGHT,7,7,264,219
+    EDITTEXT        IDC_STRING,22,200,228,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Add",IDC_ADD,209,6,50,14
+    PUSHBUTTON      "Update",IDC_UPDATE,209,27,50,14
+    PUSHBUTTON      "Delete",IDC_DELETE,209,48,50,14
+    PUSHBUTTON      "Move Up",IDC_MOVEUP,209,69,50,14
+    PUSHBUTTON      "Move Down",IDC_MOVEDOWN,209,90,50,14
+    GROUPBOX        "Settings",IDC_SB_SETTINGS,14,112,245,109
     CONTROL         "",IDC_HAS_BG_COLOR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,163,145,10,10
+                    WS_TABSTOP,168,149,10,10
     CONTROL         "",IDC_HAS_FG_COLOR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,163,163,10,10
+                    WS_TABSTOP,168,167,10,10
     CONTROL         "LastLog",IDC_LASTLOG,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,181,41,10
+                    WS_TABSTOP,22,185,41,10
 END
 
-IDD_FULPAGE2 DIALOGEX 0, 0, 275, 225
+IDD_FULDOWNLOADPAGE DIALOGEX 0, 0, 275, 225
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 EXSTYLE WS_EX_RTLREADING
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_MINISLOTS_EXTENSIONS,24,39,178,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MINISLOTS_SIZE,211,38,40,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Add",IDC_ADD,22,156,50,14
-    EDITTEXT        IDC_MAX_SOURCES,156,191,93,14,ES_AUTOHSCROLL
-    GROUPBOX        "Minislots",IDC_SB_MINISLOTS,14,14,245,46
-    LTEXT           "Minislots file extensions",IDC_ST_MINISLOTS_EXT,22,24,
-                    134,8
-    LTEXT           "Minislots file size in KiB",IDC_ST_MINISLOTS_SIZE,178,
-                    24,72,8
-    GROUPBOX        "Static ""download to"" directories",IDC_SB_PATHS,14,66,
-                    245,108
-    GROUPBOX        "Max sources for match queue",IDC_SB_MAX_SOURCES,147,179,
+    PUSHBUTTON      "Add",IDC_ADD,15,146,50,14
+    EDITTEXT        IDC_MAX_SOURCES,15,186,93,14,ES_AUTOHSCROLL
+    GROUPBOX        "Static ""download to"" directories",IDC_SB_PATHS,7,56,
+                    259,108
+    GROUPBOX        "Max sources for match queue",IDC_SB_MAX_SOURCES,7,174,
                     109,32
     CONTROL         "",IDC_DOWNLOAD_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SORTASCENDING | LVS_ALIGNLEFT | 
-                    WS_BORDER | WS_TABSTOP,22,79,226,75
-    PUSHBUTTON      "Remove",IDC_REMOVE,77,156,50,14
+                    WS_BORDER | WS_TABSTOP,15,69,245,75
+    PUSHBUTTON      "Remove",IDC_REMOVE,71,146,50,14
+    EDITTEXT        IDC_SKIPLIST_DOWNLOAD,15,28,245,14,ES_AUTOHSCROLL
+    GROUPBOX        "Skiplist Downloads",IDC_SB_SKIPLIST_DOWNLOAD,7,7,259,40
+    LTEXT           "Skiplist (separate files with """"|""""):",
+                    IDC_ST_SKIPLIST_DOWNLOAD,15,17,106,8
 END
 
 IDD_HASH_PROGRESS DIALOGEX 0, 0, 430, 113
@@ -579,25 +578,24 @@ EXSTYLE WS_EX_RTLREADING
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    COMBOBOX        IDC_COLOR_COMBO,157,187,98,30,CBS_DROPDOWNLIST | 
+    COMBOBOX        IDC_COLOR_COMBO,157,65,98,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,204,57,11
-    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,177,116,40
-    EDITTEXT        IDC_TAB_SIZE,15,148,84,14,ES_AUTOHSCROLL
-    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,7,
-                    134,116,40
-    EDITTEXT        IDC_TAB_DIRTY_BLEND,15,190,84,14,ES_AUTOHSCROLL
-    GROUPBOX        "Amount of blending when dirty",IDC_SB_TAB_DIRTY_BLEND,8,
-                    177,116,40
-    LTEXT           "%",IDC_STATIC,102,193,8,8
+    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,82,57,11
+    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,55,116,40
+    EDITTEXT        IDC_TAB_SIZE,15,69,84,14,ES_AUTOHSCROLL
+    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,7,55,
+                    116,40
+    EDITTEXT        IDC_TAB_DIRTY_BLEND,15,112,84,14,ES_AUTOHSCROLL
+    GROUPBOX        "Blending",IDC_SB_TAB_DIRTY_BLEND,8,99,258,47
+    LTEXT           "%",IDC_STATIC,102,115,8,8
     CONTROL         "",IDC_CH_STATUS_HUB_BOLD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,9,14,259,10
+                    WS_TABSTOP,9,14,246,10
     CONTROL         "",IDC_CH_STATUS_PM_BOLD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,9,25,259,10
+                    WS_TABSTOP,9,25,246,10
     CONTROL         "",IDC_CH_ICONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,
-                    36,259,10
-    CONTROL         "",IDC_CH_BLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,
-                    47,259,10
+                    36,248,10
+    CONTROL         "",IDC_CH_BLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,
+                    129,235,10
 END
 
 
@@ -751,6 +749,18 @@ BEGIN
         BOTTOMMARGIN, 171
     END
 
+    IDD_FULSHAREPAGE, DIALOG
+    BEGIN
+        VERTGUIDE, 4
+        VERTGUIDE, 12
+        VERTGUIDE, 262
+        VERTGUIDE, 270
+        HORZGUIDE, 22
+        HORZGUIDE, 42
+        HORZGUIDE, 143
+        HORZGUIDE, 159
+    END
+
     IDD_WEB_SHORTCUTS, DIALOG
     BEGIN
         BOTTOMMARGIN, 230
@@ -759,15 +769,23 @@ BEGIN
     IDD_HIGHLIGHTPAGE, DIALOG
     BEGIN
         VERTGUIDE, 22
-        VERTGUIDE, 173
-        VERTGUIDE, 243
+        VERTGUIDE, 86
+        VERTGUIDE, 178
+        VERTGUIDE, 209
+        VERTGUIDE, 250
+        VERTGUIDE, 259
+        HORZGUIDE, 6
+        HORZGUIDE, 105
         HORZGUIDE, 116
+        HORZGUIDE, 195
     END
 
-    IDD_FULPAGE2, DIALOG
+    IDD_FULDOWNLOADPAGE, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 266
+        VERTGUIDE, 15
+        VERTGUIDE, 260
         TOPMARGIN, 7
         BOTTOMMARGIN, 216
     END
@@ -788,9 +806,12 @@ BEGIN
         RIGHTMARGIN, 266
         VERTGUIDE, 14
         VERTGUIDE, 124
+        VERTGUIDE, 255
         TOPMARGIN, 7
         BOTTOMMARGIN, 216
-        HORZGUIDE, 174
+        HORZGUIDE, 59
+        HORZGUIDE, 93
+        HORZGUIDE, 99
     END
 END
 #endif    // APSTUDIO_INVOKED

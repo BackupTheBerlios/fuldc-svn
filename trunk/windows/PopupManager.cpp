@@ -121,11 +121,11 @@ void PopupManager::Remove(int pos) {
 	PopupWnd *p = (*i);
 	popups.erase(i);
 
-	//close the window and delete it
 	if(p == NULL){
 		return;
 	}
 
+	//close the window and delete it
 	p->SendMessage(WM_CLOSE, 0, 0);
 	delete p;
 	p = NULL;

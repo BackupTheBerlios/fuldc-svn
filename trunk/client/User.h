@@ -107,6 +107,7 @@ public:
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp() const;
 	void send(const string& msg);
+	void sendUserCmd(const string& aUserCmd);
 
 	string getFullNick() const { 
 		string tmp(getNick());

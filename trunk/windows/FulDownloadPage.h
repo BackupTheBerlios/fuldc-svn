@@ -8,17 +8,17 @@
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
-class FulPage2 : public CPropertyPage<IDD_FULPAGE2>, public PropPage
+class FulDownloadPage : public CPropertyPage<IDD_FULDOWNLOADPAGE>, public PropPage
 {
 public:
-	FulPage2(SettingsManager *s) : PropPage(s) {
-		SetTitle( CTSTRING(SETTINGS_FUL_MORE) );
+	FulDownloadPage(SettingsManager *s) : PropPage(s) {
+		SetTitle( CTSTRING(SETTINGS_FUL_DOWNLOAD) );
 	};
-	~FulPage2() {
+	~FulDownloadPage() {
 		ctrlDownload.Detach();
 	};
 
-	BEGIN_MSG_MAP(FulPage2)
+	BEGIN_MSG_MAP(FulDownloadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)

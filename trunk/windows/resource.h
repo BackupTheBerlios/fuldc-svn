@@ -98,6 +98,7 @@
 #define IDD_ADLS_PROPERTIES             234
 #define IDD_UCPAGE                      236
 #define IDD_FULPAGE                     238
+#define IDD_FULSHAREPAGE                238
 #define IDD_PRIORITY                    239
 #define IDD_HIGHLIGHTPAGE               240
 #define IDC_SEARCH                      241
@@ -106,6 +107,7 @@
 #define IDR_HUBFRAME                    247
 #define IDD_DIALOG1                     248
 #define IDD_FULPAGE2                    248
+#define IDD_FULDOWNLOADPAGE             248
 #define IDR_PRIVATEFRAME                249
 #define IDC_SETTINGS_MAX_HASH_SPEED     250
 #define IDC_MAX_HASH_SPEED              251
@@ -439,7 +441,6 @@
 #define IDC_TAB_DIRTY_BLEND             1292
 #define IDC_SB_                         1293
 #define IDC_SB_TAB_DIRTY_BLEND          1293
-#define IDC_CH_STATUS_BOLD              1294
 #define IDC_CH_STATUS_HUB_BOLD          1294
 #define IDC_CH_STATUS_PM_BOLD           1295
 #define IDC_CH_ICONS                    1296

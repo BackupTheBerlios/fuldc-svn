@@ -12,6 +12,7 @@
 		<String Name="AddressNotAvailable">Address not available</String>
 		<String Name="AdlDiscard">Discard</String>
 		<String Name="AdlSearch">Automatic Directory Listing Search</String>
+		<String Name="AdlFullPath">Full Path</String>
 		<String Name="AllDownloadSlotsTaken">All download slots taken</String>
 		<String Name="AllUsersOffline">All %d users offline</String>
 		<String Name="All3UsersOffline">All 3 users offline</String>
@@ -178,11 +179,11 @@
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
 		<String Name="MenuReconnect">&amp;Reconnect	Ctrl+R</String>
-		<String Name="MenuRefreshFileList">Refresh file list	Ctrl+E</String>
+		<String Name="MenuRefreshFileList">Refresh file list</String>
 		<String Name="MenuShow">Show</String>
 		<String Name="MenuSearch">&amp;Search	Ctrl+S</String>
 		<String Name="MenuSearchSpy">Search Spy</String>
-		<String Name="MenuSettings">Settings...</String>
+		<String Name="MenuSettings">Settings...	Ctrl+E</String>
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuAbout">About DC++...</String>
 		<String Name="MenuChangelog">Change Log</String>
@@ -294,10 +295,10 @@
 		<String Name="SetPriority">Set priority</String>
 		<String Name="SettingsAddFolder">&amp;Add folder</String>
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
-		<String Name="SettingsAdvanced">Advanced</String>
+		<String Name="SettingsAdvanced">DC++\Advanced</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
-		<String Name="SettingsAppearance">Appearance</String>
+		<String Name="SettingsAppearance">DC++\Appearance</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>
@@ -316,7 +317,7 @@
 		<String Name="SettingsDirectories">Directories</String>
 		<String Name="SettingsDownloadDirectory">Default download directory</String>
 		<String Name="SettingsDownloadLimits">Limits</String>
-		<String Name="SettingsDownloads">Downloads</String>
+		<String Name="SettingsDownloads">DC++\Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
 		<String Name="SettingsExampleText">Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
@@ -324,7 +325,7 @@
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>
-		<String Name="SettingsGeneral">General</String>
+		<String Name="SettingsGeneral">DC++\General</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
 		<String Name="SettingsIp">IP</String>
@@ -338,7 +339,7 @@
 		<String Name="SettingsLogUploads">Log uploads</String>
 		<String Name="SettingsLogSystemMessages">Log system messages</String>
 		<String Name="SettingsLogging">Logging</String>
-		<String Name="SettingsLogs">Logs and Sound</String>
+		<String Name="SettingsLogs">DC++\Logs and Sound</String>
 		<String Name="SettingsMaxHashSpeed">Max hash speed</String>
 		<String Name="SettingsMaxTabRows">Max tab rows</String>
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
@@ -387,13 +388,13 @@
 		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
-		<String Name="SettingsUploads">Sharing</String>
+		<String Name="SettingsUploads">DC++\Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
 		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// URL links</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
-		<String Name="SettingsUserCommands">Advanced\User Commands</String>
+		<String Name="SettingsUserCommands">DC++\Advanced\User Commands</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
 		<String Name="SettingsGetUserCountry">Get User Country</String>
 		<String Name="SettingsLogStatusMessages">Log status messages</String>
@@ -488,10 +489,10 @@
 		<String Name="PopupsDeactivated">Popups turned off</String>
 		<String Name="ShowLog">View Log</String>
 		<String Name="OpenLogDir">Open Log Directory</String>
-		<String Name="SettingsFul">fulDC</String>
+		<String Name="SettingsFulShare">fulDC\Share</String>
 		<String Name="SettingsFulAdvanced">fulDC\Advanced</String>
-		<String Name="SettingsFulHighlight">fulDC\Highlight</String>
-		<String Name="SettingsFulMore">fulDC\More</String>
+		<String Name="SettingsFulHighlight">fulDC\Appearance\Highlight</String>
+		<String Name="SettingsFulDownload">fulDC\Download</String>
 		<String Name="SettingsFulAppearance">fulDC\Appearance</String>
 		<String Name="SettingsFulTabs">fulDC\Appearance\Tabs</String>
 		<String Name="SettingsAutoUpdateIncoming">Automatically refresh incoming</String>
@@ -587,7 +588,7 @@
 		<String Name="TimeStampsHelpCaption">Time Format</String>
 		<String Name="SettingsTimeStampHelp">Help</String>
 		<String Name="SettingsSbTimeStamps">Time Format</String>
-		<String Name="SettingsSbDirtyBlend">Amount of blending when dirty</String>
+		<String Name="SettingsSbDirtyBlend">Blending</String>
 		<String Name="UserCameOnline">User came online</String>
 		<String Name="HighlightMatchTypes">Begins,Contains,Ends,Equals</String>
 		<String Name="ConfirmRemove">Do you really want to remove this item?</String>
@@ -606,7 +607,7 @@
 		<String Name="SystemUptime">System uptime:</String>
 		<String Name="NameExists">Name already exists</String>
 		<String Name="DisplayName">Name to be displayed in menus</String>
-		<String Name="BlendTabs">Blend tabs instead of using bold font when dirty</String>
+		<String Name="BlendTabs">Blend tabs instead of using bold font</String>
 		<String Name="FileLeft">file left</String>
 		<String Name="ChangedPriority">Changed priority for</String>
 		<String Name="Paste">Paste</String>

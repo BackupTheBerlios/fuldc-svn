@@ -113,6 +113,10 @@ void User::send(const string& aMsg) {
 	}
 }
 
+void User::sendUserCmd(const string& aUserCmd) {
+	send(aUserCmd);
+}
+
 void User::redirect(const string& aTarget, const string& aReason) {
 	RLock l(cs);
 	if(client) {

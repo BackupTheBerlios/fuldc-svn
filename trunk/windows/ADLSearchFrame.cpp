@@ -557,7 +557,7 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	TStringList line;
 	tstring fs;
 	line.push_back(Text::toT(search.searchString));
-	line.push_back(Text::toT(search.SourceTypeToString(search.sourceType)));
+	line.push_back(search.SourceTypeToDisplayString(search.sourceType));
 	line.push_back(Text::toT(search.destDir));
 
 	fs = _T("");
@@ -565,7 +565,7 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	{
 		fs = Text::toT(Util::toString(search.minFileSize));
 		fs += _T(" ");
-		fs += Text::toT(search.SizeTypeToStringInternational(search.typeFileSize));
+		fs += search.SizeTypeToDisplayString(search.typeFileSize);
 	}
 	line.push_back(fs);
 
@@ -574,7 +574,7 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	{
 		fs = Text::toT(Util::toString(search.maxFileSize));
 		fs += _T(" ");
-		fs += Text::toT(search.SizeTypeToStringInternational(search.typeFileSize));
+		fs += search.SizeTypeToDisplayString(search.typeFileSize);
 	}
 	line.push_back(fs);
 

@@ -115,6 +115,15 @@ public:
 		}
 	}
 
+	tstring SourceTypeToDisplayString(SourceType t) {
+		switch(t) {
+		default:
+		case OnlyFile:		return TSTRING(FILENAME);
+		case OnlyDirectory:	return TSTRING(DIRECTORY);
+		case FullPath:		return TSTRING(ADL_FULL_PATH);
+		}
+	}
+
 	// Maximum & minimum file sizes (in bytes). 
 	// Negative values means do not check.
 	int64_t minFileSize;
@@ -148,13 +157,13 @@ public:
 		case SizeGigaBytes:	return "GB";
 		}
 	}
-	string SizeTypeToStringInternational(SizeType t) {
+	tstring SizeTypeToDisplayString(SizeType t) {
 		switch(t) {
 		default:
-		case SizeBytes:		return CSTRING(B);
-		case SizeKiloBytes:	return CSTRING(KB);
-		case SizeMegaBytes:	return CSTRING(MB);
-		case SizeGigaBytes:	return CSTRING(GB);
+		case SizeBytes:		return CTSTRING(B);
+		case SizeKiloBytes:	return CTSTRING(KB);
+		case SizeMegaBytes:	return CTSTRING(MB);
+		case SizeGigaBytes:	return CTSTRING(GB);
 		}
 	}
 	int64_t GetSizeBase() {

@@ -1,4 +1,16 @@
--- 0.4033 --
+-- 0.4034 2004-10-03 --
+* Help file additions (thanks naga & ullner)
+* Fixed a few issues with files not being hashed correctly (thanks garg)
+* More ADC fixes (thanks sed)
+* Fixed some ADLSearch stuff (thanks garg)
+* Added item count to finished frames (thanks garg)
+* Fixed user commands encoding (thanks garg)
+* Added last search time to search spy (thanks ullner)
+* Fixed queue size growing on queue item move
+* Fixed missing file list on 0 byte share
+* Fixed missing search results (thanks garg)
+
+-- 0.4033 2004-09-27 --
 *** WARNING *** 
 This update will change all your config files and queues, and it is 
 very probable that you won't be able to revert back to an older version

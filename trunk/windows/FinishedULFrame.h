@@ -150,13 +150,14 @@ public:
 
 		if(ctrlStatus.IsWindow()) {
 			CRect sr;
-			int w[3];
+			int w[4];
 			ctrlStatus.GetClientRect(sr);
-			w[2] = sr.right - 16;
+			w[3] = sr.right - 16;
+			w[2] = max(w[3] - 100, 0);
 			w[1] = max(w[2] - 100, 0);
 			w[0] = max(w[1] - 100, 0);
 
-			ctrlStatus.SetParts(3, w);
+			ctrlStatus.SetParts(4, w);
 		}
 		
 		CRect rc(rect);
@@ -196,8 +197,9 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	
 	void updateStatus() {
-		ctrlStatus.SetText(1, Text::toT(Util::formatBytes(totalBytes)).c_str());
-		ctrlStatus.SetText(2, Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
+		ctrlStatus.SetText(1, Text::toT(Util::toString(ctrlList.GetItemCount()) + ' ' + STRING(ITEMS)).c_str());
+		ctrlStatus.SetText(2, Text::toT(Util::formatBytes(totalBytes)).c_str());
+		ctrlStatus.SetText(3, Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
 	}
 
 	void updateList(const FinishedItem::List& fl) {
@@ -225,7 +227,6 @@ private:
 		totalBytes = 0;
 		totalTime = 0;
 	}
-
 };
 
 #endif // FINISHEDULFRAME_H

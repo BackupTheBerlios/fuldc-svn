@@ -297,16 +297,16 @@
 				RelativePath=".\windows\FulAppearance.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\FulDownloadPage.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\FulEditCtrl.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\FulHighlightPage.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\FulPage.cpp">
-			</File>
-			<File
-				RelativePath=".\windows\FulPage2.cpp">
+				RelativePath=".\windows\FulSharePage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\FulTabsPage.cpp">
@@ -463,16 +463,16 @@
 				RelativePath=".\windows\FulAppearance.h">
 			</File>
 			<File
+				RelativePath=".\windows\FulDownloadPage.h">
+			</File>
+			<File
 				RelativePath=".\windows\FulEditCtrl.h">
 			</File>
 			<File
 				RelativePath=".\windows\FulHighlightPage.h">
 			</File>
 			<File
-				RelativePath=".\windows\FulPage.h">
-			</File>
-			<File
-				RelativePath=".\windows\FulPage2.h">
+				RelativePath=".\windows\FulSharePage.h">
 			</File>
 			<File
 				RelativePath=".\windows\FulTabsPage.h">

@@ -780,7 +780,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		sr->getUser()->getParams(tmp);
 		sr->getUser()->clientEscapeParams(tmp);
-		sr->getUser()->send(Text::utf8ToAcp(Util::formatParams(uc.getCommand(), tmp)));
+		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
 	}
 	return;
 };
@@ -970,7 +970,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		}
 		targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
 		if(WinUtil::lastDirs.size() > 0) {
-			targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+			targetDirMenu.AppendMenu(MF_SEPARATOR);
 			for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_TARGET + n, i->c_str());
 				n++;

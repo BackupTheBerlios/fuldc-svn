@@ -30,26 +30,26 @@
 #include "Advanced2Page.h"
 #include "UCPage.h"
 #include "FulHighlightPage.h"
-#include "FulPage.h"
-#include "FulPage2.h"
+#include "FulSharePage.h"
+#include "FulDownloadPage.h"
 #include "FulAdvancedPage.h"
 #include "FulAppearance.h"
 #include "FulTabsPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
-	pages[0] = new GeneralPage(s);
-	pages[1] = new DownloadPage(s);
-	pages[2] = new UploadPage(s);
-	pages[3] = new AppearancePage(s);
-	pages[4] = new Advanced2Page(s);
-	pages[5] = new AdvancedPage(s);
-	pages[6] = new UCPage(s);
-	pages[7]  = new FulPage(s);
-	pages[8]  = new FulPage2(s);
+	pages[0]  = new GeneralPage(s);
+	pages[1]  = new DownloadPage(s);
+	pages[2]  = new UploadPage(s);
+	pages[3]  = new AppearancePage(s);
+	pages[4]  = new Advanced2Page(s);
+	pages[5]  = new AdvancedPage(s);
+	pages[6]  = new UCPage(s);
+	pages[7]  = new FulDownloadPage(s);
+	pages[8]  = new FulSharePage(s);
 	pages[9]  = new FulAdvancedPage(s);
-	pages[10] = new FulHighlightPage(s);
 	pages[11] = new FulAppearancePage(s);
+	pages[10] = new FulHighlightPage(s);
 	pages[12] = new FulTabsPage(s);
 
 	for(int i=0; i<numPages; i++) {

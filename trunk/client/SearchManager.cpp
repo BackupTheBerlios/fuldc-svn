@@ -200,12 +200,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 			if(j < i + 1) {
 				return;
 			}
-			file = Text::acpToUtf8( x.substr(i, j-i) + '\\' );
+			file = Text::acpToUtf8(x.substr(i, j-i) + '\\');
 		} else if(cnt == 2) {
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
 			}
-			file = Text::acpToUtf8( x.substr(i, j-i) );
+			file = Text::acpToUtf8(x.substr(i, j-i));
 			i = j + 1;
 			if( (j = x.find(' ', i)) == string::npos) {
 				return;
@@ -227,7 +227,8 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		if( (j = x.rfind(" (")) == string::npos) {
 			return;
 		}
-		string hubName = Text::acpToUtf8( x.substr(i, j-i) );
+		// the hub's name will get replaced later (with a UTF-8 version) if there's a TTH in the result
+		string hubName = Text::acpToUtf8(x.substr(i, j-i));
 		i = j + 2;
 		if( (j = x.rfind(')')) == string::npos) {
 			return;
@@ -235,8 +236,9 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		string hubIpPort = x.substr(i, j-i);
 		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
 
+		// utf8 = true is a lie, it's not really Unicode, but we have converted all the text from acp to utf8...
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, hubIpPort, address, false);
+			file, hubName, hubIpPort, address, true);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	} else if(x.compare(1, 4, "RES ") == 0) {
