@@ -294,6 +294,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
+
 #endif
 	
 	HRESULT hRes = ::CoInitialize(NULL);
