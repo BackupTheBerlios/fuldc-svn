@@ -80,6 +80,10 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	pmMenu.AppendMenu(MF_STRING, IDC_PM_UP, CSTRING(ALL_UPLOADS));
 	pmMenu.AppendMenu(MF_STRING, IDC_PM_DOWN, CSTRING(ALL_DOWNLOADS));
 
+	copyMenu.CreatePopupMenu();
+	for(int i = 0; i < COLUMN_LAST; ++i)
+		copyMenu.AppendMenu(MF_STRING, IDC_COPY+i, CSTRING_I(columnNames[i]));
+
 	transferMenu.CreatePopupMenu();
 	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)pmMenu, CSTRING(SEND_PRIVATE_MESSAGE));
@@ -87,6 +91,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	transferMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)openMenu, CSTRING(OPEN));
+	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CSTRING(COPY));
 	transferMenu.AppendMenu(MF_STRING, IDC_RESOLVE_IP, CSTRING(RESOLVE_IP));
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
@@ -727,6 +732,14 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam
 		::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new string(string(c) + " " +  STRING(RESOLVES_TO) + " " + h->h_name));
 	delete[] resolveBuffer;
 	resolveBuffer = NULL;
+
+	return 0;
+}
+
+LRESULT TransferView::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+	ItemInfo *ii = ctrlTransfers.getSelectedItem();
+	if(ii != NULL)
+		WinUtil::copyToClipboard(ii->getText(wID - IDC_COPY));
 
 	return 0;
 }

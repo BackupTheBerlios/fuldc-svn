@@ -118,10 +118,14 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 	ctrlLastLines.AddTool(&ti);
 
+	copyMenu.CreatePopupMenu();
+	for(int i = 0; i < COLUMN_LAST; ++i)
+		copyMenu.AppendMenu(MF_STRING, IDC_COPY+1+i, CSTRING_I(columnNames[i]));
+
 	userMenu.CreatePopupMenu();
 	appendUserItems(userMenu);
 	userMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CSTRING(SHOW_LOG));
-	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
+	userMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CSTRING(COPY));
 	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
 	userMenu.SetMenuDefaultItem(IDC_GETLIST);
@@ -1339,12 +1343,19 @@ LRESULT HubFrame::onSearch(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 	return 0;
 }
 
-LRESULT HubFrame::onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(searchTerm.empty()){
-		ctrlClient.Copy();
-	} else {
-		WinUtil::copyToClipboard(searchTerm);
-		searchTerm = Util::emptyString;
+LRESULT HubFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(wID == IDC_COPY){
+		if(searchTerm.empty()){
+			ctrlClient.Copy();
+		} else {
+			WinUtil::copyToClipboard(searchTerm);
+			searchTerm = Util::emptyString;
+		}
+	}else {
+		int id = wID - IDC_COPY -1;
+		UserInfo *ui = ctrlUsers.getSelectedItem();
+		if(ui != NULL)
+			WinUtil::copyToClipboard(ui->getText(id));
 	}
 
 	return 0;

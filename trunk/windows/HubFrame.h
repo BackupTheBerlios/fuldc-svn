@@ -80,6 +80,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SHOW_HUB_LOG, onShowHubLog)
 		COMMAND_ID_HANDLER(IDC_OPEN_LOG_DIR, onShowHubLog)
 		COMMAND_RANGE_HANDLER(IDC_SEARCH, IDC_SEARCH + 15, onSearch)
+		COMMAND_RANGE_HANDLER(IDC_COPY+1, IDC_COPY+1+COLUMN_LAST, onCopy);
 		//COMMAND_RANGE_HANDLER(IDC_HEADER_MENU, IDC_HEADER_MENU + 10, ctrlUsers.onHeaderMenu)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
@@ -389,6 +390,7 @@ private:
 	CMenu tabMenu;
 	CMenu mcMenu;
 	CMenu searchMenu;
+	CMenu copyMenu;
 
 	string searchTerm;
 	string filter;
