@@ -33,12 +33,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_108599711698C842CAA8EB7C67878720"
-        "OwnerKey" = "8:_C2E054C30D7E4DD6A9B3B3E846A63748"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_1259231CA0D649799A7E9766E44C1FEE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -129,6 +123,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_620F22489FF8445987E00295F0F61D81"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_654868E0EE9940D8A60033BF368B33AD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -196,12 +196,6 @@
         "Entry"
         {
         "MsmKey" = "8:_E41060A496A94748ADFE4393AA7E35E4"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FC8D22B7520F42419BB425BCBB9270BB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -321,26 +315,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{A582A373-4685-4296-BEFE-614B80A702C3}:_108599711698C842CAA8EB7C67878720"
-            {
-            "SourcePath" = "8:pdh.dll"
-            "TargetName" = "8:pdh.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:FALSE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{A582A373-4685-4296-BEFE-614B80A702C3}:_1259231CA0D649799A7E9766E44C1FEE"
@@ -643,6 +617,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_620F22489FF8445987E00295F0F61D81"
+            {
+            "SourcePath" = "8:GeoIPCountryWhois.csv"
+            "TargetName" = "8:GeoIPCountryWhois.csv"
+            "Tag" = "8:"
+            "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{A582A373-4685-4296-BEFE-614B80A702C3}:_654868E0EE9940D8A60033BF368B33AD"
             {
             "SourcePath" = "8:res\\netstats.ico"
@@ -863,26 +857,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{A582A373-4685-4296-BEFE-614B80A702C3}:_FC8D22B7520F42419BB425BCBB9270BB"
-            {
-            "SourcePath" = "8:help.xml"
-            "TargetName" = "8:help.xml"
-            "Tag" = "8:"
-            "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
         }
         "FileType"
         {
@@ -956,13 +930,13 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:fulDC"
-        "ProductCode" = "8:{083E4085-D508-4CD3-9ED1-7236E7A28453}"
-        "PackageCode" = "8:{3DAC638A-1A56-4938-AAC5-6CD32DF1778F}"
+        "ProductCode" = "8:{284D7C29-C28A-4D10-82D1-39DBDC13B9C1}"
+        "PackageCode" = "8:{E4ECB654-DFBB-4325-B93F-D7038565502A}"
         "UpgradeCode" = "8:{1747A49C-4C30-486B-8C0D-EF9B5CF421DC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:6.60"
+        "ProductVersion" = "8:6.62"
         "Manufacturer" = "8:Trem"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
