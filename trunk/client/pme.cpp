@@ -597,6 +597,8 @@ int PME::GetLength( int _backRef )
 
 void PME::Init(const std::string & s, unsigned opts )
 {
+	if( re )
+		pcre_free( re );
 	reset ( );
 	m_isglobal = 0;
 	_opts = opts;
@@ -613,6 +615,9 @@ void PME::Init(const std::wstring & s, unsigned opts )
 
 void PME::Init(const std::string & s, const std::string & opts )
 {
+	if( re )
+		pcre_free( re );
+
 	reset ( );
 	m_isglobal = 0;
 	_opts = DeterminePcreOptions ( opts );

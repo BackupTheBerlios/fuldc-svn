@@ -153,6 +153,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8ED5E381F9DD4879B613F7C26F304C92"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BA8FA974CC3343599DF914B4145E60D2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -691,6 +697,26 @@
             "TargetName" = "8:toolbar20-highlight.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_8ED5E381F9DD4879B613F7C26F304C92"
+            {
+            "SourcePath" = "8:C:\\WINDOWS\\system32\\dbghelp.dll"
+            "TargetName" = "8:dbghelp.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"

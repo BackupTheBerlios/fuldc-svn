@@ -129,7 +129,8 @@ public:
 	
 	virtual size_t getUserCount() const {  Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
-	virtual const string& getName() const { return name; };
+	virtual const string& getName() const { return BOOLSETTING(REMOVE_TOPIC) ? shortName : name; };
+	virtual const string& getNameWithTopic() const { return name; }
 	virtual bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
 
 	virtual User::NickMap& lockUserList() { cs.enter(); return users; };
@@ -186,7 +187,6 @@ public:
 
 	GETSET(int, supportFlags, SupportFlags);
 
-	virtual const string& getNameWithTopic() const { return name; }
 private:
 
 	struct ClientAdapter : public NmdcHubListener {

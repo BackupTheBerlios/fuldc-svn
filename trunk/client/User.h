@@ -76,6 +76,7 @@ public:
 
 	User(const CID& aCID) : cid(aCID), bytesShared(0), client(NULL), favoriteUser(NULL) { }
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL), favoriteUser(NULL) { 
+		dcdebug("cs size=%d", sizeof(RWLock));
 		string::size_type pos = aNick.find("[");
 		if( pos != string::npos ) {
 			string::size_type rpos = aNick.rfind("]");

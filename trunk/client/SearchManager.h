@@ -54,14 +54,14 @@ public:
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
 		const string& aHubIpPort, const string& aIp) :
-	file(aFile), hubName(isTTH(aHubName) ? Util::emptyString : aHubName), hubIpPort(aHubIpPort), user(aUser), 
+	file(aFile), hubName(aUser->getClientName()), hubIpPort(aHubIpPort), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 
 		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), ref(1) { }
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
 		const string& aHubIpPort, TTHValue* aTTH) :
-	file(aFile), hubName(aHubName), hubIpPort(aHubIpPort), user(aUser), 
+	file(aFile), hubName(aUser->getClientName()), hubIpPort(aHubIpPort), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
 		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), ref(1) { }
 

@@ -815,7 +815,7 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 	}
 	
 	TCHAR *buf = new TCHAR[ws->url.length() + strSearchString.length()];
-	_tcprintf(buf, ws->url.c_str(), strSearchString.c_str());
+	_stprintf(buf, ws->url.c_str(), strSearchString.c_str());
 
 	DWORD escapedSize = 2048;
 	TCHAR* escapedBuf = new TCHAR[escapedSize];
