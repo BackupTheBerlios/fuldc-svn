@@ -47,40 +47,36 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="General">
+			<param name="Name" value="DC++">
 			<param name="Local" value="settings_general.html">
 			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Downloads">
-			<param name="Local" value="settings_downloads.html">
-			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Download to">
-				<param name="Local" value="settings_favoritedirs.html">
+				<param name="Name" value="Downloads">
+				<param name="Local" value="settings_downloads.html">
 				</OBJECT>
-		</UL>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Sharing">
-			<param name="Local" value="settings_sharing.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Appearance">
-			<param name="Local" value="settings_appearance.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Logs and Sound">
-			<param name="Local" value="settings_logs_and_sound.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Advanced">
-			<param name="Local" value="settings_advanced.html">
-			</OBJECT>
-		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="User Commands">
-				<param name="Local" value="settings_usercommands.html">
+				<param name="Name" value="Sharing">
+				<param name="Local" value="settings_sharing.html">
 				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Appearance">
+				<param name="Local" value="settings_appearance.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Logs and Sound">
+				<param name="Local" value="settings_logs_and_sound.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Advanced">
+				<param name="Local" value="settings_advanced.html">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="User Commands">
+					<param name="Local" value="settings_usercommands.html">
+					</OBJECT>
+			</UL>
 		</UL>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">

@@ -315,7 +315,7 @@ void HubFrame::onEnter() {
 						PrivateFrame::openWindow(ui->user);
 				}
 			}else if(Util::stricmp(cmd.c_str(), _T("topic")) == 0) {
-				addLine(Text::toT(client->getNameWithTopic()));
+				addLine(_T("*** ") + Text::toT(client->getNameWithTopic()));
 			}else if(Util::stricmp(cmd.c_str(), _T("ctopic")) == 0) {
 				openLinksInTopic();
 			} else if(Util::stricmp(cmd.c_str(), _T("popups")) == 0) {
@@ -343,8 +343,6 @@ void HubFrame::onEnter() {
 				}
 			}else if(Util::stricmp(cmd.c_str(), _T("lastlog")) == 0) {
 				TextFrame::openWindow(ctrlClient.LastLog());
-			}else if(Util::stricmp(cmd.c_str(), _T("df")) == 0) {
-				client->hubMessage(Text::fromT(WinUtil::DiskSpaceInfo()));
 			}else if(Util::stricmp(cmd.c_str(), _T("me")) == 0) {
 				client->hubMessage(Text::fromT(s));
 			} else if(Util::stricmp(cmd.c_str(), _T("dns")) == 0) {

@@ -302,7 +302,7 @@ void PrivateFrame::onEnter()
 			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
-			} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
+			} else if(Util::stricmp(s.c_str(), _T("showlog")) == 0) {
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + user->getNick() + ".log")));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /mute, /unmute, /pop on|off"));

@@ -538,7 +538,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		cmd = cmd.substr(1);
 	}
 
-	if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+	if(Util::stricmp(cmd.c_str(), _T("showlog")) == 0) {
 		if(Util::stricmp(param.c_str(), _T("system")) == 0) {
 			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "system.log")));
 		} else if(Util::stricmp(param.c_str(), _T("downloads")) == 0) {
@@ -642,6 +642,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		WinUtil::SearchSite(WebShortcuts::getInstance()->getShortcutByKey(cmd), param);
 	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
 		HashManager::getInstance()->rebuild();
+	}else if(Util::stricmp(cmd.c_str(), _T("df")) == 0) {
+		message = WinUtil::DiskSpaceInfo();
 	} else {
 		return false;
 	}

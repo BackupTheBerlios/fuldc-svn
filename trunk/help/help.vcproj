@@ -40,8 +40,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling Help File"
-						CommandLine="compile.cmd
-"
+						CommandLine="compile.cmd"
 						AdditionalDependencies="*.html;index.hhk;toc.hhc;..\windows\resource.h"
 						Outputs="$(SolutionDir)app\DCPlusPlus.chm"/>
 				</FileConfiguration>

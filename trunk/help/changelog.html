@@ -8,18 +8,65 @@
   </style>
 </head><body><h1>DC++ Changelog</h1>
 See the version history of DC++ below.
+<h2>0.666 <span style="color: gray;">(2004-11-03)</span></h2>
+<ul>
+  <li>[bug 173] Fixed copy nick to clipboard (thanks trem)</li>
+  <li>Removed some old code (thanks garg)</li>
+  <li>Added tth to log codes (thanks garg)</li>
+  <li>Added # of locally filtered results to search frame (thanks garg)</li>
+  <li>Fixed a crash in the upnp code</li>
+  <li>Fixed wide formatting of time (thanks garg)</li>
+  <li>Added local filtering of searches with "-" in front of the search term (thanks cologic) [bug 166]</li>
+  <li>Fixed a missing hubframe stats bug (thanks trem)</li>
+  <li>TTH's are now correctly searched for in search spy (thanks trem) [bug 87]</li>
+  <li>Fixed an issue with utf8 user commands (thanks trem)</li>
+  <li>Moved to a less intrusive build procedure where stlport and wtl are local to the DC++ build (see compile.txt)</li>
+  <li>Added /log to show log for current hub / user (thanks garg)</li>
+  <li>More internationalization (thanks garg)</li>
+  <li>Updated some template code (thanks farcry)</li>
+  <li>Extended log command (thanks ullner)</li>
+  <li>Fixed issue with utf-8 nicks during login to some hubs (thanks garg) [bug 212]</li>
+  <li>Fixed issue with utf-8 time formatting for certain languages in certain locales</li>
+  <li>Removed search optimisation obsoleted by tth's and bloom filters (those of you with a large number of files in your share, post on the forum if you notice any big increase in CPU usage)</li>
+  <li>Added option not to download files already in share (by TTH) (thanks TPO) [bug 69]</li>
+  <li>Help file work (garg, ullner)</li>
+  <li>Added petabytes (PiB) (thanks garg)</li>
+  <li>Clicking on active tab will deactivate it (thanks garg)</li>
+  <li>Fixed an issue with loading invalid virtual names when upgrading (thanks garg) [bug 227]</li>
+  <li>Fixed another issue with user commands (thanks garg)</li>
+  <li>Updated to WTL 7.5.4291</li>
+  <li>Hopefully fixed a few issues with w9x and Unicode [bug 183]</li>
+  <li>Fixed common control initialization</li>
+  <li>Unix makefile now generates a shared lib (thanks jeremy huddleston)</li>
+  <li>Slight memory save for hash database</li>
+  <li>Added favorite hub removal confirmation option (thanks ullner)</li>
+  <li>Fixed broken redirect (thanks garg) [bug 5]</li>
+  <li>Added spy frame column saving (thanks garg)</li>
+  <li>ADL Search autoqueue saved now (thanks garg)</li>
+  <li>Window minimization issue fix (thanks garg)</li>
+  <li>Fixed some issues with downloading &gt;4GiB files</li>
+  <li>ADL Search goto directory fixed (thanks garg)</li>
+  <li>Some fixes for compiling on osx (thanks jonathan jansson)</li>
+  <li>Removed Makedefs in favour of a python script</li>
+  <li>FastAlloc disabled in debug builds</li>
+  <li>Fixed a crash with offline users and user commands (thanks naga) [bug 266]</li>
+  <li>Fixed a case insensitivity issue (thanks farcry)</li>
+  <li>Added favorite download directories (thanks naga)</li>
+  <li>Fixed MyINFO spam when hashing</li>
+</ul>
+
 <h2>0.4034 <span style="color: gray;">(2004-10-03)</span></h2>
 <ul>
   <li>Help file additions (thanks naga &amp; ullner)</li>
-  <li>[bug 170] Fixed a few issues with files not being hashed correctly (thanks garg)</li>
+  <li>Fixed a few issues with files not being hashed correctly (thanks garg) [bug 170]</li>
   <li>More ADC fixes (thanks sed)</li>
   <li>Fixed some ADLSearch stuff (thanks garg)</li>
   <li>Added item count to finished frames (thanks garg)</li>
   <li>Fixed user commands encoding (thanks garg)</li>
   <li>Added last search time to search spy (thanks ullner)</li>
-  <li>[bug 3] Fixed queue size growing on queue item move</li>
+  <li>Fixed queue size growing on queue item move [bug 3]</li>
   <li>Fixed missing file list on 0 byte share</li>
-  <li>[bug 185] Fixed missing search results (thanks garg)</li>
+  <li>Fixed missing search results (thanks garg) [bug 185]</li>
 </ul>
 
 <h2>0.4033 <span style="color: gray;">(2004-09-27)</span></h2>
