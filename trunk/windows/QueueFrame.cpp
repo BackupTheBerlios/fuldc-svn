@@ -83,7 +83,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		ctrlQueue.insertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
-	ctrlQueue.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlQueue.setColumnOrderArray(COLUMN_LAST, columnIndexes);
 	ctrlQueue.setSortColumn(COLUMN_PATH);
 	ctrlQueue.setVisible(SETTING(QUEUEFRAME_VISIBLE));
 	

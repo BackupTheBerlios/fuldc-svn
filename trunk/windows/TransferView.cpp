@@ -36,6 +36,7 @@ ResourceManager::TIME_LEFT, ResourceManager::TOTAL_TIME_LEFT, ResourceManager::S
 ResourceManager::IP_BARE, ResourceManager::RATIO};
 
 TransferView::~TransferView() {
+	delete[] headerBuf;
 	arrows.Destroy();
 }
 
@@ -59,7 +60,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		ctrlTransfers.insertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 
-	ctrlTransfers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlTransfers.setColumnOrderArray(COLUMN_LAST, columnIndexes);
 	ctrlTransfers.setVisible(SETTING(MAINFRAME_VISIBLE));
 
 	ctrlTransfers.SetBkColor(WinUtil::bgColor);
@@ -126,11 +127,14 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 
 	// Get the bounding rectangle of the client area. 
 	ctrlTransfers.GetWindowRect(&rc);
-	//ctrlTransfers.ScreenToClient(&pt); 
 	ctrlTransfers.GetHeader().GetWindowRect(&rc2);
+	if(PtInRect(&rc2, pt)){
+		ctrlTransfers.showMenu(pt);
+		return TRUE;
+	}
+
 	if (PtInRect(&rc, pt) && ctrlTransfers.GetSelectedCount() > 0) 
 	{ 
-		ctrlTransfers.ClientToScreen(&pt);
 		int i = -1;
 		ItemInfo* itemI;
 		bool bCustomMenu = false;
@@ -149,8 +153,6 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 			cleanMenu(transferMenu);
 		}
 		return TRUE; 
-	} else if(PtInRect(&rc, pt)){
-		ctrlTransfers.showMenu(pt);
 	}
 	return FALSE; 
 }
@@ -176,8 +178,10 @@ void TransferView::runUserCommand(UserCommand& uc) {
 LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CSTRING(CONNECTING_FORCED));
-		ctrlTransfers.getItemData(i)->user->connect();
+		ItemInfo* ii = ctrlTransfers.getItemData(i);
+		ii->columns[COLUMN_STATUS] = CSTRING(CONNECTING_FORCED);
+		ii->user->connect();
+		ctrlTransfers.updateItem(i);
 	}
 	return 0;
 }
@@ -204,7 +208,12 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		// Let's draw a box if needed...
-		if(cd->iSubItem == COLUMN_STATUS) {
+		LVCOLUMN lvc;
+		lvc.mask = LVCF_TEXT;
+		lvc.pszText = headerBuf;
+		lvc.cchTextMax = 128;
+		ctrlTransfers.GetColumn(cd->iSubItem, &lvc);
+		if(Util::stricmp(headerBuf, CSTRING_I(columnNames[COLUMN_STATUS])) == 0) {
 			ItemInfo* ii = (ItemInfo*)cd->nmcd.lItemlParam;
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
@@ -215,10 +224,10 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
 				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
 
-				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
+				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, cd->iSubItem, buf, 255);
 				buf[255] = 0;
 
-				ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
+				ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, cd->iSubItem, LVIR_BOUNDS, rc);
 				CRect rc2 = rc;
 				rc2.left += 6;
 				
@@ -228,8 +237,8 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				::Rectangle(cd->nmcd.hdc, rc.left, rc.top - 1, rc.right, rc.bottom);			
 				rc.DeflateRect(1, 0, 1, 1);
 
-				LONG left = rc.left;
-				int64_t w = rc.Width();
+				int left = rc.left;
+				int w = rc.Width();
 				// draw start part
 				if(ii->size == 0)
 					ii->size = 1;
@@ -269,10 +278,10 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldbr));
 
-				LONG right = rc2.right;
+				int right = rc2.right;
 				left = rc2.left;
 				rc2.right = rc.right;
-				LONG top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
+				int top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
 				SetTextColor(cd->nmcd.hdc, RGB(255, 255, 255));
 				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, strlen(buf), NULL);
 				//::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);

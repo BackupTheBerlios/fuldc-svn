@@ -213,7 +213,7 @@ public:
 	int getSortPos(T* a) {
 		int high = GetItemCount();
 		if((sortColumn == -1) || (high == 0))
-			return high;
+			return 0;
 
 		high--;
 
@@ -300,16 +300,25 @@ public:
 	void saveHeaderOrder(SettingsManager::StrSetting order, SettingsManager::StrSetting widths, 
 		SettingsManager::StrSetting visible) throw() {
 		string tmp, tmp2, tmp3;
+		char *buf = new char[128];
 		int size = GetHeader().GetItemCount();
-		int *columnArray = new int[size];
-		GetColumnOrderArray(size, columnArray);
+		for(int i = 0; i < size; ++i){
+			LVCOLUMN lvc;
+			lvc.mask = LVCF_TEXT | LVCF_ORDER;
+			lvc.cchTextMax = 128;
+			lvc.pszText = buf;
+			GetColumn(i, &lvc);
+			for(ColumnIter j = columnList.begin(); j != columnList.end(); ++j){
+				if(Util::stricmp(buf, (*j)->name.c_str()) == 0)
+					(*j)->pos = lvc.iOrder;
+			}
+		}
 
 		int j = 0, k = 0;
 		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++k){
 			ColumnInfo* ci = *i;
 
 			if(ci->visible){
-				ci->pos = columnArray[j++];
 				ci->width = GetColumnWidth(ci->pos);
 				tmp3 += "1,";
 			} else {
@@ -331,7 +340,6 @@ public:
 		SettingsManager::getInstance()->set(widths, tmp2);
 		SettingsManager::getInstance()->set(visible, tmp3);
 
-		delete[] columnArray;
 	}
 
 	void setVisible(string vis){
@@ -352,12 +360,13 @@ public:
 		}
 	}
 
-	BOOL setColumnOrderArray(int iCount, LPINT piArray ) {
+	void setColumnOrderArray(int iCount, LPINT piArray ) {
+		LVCOLUMN lvc;
+		lvc.mask = LVCF_ORDER;
 		for(int i = 0; i < iCount; ++i) {
-			columnList[i]->pos = *(piArray + i);
+			lvc.iOrder = columnList[i]->pos = piArray[i];
+			SetColumn(i, &lvc) != 0;
 		}
-
-		return SetColumnOrderArray(iCount, piArray);
 	}
 
 

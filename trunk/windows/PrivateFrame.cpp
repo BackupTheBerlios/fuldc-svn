@@ -121,7 +121,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 					else
 						MessageBeep(MB_OK);
 				}
-				if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM)) {
+				if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
 					PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
 				}
 				break;
@@ -144,7 +144,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 					MessageBeep(MB_OK);
 			}
 
-			if (BOOLSETTING(POPUP_ON_PM)) {
+			if (BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
 				PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
 			}
 		}
@@ -155,7 +155,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 			else
 				MessageBeep(MB_OK);
 		}
-		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM)) {
+		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
 			PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
 		}
 		i->second->addLine(aMessage);
@@ -328,6 +328,11 @@ void PrivateFrame::onEnter()
 			} else if(Util::stricmp(s.c_str(), "unmute") == 0){
 				muted = false;
 				addClientLine(STRING(UNMUTED));
+			} else if(Util::stricmp(s.c_str(), "pop") == 0) {
+				if( Util::stricmp(param, "on") == 0)
+					doPopups = true;
+				else if( Util::stricmp(param, "off") == 0)
+					doPopups = false;
 			} else {
 				if(user->isOnline()) {
 					sendMessage(s);

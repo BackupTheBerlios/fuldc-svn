@@ -167,9 +167,10 @@ public:
 	User::Ptr& getUser() { return user; };
 
 	bool muted;
+	
 private:
 	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
-		created(false), closed(false), muted(false),
+		created(false), closed(false), muted(false), doPopups(true),
 		ctrlMessageContainer("edit", this, PM_MESSAGE_MAP),
 		ctrlClientContainer("edit", this, PM_MESSAGE_MAP) {
 	}
@@ -177,6 +178,7 @@ private:
 	~PrivateFrame() {
 	}
 	
+	bool doPopups;
 	bool created;
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;

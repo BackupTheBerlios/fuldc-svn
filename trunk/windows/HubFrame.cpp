@@ -411,7 +411,7 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 		//dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
 		return ctrlUsers.getSortPos(ui);
 	}
-	return ctrlUsers.findItem(aUser->getNick());
+	return ctrlUsers.findItem(i->second);
 }
 
 void HubFrame::addAsFavorite() {
@@ -455,20 +455,27 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 
 bool HubFrame::updateUser(const User::Ptr& u) {
-	int i = findUser(u);
-	
-	if(i != -1){
-		ctrlUsers.getItemData(i)->update();
-		ctrlUsers.updateItem(i);
-		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-		if(u->isSet(User::OP))
-			ctrlUsers.resort();
-		return false;
+	int i = -1;
+	string nick;
+	if(stripIsp)
+		nick = u->getShortNick();
+	else
+		nick = u->getNick();
+
+	while( ( i = ctrlUsers.findItem(nick, i) ) != -1 ) {
+		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
+		if( Util::stricmp(u->getNick(), ui->user->getNick()) == 0) {
+			ctrlUsers.getItemData(i)->update();
+			ctrlUsers.updateItem(i);
+			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
+			return false;
+		}
 	}
 
 	UserMap::iterator j = usermap.begin();
 	for(; j != usermap.end(); ++j) {
 		if(Util::stricmp(u->getNick(), j->second->user->getNick()) == 0) {
+			j->second->update();
 			return false;
 		}
 
@@ -495,8 +502,6 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPDATE_USERS) {
-		bool userAdded = false;
-		bool userUpdated = false;
 		ctrlUsers.SetRedraw(FALSE);
 		{
 			Lock l(updateCS);

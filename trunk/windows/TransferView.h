@@ -37,7 +37,9 @@ class TransferView : public CWindowImpl<TransferView>, private DownloadManagerLi
 	public UserInfoBaseHandler<TransferView>, public UCHandler<TransferView>
 {
 public:
-	TransferView() { };
+	TransferView() {
+		headerBuf = new char[128];
+	};
 	~TransferView(void);
 
 	typedef UserInfoBaseHandler<TransferView> uibBase;
@@ -104,6 +106,8 @@ public:
 private:
 	/** Parameter map for user commands */
 	StringMap ucParams;
+	char * headerBuf;
+
 	class ItemInfo;
 public:
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };

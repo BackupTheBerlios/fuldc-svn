@@ -277,7 +277,7 @@ void SearchFrame::onEnter() {
 				return;
 			}
 		} else {
-			StringTokenizer t(Util::toLower(f));
+			StringTokenizer t(Util::toLower(f), ' ');
 			filterList = t.getTokens();
 			useRegExp = false;
 		}
