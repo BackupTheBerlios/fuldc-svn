@@ -28,78 +28,74 @@ PropPage::TextItem Advanced2Page::texts[] = {
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
 	{ IDC_SETTINGS_LOG_DIR, ResourceManager::DIRECTORY},
 	{ IDC_BROWSE_LOG, ResourceManager::BROWSE_ACCEL },
-	{ IDC_LOG_MAIN_CHAT, ResourceManager::SETTINGS_LOG_MAIN_CHAT },
-	{ IDC_LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
-	{ IDC_LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS }, 
-	{ IDC_LOG_UPLOADS, ResourceManager::SETTINGS_LOG_UPLOADS },
-	{ IDC_LOG_SYSTEM, ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
-	{ IDC_SETTINGS_FORMAT1, ResourceManager::SETTINGS_FORMAT },
-	{ IDC_SETTINGS_FORMAT2, ResourceManager::SETTINGS_FORMAT },
-	{ IDC_SETTINGS_FORMAT3, ResourceManager::SETTINGS_FORMAT },
-	{ IDC_SETTINGS_FORMAT4, ResourceManager::SETTINGS_FORMAT },
-	{ IDC_LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
-	{ IDC_SETTINGS_FILE_NAME1, ResourceManager::SETTINGS_FILE_NAME },
-	{ IDC_SETTINGS_FILE_NAME2, ResourceManager::SETTINGS_FILE_NAME },
-	{ IDC_SETTINGS_FILE_NAME3, ResourceManager::SETTINGS_FILE_NAME },
-	{ IDC_SETTINGS_FILE_NAME4, ResourceManager::SETTINGS_FILE_NAME },
+	{ IDC_SETTINGS_FORMAT, ResourceManager::SETTINGS_FORMAT },
+	{ IDC_SETTINGS_FILE_NAME, ResourceManager::SETTINGS_FILE_NAME },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 PropPage::Item Advanced2Page::items[] = {
-	{ IDC_LOG_MAIN_CHAT, SettingsManager::LOG_MAIN_CHAT, PropPage::T_BOOL },
-	{ IDC_LOG_PRIVATE_CHAT, SettingsManager::LOG_PRIVATE_CHAT, PropPage::T_BOOL },
-	{ IDC_LOG_DOWNLOADS, SettingsManager::LOG_DOWNLOADS, PropPage::T_BOOL },
-	{ IDC_LOG_UPLOADS, SettingsManager::LOG_UPLOADS, PropPage::T_BOOL },
 	{ IDC_LOG_DIRECTORY, SettingsManager::LOG_DIRECTORY, PropPage::T_STR },
-	{ IDC_LOG_SYSTEM, SettingsManager::LOG_SYSTEM, PropPage::T_BOOL },
-	{ IDC_POST_DOWNLOAD, SettingsManager::LOG_FORMAT_POST_DOWNLOAD, PropPage::T_STR },
-	{ IDC_POST_UPLOAD, SettingsManager::LOG_FORMAT_POST_UPLOAD, PropPage::T_STR },
-	{ IDC_MAIN_CHAT, SettingsManager::LOG_FORMAT_MAIN_CHAT, PropPage::T_STR },
-	{ IDC_PRIVATE_CHAT, SettingsManager::LOG_FORMAT_PRIVATE_CHAT, PropPage::T_STR },
-	{ IDC_LOG_STATUS_MESSAGES, SettingsManager::LOG_STATUS_MESSAGES, PropPage::T_BOOL },
-	{ IDC_MAIN_CHAT_FILE, SettingsManager::LOG_FILE_MAIN_CHAT, PropPage::T_STR },
-	{ IDC_PRIVATE_CHAT_FILE, SettingsManager::LOG_FILE_PRIVATE_CHAT, PropPage::T_STR },
-	{ IDC_UPLOAD_FILE, SettingsManager::LOG_FILE_UPLOAD, PropPage::T_STR },
-	{ IDC_DOWNLOAD_FILE, SettingsManager::LOG_FILE_DOWNLOAD, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
+};
+
+PropPage::ListItem Advanced2Page::listItems[] = {
+	{ SettingsManager::LOG_MAIN_CHAT,			ResourceManager::SETTINGS_LOG_MAIN_CHAT },
+	{ SettingsManager::LOG_PRIVATE_CHAT,		ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
+	{ SettingsManager::LOG_DOWNLOADS,			ResourceManager::SETTINGS_LOG_DOWNLOADS }, 
+	{ SettingsManager::LOG_UPLOADS,				ResourceManager::SETTINGS_LOG_UPLOADS },
+	{ SettingsManager::LOG_SYSTEM,				ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
+	{ SettingsManager::LOG_STATUS_MESSAGES,		ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
+	{ 0,										ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 LRESULT Advanced2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items);
+	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_LOG_OPTIONS));
 
-	updateEdits();
+	int i = SettingsManager::LOG_FILE_MAIN_CHAT;
+
+	for(int j = 0; j < 6; ++j) {
+		options.push_back(Text::toT(SettingsManager::getInstance()->get(static_cast<SettingsManager::StrSetting>(i++), true)));
+		options.push_back(Text::toT(SettingsManager::getInstance()->get(static_cast<SettingsManager::StrSetting>(i++), true)));
+	}
+
 	// Do specialized reading here
 	return TRUE;
 }
 
-void Advanced2Page::updateEdits() {
-	bool btnState = (IsDlgButtonChecked(IDC_LOG_MAIN_CHAT) != 0);
-	::EnableWindow(GetDlgItem(IDC_MAIN_CHAT), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT1), btnState);
-	::EnableWindow(GetDlgItem(IDC_MAIN_CHAT_FILE), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME1), btnState);
-	btnState = (IsDlgButtonChecked(IDC_LOG_PRIVATE_CHAT) != 0);
-	::EnableWindow(GetDlgItem(IDC_PRIVATE_CHAT), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT2), btnState);
-	::EnableWindow(GetDlgItem(IDC_PRIVATE_CHAT_FILE), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME2), btnState);
-	btnState = (IsDlgButtonChecked(IDC_LOG_DOWNLOADS) != 0);
-	::EnableWindow(GetDlgItem(IDC_POST_DOWNLOAD), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT3), btnState);
-	::EnableWindow(GetDlgItem(IDC_DOWNLOAD_FILE), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME4), btnState);
-	btnState = (IsDlgButtonChecked(IDC_LOG_UPLOADS) != 0);
-	::EnableWindow(GetDlgItem(IDC_POST_UPLOAD), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT4), btnState);
-	::EnableWindow(GetDlgItem(IDC_UPLOAD_FILE), btnState);
-	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME3), btnState);
+LRESULT Advanced2Page::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
+	logOptions.Attach(GetDlgItem(IDC_LOG_OPTIONS));
+
+	TCHAR buf[512];
+
+	if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
+		options[oldSelection*2] = buf;
+	if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
+		options[oldSelection*2+1] = buf;
+	
+	int sel = logOptions.GetSelectedIndex();
+	
+	if(sel >= 0) {
+		BOOL checkState = logOptions.GetCheckState(sel) == BST_CHECKED ? TRUE : FALSE;
+		
+		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), checkState);
+		::EnableWindow(GetDlgItem(IDC_LOG_FILE), checkState);
+		
+		SetDlgItemText(IDC_LOG_FILE, options[sel*2].c_str());
+		SetDlgItemText(IDC_LOG_FORMAT, options[sel*2+1].c_str());
+
+		//save the old selection so we know where to save the values
+		oldSelection = sel;
+	}
+	
+	logOptions.Detach();
+	return 0;
 }
 
 void Advanced2Page::write()
 {
-	PropPage::write((HWND)*this, items);
+	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_LOG_OPTIONS));
 
 	const string& s = SETTING(LOG_DIRECTORY);
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
@@ -110,34 +106,26 @@ void Advanced2Page::write()
 	// settings->set(XX, YY);
 	// Since the dir might change while running we don't call
 	// File::ensureDirectory() here
-	const string& t = SETTING(LOG_FILE_MAIN_CHAT);
-	if(Util::getFileExt(Util::getFileName(t)) == Util::emptyString) {
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_MAIN_CHAT, t + ".log");
-	} else {
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_MAIN_CHAT, t);
-	}
-	string tmp = t;
-	string::size_type i = tmp.rfind('.');
-	tmp.insert(i, "_status");
-	SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_STATUS, tmp);
 	
-	const string& u = SETTING(LOG_FILE_PRIVATE_CHAT);
-	if(Util::getFileExt(Util::getFileName(u)) == Util::emptyString)
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_PRIVATE_CHAT, u + ".log");
-	else
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_PRIVATE_CHAT, u);
+	int i = SettingsManager::LOG_FILE_MAIN_CHAT;
 
-	const string& w = SETTING(LOG_FILE_UPLOAD);
-	if(Util::getFileExt(Util::getFileName(w)) == Util::emptyString)
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_UPLOAD, w + ".log");
-	else
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_UPLOAD, w);
+	//make sure we save the last edit too, the user
+	//might not have changed the selection
+	TCHAR buf[512];
 
-	const string& x = SETTING(LOG_FILE_DOWNLOAD);
-	if(Util::getFileExt(Util::getFileName(x)) == Util::emptyString)
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_DOWNLOAD, x + ".log");
-	else
-		SettingsManager::getInstance()->set(SettingsManager::LOG_FILE_DOWNLOAD, x);
+	if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
+		options[oldSelection*2] = buf;
+	if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
+		options[oldSelection*2+1] = buf;
+
+	for(int j = 0; j < 6; ++j) {
+		string tmp = Text::fromT(options[j*2]);
+		if(Util::stricmp(Util::getFileExt(tmp), ".log") != 0)
+			tmp += ".log";
+		
+		SettingsManager::getInstance()->set(static_cast<SettingsManager::StrSetting>(i++), tmp);
+		SettingsManager::getInstance()->set(static_cast<SettingsManager::StrSetting>(i++), Text::fromT(options[j*2+1]));
+	}
 }
 
 LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

@@ -25,6 +25,7 @@
 
 #include <atlcrack.h>
 #include "PropPage.h"
+#include "ExListViewCtrl.h"
 
 class Advanced2Page : public CPropertyPage<IDD_ADVANCED2PAGE>, public PropPage
 {
@@ -40,10 +41,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_BROWSE_LOG, onClickedBrowseDir)
-		COMMAND_ID_HANDLER(IDC_LOG_MAIN_CHAT, onUpdateEdits)
-		COMMAND_ID_HANDLER(IDC_LOG_PRIVATE_CHAT, onUpdateEdits)
-		COMMAND_ID_HANDLER(IDC_LOG_DOWNLOADS, onUpdateEdits)
-		COMMAND_ID_HANDLER(IDC_LOG_UPLOADS, onUpdateEdits)
+		NOTIFY_HANDLER(IDC_LOG_OPTIONS, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
@@ -51,13 +49,8 @@ public:
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-	LRESULT onUpdateEdits(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		updateEdits();
-		return 0;
-	}
-	
-	void updateEdits();
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
@@ -65,6 +58,16 @@ public:
 protected:
 	static Item items[];
 	static TextItem texts[];
+	static ListItem listItems[];
+
+	ExListViewCtrl logOptions;
+
+	int oldSelection;
+
+	//store all log formats here so we can discard them
+	//if the user cancels the dialog.
+	//even numbers are file names and odd numbers are log format
+	TStringList options;
 };
 
 #endif //ADVANCED2PAGE_H

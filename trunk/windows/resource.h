@@ -151,6 +151,7 @@
 #define IDC_UDP_PORT                    290
 #define IDD_APPEARANCE2PAGE             291
 #define IDC_SETTINGS_FILE_NAME1         292
+#define IDC_SETTINGS_FILE_NAME          292
 #define IDC_SETTINGS_FILE_NAME2         293
 #define IDC_SETTINGS_FILE_NAME3         294
 #define IDC_SETTINGS_FILE_NAME4         295
@@ -158,6 +159,7 @@
 #define IDC_PRIVATE_CHAT_FILE           297
 #define IDC_ONLYTTH                     298
 #define IDC_MAIN_CHAT_FILE              299
+#define IDC_LOG_FILE                    299
 #define IDC_LOG_STATUS_MESSAGES         300
 #define IDC_DOWNLOAD_FILE               301
 #define IDD_ADVANCED3PAGE               302
@@ -278,6 +280,7 @@
 #define IDC_POST_UPLOAD                 1080
 #define IDC_FIND                        1081
 #define IDC_MAIN_CHAT                   1081
+#define IDC_LOG_FORMAT                  1081
 #define IDC_NEXT                        1082
 #define IDC_PRIVATE_CHAT                1083
 #define IDC_FINISHED                    1084
@@ -455,6 +458,7 @@
 #define IDC_TAB_SIZE                    1254
 #define IDC_SETTINGS_FORMAT1            1255
 #define IDC_MAX_SOURCES                 1255
+#define IDC_SETTINGS_FORMAT             1255
 #define IDC_SETTINGS_FORMAT2            1256
 #define IDC_SETTINGS_FORMAT3            1257
 #define IDC_SETTINGS_FORMAT4            1258
@@ -516,6 +520,7 @@
 #define IDC_DUPES                       1304
 #define IDC_BUTTON1                     1305
 #define IDC_DUPE_COLOR                  1305
+#define IDC_LOG_OPTIONS                 1308
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -563,7 +568,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1306
+#define _APS_NEXT_CONTROL_VALUE         1309
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif
