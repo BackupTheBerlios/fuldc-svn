@@ -27,12 +27,12 @@ public:
   // This function implements the UN*X wildcards and returns:
   // 0 - if *wildcard does not match *test
   // 1 - if *wildcard matches *test
-  static int wildcardfit (const char *wildcard, const char *test);
-  static int wildcardfit (const wchar_t *wildcard, const wchar_t *test);
+  static int wildcardfit (const char *wildcard, const char *test, bool useSet = true);
+  static int wildcardfit (const wchar_t *wildcard, const wchar_t *test, bool useSet = true);
 
 	// Checks whether a text matches a pattern
-	static bool patternMatch(const string& text, const string& pattern);
-	static bool patternMatch (const wstring& text, const wstring& pattern);
+	static bool patternMatch(const string& text, const string& pattern, bool useSet = true);
+	static bool patternMatch (const wstring& text, const wstring& pattern, bool useSet = true);
 
 	// Checks whether a text matches any pattern in a patternlist
 	static bool patternMatch(const string& text, const string& patternlist, char delimiter);

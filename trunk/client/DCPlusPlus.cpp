@@ -35,6 +35,7 @@
 #include "ADLSearch.h"
 #include "HighlightManager.h"
 #include "WebShortcuts.h"
+#include "IgnoreManager.h"
 
 //ugly, but i have no intention on moving the code to *nix so it works =)
 #include "../windows/PopupManager.h"
@@ -89,6 +90,8 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	ADLSearchManager::newInstance();
 	PopupManager::newInstance();
 	WebShortcuts::newInstance();
+	IgnoreManager::newInstance();
+
 	
 	SettingsManager::getInstance()->load();
 
@@ -121,6 +124,7 @@ void shutdown() {
 	TimerManager::getInstance()->removeListeners();
 	SettingsManager::getInstance()->save();
 	
+	IgnoreManager::deleteInstance();
 	WebShortcuts::deleteInstance();
 	PopupManager::deleteInstance();
 	ADLSearchManager::deleteInstance();

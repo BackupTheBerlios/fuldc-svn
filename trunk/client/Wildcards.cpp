@@ -14,31 +14,33 @@
 
 #include "wildcards.h"
 
-int Wildcard::wildcardfit(const char *wildcard, const char *test) {
+int Wildcard::wildcardfit(const char *wildcard, const char *test, bool useSet) {
   int fit = 1;
   
   for (; ('\000' != *wildcard) && (1 == fit) && ('\000' != *test); wildcard++)
     {
       switch (*wildcard)
         {
-        case '[':
-	  wildcard++; // leave out the opening square bracket 
-          fit = set (&wildcard, &test);
-	  // we don't need to decrement the wildcard as in case
-	  // of asterisk because the closing ] is still there
-          break;
         case '?':
-          test++;
-          break;
+			test++;
+			break;
         case '*':
-          fit = asterisk (&wildcard, &test);
-	  // the asterisk was skipped by asterisk() but the loop will
-	  // increment by itself. So we have to decrement
-	  wildcard--;
-          break;
+			fit = asterisk (&wildcard, &test);
+			// the asterisk was skipped by asterisk() but the loop will
+			// increment by itself. So we have to decrement
+			wildcard--;
+			break;
+		case '[':
+			if(useSet) {
+				wildcard++; // leave out the opening square bracket 
+				fit = set (&wildcard, &test);
+				// we don't need to decrement the wildcard as in case
+				// of asterisk because the closing ] is still there
+				break;
+			} //if we're not using the set option, fall through
         default:
-          fit = (int) (*wildcard == *test);
-          test++;
+			fit = (int) (*wildcard == *test);
+			test++;
         }
     }
   while ((*wildcard == '*') && (1 == fit)) 
@@ -48,19 +50,13 @@ int Wildcard::wildcardfit(const char *wildcard, const char *test) {
   return (int) ((1 == fit) && ('\0' == *test) && ('\0' == *wildcard));
 }
 
-int Wildcard::wildcardfit(const wchar_t *wildcard, const wchar_t *test) {
+int Wildcard::wildcardfit(const wchar_t *wildcard, const wchar_t *test, bool useSet) {
 	int fit = 1;
 
 	for (; (L'\000' != *wildcard) && (1 == fit) && (L'\000' != *test); wildcard++)
 	{
 		switch (*wildcard)
 		{
-		case L'[':
-			wildcard++; // leave out the opening square bracket
-			fit = set (&wildcard, &test);
-			// we don't need to decrement the wildcard as in case
-			// of asterisk because the closing ] is still there
-			break;
 		case L'?':
 			test++;
 			break;
@@ -70,6 +66,14 @@ int Wildcard::wildcardfit(const wchar_t *wildcard, const wchar_t *test) {
 			// increment by itself. So we have to decrement
 			wildcard--;
 			break;
+		case L'[':
+			if(useSet) {
+				wildcard++; // leave out the opening square bracket
+				fit = set (&wildcard, &test);
+				// we don't need to decrement the wildcard as in case
+				// of asterisk because the closing ] is still there
+				break;
+			}//if we're not using the set option, fall through
 		default:
 			fit = (int) (*wildcard == *test);
 			test++;
@@ -267,16 +271,16 @@ int Wildcard::asterisk (const wchar_t **wildcard, const wchar_t **test) {
 }
 
 
-bool Wildcard::patternMatch(const string& text, const string& pattern) {
+bool Wildcard::patternMatch(const string& text, const string& pattern, bool useSet) {
 	string sText = Text::toLower(text);
 	string sPattern = Text::toLower(pattern);
-	return ( wildcardfit(sPattern.c_str(), sText.c_str()) == 1 );
+	return ( wildcardfit(sPattern.c_str(), sText.c_str(), useSet) == 1 );
 }
 
-bool Wildcard::patternMatch(const wstring& text, const wstring& pattern) {
+bool Wildcard::patternMatch(const wstring& text, const wstring& pattern, bool useSet) {
 	wstring sText = Text::toLower(text);
 	wstring sPattern = Text::toLower(pattern);
-	return (wildcardfit(sPattern.c_str(), sText.c_str()) == 1 );
+	return (wildcardfit(sPattern.c_str(), sText.c_str(), useSet) == 1 );
 }
 
 bool Wildcard::patternMatch(const string& text, const string& patternlist, char delimiter) {

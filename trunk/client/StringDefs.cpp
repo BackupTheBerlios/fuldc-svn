@@ -697,6 +697,8 @@ string ResourceManager::strings[] = {
 "Ignore TTH inconsistency on downloads", 
 "Add finished downloads to finished downloads window", 
 "Add finished uploads to finished uploads window", 
+"Unignore", 
+"Ignore", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1394,4 +1396,6 @@ string ResourceManager::names[] = {
 "IgnoreTthInconsistency", 
 "AddFinishedDownloads", 
 "AddFinishedUploads", 
+"Unignore", 
+"Ignorea", 
 };

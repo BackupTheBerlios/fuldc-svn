@@ -700,5 +700,7 @@ enum Strings { // @DontAdd
 	IGNORE_TTH_INCONSISTENCY, // "Ignore TTH inconsistency on downloads"
 	ADD_FINISHED_DOWNLOADS, // "Add finished downloads to finished downloads window"
 	ADD_FINISHED_UPLOADS, // "Add finished uploads to finished uploads window"
+	UNIGNORE, // "Unignore"
+	IGNOREA, // "Ignore"
 	LAST // @DontAdd
 };

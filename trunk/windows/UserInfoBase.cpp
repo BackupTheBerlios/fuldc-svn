@@ -25,6 +25,7 @@
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
 #include "../client/User.h"
+#include "../client/IgnoreManager.h"
 
 
 void UserInfoBase::matchQueue() {
@@ -54,4 +55,11 @@ void UserInfoBase::grant() {
 }
 void UserInfoBase::removeAll() {
 	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+}
+
+void UserInfoBase::ignore() {
+	IgnoreManager::getInstance()->ignore(user->getNick());
+}
+void UserInfoBase::unignore() {
+	IgnoreManager::getInstance()->unignore(user->getNick());
 }

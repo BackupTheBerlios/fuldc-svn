@@ -34,6 +34,7 @@
 #include "../client/QueueManager.h"
 #include "../client/File.h"
 #include "../client/StringTokenizer.h"
+#include "../client/IgnoreManager.h"
 
 #include <MMSystem.h>
 
@@ -68,6 +69,9 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
 	tabMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
+	tabMenu.AppendMenu(MF_SEPARATOR);
+	tabMenu.AppendMenu(MF_STRING, IDC_IGNORE, CTSTRING(IGNOREA));
+	tabMenu.AppendMenu(MF_STRING, IDC_UNIGNORE, CTSTRING(UNIGNORE));
 
 
 	PostMessage(WM_SPEAKER, USER_UPDATED);
@@ -118,29 +122,31 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 			}
 		}
 		if(!found) {
-			p = new PrivateFrame(aUser);
-			frames[aUser] = p;
-			p->readLog();
-			p->addLine(aMessage);
-			if(Util::getAway()) {
-				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
-				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->getConnection().empty()))
-					p->sendMessage(Text::toT(Util::getAwayMessage()));
-			}
+			if(!IgnoreManager::getInstance()->isIgnored(aUser->getNick())) {
+				p = new PrivateFrame(aUser);
+				frames[aUser] = p;
+				p->readLog();
+				p->addLine(aMessage);
+				if(Util::getAway()) {
+					// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
+					if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->getConnection().empty()))
+						p->sendMessage(Text::toT(Util::getAwayMessage()));
+				}
 
-			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-				if(BOOLSETTING(CUSTOM_SOUND))
-					PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-				else
-					MessageBeep(MB_OK);
-			}
+				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
+					if(BOOLSETTING(CUSTOM_SOUND))
+						PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+					else
+						MessageBeep(MB_OK);
+				}
 
-			if(BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
-				PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
-			}
+				if(BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
+					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
+				}
 
-			if(BOOLSETTING(FLASH_WINDOW_ON_PM)){
-				p->FlashWindow();
+				if(BOOLSETTING(FLASH_WINDOW_ON_PM)){
+					p->FlashWindow();
+				}
 			}
 		}
 	} else {
@@ -414,6 +420,15 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
+	
+	if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
+		tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
+		tabMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
+	} else {
+		tabMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+		tabMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
+	}
+	
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -520,6 +535,15 @@ LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam,
 			
 			// konvertera tillbaka positionen för musen så menyn hamnar rätt
 			ctrlClient.ClientToScreen(&pt);
+
+			if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
+				tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
+				tabMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
+			} else {
+				tabMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+				tabMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
+			}
+
 			tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		}else {
 			RECT rc2;
@@ -564,6 +588,17 @@ LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())
 		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
+	return 0;
+}
+
+LRESULT PrivateFrame::onIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	IgnoreManager::getInstance()->ignore(user->getNick());
+
+	return 0;
+}
+LRESULT PrivateFrame::onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	IgnoreManager::getInstance()->unignore(user->getNick());
+
 	return 0;
 }
 

@@ -38,6 +38,8 @@ public:
 	void addFav();
 	void removeAll();
 	void showLog();
+	void ignore();
+	void unignore();
 
 	User::Ptr& getUser() { return user; }	
 	User::Ptr user;
@@ -53,6 +55,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
+		COMMAND_ID_HANDLER(IDC_IGNORE, onIgnore)
+		COMMAND_ID_HANDLER(IDC_UNIGNORE, onUnIgnore)
 	END_MSG_MAP()
 
 	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -79,6 +83,17 @@ public:
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::removeAll);
 		return 0;
 	}
+
+	LRESULT onIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::ignore);
+		return 0;
+	}
+
+	LRESULT onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::unignore);
+		return 0;
+	}
+
 	void appendUserItems(CMenu& menu) {
 		menu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
 		menu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE));
@@ -86,6 +101,11 @@ public:
 		menu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
 		menu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
 		menu.AppendMenu(MF_STRING, IDC_REMOVEALL, CTSTRING(REMOVE_FROM_ALL));
+		menu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
+		menu.AppendMenu(MF_SEPARATOR);
+		menu.AppendMenu(MF_STRING, IDC_IGNORE, CTSTRING(IGNOREA));
+		menu.AppendMenu(MF_STRING, IDC_UNIGNORE, CTSTRING(UNIGNORE));
+		menu.AppendMenu(MF_SEPARATOR);
 	}
 };
 

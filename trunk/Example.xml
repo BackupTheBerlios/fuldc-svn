@@ -696,5 +696,7 @@
 		<String Name="IgnoreTthInconsistency">Ignore TTH inconsistency on downloads</String>
 		<String Name="AddFinishedDownloads">Add finished downloads to finished downloads window</String>
 		<String Name="AddFinishedUploads">Add finished uploads to finished uploads window</String>
+		<String Name="Unignore">Unignore</String>
+		<String Name="Ignorea">Ignore</String>
 	</Strings>
 </Language>

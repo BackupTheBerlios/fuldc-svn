@@ -35,6 +35,7 @@
 #include "../client/LogManager.h"
 #include "../client/AdcCommand.h"
 #include "../client/version.h"
+#include "../client/IgnoreManager.h"
 
 HubFrame::FrameMap HubFrame::frames;
 bool HubFrame::closing = false;
@@ -122,7 +123,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	userMenu.CreatePopupMenu();
 	appendUserItems(userMenu);
-	userMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
 	userMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY));
 	userMenu.SetMenuDefaultItem(IDC_GETLIST);
 
@@ -833,11 +833,23 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 			for(int i = 0; i < items; ++i) {
 				ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
 			}
+
+			UserInfo* ui = (UserInfo*)ctrlUsers.getItemData(pos);
+			if(IgnoreManager::getInstance()->isUserIgnored(ui->user->getNick())) {
+				userMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
+				userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
+			} else {
+				userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+				userMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
+			}
+
 			ctrlUsers.SetRedraw(TRUE);
 			ctrlUsers.EnsureVisible(pos, FALSE);
 
 			ctrlClient.ClientToScreen(&pt);
 			doMenu = true; 
+
+
 		} else {
 			doMcMenu = true;
 		}
@@ -859,6 +871,23 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	}
 
 	if(doMenu) {
+		if(ctrlUsers.GetSelectedCount() == 1) {
+			int pos = ctrlUsers.GetNextItem(-1, LVNI_SELECTED);
+			if(pos != -1) {
+				UserInfo* ui = (UserInfo*)ctrlUsers.getItemData(pos);
+				if(IgnoreManager::getInstance()->isUserIgnored(ui->user->getNick())) {
+					userMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
+					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
+				} else {
+					userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
+				}
+			}
+		} else {
+			userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+			userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
+		}
+
 		tabMenuShown = false;
 		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getAddressPort()), client->getOp());
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -869,7 +898,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	if(doMcMenu) {
 		ctrlClient.ClientToScreen(&pt);
 		ctrlClient.ShowMenu(m_hWnd, pt);
-		bHandled = true;
+		bHandled = TRUE;
 		return TRUE;
 	}
 	return FALSE;

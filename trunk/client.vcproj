@@ -198,6 +198,9 @@
 				RelativePath=".\client\HubManager.cpp">
 			</File>
 			<File
+				RelativePath=".\client\IgnoreManager.cpp">
+			</File>
+			<File
 				RelativePath=".\client\LogManager.cpp">
 			</File>
 			<File
@@ -389,6 +392,9 @@
 			</File>
 			<File
 				RelativePath=".\client\HubManager.h">
+			</File>
+			<File
+				RelativePath=".\client\IgnoreManager.h">
 			</File>
 			<File
 				RelativePath=".\client\LogManager.h">
