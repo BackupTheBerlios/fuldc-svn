@@ -566,17 +566,21 @@ int ShareManager::run() {
 			Directory::Map newDirs;
 			{
 				RLock l(cs);
-				Directory::MapIter i = directories.find( refreshPath );
-				if( i != directories.end() ){
-					Directory* dp = buildTree(i->first, NULL);
-					dp->setName(findVirtual(i->first)->first);
-					newDirs.insert(make_pair(i->first, dp));
+				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
+					Directory::MapIter i = directories.find( *j );
+					if( i != directories.end() ){
+						Directory* dp = buildTree(i->first, NULL);
+						dp->setName(findVirtual(i->first)->first);
+						newDirs.insert(make_pair(i->first, dp));
+					}
 				}
 			}
 			{
 				WLock l(cs);
 				StringPairList dirs = virtualMap;
-				removeDirectory( refreshPath );
+				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
+					removeDirectory( *j );
+				}
 				virtualMap = dirs;
 
 				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
@@ -586,7 +590,7 @@ int ShareManager::run() {
 			}
 
 			refreshDir = false;
-			refreshPath = Util::emptyString;
+			refreshPaths.clear();
 		}
 
 		if(refreshIncoming && !refreshDirs) {
@@ -1518,10 +1522,13 @@ void ShareManager::setIncoming( const string& aDir, bool incoming /*= true*/ ) {
 }
 
 bool ShareManager::refresh( const string& aDir ){
+	bool result = false;
 	string path = aDir;
 
 	if(path[ path.length() -1 ] != PATH_SEPARATOR)
 		path += PATH_SEPARATOR;
+
+	RLock l(cs);
 
 	Directory::MapIter i = directories.find( path );
 
@@ -1529,16 +1536,42 @@ bool ShareManager::refresh( const string& aDir ){
 		
 		for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
 			if( Util::stricmp( j->first, aDir ) == 0 ) {
-				refreshPath = j->second;
-				return false;
+				refreshPaths.push_back( j->second );
+				result = true;
 			}
 		}
 	} else {
-		refreshPath = path;
+		refreshPaths.push_back( path );
+		result = true;
 	}
 
 	refresh(false, true, false, false, true);
-	return true;
+	
+	return result;
+}
+
+StringList ShareManager::getVirtualDirectories() {
+	StringList result;
+
+	RLock l(cs);
+
+	for(StringPairIter i = virtualMap.begin(); i != virtualMap.end(); ++i){
+		bool exists = false;
+
+		for(StringIter j = result.begin(); j != result.end(); ++j) {
+			if( Util::stricmp( *j, i->first ) == 0 ){
+				exists = true;
+				break;
+			}
+		}
+
+		if( !exists )
+			result.push_back( i->first );
+	}
+
+	sort( result.begin(), result.end() );
+
+	return result;
 }
 
 /**

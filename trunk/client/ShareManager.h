@@ -93,6 +93,8 @@ public:
 	bool isIncoming(const string& aDir);
 	void setIncoming(const string& aDir, bool incoming = true);
 
+	StringList getVirtualDirectories();
+
 private:
 	struct AdcSearch;
 
@@ -229,7 +231,7 @@ private:
 	bool refreshIncoming;
 	bool refreshDir;
 
-	string refreshPath;
+	StringList refreshPaths;
 	
 	int listN;
 
