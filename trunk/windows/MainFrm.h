@@ -256,6 +256,7 @@ public:
 		::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
 		UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
 		UpdateLayout();
+		SettingsManager::getInstance()->set(SettingsManager::SHOW_STATUSBAR, bVisible);
 		return 0;
 	}
 
@@ -276,6 +277,7 @@ public:
 		}
 		UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
 		UpdateLayout();
+		SettingsManager::getInstance()->set(SettingsManager::SHOW_TRANSFERVIEW, bVisible);
 		return 0;
 	}
 

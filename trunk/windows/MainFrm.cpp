@@ -175,6 +175,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS))
 		PostMessage(WM_COMMAND, IDC_FINISHED);
+	
+	if(!BOOLSETTING(SHOW_STATUSBAR))
+		PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
+	if(!BOOLSETTING(SHOW_TOOLBAR))
+		PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
+	if(!BOOLSETTING(SHOW_TRANSFERVIEW))
+		PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
 
 	if(!(GetAsyncKeyState(VK_SHIFT) & 0x8000))
 		PostMessage(WM_SPEAKER, AUTO_CONNECT);
@@ -889,6 +896,7 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	rebar.ShowBand(nBandIndex, bVisible);
 	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
 	UpdateLayout();
+	SettingsManager::getInstance()->set(SettingsManager::SHOW_TOOLBAR, bVisible);
 	return 0;
 }
 

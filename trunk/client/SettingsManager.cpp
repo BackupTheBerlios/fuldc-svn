@@ -59,7 +59,7 @@ const string SettingsManager::settingTags[] =
 	"HubFrameConfirmation", "QueueRemoveConfirmation", "PopunderPm", "PopunderDirlist",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", 
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
-	"PopupTextColor", "FreeSlotsSize", 
+	"PopupTextColor", "FreeSlotsSize", "ShowStatusbar", "ShowToolbar", "ShowTransferView",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -191,6 +191,10 @@ SettingsManager::SettingsManager()
 	setDefault(FREE_SLOTS_SIZE, 32);
 	setDefault(SKIPLIST_SHARE, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
 	setDefault(SKIPLIST_DOWNLOAD, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
+	setDefault(SHOW_STATUSBAR, true);
+	setDefault(SHOW_TOOLBAR, true);
+	setDefault(SHOW_TRANSFERVIEW, true);
+	
 	
 	
 
