@@ -25,10 +25,11 @@
 class AdcHub;
 class ClientManager;
 
-class AdcHub : public Client, CommandHandler<AdcHub> {
+class AdcHub : public Client, public CommandHandler<AdcHub> {
 public:
 
 	virtual void connect(const User* user);
+	virtual void connect(const User* user, string const& token);
 	virtual void disconnect();
 	
 	virtual void hubMessage(const string& aMessage);
@@ -58,6 +59,8 @@ public:
 	void handle(Command::INF, Command& c) throw();
 	void handle(Command::GPA, Command& c) throw();
 	void handle(Command::QUI, Command& c) throw();
+	void handle(Command::CTM, Command& c) throw();
+	void handle(Command::RCM, Command& c) throw();
 
 	virtual string escape(string const& str) const { return Command::escape(str); };
 

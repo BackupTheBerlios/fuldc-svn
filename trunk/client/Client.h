@@ -142,6 +142,7 @@ public:
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
 	GETSET(bool, registered, Registered);
+	GETSET(u_int32_t, reconnDelay, ReconnDelay);
 protected:
 	struct Counts {
 		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { };

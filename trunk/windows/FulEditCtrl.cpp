@@ -102,11 +102,9 @@ bool CFulEditCtrl::AddLine(const tstring & line, bool timeStamps) {
 	if( pos != tstring::npos)
 		aLine = _T("** ") + aLine.substr(1, pos-1) +  aLine.substr(pos+5, aLine.length());
 
-	if(timeStamps) {
-		aLine = _T("\r[") + Util::getShortTimeStringW() + _T("] ") + aLine;
-	} else {
-		aLine = _T("\r") + aLine;
-	}
+	if(timeStamps)
+		aLine = _T("[") + Util::getShortTimeStringW() + _T("] ") + aLine;
+	
 	
 	SetRedraw(FALSE);
 	
@@ -152,9 +150,6 @@ void CFulEditCtrl::Colorize(const tstring& aLine, int begin) {
 	SetSelectionCharFormat(selFormat);
 
 	logged = false;
-
-	//compensate for \r
-	--begin;
 
 	//compare the last line against all strings in the vector
 	for(ColorIter i = cList->begin(); i != cList->end(); ++i) {
@@ -242,6 +237,8 @@ int CFulEditCtrl::TextUnderCursor(POINT p, tstring& x) {
 
 void CFulEditCtrl::AddInternalLine(const tstring & aLine) {
 	int length = GetTextLengthEx(GTL_NUMCHARS)+1;
+	
+	AppendText(_T("\r"));
 	AppendText(aLine.c_str());
 	
 	CHARRANGE cr;
