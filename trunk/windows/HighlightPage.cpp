@@ -5,6 +5,7 @@
 #include "../client/SettingsManager.h"
 #include "../client/ColorSettings.h"
 #include "../client/HighlightManager.h"
+#include "../client/StringTokenizer.h"
 
 #include "../regex/pme.h"
 
@@ -27,7 +28,7 @@ PropPage::TextItem HighlightPage::texts[] = {
 	{ IDC_MOVE_UP,		 ResourceManager::SETTINGS_BTN_MOVEUP		},
 	{ IDC_MOVE_DOWN,	 ResourceManager::SETTINGS_BTN_MOVEDOWN		},
 	{ IDC_BGCOLOR,		 ResourceManager::SETTINGS_BTN_BGCOLOR		},
-	{ IDC_FGCOLOR,		 ResourceManager::SETTINGS_BTN_COLOR		},
+	{ IDC_FGCOLOR,		 ResourceManager::SETTINGS_BTN_TEXTCOLOR	},
 	{ IDC_SELECT_SOUND,  ResourceManager::SETTINGS_SELECT_SOUND		},
 	{ IDC_BOLD,			 ResourceManager::BOLD						},
 	{ IDC_ITALIC,		 ResourceManager::ITALIC					},
@@ -70,10 +71,10 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlMatchType.Attach(GetDlgItem(IDC_MATCHTYPE));
 
 	//add alternatives
-	ctrlMatchType.AddString("Begins");
-	ctrlMatchType.AddString("Contains");
-	ctrlMatchType.AddString("Ends");
-	ctrlMatchType.AddString("Equals");
+	StringTokenizer s(STRING(HIGHLIGHT_MATCH_TYPES), ",");
+	StringList l = s.getTokens();
+	for(StringIter i = l.begin(); i != l.end(); ++i)
+		ctrlMatchType.AddString((*i).c_str());
 
 	ctrlMatchType.SetCurSel(1);
 

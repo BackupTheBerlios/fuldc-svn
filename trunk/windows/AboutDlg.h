@@ -40,6 +40,11 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "defr, ullner, fleetcommand, liny, xan, olle svensson. "
 "Keep it coming!";
 
+static const char fulthanks[] = 
+"Thanks to snowflake/summerfling/goose for his work on the lovely fuldc website. "
+"Thanks to fnordpojk for hosting the website and thanks to fusbar for all his advice. "
+"should probably add more in here, seems a bit empty =)";
+
 class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
 {
 public:
@@ -62,6 +67,12 @@ public:
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);
 		ctrl.Detach();
+
+		ctrl.Attach(GetDlgItem(IDC_FULTHANKS));
+		ctrl.FmtLines(TRUE);
+		ctrl.AppendText(fulthanks, TRUE);
+		ctrl.Detach();
+
 		SetDlgItemText(IDC_TTH, WinUtil::tth.c_str());
 		SetDlgItemText(IDC_LATEST, CSTRING(DOWNLOADING));
 		SetDlgItemText(IDC_TOTALS, ("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 

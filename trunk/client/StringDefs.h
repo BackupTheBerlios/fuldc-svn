@@ -567,5 +567,8 @@ enum Strings { // @DontAdd
 	SETTINGS_TIME_STAMP_HELP, // "Help"
 	SETTINGS_SB_TIME_STAMPS, // "Time Format"
 	USER_CAME_ONLINE, // "User came online"
+	HIGHLIGHT_MATCH_TYPES, // "Begins,Contains,Ends,Equals"
+	CONFIRM_REMOVE, // "Do you really want to remove this item?"
+	CONFIRM_REMOVE_CAPTION, // "Confirm Removal"
 	LAST // @DontAdd
 };

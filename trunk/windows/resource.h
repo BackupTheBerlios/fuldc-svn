@@ -158,6 +158,8 @@
 #define IDC_PUBLIC_HUBS                 1054
 #define IDC_THANKS                      1055
 #define IDC_DOWNLOADS                   1056
+#define IDC_THANKS2                     1056
+#define IDC_FULTHANKS                   1056
 #define IDC_SLOTSSPIN                   1057
 #define IDC_MAXSPEED                    1058
 #define IDC_SPEEDSPIN                   1059

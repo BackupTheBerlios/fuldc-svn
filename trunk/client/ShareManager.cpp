@@ -232,37 +232,48 @@ bool ShareManager::loadXmlList(){
 	buf = NULL;
 
 	//same here =)
-	if(xmlString->empty())
+	if(xmlString->empty()){
+		delete xmlString;
 		return false;
+	}
 
-	//convert the xml string to an xml object
-	SimpleXML *xml = new SimpleXML;
-	xml->fromXML(*xmlString);
+	bool result = true;
 
+	SimpleXML *xml = NULL;
+
+	try{
+		xml = new SimpleXML();
+		//convert the xml string to an xml object
+		xml->fromXML(*xmlString);
+
+		//stepin inside <Share>
+		xml->resetCurrentChild();
+		xml->findChild("Share");
+		xml->stepIn();
+
+		while (xml->findChild("Directory")) {
+			string name = xml->getChildAttrib("Name");
+			string path = xml->getChildAttrib("Path");
+			Util::toAcp(name);
+			Util::toAcp(path);
+					
+			directories[path] = addDirectoryFromXml(xml, NULL, name, path); 
+			dirs[name] = path;
+		}
+
+		loadDirs.clear();
+	} catch(SimpleXMLException &e){
+		LogManager::getInstance()->message(e.getError());
+		result = false;
+	}
+	
 	//cleanup
 	delete xmlString;
 	xmlString = NULL;
+	if(xml != NULL)
+        delete xml;
 
-	//stepin inside <Share>
-    xml->resetCurrentChild();
-	xml->findChild("Share");
-	xml->stepIn();
-
-	while (xml->findChild("Directory")) {
-		string name = xml->getChildAttrib("Name");
-		string path = xml->getChildAttrib("Path");
-		Util::toAcp(name);
-		Util::toAcp(path);
-				
-		directories[path] = addDirectoryFromXml(xml, NULL, name, path); 
-		dirs[name] = path;
-	}
-
-	delete xml;
-
-	loadDirs.clear();
-
-	return true;
+	return result;
 }
 
 

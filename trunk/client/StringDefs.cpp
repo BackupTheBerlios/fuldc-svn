@@ -564,6 +564,9 @@ string ResourceManager::strings[] = {
 "Help", 
 "Time Format", 
 "User came online", 
+"Begins,Contains,Ends,Equals", 
+"Do you really want to remove this item?", 
+"Confirm Removal", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1128,4 +1131,7 @@ string ResourceManager::names[] = {
 "SettingsTimeStampHelp", 
 "SettingsSbTimeStamps", 
 "UserCameOnline", 
+"HighlightMatchTypes", 
+"ConfirmRemove", 
+"ConfirmRemoveCaption", 
 };

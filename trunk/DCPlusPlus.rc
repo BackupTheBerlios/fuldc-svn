@@ -68,7 +68,7 @@ BEGIN
     CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,251,
                     18,227,8
     CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,251,31,227,8
-    EDITTEXT        IDC_THANKS,13,122,227,66,ES_MULTILINE | ES_READONLY | 
+    EDITTEXT        IDC_THANKS,10,122,227,66,ES_MULTILINE | ES_READONLY | 
                     WS_VSCROLL
     CTEXT           "Static",IDC_VERSION,13,37,227,54
     EDITTEXT        IDC_TTH,44,93,196,12,ES_AUTOHSCROLL | ES_READONLY | NOT 
@@ -76,7 +76,8 @@ BEGIN
     LTEXT           "TTH:",IDC_STATIC,13,93,18,12
     GROUPBOX        "Uptime",IDC_STATIC,247,76,235,24,BS_CENTER
     CTEXT           "00:00",IDC_UPTIME,252,87,227,8
-    LTEXT           "fnordpojk är bäst",IDC_STATIC,339,107,82,8
+    EDITTEXT        IDC_FULTHANKS,251,108,227,66,ES_MULTILINE | ES_READONLY | 
+                    WS_VSCROLL
 END
 
 IDD_LINE DIALOGEX 0, 0, 239, 46

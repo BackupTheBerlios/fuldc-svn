@@ -563,5 +563,8 @@
 		<String Name="SettingsTimeStampHelp">Help</String>
 		<String Name="SettingsSbTimeStamps">Time Format</String>
 		<String Name="UserCameOnline">User came online</String>
+		<String Name="HighlightMatchTypes">Begins,Contains,Ends,Equals</String>
+		<String Name="ConfirmRemove">Do you really want to remove this item?</String>
+		<String Name="ConfirmRemoveCaption">Confirm Removal</String>
 	</Strings>
 </Language>
