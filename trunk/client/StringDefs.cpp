@@ -128,7 +128,7 @@ string ResourceManager::strings[] = {
 "files left", 
 "files/h", 
 "F&ilter", 
-"Filtered", 
+"Filtered: ", 
 "Find", 
 "Finished Downloads", 
 "Finished Uploads", 

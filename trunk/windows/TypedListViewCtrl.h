@@ -383,7 +383,7 @@ public:
 	}
 
 	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		if((GetKeyState(65) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
+		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
 			int count = GetItemCount();
 			for(int i = 0; i < count; ++i)
 				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
