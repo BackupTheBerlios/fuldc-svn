@@ -54,7 +54,6 @@ public:
 
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onHeaderMenu)
-		//COMMAND_RANGE_HANDLER(IDC_HEADER_MENU, IDC_HEADER_MENU + columnList.size(), onHeaderMenu)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 

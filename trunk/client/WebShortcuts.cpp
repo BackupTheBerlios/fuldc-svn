@@ -24,8 +24,6 @@
 #include "StringTokenizer.h"
 #include "oxmllib.h"
 
-WebShortcuts* Singleton<WebShortcuts>::instance = NULL;
-
 void WebShortcuts::load() {
 	clear();
 	string s = OXMLLib::decode(SETTING(WEB_SHORTCUTS), false);
