@@ -28,7 +28,7 @@
 WebShortcuts::WebShortcuts() {
 	SettingsManager::getInstance()->addListener(this);
 
-	tstring s = Text::toT(OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false));
+	tstring s = _T("As URL\x01u\x01%s\x02Google\x01g\x01http://www.google.com/search?q=%s\x02IMDB\x01i\x01http://www.imdb.com/Find?select=All&for=%s\x02TV Tome\x01t\x01http://www.tvtome.com/tvtome/servlet/Search?searchType=all&searchString=%s");
 
 	StringTokenizer<tstring> st(s, _T('\x02'));
 	for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
