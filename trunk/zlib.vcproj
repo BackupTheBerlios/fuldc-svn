@@ -22,7 +22,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForProcessor="2"
+				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="ZLIB_COMPILE"
 				StringPooling="TRUE"

@@ -39,7 +39,6 @@
 #include "StatsFrame.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
-#include "EmoticonManager.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"

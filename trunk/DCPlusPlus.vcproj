@@ -21,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForProcessor="2"
+				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib Winmm.lib Pdh.lib gdi32.lib gdiplus.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib Winmm.lib Pdh.lib gdi32.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -411,9 +411,6 @@
 			</File>
 			<File
 				RelativePath=".\windows\DownloadPage.h">
-			</File>
-			<File
-				RelativePath=".\windows\EmoticonManager.h">
 			</File>
 			<File
 				RelativePath=".\windows\ExListViewCtrl.h">
