@@ -3,7 +3,7 @@
 // Used by f:\Programmering\C++\fuldc\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
-#define IDC_SLOTSPIN					101
+#define IDC_SLOTSPIN                    101
 #define IDC_TRAY_QUIT                   102
 #define IDC_TRAY_SHOW                   103
 #define IDC_COPY_HUB                    104
@@ -25,7 +25,7 @@
 #define IDC_DELETE                      116
 #define IDC_CLOSE_ALL_DIR_LIST          116
 #define IDC_COPY_TTH                    117
-#define IDC_TTH							118
+#define IDC_TTH                         118
 #define IDC_SHOW_HUB_LOG                119
 #define IDC_OPEN_LOG_DIR                120
 #define IDC_OPEN_MY_LIST                121
@@ -450,7 +450,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        254
+#define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32818
 #define _APS_NEXT_CONTROL_VALUE         1288
 #define _APS_NEXT_SYMED_VALUE           131

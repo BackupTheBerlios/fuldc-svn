@@ -85,7 +85,7 @@ public:
 	}
 	
 	int getRunning() { return running; };
-	int getFreeSlots() { return 0;}//return max((SETTING(SLOTS) - running), 0); }
+	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
 	bool getAutoSlot() {
 		if(SETTING(MIN_UPLOAD_SPEED) == 0)
 			return false;

@@ -188,7 +188,7 @@ static void installUrlHandler() {
 	}
 } 
 
-static void checkCommonControls() {
+static DWORD checkCommonControls() {
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
 
 	HINSTANCE hinstDll;
@@ -224,6 +224,8 @@ static void checkCommonControls() {
 	if(dwVersion < PACKVERSION(5,80)) {
 		MessageBox(NULL, "Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly.", "User Interface Warning", MB_OK);
 	}
+
+	return dwVersion;
 }
 
 void callBack(void* x, const string& a, const string& b) {
@@ -244,7 +246,7 @@ public:
 
 static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-	checkCommonControls();
+	DWORD version = checkCommonControls();
 
 	CMessageLoop theLoop;
 	CFindDialogMessageFilter findDialogFilter;
@@ -277,6 +279,8 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.RedrawWindow();
 
 	startup(callBack, (void*)splash.m_hWnd);
+
+	WinUtil::comCtlVersion = version;
 
 	splash.DestroyWindow();
 	dummy.DestroyWindow();

@@ -19,6 +19,9 @@
 #if !defined(AFX_LISTVIEW_ARROWS_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 #define AFX_LISTVIEW_ARROWS_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_
 
+#include "WinUtil.h"
+
+
 template<class T>
 class ListViewArrows {
 public:
@@ -101,24 +104,44 @@ public:
 			return;
 
 		T* pThis = (T*)this;
-		HBITMAP bitmap = (pThis->isAscending() ? upArrow : downArrow);
-
+		
 		CHeaderCtrl headerCtrl = pThis->GetHeader();
 		const int itemCount = headerCtrl.GetItemCount();
-		for (int i=0; i < itemCount; ++i)
-		{
-			HDITEM item;
-			item.mask = HDI_FORMAT;
-			headerCtrl.GetItem(i, &item);
-			item.mask = HDI_FORMAT | HDI_BITMAP;
-			if (i == pThis->getSortColumn()) {
-				item.fmt |= HDF_BITMAP | HDF_BITMAP_ON_RIGHT;
-				item.hbm = bitmap;
-			} else {
-				item.fmt &= ~(HDF_BITMAP | HDF_BITMAP_ON_RIGHT);
-				item.hbm = 0;
+		
+		if(WinUtil::comCtlVersion >= MAKELONG(0,6)){
+			for(int i=0; i < itemCount; ++i){
+				HDITEM item;
+				item.mask = HDI_FORMAT;
+				headerCtrl.GetItem(i, &item);
+				item.mask = HDI_FORMAT;
+				if( i == pThis->getSortColumn()){
+					//clear the previous state
+					item.fmt &=  ~(pThis->isAscending() ? HDF_SORTDOWN : HDF_SORTUP);
+					item.fmt |= (pThis->isAscending() ? HDF_SORTUP : HDF_SORTDOWN);
+				} else {
+					item.fmt &=  ~(HDF_SORTUP | HDF_SORTDOWN);
+				}
+				headerCtrl.SetItem(i, &item);
 			}
-			headerCtrl.SetItem(i, &item);
+
+		} else {
+			HBITMAP bitmap = (pThis->isAscending() ? upArrow : downArrow);
+
+			for (int i=0; i < itemCount; ++i)
+			{
+				HDITEM item;
+				item.mask = HDI_FORMAT;
+				headerCtrl.GetItem(i, &item);
+				item.mask = HDI_FORMAT | HDI_BITMAP;
+				if (i == pThis->getSortColumn()) {
+					item.fmt |= HDF_BITMAP | HDF_BITMAP_ON_RIGHT;
+					item.hbm = bitmap;
+				} else {
+					item.fmt &= ~(HDF_BITMAP | HDF_BITMAP_ON_RIGHT);
+					item.hbm = 0;
+				}
+				headerCtrl.SetItem(i, &item);
+			}
 		}
 	}
 

@@ -66,6 +66,7 @@ HHOOK WinUtil::hook = NULL;
 string WinUtil::tth;
 HWND WinUtil::findDialog = NULL;
 const u_int32_t WinUtil::startTime = GET_TIME();
+DWORD WinUtil::comCtlVersion = 0;
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
@@ -838,7 +839,7 @@ void WinUtil::addLastDir(const string& dir) {
 int WinUtil::getTextWidth(const string& str, HWND hWnd) {
 	HDC dc = ::GetDC(hWnd);
 	int sz = getTextWidth(str, dc);
-	::ReleaseDC(mainWnd, dc);
+	::ReleaseDC(hWnd, dc);
 	return sz;
 }
 int WinUtil::getTextWidth(const string& str, HDC dc) {

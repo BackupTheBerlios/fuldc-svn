@@ -78,6 +78,7 @@ public:
 	static string tth;
 	static HWND findDialog;
 	static const u_int32_t startTime;
+	static DWORD comCtlVersion;
 
 	static void SearchSite(WebShortcut* ws, string strSearchString);
 
