@@ -965,10 +965,14 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 
 void QueueManager::removeSources(User::Ptr& aUser, int reason) throw() {
 	string x;
+	
+	//this is so damn ugly i should probably shoot myself but
+	//i'm tired and i hate this damn error =)
+	string nick = aUser->getNick();
 	{
 		Lock l(cs);
 		QueueItem* qi = NULL;
-		while( (qi = userQueue.getNext(aUser, QueueItem::PAUSED)) != NULL) {
+		while( (qi = userQueue.getNext(aUser, QueueItem::PAUSED)) != NULL && Util::stricmp(nick, aUser->getNick()) == 0) {
 			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 				remove(qi->getTarget());
 			} else {

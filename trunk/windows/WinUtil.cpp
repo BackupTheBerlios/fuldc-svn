@@ -916,6 +916,11 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 		strSearchString = strSearch.substr(0, intPos + 1);
 	}
 	
+	if(Util::stricmp(ws->url.c_str(), _T("%s")) == 0) {
+		WinUtil::openLink(strSearchString);
+		return;
+	}
+
 	if(ws->url.find(_T("google.")) != tstring::npos)
 		strSearchString = Text::utf8ToWide(Util::encodeURI(Text::wideToUtf8(strSearchString)));
 	else

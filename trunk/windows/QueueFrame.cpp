@@ -603,7 +603,8 @@ void QueueFrame::on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) {
 		{
 			for(QueueItemInfo::SourceIter i = ii->getSources().begin(); i != ii->getSources().end(); ) {
 				if(!aQI->isSource(i->getUser())) {
-					i = ii->getSources().erase(i);
+					ii->getSources().erase(i);
+					break;
 				} else {
 					++i;
 				}
@@ -617,7 +618,8 @@ void QueueFrame::on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) {
 		{
 			for(QueueItemInfo::SourceIter i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ) {
 				if(!aQI->isBadSource(i->getUser())) {
-					i = ii->getBadSources().erase(i);
+					ii->getBadSources().erase(i);
+					break;
 				} else {
 					++i;
 				}
