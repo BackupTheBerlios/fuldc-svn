@@ -120,7 +120,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 		if(!found) {
 			p = new PrivateFrame(aUser);
 			frames[aUser] = p;
-			p->ReadLog();
+			p->readLog();
 			p->addLine(aMessage);
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
@@ -597,14 +597,14 @@ void PrivateFrame::FlashWindow() {
 	}
 }
 
-void PrivateFrame::ReadLog() {
-	StringMap params;
-	params["user"] = user->getNick();
+void PrivateFrame::readLog() {
+	StringMap params;	
+	params["user"] = user->getNick();	
 	params["hub"] = user->getClientName();
-	params["hubaddr"] = user->getClientAddressPort();
-	params["mynick"] = user->getClientNick(); 
-	params["mycid"] = user->getClientCID().toBase32(); 
-	params["cid"] = user->getCID().toBase32(); 
+	params["mynick"] = user->getClientNick();	
+	params["mycid"] = user->getClientCID().toBase32();	
+	params["cid"] = user->getCID().toBase32();	
+	params["hubaddr"] = user->getClientAddressPort();	
 	
 	string path = Util::validateFileName(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 

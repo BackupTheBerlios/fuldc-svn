@@ -68,7 +68,7 @@ const string SettingsManager::settingTags[] =
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
-	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", 
+	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -199,6 +199,7 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
 	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
 	setDefault(SEARCH_ONLY_TTH, false);
+	setDefault(SHOW_LAST_LINES_LOG, 0);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);

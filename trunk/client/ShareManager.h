@@ -299,7 +299,7 @@ private:
 	bool checkFile(const string& aDir, const string& aFile, Directory::File::Iter& it);
 
 	Directory* buildTree(const string& aName, Directory* aParent);
-	void addTree(const string& aName, Directory* aDirectory);
+	void addTree(Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
 		
 	void removeTTH(const TTHValue& tth, const Directory::File::Iter&);

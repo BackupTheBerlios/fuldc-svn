@@ -167,6 +167,8 @@
 #define IDC_TIME_STAMPS_FORMAT          304
 #define IDC_SETTINGS_FILELIST_MENU      305
 #define IDD_NETWORKPAGE                 306
+#define IDC_SETTINGS_PM_HISTORY         307
+#define IDC_SHOW_LAST_LINES_LOG         309
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -560,13 +562,14 @@
 #define IDC_SWITCH_WINDOW_9             32806
 #define IDC_SWITCH_WINDOW_0             32807
 #define ID_WINDOW_MINIMIZE_ALL          57654
+#define ID_WINDOW_RESTORE_ALL           57655
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        259
+#define _APS_NEXT_RESOURCE_VALUE        309
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1309
 #define _APS_NEXT_SYMED_VALUE           136

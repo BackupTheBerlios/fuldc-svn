@@ -142,7 +142,8 @@ public:
 	static tstring emptyStringT;
 	static string emptyString;
 	static wstring emptyStringW;
-	static const string tempExtension;
+	static const string TEMP_EXT;
+	static const string ANTI_FRAG_EXT;
 
 	static void initialize();
 

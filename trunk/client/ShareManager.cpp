@@ -308,7 +308,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 
 	{
 		WLock<> l(cs);
-		addTree(d, dp);
+		addTree(dp);
 
 		directories[d] = dp;
 		virtualMap.push_back(make_pair(vName, d));
@@ -577,8 +577,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			// Not a directory, assume it's a file...make sure we're not sharing the settings file...
 			if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
 				(Util::stricmp(name.c_str(), "Favorites.xml") != 0) &&
-				(Util::stricmp(Util::getFileExt(name).c_str(), ".dctmp") != 0) &&
-				(Util::stricmp(Util::getFileExt(name).c_str(), ".antifrag") != 0) ){
+				(Util::stricmp(Util::getFileExt(name).c_str(), Util::TEMP_EXT) != 0) &&
+				(Util::stricmp(Util::getFileExt(name).c_str(), Util::ANTI_FRAG_EXT) != 0) ){
 
 				int64_t size = i->getSize();
 				string fileName = aName + name;
@@ -598,12 +598,12 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	return dir;
 }
 
-void ShareManager::addTree(const string& fullName, Directory* dir) {
+void ShareManager::addTree(Directory* dir) {
 	bloom.add(Text::toLower(dir->getName()));
 
 	for(Directory::MapIter i = dir->directories.begin(); i != dir->directories.end(); ++i) {
 		Directory* d = i->second;
-		addTree(fullName + d->getName() + PATH_SEPARATOR, d);
+		addTree(d);
 	}
 
 	for(Directory::File::Iter i = dir->files.begin(); i != dir->files.end(); ) {
@@ -671,7 +671,7 @@ int ShareManager::run() {
 				virtualMap = dirs;
 
 				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
-					addTree(i->first, i->second);
+					addTree(i->second);
 					directories.insert(*i);
 				}
 			}
@@ -704,7 +704,7 @@ int ShareManager::run() {
 				virtualMap = dirs;
 
 				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
-					addTree(i->first, i->second);
+					addTree(i->second);
 					directories.insert(*i);
 				}
 			}
@@ -736,7 +736,7 @@ int ShareManager::run() {
 				virtualMap = dirs;
 
 				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
-					addTree(i->first, i->second);
+					addTree(i->second);
 					directories.insert(*i);
 				}
 			}
@@ -1496,7 +1496,7 @@ bool ShareManager::loadXmlList(){
 				path += PATH_SEPARATOR;
 			
 			Directory *d = addDirectoryFromXml(xml, NULL, name, path); 
-			addTree(path, d);
+			addTree(d);
 			directories[path] = d;
 			virtualMap.push_back(make_pair(name,path));
 		}

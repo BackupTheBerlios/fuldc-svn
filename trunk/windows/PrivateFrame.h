@@ -100,6 +100,7 @@ public:
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
+	void readLog();
 	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	
@@ -219,7 +220,6 @@ private:
 	}
 
 	void FlashWindow();
-	void ReadLog();
 	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {

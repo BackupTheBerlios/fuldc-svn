@@ -30,12 +30,20 @@ static const u_int32_t HASH_FILE_VERSION=1;
 
 bool HashManager::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 	Lock l(cs);
-	return store.checkTTH(aFileName, aSize, aTimeStamp);
+	if(!store.checkTTH(aFileName, aSize, aTimeStamp)) {
+		hasher.hashFile(aFileName, aSize);
+		return false;
+	}
+	return true;
 }
 
 bool HashManager::checkTTH(const string& aFileName, int64_t aSize) {
 	Lock l(cs);
-	return store.checkTTH(aFileName, aSize);
+	if(!store.checkTTH(aFileName, aSize)) {
+		hasher.hashFile(aFileName, aSize);
+		return false;
+	}
+	return true;
 
 }
 

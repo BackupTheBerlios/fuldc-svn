@@ -147,7 +147,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
-	
+	m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
+
 	// remove old menu
 	SetMenu(NULL);
 

@@ -297,7 +297,7 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 			dcdebug("Connection flood detected!\n");
 			return;
 		} else {
-			floodCounter += 2000;
+			floodCounter += FLOOD_ADD;
 		}
 	}
 

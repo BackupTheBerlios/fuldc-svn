@@ -55,7 +55,8 @@ time_t Util::awayTime;
 
 Util::CountryList Util::countries;
 string Util::appPath;
-const string Util::tempExtension = ".dctmp";
+const string Util::TEMP_EXT = ".dctmp";
+const string Util::ANTI_FRAG_EXT = ".antifrag";
 
 static void sgenrand(unsigned long seed);
 

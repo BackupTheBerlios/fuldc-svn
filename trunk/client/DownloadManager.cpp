@@ -40,7 +40,6 @@
 #endif
 
 static const string DOWNLOAD_AREA = "Downloads";
-const string Download::ANTI_FRAG_EXT = ".antifrag";
 
 Download::Download() throw() : file(NULL),
 crcCalc(NULL), treeValid(false), oldDownload(false), tth(NULL) { 
@@ -269,7 +268,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 		// Only use antifrag if we don't have a previous non-antifrag part
 		if( BOOLSETTING(ANTI_FRAG) && (start == -1) && (d->getSize() != -1) ) {
-			int64_t aSize = File::getSize(target + Download::ANTI_FRAG_EXT);
+			int64_t aSize = File::getSize(target + Util::ANTI_FRAG_EXT);
 
 			if(aSize == d->getSize())
 				start = d->getPos();

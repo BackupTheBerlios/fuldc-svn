@@ -42,7 +42,6 @@ class DownloadManager;
  */
 class Download : public Transfer, public Flags {
 public:
-	static const string ANTI_FRAG_EXT;
 
 	typedef Download* Ptr;
 	typedef vector<Ptr> List;
@@ -84,7 +83,7 @@ public:
 	/** @internal */
 	string getDownloadTarget() {
 		const string& tgt = (getTempTarget().empty() ? getTarget() : getTempTarget());
-		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;			
+		return isSet(FLAG_ANTI_FRAG) ? tgt + Util::ANTI_FRAG_EXT : tgt;			
 	}
 
 	/** @internal */
