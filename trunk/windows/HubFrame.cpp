@@ -798,13 +798,13 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	POINT pt; 
 	GetCursorPos(&pt);			//need cursor pos
 	ctrlClient.GetWindowRect(&rc);
-	
+
 	bool doMenu = false;
 	bool doMcMenu = false;
-	
+
 	if (PtInRect(&rc, pt)) {
-		ctrlClient.ScreenToClient(&pt);
 		tstring x;
+		ctrlClient.ScreenToClient(&pt);
 		string::size_type start = (string::size_type)ctrlClient.TextUnderCursor(pt, x);
 
 		string::size_type end = x.find_first_of(_T(" >\t"), start+1);

@@ -886,18 +886,21 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		if(pt.x < 0 || pt.y < 0) {
 			pt.x = pt.y = 0;
 			ctrlDirs.ClientToScreen(&pt);
+		} else {
+			// Strange, windows doesn't change the selection on right-click... (!)
+			UINT a = 0;
+			ctrlDirs.ScreenToClient(&pt);
+			HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
+			if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
+				ctrlDirs.SelectItem(ht);
+			if(ht != NULL && QueueManager::getInstance()->hasNotification(Text::fromT(getDir(ht))))
+				dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_CHECKED);
+			else
+				dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_UNCHECKED);
+			ctrlDirs.ClientToScreen(&pt);
 		}
 		usingDirMenu = true;
-		// Strange, windows doesn't change the selection on right-click... (!)
-		UINT a = 0;
-		HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
-		if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
-			ctrlDirs.SelectItem(ht);
-		if(ht != NULL && QueueManager::getInstance()->hasNotification(Text::fromT(getDir(ht))))
-			dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_CHECKED);
-		else
-			dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_UNCHECKED);
-
+		
 		dirMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	
 		return TRUE;

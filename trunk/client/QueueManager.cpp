@@ -416,7 +416,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 }
 
 void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw() {
-	if(!aUser->isOnline())
+	if(!aUser->isOnline() || aUser->getCID().isZero())
 		return;
 
 	{

@@ -17,8 +17,8 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.671"
-#define VERSIONFLOAT 0.671
+#define VERSIONSTRING "0.672"
+#define VERSIONFLOAT 0.672
 
 #define FULDC "fulDC"
 #ifdef _DEBUG
