@@ -46,28 +46,27 @@ public:
 		string msg;
 		switch(area){
 			case UPLOAD:
-				//Util::formatTime(Util::formatParams(SETTING(LOG_FILE_UPLOAD), params), time(NULL));
-				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)), params);
-				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_POST_UPLOAD), time(NULL)), params);
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_UPLOAD), params), time(NULL));
+				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params), time(NULL));
 				break;
 			case DOWNLOAD:
-				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_DOWNLOAD), time(NULL)), params);
-				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_POST_DOWNLOAD), time(NULL)), params);
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_DOWNLOAD), params), time(NULL));
+				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params), time(NULL));
 				break;
 			case PM:
-				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_PRIVATE_CHAT), time(NULL)), params);
-				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_PRIVATE_CHAT), time(NULL)), params);
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params), time(NULL));
+				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params), time(NULL));
 				break;
 			case CHAT:
 				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), time(NULL));
 				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params), time(NULL));
 				break;
 			case STATUS:
-				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_STATUS), time(NULL)), params);
-				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_STATUS), time(NULL)), params);
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_STATUS), params), time(NULL));
+				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_STATUS), params), time(NULL));
 			case SYSTEM:
-				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_SYSTEM), time(NULL)), params);
-				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_SYSTEM), time(NULL)), params);
+				path += Util::formatTime(Util::formatParams(SETTING(LOG_FILE_SYSTEM), params), time(NULL));
+				msg = Util::formatTime(Util::formatParams(SETTING(LOG_FORMAT_SYSTEM), params), time(NULL));
 		}
 
 		log(path, msg);

@@ -43,6 +43,7 @@ class SimpleXML;
 class Client;
 class File;
 class OutputStream;
+class MemoryInputStream;
 
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
 	private HashManagerListener, private DownloadManagerListener
@@ -55,7 +56,8 @@ public:
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
 	void removeDirectory(const string& aName, bool duringRefresh = false);	
 	void renameDirectory(const string& path, const string& nName) throw(ShareException);
-	string translateFileName(const string& aFile, bool adc) throw(ShareException);
+	string translateFileName(const string& aFile) throw(ShareException);
+	bool getTTH(const string& aFile, TTHValue& tth) throw();
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
 	bool refresh( const string& aDir );
 	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; };
@@ -64,6 +66,9 @@ public:
 	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);
 
 	StringPairList getDirectories() const { RLock<> l(cs); return virtualMap; }
+
+	MemoryInputStream* generatePartialList(const string& dir);
+	MemoryInputStream* getTree(const string& aFile);
 
 	int64_t getShareSize() throw();
 	int64_t getShareSize(const string& aDir) throw();
@@ -107,7 +112,6 @@ public:
 
 private:
 	struct AdcSearch;
-
 	class Directory : public FastAlloc<Directory> {
 	public:
 		struct File {
@@ -125,19 +129,15 @@ private:
 			typedef Set::iterator Iter;
 
 			File() : size(0), parent(NULL), tth(NULL) { };
-			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
-			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
-			File(const File& f) : 
-				name(f.getName()), size(f.getSize()), parent(f.getParent()), 
-					tth(f.getTTH() ? new TTHValue(*f.getTTH()) : NULL) { };
+			File(const string& aName, int64_t aSize, Directory* aParent, const TTHValue& aRoot) : 
+			name(aName), tth(aRoot), size(aSize), parent(aParent) { };
+			File(const File& rhs) : 
+			name(rhs.getName()), tth(rhs.getTTH()), size(rhs.getSize()), parent(rhs.getParent()) { };
 
-			~File() {
-				delete tth;
-			}
+			~File() { }
 
 			File& operator=(const File& rhs) {
-				delete tth;
-				name = rhs.name; size = rhs.size; parent = rhs.parent; tth = rhs.tth ? new TTHValue(*rhs.tth) : NULL;
+				name = rhs.name; size = rhs.size; parent = rhs.parent; tth = rhs.tth;
 				return *this;
 			}
 
@@ -145,9 +145,9 @@ private:
 			string getFullName() const { return parent->getFullName() + getName(); }
 
 			GETSET(string, name, Name);
+			GETSET(TTHValue, tth, TTH);
 			GETSET(int64_t, size, Size);
 			GETSET(Directory*, parent, Parent);
-			GETSET(TTHValue*, tth, TTH);
 		};
 
 		typedef Directory* Ptr;
@@ -159,7 +159,7 @@ private:
 		File::Set files;
 
 		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : 
-			size(0), name(aName), parent(aParent), fileTypes(0) { 
+		size(0), name(aName), parent(aParent), fileTypes(0) { 
 		};
 
 		~Directory();
@@ -208,6 +208,7 @@ private:
 		u_int32_t fileTypes;
 
 	};
+
 	friend class Directory;
 
 	friend class Singleton<ShareManager>;
@@ -248,7 +249,7 @@ private:
 		bool isDirectory;
 	};
 
-	typedef HASH_MULTIMAP_X(TTHValue::Ptr, Directory::File::Iter, TTHValue::PtrHash, TTHValue::PtrHash, TTHValue::PtrLess) HashFileMap;
+	typedef HASH_MULTIMAP_X(TTHValue*, Directory::File::Iter, TTHValue::PtrHash, TTHValue::PtrHash, TTHValue::PtrLess) HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;
@@ -295,12 +296,13 @@ private:
 	/** Find real name from virtual name */
 	StringPairIter lookupVirtual(const string& name);
 
-	bool checkFile(const string& aDir, const string& aFile);
+	bool checkFile(const string& aDir, const string& aFile, Directory::File::Iter& it);
+
 	Directory* buildTree(const string& aName, Directory* aParent);
 	void addTree(const string& aName, Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
 		
-	void removeTTH(TTHValue* tth, const Directory::File::Iter&);
+	void removeTTH(const TTHValue& tth, const Directory::File::Iter&);
 
 	Directory* getDirectory(const string& fname);
 

@@ -654,7 +654,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	return true;
 }
 
- void WinUtil::searchHash(TTHValue* aHash) {
+void WinUtil::searchHash(const TTHValue* aHash) {
 	 if(aHash != NULL) {
 		 SearchFrame::openWindow(Text::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 	 }

@@ -23,6 +23,7 @@
 #include "Advanced2Page.h"
 #include "../client/SettingsManager.h"
 #include "WinUtil.h"
+#include "../client/File.h"
 
 PropPage::TextItem Advanced2Page::texts[] = {
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
