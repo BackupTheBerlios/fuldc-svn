@@ -370,7 +370,7 @@ public:
 		lvc.mask = LVCF_ORDER;
 		for(int i = 0; i < iCount; ++i) {
 			lvc.iOrder = columnList[i]->pos = piArray[i];
-			SetColumn(i, &lvc) != 0;
+			SetColumn(i, &lvc);
 		}
 	}
 
@@ -423,7 +423,7 @@ private:
 		lvcl.pszText = buf;
 		lvcl.cchTextMax = 512;
 
-		int columns = GetColumn(col, &lvcl);
+		GetColumn(col, &lvcl);
 
 		int i = 0;
 		for(ColumnIter j = columnList.begin(); j != columnList.end(); ++i, ++j){

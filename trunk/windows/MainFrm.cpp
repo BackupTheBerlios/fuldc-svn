@@ -700,6 +700,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		if(BOOLSETTING(MINIMIZE_TRAY)) {
 			updateTray(true);
 			ShowWindow(SW_HIDE);
+			PopupManager::getInstance()->Minimized(true);
 		}
 		maximized = IsZoomed() > 0;
 
@@ -710,6 +711,8 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		if(trayIcon) {
 			updateTray(false);
 		}
+
+		PopupManager::getInstance()->Minimized(false);
 	}
 	
 	bHandled = FALSE;

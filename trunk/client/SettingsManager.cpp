@@ -58,7 +58,7 @@ const string SettingsManager::settingTags[] =
 	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
-	"RotateLogs", "PopupTimeout", "PopupAway", "PopupPm", "PopupNewPm", "PopupHubStatus", 
+	"RotateLogs", "PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation", "QueueRemoveConfirmation", "PopunderPm", "PopunderDirlist",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
@@ -207,6 +207,7 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_TOPIC, true);
 	setDefault(MAX_AUTO_MATCH_SOURCES, 5);
 	setDefault(MAX_MSG_LENGTH, 90);
+	setDefault(POPUP_MINIMIZED, false);
 	
 	
 	

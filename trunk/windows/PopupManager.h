@@ -21,7 +21,7 @@ class PopupManager : public Singleton< PopupManager >, private TimerManagerListe
 	private QueueManagerListener
 {
 public:
-	PopupManager() : height(90), width(200), offset(0), activated(true) {
+	PopupManager() : height(90), width(200), offset(0), activated(true), minimized(false) {
 		TimerManager::getInstance()->addListener(this);
 		QueueManager::getInstance()->addListener(this);
 
@@ -69,6 +69,10 @@ public:
 		activated = !mute;
 	}
 
+	void Minimized(bool mini){
+		minimized = mini;
+	}
+
 private:
 		
 	typedef deque< PopupWnd* > PopupList;
@@ -90,6 +94,9 @@ private:
 
 	//turn on/off popups completely
 	bool activated;
+
+	//keep track on window state
+	bool minimized;
 
 	//this is the background of the popup window
 	HBITMAP hBitmap;

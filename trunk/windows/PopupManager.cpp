@@ -18,6 +18,10 @@ void PopupManager::Show(const string& aMsg ) {
 	if (!Util::getAway() && BOOLSETTING(POPUP_AWAY)) {
 		return;
 	}
+
+	if(!minimized && BOOLSETTING(POPUP_MINIMIZED)) 
+		return;
+	
 	
 	CRect rcDesktop;
 	

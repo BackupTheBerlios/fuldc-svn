@@ -441,6 +441,7 @@ enum Strings { // @DontAdd
 	HIGH_PRIO_SAMPLE, // "Set high priority on sample and sub files when enqueued"
 	ROTATE_LOG, // "Create new main chat log every midnight"
 	POPUP_AWAY, // "Only show popups if away"
+	POPUP_MINIMIZED, // "Only show popups if minimized to tray"
 	POPUP_ON_PM, // "Show popup on PM"
 	POPUP_ON_NEW_PM, // "Show popup on PM only if it's from a new user"
 	POPUP_ON_HUBSTATUS, // "Show popup on hub status messages such as disconnected"

@@ -47,6 +47,7 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::HIGH_PRIO_SAMPLE, ResourceManager::HIGH_PRIO_SAMPLE },
 	{ SettingsManager::ROTATE_LOG, ResourceManager::ROTATE_LOG },
 	{ SettingsManager::POPUP_AWAY, ResourceManager::POPUP_AWAY },
+	{ SettingsManager::POPUP_MINIMIZED, ResourceManager::POPUP_MINIMIZED },
 	{ SettingsManager::POPUP_ON_PM, ResourceManager::POPUP_ON_PM },
 	{ SettingsManager::POPUP_ON_NEW_PM, ResourceManager::POPUP_ON_NEW_PM },
 	{ SettingsManager::POPUP_ON_HUBSTATUS, ResourceManager::POPUP_ON_HUBSTATUS },

@@ -437,6 +437,7 @@
 		<String Name="HighPrioSample">Set high priority on sample and sub files when enqueued</String>
 		<String Name="RotateLog">Create new main chat log every midnight</String>
 		<String Name="PopupAway">Only show popups if away</String>
+		<String Name="PopupMinimized">Only show popups if minimized to tray</String>
 		<String Name="PopupOnPm">Show popup on PM</String>
 		<String Name="PopupOnNewPm">Show popup on PM only if it's from a new user</String>
 		<String Name="PopupOnHubstatus">Show popup on hub status messages such as disconnected</String>
