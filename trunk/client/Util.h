@@ -360,7 +360,7 @@ public:
 	static string formatBytes(int64_t aBytes);
 	static wstring formatBytesW(int64_t aBytes);
 
-	static string formatExactSize(int64_t aBytes);
+	static wstring formatExactSize(int64_t aBytes);
 
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];

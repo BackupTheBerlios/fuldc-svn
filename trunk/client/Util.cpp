@@ -401,34 +401,30 @@ wstring Util::formatBytesW(int64_t aBytes) {
 	return buf;
 }
 
-string Util::formatExactSize(int64_t aBytes) {
-	char buf[64];
-#ifdef _WIN32
-		char number[64];
-		NUMBERFMTA nf;
-		sprintf(number, "%I64d", aBytes);
-		char Dummy[16];
-    
-		/*No need to read these values from the system because they are not
-		used to format the exact size*/
-		nf.NumDigits = 0;
-		nf.LeadingZero = 0;
-		nf.NegativeOrder = 0;
-		nf.lpDecimalSep = ",";
+wstring Util::formatExactSize(int64_t aBytes) {
+	wchar_t buf[64];
+	wchar_t number[64];
+	NUMBERFMT nf;
+	wsprintf(number, L"%I64d", aBytes);
+	wchar_t dummy[16];
 
-		GetLocaleInfoA( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, Dummy, 16 );
-		nf.Grouping = atoi(Dummy);
-		GetLocaleInfoA( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Dummy, 16 );
-		nf.lpThousandSep = Dummy;
+	//No need to read these values from the system because they are not
+	//used to format the exact size
+	nf.NumDigits = 0;
+	nf.LeadingZero = 0;
+	nf.NegativeOrder = 0;
+	nf.lpDecimalSep = L",";
 
-		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, &nf, buf, sizeof(buf)/sizeof(buf[0]));
-#else
-		sprintf(buf, "%'lld", aBytes);
-#endif
-		sprintf(buf, "%s %s", buf, CSTRING(B));
-		return buf;
+	GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, dummy, 16 );
+	nf.Grouping = _wtoi(dummy);
+	GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, dummy, 16 );
+	nf.lpThousandSep = dummy;
+
+	GetNumberFormat(LOCALE_USER_DEFAULT, 0, number, &nf, buf, 64);
+	
+	wsprintf(buf, L"%s %s", buf, CTSTRING(B));
+	return buf;
 }
-
 string Util::getLocalIp() {
 	string tmp;
 	

@@ -527,6 +527,8 @@
 #define IDC_DUPES                       1304
 #define IDC_BUTTON1                     1305
 #define IDC_DUPE_COLOR                  1305
+#define IDC_NONTTH                      1306
+#define IDC_DUPE_COLOR2                 1307
 #define IDC_LOG_OPTIONS                 1308
 #define IDC_IGNORE                      1309
 #define IDC_UNIGNORE                    1310

@@ -178,10 +178,11 @@ LRESULT FulHighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		int sel = ctrlStrings.GetSelectedIndex();
 		ctrlStrings.DeleteItem(sel);
 		
-		if(sel > 0 && ctrlStrings.GetItemCount() > 0)
+		if(sel > 0 && ctrlStrings.GetItemCount() > 0) {
 			ctrlStrings.SelectItem(sel-1);
-		else if(ctrlStrings.GetItemCount() > 0)
+		} else if(ctrlStrings.GetItemCount() > 0) {
 			ctrlStrings.SelectItem(0);
+		}
 
 		int j = 0;
 		ColorIter i = highlights.begin();

@@ -370,6 +370,7 @@ void SearchFrame::onEnter() {
 	SetWindowText((TSTRING(SEARCH) + _T(" - ") + s).c_str());
 
 	if(SearchManager::getInstance()->okToSearch()) {
+		results = filtered = 0;
 		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
 			(SearchManager::TypeModes)ftype, mode);
 		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent

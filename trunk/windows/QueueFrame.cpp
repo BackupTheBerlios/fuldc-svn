@@ -232,7 +232,7 @@ void QueueFrame::QueueItemInfo::update() {
 		}
 		if(colMask & MASK_SIZE) {
 			display->columns[COLUMN_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Text::toT(Util::formatBytes(getSize()));
-			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Text::toT(Util::formatExactSize(getSize()));
+			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Util::formatExactSize(getSize());
 		}
 		if(colMask & MASK_DOWNLOADED) {
 			if(getSize() > 0)

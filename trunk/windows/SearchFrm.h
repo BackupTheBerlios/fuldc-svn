@@ -348,7 +348,7 @@ private:
 				if(!type.empty() && type[0] == _T('.'))
 					type.erase(0, 1);
 				size = Text::toT(Util::formatBytes(sr->getSize()));
-				exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
+				exactSize = Util::formatExactSize(sr->getSize());
 			} else {
 				fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
 				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));

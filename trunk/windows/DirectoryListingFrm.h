@@ -232,7 +232,7 @@ private:
 			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
 				columns[COLUMN_TYPE].erase(0, 1);
 
-			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(f->getSize()));
+			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(f->getSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
 			if(f->getTTH() != NULL)
 				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
@@ -248,7 +248,7 @@ private:
 			} else {
 				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(d->getName()));
 			}
-			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(d->getTotalSize()));
+			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(d->getTotalSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		};
 
