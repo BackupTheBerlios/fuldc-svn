@@ -159,7 +159,11 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	updateStatus();
 
 	if(!BOOLSETTING(EXPAND_QUEUE)) {
-		collapse(ctrlDirs.GetRootItem());
+		HTREEITEM item = ctrlDirs.GetRootItem();
+		do{
+			collapse(item);
+			ctrlDirs.Expand(item, TVE_EXPAND);
+		}while((item = ctrlDirs.GetNextSiblingItem(item)) != NULL);
 	}
 
 	m_hMenu = WinUtil::mainMenu;
@@ -1371,8 +1375,7 @@ void QueueFrame::collapse(HTREEITEM item) {
 			collapse(tmp);
 			tmp = ctrlDirs.GetNextSiblingItem(tmp);
 		}
-		if(item != ctrlDirs.GetRootItem())
-			ctrlDirs.Expand(item, TVE_COLLAPSE);
+		ctrlDirs.Expand(item, TVE_COLLAPSE);
 	}else 
 		return;
 }
