@@ -39,7 +39,7 @@ PropPage::Item FulPage2::items[] = {
 LRESULT FulPage2::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 	PropPage::read((HWND)*this, items);
 
-	StringMap download = SettingsManager::getInstance()->getDownloadPaths();
+	download = SettingsManager::getInstance()->getDownloadPaths();
 
 	ctrlDownload.Attach( GetDlgItem(IDC_DOWNLOAD_LIST) );
 
@@ -67,6 +67,9 @@ LRESULT FulPage2::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BO
 			path += _T('\\');
 
 		bool accepted = false;
+		
+		//loop until the user enters an accepted name instead of aborting
+		//and having the user go through the browse dialog again
 		while( !accepted ){
 			LineDlg dlg;
 			dlg.line = Util::getLastDir( path );
@@ -76,7 +79,8 @@ LRESULT FulPage2::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BO
 				if( download.find( Text::fromT(dlg.line) ) != download.end() ){
 					MessageBox(CTSTRING(NAME_EXISTS), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK);
 				} else {
-					download[ Text::fromT(dlg.line) ] = Text::fromT(path);
+					//download[ Text::fromT(dlg.line) ] = Text::fromT(path);
+					download.insert( StringPair( Text::fromT(dlg.line), Text::fromT(path) ) );
 					TStringList l;
 					l.push_back( dlg.line );
 					l.push_back( path );
@@ -99,12 +103,10 @@ LRESULT FulPage2::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	ctrlDownload.GetItemText(sel, 0, buf, 1000);
 	string name = Text::fromT(buf);
 
-	for(StringMapIter i = download.begin(); i != download.end(); ++i) {
-		if( Util::stricmp( i->first, name ) == 0 ){
-			download.erase( i );
-			break;
-		}
-	}
+	StringMapIter i = download.find ( name );
+	if( i != download.end() )
+		download.erase( i );
+
 	ctrlDownload.DeleteItem( sel );
 	
 	return 0;

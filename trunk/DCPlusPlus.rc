@@ -814,10 +814,10 @@ BEGIN
     "U",            IDC_FAVUSERS,           VIRTKEY, CONTROL, NOINVERT
     "T",            IDC_FOLLOW,             VIRTKEY, CONTROL, NOINVERT
     "N",            IDC_NOTEPAD,            VIRTKEY, CONTROL, NOINVERT
-    "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
-    "E",            IDC_REFRESH_FILE_LIST,  VIRTKEY, CONTROL, NOINVERT
-    "S",            IDC_SEND_MESSAGE,       VIRTKEY, ALT, NOINVERT
     "L",            IDC_OPEN_FILE_LIST,     VIRTKEY, CONTROL, NOINVERT
+    "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_FILE_SETTINGS,       VIRTKEY, CONTROL, NOINVERT
+    "S",            IDC_SEND_MESSAGE,       VIRTKEY, ALT, NOINVERT
     "0",            IDC_SWITCH_WINDOW_0,    VIRTKEY, ALT, NOINVERT
     "1",            IDC_SWITCH_WINDOW_1,    VIRTKEY, ALT, NOINVERT
     "2",            IDC_SWITCH_WINDOW_2,    VIRTKEY, ALT, NOINVERT

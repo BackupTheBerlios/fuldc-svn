@@ -1151,15 +1151,31 @@ tstring WinUtil::UselessInfo() {
 	}
 
 	OSVERSIONINFOEX ver;
-	WinUtil::getVersionInfo(ver);
+	if(WinUtil::getVersionInfo(ver) ) {
+		tstring platform;
+		if(ver.dwPlatformId == VER_PLATFORM_WIN32_NT)
+			platform = _T("Win32 NT");
+		else if( ver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+			platform = _T("Win32 Windows");
+		else
+			platform = _T("Win32");
+		
+		tstring type;
+		if( ver.wProductType == VER_NT_WORKSTATION )
+			type = _T("Workstation");
+		else if( ver.wProductType == VER_NT_DOMAIN_CONTROLLER )
+			type = _T("Domain Controller");
+		else
+			type = _T("Server");
 
-	_stprintf(buf, _T("Major: %d\nMinor: %d\nBuild: %d\nSP: %d\nType: %d"),
-		(DWORD)ver.dwMajorVersion, (DWORD)ver.dwMinorVersion, (DWORD)ver.dwBuildNumber,
-		(DWORD)ver.wServicePackMajor, (DWORD)ver.wProductType);
+		_stprintf(buf, _T("%d.%d.%d SP: %d\nPlatform: %s Type: %s"),
+			(DWORD)ver.dwMajorVersion, (DWORD)ver.dwMinorVersion, (DWORD)ver.dwBuildNumber,
+			(DWORD)ver.wServicePackMajor, platform.c_str(), type.c_str());
 
-	result += _T("OS\n");
-	result += buf;
-	result += _T("\n\n");
+		result += _T("OS\n");
+		result += buf;
+		result += _T("\n\n");
+	}
 
 	result += _T("Uptime\n");
 	result += _T("System uptime: ");
