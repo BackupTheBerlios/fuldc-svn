@@ -14,9 +14,8 @@ void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	if(!activated)
 		return;
 
-	if (!Util::getAway() && BOOLSETTING(POPUP_AWAY)) {
+	if (!Util::getAway() && BOOLSETTING(POPUP_AWAY))
 		return;
-	}
 
 	if(!minimized && BOOLSETTING(POPUP_MINIMIZED)) 
 		return;
