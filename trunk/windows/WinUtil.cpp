@@ -771,15 +771,15 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 		size_t intPos = 0;
 
 		// Convert the stoplist string to a vector
-		StringTokenizer<tstring> t(strStoplistText, '|');
+		StringTokenizer<tstring> t(strStoplistText, _T('|') );
 		TStringList strStoplist = t.getTokens();
 		
 		// To lower case
 		strSearch = Text::toLower(strSearch);
 		// Loop all words and remove those that exists in the search string
 		for (unsigned int i = 0; i < strStoplist.size(); i++) {
-			tstring::size_type pos = strSearch.find(strStoplist[i]);
-			while (pos > 0) {
+			int pos = strSearch.find(strStoplist[i]);
+			while (pos != tstring::npos ) {
 				strSearch = strSearch.substr(0, pos) + strSearch.substr(pos + strStoplist[i].length());
 				pos = strSearch.find(strStoplist[i]);
 			}
@@ -796,16 +796,16 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 		}
 		
 		// Remove 4 digits (year)
-		regexp.Init("\\d{4}", "i");
+		regexp.Init(_T("\\d{4}"), _T("i"));
 		strSearch = regexp.sub(strSearch, Util::emptyStringT);
 				
 		// search for "s01e01" and remove
-		regexp.Init("s\\d{2}(e\\d{2})?", "i");
+		regexp.Init(_T("s\\d{2}(e\\d{2})?"), _T("i"));
 		strSearch = regexp.sub(strSearch, Util::emptyStringT);
 
 		// search for "1x01" and remove
 		//regExp.Parse("{ [0-9]x[0-9][0-9]}", false);
-		regexp.Init("\\dx\\d{2}", "i");
+		regexp.Init(_T("\\dx\\d{2}"), _T("i"));
 		strSearch = regexp.sub(strSearch, Util::emptyStringT);
 		
 		// Remove trailing spaces
