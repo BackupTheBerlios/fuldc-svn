@@ -520,14 +520,16 @@ LRESULT SearchFrame::onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	dcassert(wID >= IDC_DOWNLOAD_TARGET);
+
 	size_t newId = (size_t)wID - IDC_DOWNLOAD_TARGET;
 
 	if(newId < downloadPaths.size()){
 		ctrlResults.forEachSelectedT(SearchInfo::Download(downloadPaths[newId]));
-	}else if(newId < WinUtil::lastDirs.size()) {
+	}else if((newId - downloadPaths.size()) < WinUtil::lastDirs.size()) {
 		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId - downloadPaths.size()]));
 	} else {
-		dcassert((newId - WinUtil::lastDirs.size()) < targets.size());
+		dcassert((newId - WinUtil::lastDirs.size() - downloadPaths.size()) < targets.size());
+		dcassert((newId - WinUtil::lastDirs.size() - downloadPaths.size()) >= 0);
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(targets[newId - WinUtil::lastDirs.size() - downloadPaths.size()]));
 	}
 	return 0;
