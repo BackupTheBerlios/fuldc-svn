@@ -1359,6 +1359,8 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 						if(qi->getSources().size() < SETTING(MAX_AUTO_MATCH_SOURCES))
 							addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 					}
+				} catch (QueueException&) {
+					//...
 				} catch(const Exception&) {
 					// ...
 				}
@@ -1552,9 +1554,10 @@ u_int64_t QueueManager::getTotalSize(const string & path){
 
 	StringIntIter i = totalSizeMap.find(tmp);
 
-	dcassert(i != totalSizeMap.end());
-	
-	return i->second;
+	if(i == totalSizeMap.end())
+		return 0;
+	else
+		return i->second;
 }
 /**
  * @file

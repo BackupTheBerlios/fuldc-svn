@@ -179,6 +179,7 @@ private:
 		string file;
 		string path;
 		string IP;
+		string country;
 
 		enum {
 			MASK_USER = 1 << COLUMN_USER,

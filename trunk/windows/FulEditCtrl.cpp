@@ -398,14 +398,14 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 	return string::npos;
 }
 
-LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled){
+LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
 	ScrollEnd();
 			
 	bHandled = FALSE;
 	return 1;
 }
 
-LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	POINT pt2, pt = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
 	int ch = CharFromPos(pt);
 	pt2 = PosFromChar(ch);

@@ -54,7 +54,9 @@ public:
 #undef CMD
 
 	template<typename T>
-	explicit Command(T t) : cmdInt(typename T::CMD), type(0) { }
+	explicit Command(const T&) : cmdInt(T::CMD), type(0) { }
+
+	//explicit Command(u_int32_t cmd) : cmdInt(cmd), type(0) { }
 
 	explicit Command(const string& aLine, bool nmdc = false) : cmdInt(0), type(0) {
 		parse(aLine, nmdc);
@@ -85,6 +87,7 @@ public:
 		} else {
 			tmp += '$';
 		}
+		return tmp;
 	}
 	void addParam(const string& name, const string& value) {
 		parameters.push_back(name);
@@ -93,19 +96,29 @@ public:
 	void addParam(const string& str) {
 		parameters.push_back(str);
 	}
-	const string& getParam(size_t n) {
+	const string& getParam(size_t n) const {
 		return getParameters().size() > n ? getParameters()[n] : Util::emptyString;
 	}
 	/** Return a named parameter where the name is a two-letter code */
-	string getParam(const char* name, size_t start) const {
-		if(getParameters().size() <= start)
-			return Util::emptyString;
+	bool getParam(const char* name, size_t start, string& ret) const {
 		for(string::size_type i = start; i < getParameters().size(); ++i) {
-			if(toCode(name) == toCode(getParameters()[0].c_str())) {
-				return getParameters()[i].substr(2);
+			if(toCode(name) == toCode(getParameters()[i].c_str())) {
+				ret = getParameters()[i].substr(2);
+				return true;
 			}
 		}
-		return Util::emptyString;
+		return false;
+	}
+
+	bool hasFlag(const char* name, size_t start) const {
+		for(string::size_type i = start; i < getParameters().size(); ++i) {
+			if(toCode(name) == toCode(getParameters()[i].c_str()) && 
+				getParameters()[i][2] == '1' &&
+				getParameters()[i].size() == 3) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static u_int16_t toCode(const char* x) { return *((u_int16_t*)x); }

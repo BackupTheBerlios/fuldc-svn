@@ -227,6 +227,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	strtmp[strtmp.length() - 1] = '\n';
 	send(strtmp);
 }
+
 void AdcHub::password(const string& pwd) { 
 	if(!salt.empty()) {
 		static const int SALT_SIZE = 192/8;

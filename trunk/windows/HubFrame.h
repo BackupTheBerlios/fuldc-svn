@@ -68,7 +68,6 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
-		COMMAND_ID_HANDLER(IDC_REFRESH, onRefresh)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
@@ -187,14 +186,6 @@ public:
 		}
 	}
 
-	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		if(client->isConnected()) {
-			clearUserList();
-			((NmdcHub*)client)->refreshUserList();
-		}
-		return 0;
-	}
-	
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		clearUserList();
 		client->addListener(this);
@@ -325,6 +316,7 @@ private:
         tabList.push_back("/clear");
 		tabList.push_back("/close");
 		tabList.push_back("/connection");
+		tabList.push_back("/ctopic");
 		tabList.push_back("/dc++");
 		tabList.push_back("/dslots");
 		tabList.push_back("/favorite");
@@ -343,7 +335,7 @@ private:
 		tabList.push_back("/share");
 		tabList.push_back("/showjoins");
 		tabList.push_back("/slots");
-		tabList.push_back("/topics");
+		tabList.push_back("/topic");
 		tabList.push_back("/ts");
 		tabList.push_back("/unshare");
 		tabList.push_back("/uptime");

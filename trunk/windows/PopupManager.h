@@ -29,8 +29,8 @@ public:
 		if(hBitmap != NULL){
 			BITMAP bm;
 			GetObject(hBitmap,sizeof(bm),&bm);
-			height = bm.bmHeight;
-			width = bm.bmWidth;
+			height = (u_int16_t)bm.bmHeight;
+			width = (u_int16_t)bm.bmWidth;
 		}
 	}
 	~PopupManager() {

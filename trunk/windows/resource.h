@@ -5,9 +5,9 @@
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
 #define IDC_TRAY_SHOW                   103
+#define IDC_COPY_HUB                    104
 #define IDC_COPY_FILENAME               105
 #define IDC_COPY_PATH                   106
-#define IDC_COPY_HUB                    104
 #define IDD_GENERALPAGE                 107
 #define IDC_COPY_SIZE                   107
 #define IDC_SET_PRIORITY                108
@@ -36,6 +36,7 @@
 #define IDC_RESOLVE_IP                  125
 #define IDC_RESOLVED_IP                 126
 #define IDC_SEARCH_RELEASEALTERNATES    127
+#define IDC_SETTINGS_GET_USER_COUNTRY   127
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
 #define IDC_PUBLIST                     130
@@ -84,9 +85,9 @@
 #define IDD_DIALOG1                     248
 #define IDD_FULPAGE2                    248
 #define IDR_PRIVATEFRAME                249
-#define IDC_SETTINGS_MAX_HASH_SPEED		250
-#define IDC_MAX_HASH_SPEED				251
-#define IDC_SETTINGS_MBS				252
+#define IDC_SETTINGS_MAX_HASH_SPEED     250
+#define IDC_MAX_HASH_SPEED              251
+#define IDC_SETTINGS_MBS                252
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -431,6 +432,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        253
 #define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1263
-#define _APS_NEXT_SYMED_VALUE           127
+#define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

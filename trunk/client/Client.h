@@ -50,6 +50,7 @@ public:
 	typedef X<14> HubFull;
 	typedef X<15> NickTaken;
 	typedef X<16> SearchFlood;
+	typedef X<17> NmdcSearch;
 
 	virtual void on(Connecting, Client*) throw() { }
 	virtual void on(Connected, Client*) throw() { }
@@ -67,6 +68,7 @@ public:
 	virtual void on(HubFull, Client*) throw() { }
 	virtual void on(NickTaken, Client*) throw() { }
 	virtual void on(SearchFlood, Client*, const string&) throw() { }
+	virtual void on(NmdcSearch, Client*, const string&, int, int64_t, int, const string&) throw() { }
 };
 
 /** Yes, this should probably be called a Hub */

@@ -325,6 +325,9 @@ public:
 	static int toInt(const string& aString) {
 		return atoi(aString.c_str());
 	}
+	static u_int32_t toUInt32(const char* c) {
+		return (u_int32_t)atoi(c);
+	}
 
 	static double toDouble(const string& aString) {
 		return atof(aString.c_str());
@@ -489,6 +492,8 @@ public:
 
 	static string getOsVersion();
 
+	static string getIpCountry (string IP);
+
 	static bool getAway() { return away; };
 	static void setAway(bool aAway) {
 		away = aAway;
@@ -512,6 +517,12 @@ private:
 	static char lower[];
 	static int8_t cmp[256][256];
 	static int8_t cmpi[256][256];
+
+	typedef map<u_int32_t, u_int16_t> CountryList;
+	typedef CountryList::iterator CountryIter;
+
+	static CountryList countries;
+
 };
 
 /** Case insensitive hash function for strings */

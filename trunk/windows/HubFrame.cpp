@@ -91,7 +91,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUsers.SetButtonStyle(BS_AUTOCHECKBOX, false);
 	ctrlShowUsers.SetFont(WinUtil::systemFont);
-	ctrlShowUsers.SetCheck(showUserList);
+	ctrlShowUsers.SetCheck(showUserList ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
@@ -126,8 +126,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	appendUserItems(userMenu);
 	userMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CSTRING(SHOW_LOG));
 	userMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CSTRING(COPY));
-	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
 	userMenu.SetMenuDefaultItem(IDC_GETLIST);
 
 	tabMenu = CreatePopupMenu();
@@ -308,6 +306,8 @@ void HubFrame::onEnter() {
 						PrivateFrame::openWindow(ui->user);
 				}
 			}else if(Util::stricmp(cmd.c_str(), "topic") == 0) {
+				addLine((string)client->getNameWithTopic());
+			}else if(Util::stricmp(cmd.c_str(), "ctopic") == 0) {
 				openLinksInTopic();
 			} else if(Util::stricmp(cmd.c_str(), "popups") == 0) {
 				if(Util::stricmp(param.c_str(), "on") == 0) {
@@ -591,7 +591,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 			SetSinglePaneMode(SPLIT_PANE_LEFT);
 	} else {
 		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_NONE);
+		SetSinglePaneMode(SPLIT_PANE_NONE);
 	}
 	SetSplitterRect(rc);
 	
@@ -634,7 +634,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUserList);
+		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
 
 		int i = 0;
 		int j = ctrlUsers.GetItemCount();
@@ -1131,11 +1131,20 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
-
-	if(wParam == BST_CHECKED)
+	if(wParam == BST_CHECKED) {
+		User::NickMap& lst = client->lockUserList();
+		ctrlUsers.SetRedraw(FALSE);
+		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
+			updateUser(i->second);
+		}
+		client->unlockUserList();
+		ctrlUsers.SetRedraw(TRUE);
+		ctrlUsers.resort();
 		showUserList = true;
-	else
+
+	} else {
 		showUserList = false;
+	}
 
 	UpdateLayout(FALSE);
 	return 0;

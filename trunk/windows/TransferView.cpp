@@ -393,7 +393,8 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_PATH] = path;
 	}
 	if(colMask & MASK_IP) {
-		columns[COLUMN_IP] = IP;
+		if (country == "") columns[COLUMN_IP] = IP;
+		else columns[COLUMN_IP] = IP + " (" + country + ")";
 	}
 	if(colMask & MASK_RATIO) {
 		columns[COLUMN_RATIO] = Util::toString(getRatio());
@@ -467,6 +468,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 		i->path = Util::getFilePath(aDownload->getTarget());
 		i->statusString = STRING(DOWNLOAD_STARTING);
 		i->IP = aDownload->getUserConnection()->getRemoteIp();
+		i->country = Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp());
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
 			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
 	}
@@ -550,6 +552,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 		i->path = Util::getFilePath(aUpload->getFileName());
 		i->statusString = STRING(UPLOAD_STARTING);
 		i->IP = aUpload->getUserConnection()->getRemoteIp();
+		i->country = Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp());
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
 			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
 	}

@@ -49,7 +49,7 @@ private:
 	CHARFORMAT2 selFormat;
 	char*		findBuffer;
 	int			curFindPos;
-	const int	findBufferSize;
+	const WORD	findBufferSize;
     static UINT	WM_FINDREPLACE;
 	StringList	urls;
 		
