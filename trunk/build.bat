@@ -1,19 +1,18 @@
 @ECHO OFF
 rem CONFIG START
 rem ----------------------------------------------------
-set NET=C:\Progra~1\Micros~1.NET\Common7\IDE\devenv.exe
+set NET="C:\Program Files\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.exe"
 set OPTS=dcplusplus.sln /build release
 set CLEAN=dcplusplus.sln /clean release
 
-set RAR=C:\Progra~1\Winrar\rar.exe
-set RAROPS=a -r -idp -inul -m3 ..\fulDC.rar *.*
+rem set RAR=C:\Progra~1\Winrar\rar.exe
+rem set RAROPS=a -r -idp -inul -m3 ..\fulDC.rar *.*
 
 rem CONFIG END
 rem ----------------------------------------------------
 
 ECHO Cleaning Solution...
 %NET% %CLEAN%
-rmdir App /S /Q
 ECHO ------------------------------
 ECHO Compiling Solution...
 %NET% %OPTS%
@@ -31,10 +30,10 @@ del App\icons\dcplusplus.manifest
 del App\dcplusplus.map
 
 ECHO ------------------------------
-ECHO Rarring...
-del fulDC.rar
-cd App
-%RAR% %RAROPS%
+rem ECHO Rarring...
+rem del fulDC.rar
+rem cd App
+rem %RAR% %RAROPS%
 ECHO ------------------------------
 ECHO finished!
 pause
