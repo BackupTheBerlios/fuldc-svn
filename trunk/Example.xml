@@ -287,7 +287,6 @@
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
-		<String Name="SettingsAutoSearchAutoString">Use default search strings in auto search when no string is specified</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
@@ -315,7 +314,6 @@
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
-		<String Name="SettingsListDupes">Keep duplicate files in your file list (duplicates never count towards your share size)</String>
 		<String Name="SettingsLogDownloads">Log downloads</String>
 		<String Name="SettingsLogFilelistTransfers">Log filelist transfers</String>
 		<String Name="SettingsLogMainChat">Log main chat</String>

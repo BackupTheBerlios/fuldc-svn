@@ -329,7 +329,6 @@ private:
 	// SettingsManagerListener
 	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw() {
 		save(xml);
-		saveXmlList();
 	}
 	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
 		load(xml);

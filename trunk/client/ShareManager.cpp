@@ -83,6 +83,8 @@ ShareManager::~ShareManager() {
 	DownloadManager::getInstance()->removeListener(this);
 	HashManager::getInstance()->removeListener(this);
 
+	saveXmlList();
+
 	join();
 
 	delete lFile;

@@ -45,8 +45,8 @@ const string SettingsManager::settingTags[] =
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
-	"OpenPublic", "OpenQueue", "AutoSearch", "AutoAutoSearchString", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
-	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
+	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
+	"BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
@@ -103,13 +103,11 @@ SettingsManager::SettingsManager()
 	setDefault(MINIMIZE_TRAY, false);
 	setDefault(OPEN_PUBLIC, false);
 	setDefault(OPEN_QUEUE, false);
-	setDefault(AUTO_SEARCH, false);
-	setDefault(AUTO_SEARCH_AUTO_STRING, false);
+	setDefault(AUTO_SEARCH, true);
 	setDefault(TIME_STAMPS, false);
 	setDefault(CONFIRM_EXIT, false);
 	setDefault(IGNORE_OFFLINE, false);
 	setDefault(POPUP_OFFLINE, false);
-	setDefault(LIST_DUPES, false);
 	setDefault(BUFFER_SIZE, 64);
 	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.config.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);

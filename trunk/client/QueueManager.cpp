@@ -132,9 +132,6 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 		// No files that already have more than 5 online sources
 		if(q->countOnlineUsers() >= 5)
 			continue;
-		// Check that we have a search string
-		if(!BOOLSETTING(AUTO_SEARCH_AUTO_STRING) && q->getSearchString().empty())
-			continue;
 		// Did we search for it recently?
         if(find(recent.begin(), recent.end(), q->getSearchString()) != recent.end())
 			continue;
@@ -370,7 +367,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 				} else {
 					fn = qi->getTargetFileName();
 					sz = qi->getSize() - 1;
-					if(qi->getSearchString().empty()) { // BOOLSETTING(AUTO_SEARCH_AUTO_STRING must be set...
+					if(qi->getSearchString().empty()) {
 						searchString = SearchManager::getInstance()->clean(qi->getTargetFileName());
 					} else {
 						searchString = qi->getSearchString();
@@ -1232,6 +1229,7 @@ void QueueLoader::endTag(const string& name, const string&) {
 // SearchManagerListener
 void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 	bool added = false;
+	bool wantConnection = false;
 	int users = 0;
 
 	if(BOOLSETTING(AUTO_SEARCH)) {
@@ -1255,7 +1253,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 
 			if(found) {
 				try {
-					addSource(qi, sr->getFile(), sr->getUser(), 0, false);
+					wantConnection = addSource(qi, sr->getFile(), sr->getUser(), 0, false);
 					added = true;
 					users = qi->countOnlineUsers();
 
@@ -1276,6 +1274,9 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			// ...
 		}
 	}
+
+	if(added && wantConnection && sr->getUser()->isOnline())
+		ConnectionManager::getInstance()->getDownloadConnection(sr->getUser());
 }
 
 // ClientManagerListener
@@ -1425,7 +1426,7 @@ void QueueManager::onTimerSearch() {
 	try{
         fn = qi->getTargetFileName();
         sz = qi->getSize() - 1;
-        if(qi->getSearchString().empty()) { // BOOLSETTING(AUTO_SEARCH_AUTO_STRING must be set...
+        if(qi->getSearchString().empty()) { 
 			searchString = SearchManager::getInstance()->clean(fn);
         } else {
 			searchString = qi->getSearchString();

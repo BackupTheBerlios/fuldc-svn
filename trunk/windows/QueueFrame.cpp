@@ -762,7 +762,7 @@ void QueueFrame::setSearchStringForSelected() {
 		// Single item, fill in the current search string
 		QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 		dlg.line = ii->getSearchString();
-		if(dlg.line.empty() && BOOLSETTING(AUTO_SEARCH_AUTO_STRING))
+		if(dlg.line.empty())
 			dlg.line = SearchManager::getInstance()->clean(ii->getTargetFileName());
 		if(dlg.DoModal() == IDOK)
 			QueueManager::getInstance()->setSearchString(ii->getTarget(), dlg.line);

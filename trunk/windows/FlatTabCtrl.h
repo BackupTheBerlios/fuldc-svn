@@ -423,15 +423,13 @@ public:
 				}
 			}
 			
-			if(rows > 1){
-				HPEN oldpen = memDC.SelectPen(::CreatePen(PS_SOLID, 1, SETTING(TAB_INACTIVE_BORDER)));
-				for(int r = 0; r < rows; r++) {
-					memDC.MoveTo(rc.left, r*getTabHeight());
-					memDC.LineTo(rc.right, r*getTabHeight());
-				}
-				::DeleteObject(memDC.SelectPen(oldpen));
+			HPEN oldpen = memDC.SelectPen(::CreatePen(PS_SOLID, 1, SETTING(TAB_INACTIVE_BORDER)));
+			for(int r = 0; r < rows; r++) {
+				memDC.MoveTo(rc.left, r*getTabHeight());
+				memDC.LineTo(rc.right, r*getTabHeight());
 			}
-
+			::DeleteObject(memDC.SelectPen(oldpen));
+			
 			if(drawActive) {
 				dcassert(active);
 				drawTab(memDC, active, active->xpos, active->row, true);
@@ -565,6 +563,7 @@ private:
 
 		int getWidth() {
 			return (dirty ? boldSize.cx : size.cx) + ((wCode == -1) ? FT_EXTRA_SPACE -7: FT_EXTRA_SPACE) - (BOOLSETTING(TAB_SHOW_ICONS) ? 0 : 16);
+			
 		}
 	};
 

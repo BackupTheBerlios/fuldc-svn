@@ -83,7 +83,7 @@ public:
 				rpos = aNick.rfind("]", rpos-1);
 			if(rpos != string::npos) {
 				shortNick = aNick.substr(rpos+1);
-				isp = aNick.substr(pos+1, rpos-1);
+				isp = aNick.substr(0, rpos);
 			} else {
 				shortNick = aNick;
 				isp = Util::emptyString;
