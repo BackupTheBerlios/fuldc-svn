@@ -809,36 +809,45 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 			menuItems = 0;
 			int pmItems = 0;
-			QueueItemInfo::SourceIter i;
-			for(i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
-				tstring nick = Text::toT(i->getUser()->getNick());
-				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPTSTR)nick.c_str();
-				mi.dwItemData = (ULONG_PTR)&(*i);
-				mi.wID = IDC_BROWSELIST + menuItems;
-				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
-				removeMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
-				mi.wID = IDC_REMOVE_SOURCES + menuItems;
-				removeAllMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				if(i->getUser()->isOnline()) {
-					mi.wID = IDC_PM + menuItems;
-					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
-					pmItems++;
+			if(ii) {
+				QueueItemInfo::SourceIter i;
+				for(i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
+					if(!i->getUser()) {
+						continue;
+					}
+					tstring nick = Text::toT(i->getUser()->getNick());
+					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+					mi.fType = MFT_STRING;
+					mi.dwTypeData = (LPTSTR)nick.c_str();
+					mi.dwItemData = (ULONG_PTR)&(*i);
+					mi.wID = IDC_BROWSELIST + menuItems;
+					browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
+					mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
+					removeMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
+					mi.wID = IDC_REMOVE_SOURCES + menuItems;
+					removeAllMenu.InsertMenuItem(menuItems, TRUE, &mi);
+					if(i->getUser()->isOnline()) {
+						mi.wID = IDC_PM + menuItems;
+						pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
+						pmItems++;
+					}
+					menuItems++;
 				}
-				menuItems++;
-			}
-			readdItems = 0;
-			for(i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
-				tstring nick = Text::toT(i->getUser()->getNick());
-				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPTSTR)nick.c_str();
-				mi.dwItemData = (ULONG_PTR)&(*i);
-				mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
-				readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
-				readdItems++;
+			
+				readdItems = 0;
+				for(i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
+					if(!i->getUser()) {
+						continue;
+					}
+					tstring nick = Text::toT(i->getUser()->getNick());
+					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+					mi.fType = MFT_STRING;
+					mi.dwTypeData = (LPTSTR)nick.c_str();
+					mi.dwItemData = (ULONG_PTR)&(*i);
+					mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
+					readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
+					readdItems++;
+				}
 			}
 
 			if(menuItems == 0) {

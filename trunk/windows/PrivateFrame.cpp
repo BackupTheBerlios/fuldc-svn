@@ -343,8 +343,6 @@ void PrivateFrame::onEnter()
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), _T("showlog")) == 0) {
 				SendMessage(WM_COMMAND, IDC_SHOWLOG);
-			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
-				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /mute, /unmute, /pop on|off"));
 			} else if(Util::stricmp(s.c_str(), _T("me")) == 0) {
 				sendMessage(_T("/") + s + _T(" ") + param);
 			} else if(Util::stricmp(s.c_str(), _T("mute")) == 0) {

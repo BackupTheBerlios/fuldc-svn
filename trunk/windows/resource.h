@@ -47,6 +47,7 @@
 #define IDC_FILES                       135
 #define IDC_PASTE                       135
 #define IDC_PRIORITY                    136
+#define IDC_CHATCOMMANDS                136
 #define IDC_ITEMS                       137
 #define IDC_BOLD                        138
 #define IDC_ITALIC                      139
@@ -547,7 +548,6 @@
 #define IDC_ONLY_REFRESH_INCOMING_TIME2 1320
 #define IDC_ONLY_REFRESH_SHARE_TIME1    1321
 #define IDC_ONLY_REFRESH_SHARE_TIME2    1322
-#define IDC_CUSTOM1                     1323
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -598,6 +598,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1324
-#define _APS_NEXT_SYMED_VALUE           136
+#define _APS_NEXT_SYMED_VALUE           137
 #endif
 #endif

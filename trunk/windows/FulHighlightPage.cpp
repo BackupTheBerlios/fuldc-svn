@@ -417,7 +417,7 @@ void FulHighlightPage::addPreset(int preset) {
 			fgColor = RGB(115, 115, 118);
 			break;
 		case 4:
-			SetDlgItemText(IDC_STRING, _T("$Re:http://\\S+|ftp://\\S+|https://\\S+|mms://\\S+|ftps://\\S+|www\\.\\S+"));
+			SetDlgItemText(IDC_STRING, _T("$Re:\\s(http://\\S+|ftp://\\S+|https://\\S+|mms://\\S+|ftps://\\S+|www\\.\\S+)"));
 			CheckDlgButton(IDC_UNDERLINE, BST_CHECKED);
 			CheckDlgButton(IDC_LASTLOG, BST_CHECKED);
 			CheckDlgButton(IDC_HAS_FG_COLOR, BST_CHECKED);

@@ -42,7 +42,6 @@ PropPage::TextItem FulAppearancePage::texts[] = {
 
 PropPage::Item FulAppearancePage::items[] = {
 	{ IDC_CHATBUFFERSIZE,	SettingsManager::CHATBUFFERSIZE,	PropPage::T_INT },
-	{ IDC_EDIT_TIME_STAMPS, SettingsManager::TIME_STAMPS_FORMAT,PropPage::T_STR },
 	{ 0,					0,									PropPage::T_END }
 };
 

@@ -80,6 +80,7 @@ IDD_FULPOPUPPAGE=settings_fuldc_popups.html
 IDD_FULTABSPAGE=settings_fuldc_tabs.html
 IDD_HIGHLIGHTPAGE=settings_fuldc_highlight.html
 IDD_FULIGNOREPAGE=settings_fuldc_ignore.html
+IDC_CHATCOMMANDS=chat_commands.html
 
 [MAP]
 #include ..\windows\resource.h

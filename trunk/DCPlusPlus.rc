@@ -407,18 +407,20 @@ BEGIN
                     IDC_ONLY_REFRESH_INCOMING,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,12,164,139,10
     COMBOBOX        IDC_ONLY_REFRESH_INCOMING_TIME1,156,162,47,30,
-                    CBS_DROPDOWN | CBS_SORT | WS_DISABLED | WS_VSCROLL | 
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | 
                     WS_TABSTOP
     COMBOBOX        IDC_ONLY_REFRESH_INCOMING_TIME2,213,162,47,30,
-                    CBS_DROPDOWN | CBS_SORT | WS_DISABLED | WS_VSCROLL | 
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | 
                     WS_TABSTOP
     CONTROL         "Only refresh Incoming between...",
                     IDC_ONLY_REFRESH_SHARE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,12,185,139,10
-    COMBOBOX        IDC_ONLY_REFRESH_SHARE_TIME1,156,183,47,30,CBS_DROPDOWN | 
-                    CBS_SORT | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_ONLY_REFRESH_SHARE_TIME2,213,183,47,30,CBS_DROPDOWN | 
-                    CBS_SORT | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_ONLY_REFRESH_SHARE_TIME1,156,183,47,30,
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | 
+                    WS_TABSTOP
+    COMBOBOX        IDC_ONLY_REFRESH_SHARE_TIME2,213,183,47,30,
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | 
+                    WS_TABSTOP
     GROUPBOX        "Refresh",IDC_SB_REFRESH,7,106,261,96
     GROUPBOX        "Skiplist Share",IDC_SB_SKIPLIST_SHARE,7,7,261,40
     LTEXT           "Skiplist (separate files with """"|""""):",

@@ -531,8 +531,6 @@ _T("\r\n-- My client supports XML file lists, does yours?\r\n") LINE2
 
 #define MSGS 16
 
-tstring WinUtil::commands = _T("/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /rebuild");
-
 bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status) {
 	string::size_type i = cmd.find(' ');
 	if(i != string::npos) {
@@ -656,6 +654,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		message = WinUtil::DiskSpaceInfo();
 	} else if(Util::stricmp(cmd.c_str(), _T("regen")) == 0) {
 		ShareManager::getInstance()->generateXmlList(true);
+	} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
+		HtmlHelp(mainWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDC_CHATCOMMANDS);
 	} else {
 		return false;
 	}

@@ -285,16 +285,6 @@ void HubFrame::onEnter() {
 					ui->grant();
 					addClientLine(ui->getText(COLUMN_NICK) + _T(" granted"));
 				}
-			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
-				if(param.empty()) 
-					addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message]"));
-				else {
-					tstring help = WinUtil::Help(param);
-					if(help.empty())
-						addLine(_T("*** /") + param + _T(" - ") + CTSTRING(NOT_FOUND));
-					else
-						addLine(_T("*** /") + help);
-				}
 			} else if(Util::stricmp(cmd.c_str(), _T("showlog")) == 0) {
 				SendMessage(WM_COMMAND, IDC_SHOW_HUB_LOG);
 			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {

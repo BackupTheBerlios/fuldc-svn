@@ -75,7 +75,6 @@ public:
 	static HWND mainWnd;
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
-	static tstring commands;
 	static HHOOK hook;
 	static tstring tth;
 	static StringPairList initialDirs;
