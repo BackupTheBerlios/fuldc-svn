@@ -231,6 +231,7 @@ public:
 
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
 	static string validateFileName(string aFile);
+	static wstring validateFileName(wstring aFile);
 	
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));

@@ -669,7 +669,7 @@ LRESULT TransferView::onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		return 0;
 
 	resolveBuffer = new char[MAXGETHOSTSTRUCT];
-	unsigned long l = inet_addr(Text::fromT(ctrlTransfers.getItemData(i)->getText(COLUMN_IP)).c_str());
+	unsigned long l = inet_addr(Text::wideToAcp(ctrlTransfers.getItemData(i)->getText(COLUMN_IP)).c_str());
 
 	if( 0 == WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT)) {
 		delete[] resolveBuffer;
@@ -694,7 +694,7 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	memcpy(&a.S_un.S_addr, h->h_addr_list[0], 4);
 	char * c = inet_ntoa(a);
 	if(c != NULL)
-		::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new string(string(c) + " " +  STRING(RESOLVES_TO) + " " + h->h_name));
+		::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new tstring( Text::acpToWide(c) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(h->h_name) ));
 	delete[] resolveBuffer;
 	resolveBuffer = NULL;
 

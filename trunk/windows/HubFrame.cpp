@@ -184,6 +184,9 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		MoveWindow(rc, TRUE);
 	}
 
+	//avoid receiving timer messages before the window has been created
+	TimerManager::getInstance()->addListener(this);
+
 	return 1;
 }
 
@@ -1512,7 +1515,7 @@ LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 		path += server + _T(".log");
 	}
 	
-	ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
 	
 	return 0;
 }

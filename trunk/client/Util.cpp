@@ -172,6 +172,12 @@ static const char badChars[] = {
 		31, '<', '>', '/', '"', '|', '?', '*', 0
 };
 
+static const wchar_t badCharsW[] = { 
+	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+		31, _T('<'), _T('>'), _T('/'), _T('"'), _T('|'), _T('?'), _T('*'), 0
+};
+
 /**
  * Replaces all strange characters in a file with '_'
  * @todo Check for invalid names such as nul and aux...
@@ -214,6 +220,49 @@ string Util::validateFileName(string tmp) {
 		tmp[i + 1] = '_';
 		tmp[i + 2] = '_';
 		tmp[i + 3] = '_';
+		i += 2;
+	}
+	return tmp;
+}
+
+wstring Util::validateFileName(wstring tmp) {
+	wstring::size_type i = 0;
+
+	// First, eliminate forbidden chars
+	while( (i = tmp.find_first_of(badCharsW, i)) != wstring::npos) {
+		tmp[i] = _T('_');
+		i++;
+	}
+
+	// Then, eliminate all ':' that are not the second letter ("c:\...")
+	i = 0;
+	while( (i = tmp.find(_T(':'), i)) != wstring::npos) {
+		if(i == 1) {
+			i++;
+			continue;
+		}
+		tmp[i] = _T('_');	
+		i++;
+	}
+
+	// Remove the .\ that doesn't serve any purpose
+	i = 0;
+	while( (i = tmp.find(_T("\\.\\"), i)) != wstring::npos) {
+		tmp.erase(i+1, 2);
+	}
+
+	// Remove any double \\ that are not at the beginning of the path...
+	i = 1;
+	while( (i = tmp.find(_T("\\\\"), i)) != wstring::npos) {
+		tmp.erase(i+1, 1);
+	}
+
+	// And last, but not least, the infamous ..\! ...
+	i = 0;
+	while( ((i = tmp.find(_T("\\..\\"), i)) != wstring::npos) ) {
+		tmp[i + 1] = _T('_');
+		tmp[i + 2] = _T('_');
+		tmp[i + 3] = _T('_');
 		i += 2;
 	}
 	return tmp;

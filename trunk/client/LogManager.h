@@ -61,7 +61,7 @@ public:
 		time_t now = time(NULL);
 		strftime(buf, 20, "%Y-%m-%d ", localtime(&now));
 		if(!log(area + "\\" + buf + area, msg)) {
-			::CreateDirectoryA((SETTING(LOG_DIRECTORY) + area).c_str(), NULL);
+			::CreateDirectoryW( Text::utf8ToWide(SETTING(LOG_DIRECTORY) + Util::validateFileName(area) ).c_str(), NULL);
 			log(area + "\\" + buf + area, msg);
 		}
 	}
