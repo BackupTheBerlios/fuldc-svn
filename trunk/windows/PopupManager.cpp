@@ -5,6 +5,7 @@
 
 #include "WinUtil.h"
 #include "PopupManager.h"
+#include "MainFrm.h"
 
 
 PopupManager* Singleton< PopupManager >::instance = NULL;
@@ -60,10 +61,22 @@ void PopupManager::Show(const string& aMsg ) {
 	popups.push_back(p);
 }
 
-void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t tick) {
+void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t /*tick*/ ) {
 	if(!BOOLSETTING(REMOVE_POPUPS))
 		return;
 
+	//post a message and let the main window thread take care of the window
+	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, MainFrame::REMOVE_POPUP, 0);
+
+}
+
+void PopupManager::on(QueueManagerListener::ReleaseDone, string msg) {
+	//we can't create the window in this thread, then the client will crash
+	//so post a message and let the main window thread create it
+	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, MainFrame::DOWNLOAD_COMPLETE, (LPARAM)new string(msg));
+}
+
+void PopupManager::AutoRemove(){
 	Lock l(cs);
 
 	//we got nothing to do here
@@ -75,24 +88,18 @@ void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t tick) {
 	PopupList::iterator i = popups.begin();
 	for(; i != popups.end(); ++i) {
 
-		if((*i)->visible + SETTING(POPUP_TIMEOUT) * 1000 < tick) {
+		if((*i)->visible + SETTING(POPUP_TIMEOUT) * 1000 < GET_TICK()) {
 			//okay remove the first popup
 			Remove();
 
 			//if list is empty there is nothing more to do
 			if(popups.empty())
 				return;
-				
+
 			//start over from the beginning
 			i = popups.begin();
 		}
 	}
-}
-
-void PopupManager::on(QueueManagerListener::ReleaseDone, string msg) {
-	//we can't create the window in this thread, then the client will crash
-	//so post a message and let the main window thread create it
-	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, DOWNLOAD_COMPLETE, (LPARAM)new string(msg));
 }
 
 void PopupManager::Remove(int pos) {
@@ -109,21 +116,21 @@ void PopupManager::Remove(int pos) {
 	int end = (rcDesktop.bottom - pos) / height;
 	PopupList::iterator i = popups.begin();
 	for(int j = 0; j < end; ++j, ++i);
-	
+
 	//remove the window from the list
 	PopupWnd *p = (*i);
 	popups.erase(i);
-	
+
 	//close the window and delete it
 	if(p == NULL){
 		return;
 	}
-	
+
 	p->SendMessage(WM_CLOSE, 0, 0);
 	delete p;
 	p = NULL;
-	
-	    
+
+
 	//set offset one window position lower
 	dcassert(offset > 0);
 	offset = offset - height;

@@ -452,6 +452,8 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		PopupManager::getInstance()->ShowDownloadComplete((string*)lParam);
 	} else if(wParam == WM_CLOSE) {
 		PopupManager::getInstance()->Remove((int)lParam);
+	} else if(wParam == REMOVE_POPUP){
+		PopupManager::getInstance()->AutoRemove();
 	}
 
 	return 0;

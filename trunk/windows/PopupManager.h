@@ -16,8 +16,6 @@
 #include "PopupDlg.h"
 #include "WinUtil.h"
 
-#define DOWNLOAD_COMPLETE 6
-
 class PopupManager : public Singleton< PopupManager >, private TimerManagerListener, 
 	private QueueManagerListener
 {
@@ -59,8 +57,11 @@ public:
 	//and take care of cleanup
 	void ShowDownloadComplete(string *msg);
 
-	//remove first popup in list and move everyone else
+	//remove the specified popup in list and move everyone else
 	void Remove(int pos = 0);
+
+	//remove the popups that are scheduled to be removed
+	void AutoRemove();
 
 	void Mute(bool mute) {
 		activated = !mute;
