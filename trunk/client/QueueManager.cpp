@@ -853,13 +853,17 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 
 void QueueManager::remove(const string& aTarget) throw() {
 	string x;
+	string name;
+	u_int64_t size;
 	{
 		Lock l(cs);
 
 		QueueItem* q = fileQueue.find(aTarget);
-		updateTotalSize(q->getTarget(), q->getSize(), false);
-
+		
 		if(q != NULL) {
+			name = q->getTarget();
+			size = q->getSize();
+
 			if(q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD)) {
 				dcassert(q->getSources().size() == 1);
 				DirectoryItem::DirectoryPair dp = directories.equal_range(q->getSources()[0]->getUser());
@@ -895,6 +899,10 @@ void QueueManager::remove(const string& aTarget) throw() {
 	}
 	if(!x.empty()) {
 		DownloadManager::getInstance()->abortDownload(x);
+	}
+	
+	if(!name.empty()){
+		updateTotalSize(name, size, false);
 	}
 }
 

@@ -61,6 +61,9 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
 
+	if(f != NULL)
+		(*f)(p, tku[index], STRING(SETTINGS));
+
 	LogManager::newInstance();
 	TimerManager::newInstance();
 	HashManager::newInstance();

@@ -138,9 +138,10 @@ public:
 	// Sorting
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem != sortColumn) {
+		int column = findColumn(l->iSubItem);
+		if(column != sortColumn) {
 			sortAscending = true;
-			sortColumn = l->iSubItem;
+			sortColumn = column;
 		} else if(sortAscending) {
 			sortAscending = false;
 		} else {
@@ -413,6 +414,24 @@ private:
 		}
 
 		delete[] buf;
+	}
+
+	int findColumn(int col){
+		CHAR *buf = new CHAR[512];
+		LVCOLUMN lvcl;
+		lvcl.mask = LVCF_TEXT;
+		lvcl.pszText = buf;
+		lvcl.cchTextMax = 512;
+
+		int columns = GetColumn(col, &lvcl);
+
+		int i = 0;
+		for(ColumnIter j = columnList.begin(); j != columnList.end(); ++i, ++j){
+			if(Util::stricmp((*j)->name.c_str(), buf) == 0)
+				return i;
+		}
+
+		return -1;
 	}
 };
 
