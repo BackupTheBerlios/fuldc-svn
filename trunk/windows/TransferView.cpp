@@ -233,7 +233,6 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 		return 0;
 	}
 
-	CRect rc;
 	LPNMLVCUSTOMDRAW cd = (LPNMLVCUSTOMDRAW)pnmh;
 
 	switch(cd->nmcd.dwDrawStage) {
@@ -251,21 +250,28 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 		lvc.cchTextMax = 128;
 		ctrlTransfers.GetColumn(cd->iSubItem, &lvc);
 		if(Util::stricmp(headerBuf, CTSTRING_I(columnNames[COLUMN_STATUS])) == 0) {
-			ItemInfo* ii = (ItemInfo*)cd->nmcd.lItemlParam;
+			ItemInfo* ii = reinterpret_cast<ItemInfo*>(cd->nmcd.lItemlParam);
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
-				TCHAR buf[256];
 				COLORREF barBase = ii->type == ItemInfo::TYPE_DOWNLOAD ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR);
 				COLORREF bgBase = WinUtil::bgColor;
 				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
 				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
 				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
 
-				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, cd->iSubItem, buf, 255);
-				buf[255] = 0;
-
-				ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, cd->iSubItem, LVIR_BOUNDS, rc);
-				CRect rc2 = rc;
+				CRect rc, rc2;
+				
+				//this is just severely broken, msdn says GetSubItemRect requires a one based index
+				//but it wont work and index 0 gives the rect of the whole item
+				if(cd->iSubItem == 0) {
+					//use LVIR_LABEL to exclude the icon area since we will be painting over that
+					//later
+					ctrlTransfers.GetItemRect((int)cd->nmcd.dwItemSpec, &rc, LVIR_LABEL);
+				} else {
+					ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, cd->iSubItem, LVIR_BOUNDS, &rc);
+				}
+				
+				rc2 = rc;
 				rc2.left += 6;
 				
 				// draw background
@@ -320,14 +326,52 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				rc2.right = rc.right;
 				LONG top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
 				SetTextColor(cd->nmcd.hdc, RGB(255, 255, 255));
-				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
-				//::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
+				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, ii->getText(COLUMN_STATUS).c_str(),
+					ii->getText(COLUMN_STATUS).length(), NULL);
 
 				rc2.left = rc2.right;
 				rc2.right = right;
 
 				SetTextColor(cd->nmcd.hdc, WinUtil::textColor);
-				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, _tcslen(buf), NULL);
+				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, ii->getText(COLUMN_STATUS).c_str(),
+					ii->getText(COLUMN_STATUS).length(), NULL);
+
+				//bah crap, if we return CDRF_SKIPDEFAULT windows won't paint the icons
+				//so we have to do it
+				if(cd->iSubItem == 0){
+					LVITEM lvItem;
+					lvItem.iItem = cd->nmcd.dwItemSpec;
+					lvItem.iSubItem = 0;
+					lvItem.mask = LVIF_IMAGE | LVIF_STATE;
+					lvItem.stateMask = LVIS_SELECTED;
+					ctrlTransfers.GetItem(&lvItem);
+
+					HIMAGELIST imageList = (HIMAGELIST)::SendMessage(ctrlTransfers.m_hWnd, LVM_GETIMAGELIST, LVSIL_SMALL, 0);
+					if(imageList) {
+						//let's find out where to paint it
+						//and draw the background to avoid having 
+						//the selection color as background
+						CRect iconRect;
+						ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, 0, LVIR_ICON, iconRect);
+
+						//we don't need to paint the background if the item's not selected
+						//since it will already have the right color
+						if(lvItem.state & LVIS_SELECTED) {
+							HBRUSH brush = (HBRUSH)::SendMessage(::GetParent(ctrlTransfers.m_hWnd), WM_CTLCOLORLISTBOX, (WPARAM)cd->nmcd.hdc, (LPARAM)ctrlTransfers.m_hWnd);
+							if(brush) {
+								//remove 4 pixels to repaint the offset between the
+								//column border and the icon.
+								iconRect.left -= 4;
+								::FillRect(cd->nmcd.hdc, &iconRect, brush);
+
+								//have to add them back otherwise the icon will be painted
+								//in the wrong place
+								iconRect.left += 4;
+							}
+						}
+						ImageList_Draw(imageList, lvItem.iImage, cd->nmcd.hdc, iconRect.left, iconRect.top, ILD_TRANSPARENT);
+					}
+				}
 
 				return CDRF_SKIPDEFAULT;
 			}

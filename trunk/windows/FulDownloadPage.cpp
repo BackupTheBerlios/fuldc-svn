@@ -54,7 +54,7 @@ LRESULT FulDownloadPage::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 
 LRESULT FulDownloadPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring path;
-	if(WinUtil::browseDirectory(path)){
+	if(WinUtil::browseDirectory(path, m_hWnd)){
 		if( path[ path.length() -1 ] != _T('\\') )
 			path += _T('\\');
 
