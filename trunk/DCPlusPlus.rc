@@ -67,8 +67,8 @@ BEGIN
     GROUPBOX        "Latest version",IDC_STATIC,7,253,191,24,BS_CENTER
     CTEXT           "0.xxx",IDC_LATEST,13,265,179,8
     GROUPBOX        "Totals",IDC_STATIC,7,182,191,39,BS_CENTER
-    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,193,
-                    179,8
+    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,
+                    193,179,8
     CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,206,179,8
     EDITTEXT        IDC_THANKS,13,107,179,66,ES_MULTILINE | ES_READONLY | 
                     WS_VSCROLL
@@ -776,6 +776,7 @@ BEGIN
     "N",            IDC_NOTEPAD,            VIRTKEY, CONTROL, NOINVERT
     "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
     "S",            IDC_SEND_MESSAGE,       VIRTKEY, ALT, NOINVERT
+    "0",            IDC_SWITCH_WINDOW_0,    VIRTKEY, ALT, NOINVERT
     "1",            IDC_SWITCH_WINDOW_1,    VIRTKEY, ALT, NOINVERT
     "2",            IDC_SWITCH_WINDOW_2,    VIRTKEY, ALT, NOINVERT
     "3",            IDC_SWITCH_WINDOW_3,    VIRTKEY, ALT, NOINVERT
@@ -785,7 +786,6 @@ BEGIN
     "7",            IDC_SWITCH_WINDOW_7,    VIRTKEY, ALT, NOINVERT
     "8",            IDC_SWITCH_WINDOW_8,    VIRTKEY, ALT, NOINVERT
     "9",            IDC_SWITCH_WINDOW_9,    VIRTKEY, ALT, NOINVERT
-    "0",            IDC_SWITCH_WINDOW_0,    VIRTKEY, ALT, NOINVERT
 END
 
 IDR_PUBLICHUBS ACCELERATORS 
@@ -818,6 +818,7 @@ END
 IDR_HUBFRAME ACCELERATORS 
 BEGIN
     "F",            IDC_FIND,               VIRTKEY, ALT, NOINVERT
+    VK_F3,          IDC_FIND,               VIRTKEY, NOINVERT
 END
 
 IDR_PRIVATEFRAME ACCELERATORS 

@@ -348,10 +348,16 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
-		name = param;
-		int i = 0;
-		if( (i = param.rfind(" - ")) != string::npos)
-			shortName = param.substr(0, i);
+		int i = param.find_first_of("\r\n");
+		if(i != string::npos)
+			name = param.substr(0, i);
+		else
+			name = param;
+
+		if( (i = name.rfind(" - ")) != string::npos)
+			shortName = name.substr(0, i);
+		else
+			shortName = name;
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::HubName(), this);
 	} else if(cmd == "$Supports") {
 		StringTokenizer st(param, ' ');

@@ -192,13 +192,34 @@ public:
 	void parseCommandLine(const string& cmdLine);
 
 	LRESULT onAppCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled){
-		if(GET_APPCOMMAND_LPARAM(lParam) == APPCOMMAND_BROWSER_FORWARD)
+		bHandled = TRUE;
+		int ret = TRUE;
+		HWND wnd;
+
+		switch(GET_APPCOMMAND_LPARAM(lParam)){
+		case APPCOMMAND_BROWSER_FORWARD:
 			ctrlTab.SwitchTo();
-		if(GET_APPCOMMAND_LPARAM(lParam) == APPCOMMAND_BROWSER_BACKWARD)
+			break;
+		case APPCOMMAND_BROWSER_BACKWARD:
 			ctrlTab.SwitchTo(false);
-		
-		bHandled = FALSE;
-		return FALSE;
+			break;
+		case APPCOMMAND_BROWSER_SEARCH:
+			::PostMessage(m_hWnd, WM_COMMAND, ID_FILE_SEARCH, 0);
+			break;
+		case APPCOMMAND_FIND:
+			wnd = (HWND)::SendMessage(m_hWnd, WM_MDIGETACTIVE, 0, 0);
+			::PostMessage(wnd, WM_COMMAND, IDC_FIND, 0);
+			break;
+		case APPCOMMAND_CLOSE:
+			wnd = (HWND)::SendMessage(m_hWnd, WM_MDIGETACTIVE, 0, 0);
+			::PostMessage(wnd, WM_CLOSE, 0, 0);
+		default:
+			bHandled = FALSE;
+			ret = FALSE;
+			break;
+		}
+
+		return ret;
 	}
 
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
