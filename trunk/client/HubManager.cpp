@@ -417,7 +417,7 @@ void HubManager::load(SimpleXML* aXml) {
 			e->setStripIsp(			aXml->getBoolChildAttrib("StripIsp"));
 			e->setShowJoins(		aXml->getBoolChildAttrib("ShowJoins"));
 			e->setShowUserlist(		aXml->getBoolChildAttrib("ShowUserlist", BOOLSETTING(GET_USER_INFO)));
-			e->setLogMainChat(		aXml->getBoolChildAttrib("LogMainChat", BOOLSETTING(LOG_MAIN_CHAT)));
+			e->setLogMainChat(		aXml->getBoolChildAttrib("LogMainchat", BOOLSETTING(LOG_MAIN_CHAT)));
 			e->setBottom((u_int16_t)aXml->getIntChildAttrib("Bottom") );
 			e->setTop((u_int16_t)	aXml->getIntChildAttrib("Top"));
 			e->setRight((u_int16_t)	aXml->getIntChildAttrib("Right"));

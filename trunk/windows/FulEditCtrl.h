@@ -74,6 +74,7 @@ private:
 	bool		matchedTab;
 	bool		logged;
 	bool		skipLog;
+	bool		timeStamps;
 
 	tstring		nick;
 	tstring		searchTerm;

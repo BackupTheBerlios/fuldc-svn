@@ -72,9 +72,11 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-bool CFulEditCtrl::AddLine(const tstring & line, bool timeStamps) {
+bool CFulEditCtrl::AddLine(const tstring & line, bool aTimeStamps) {
 	bool noScroll = false;
 	matchedTab = false;
+	timeStamps = aTimeStamps;
+
 	tstring aLine = Util::replace(line, _T("\r\n"), _T("\r"));
 	if(GetWindowTextLength() > SETTING(CHATBUFFERSIZE)) {
 		SetRedraw(FALSE);
@@ -280,7 +282,14 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 			return tstring::npos;
 		index = 0;
 	} else if( cs->getUsers() ) {
-		index = line.find(_T("<"));
+		if(timeStamps)
+			index = line.find(_T("] <"));
+		else if( line[0] == _T('<'))
+			index = 0;
+		
+		// /me might cause this to happen
+		if(index == tstring::npos)
+			return tstring::npos;
 	}else{
 		if( cs->getCaseSensitive() ) {
 			index = line.find(searchString, pos);
