@@ -129,6 +129,8 @@ public:
 	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
 	void setDescription(const string& aDesc) { description = aDesc; };
 
+	void scheduleDestruction() const { socket->shutdown(); }
+
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
 	GETSET(bool, registered, Registered);
@@ -170,6 +172,11 @@ private:
 
 	CountType countType;
 
+	// BufferedSocketListener
+	virtual void on(BufferedSocketListener::Shutdown) throw() {
+		removeListeners();
+		delete this;
+	}
 };
 
 #endif // _CLIENT_H

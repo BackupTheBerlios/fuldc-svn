@@ -440,7 +440,9 @@
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine=".\vc7\$(ConfigurationName)\MakeDefs\MakeDefs.exe .\client\StringDefs.h .\client\StringDefs.cpp .\Example.xml"
+						Description="Creating StringDefs.cpp"
+						CommandLine=".\vc7\$(ConfigurationName)\MakeDefs\MakeDefs.exe .\client\StringDefs.h .\client\StringDefs.cpp .\Example.xml
+"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
 			</File>

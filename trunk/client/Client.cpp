@@ -36,7 +36,6 @@ Client::Client(const string& hubURL, char separator, bool usesEscapes) :
 
 Client::~Client() {
 	socket->removeListener(this);
-	BufferedSocket::putSocket(socket);
 
 	updateCounts(true);
 }

@@ -232,6 +232,8 @@ public:
 		int xPos = GET_X_LPARAM(lParam); 
 		int yPos = GET_Y_LPARAM(lParam); 
 		int row = getRows() - ((yPos / getTabHeight()) + 1);
+		
+		bool moveLast = true;
 
 		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* t = *i;
@@ -239,18 +241,23 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					if(t == moving) 
+					if(t == moving) {
 						::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
-					else{
+					}else{
 						//check if the pointer is on the left or right half of the tab
 						//to determine where to insert the tab
 						moveTabs(t, xPos > (t->xpos + (t->getWidth()/2)));
+						
 					}
 				}
+
+				moveLast = false;
 				break;
 			}
 		}
-		
+		if(moveLast)
+			moveTabs(tabs.back(), true);
+
 		moving = NULL;
 
 		return 0;

@@ -21,7 +21,7 @@
 #define VERSIONFLOAT 0.403
 
 #ifdef _DEBUG
-#define FULVERSIONSTRING "6.49 svn132"
+#define FULVERSIONSTRING "6.49 svn133"
 #else
 #define FULVERSIONSTRING "6.49"
 #endif
