@@ -1142,7 +1142,7 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	TStringList* str = new TStringList();
 	str->push_back(Util::getAway() ? TSTRING(AWAY) : _T(""));
 	str->push_back(Text::toT("H: " + Client::getCounts()));
-	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getUploadCount()) + '/' + Util::toString(SETTING(SLOTS))));
+	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - static_cast<int>(UploadManager::getInstance()->getUploadCount())) + '/' + Util::toString(SETTING(SLOTS))));
 	str->push_back(Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
 	str->push_back(Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
 	str->push_back(Text::toT("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
