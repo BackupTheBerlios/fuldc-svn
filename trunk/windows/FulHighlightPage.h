@@ -9,6 +9,7 @@
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 #include "../client/SettingsManager.h"
+#include "../client/HighlightManager.h"
 
 class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 {
@@ -71,6 +72,8 @@ protected:
 
 	//reset all controls except listview
 	void clear();
+
+	vector<ColorSettings> highlights;
 	
 };
 

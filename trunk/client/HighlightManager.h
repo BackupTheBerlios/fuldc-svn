@@ -11,7 +11,7 @@
 #include "ColorSettings.h"
 #include "SimpleXML.h"
 
-typedef vector< ColorSettings* > ColorList;
+typedef vector<ColorSettings> ColorList;
 typedef ColorList::iterator ColorIter;
 
 class HighlightManager : public Singleton<HighlightManager>, private SettingsManagerListener

@@ -7,7 +7,8 @@
 class ColorSettings
 {
 public:
-	ColorSettings(): bTimestamps(false), bUsers(false), bMyNick(false), bUsingRegexp(false){	}
+	ColorSettings(): bTimestamps(false), bUsers(false), bMyNick(false), bUsingRegexp(false), 
+		strMatch(Util::emptyStringT), strSoundFile(Util::emptyStringT) {	}
 	~ColorSettings(){};
 
 	GETSET(bool, bWholeWord, WholeWord);

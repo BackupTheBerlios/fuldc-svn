@@ -53,8 +53,11 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	ColorList* cList = HighlightManager::getInstance()->rLock();
 		
 	//populate listview with current strings
-	for(ColorIter i = cList->begin();i != cList->end(); ++i)
-		ctrlStrings.insert( ctrlStrings.GetItemCount(), (*i)->getMatch(), 0, (LPARAM)(*i) );
+	highlights.reserve(cList->size());
+	for(ColorIter i = cList->begin();i != cList->end(); ++i) {
+		highlights.push_back((*i));
+		ctrlStrings.insert( ctrlStrings.GetItemCount(), (*i).getMatch());
+	}
 	
 	HighlightManager::getInstance()->rUnlock();
 	
@@ -77,40 +80,32 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 void FulHighlightPage::write(){
-	int i = 0;
-	int end = ctrlStrings.GetItemCount();
-	ColorSettings *cs;
 	ColorList* cList = HighlightManager::getInstance()->wLock();
     cList->clear();
-	for(; i < end; ++i){
-		cs = (ColorSettings*)ctrlStrings.GetItemData(i);
-		cList->push_back(cs);
-	}
-
+	*cList = highlights;
 	HighlightManager::getInstance()->wUnlock();
 }
 
 LRESULT FulHighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-	ColorSettings *cs = new ColorSettings();
-	getValues(cs);
+	ColorSettings cs;
+	getValues(&cs);
 
-	if(cs->getMatch().empty()){
+	if(cs.getMatch().empty()){
 		MessageBox(CTSTRING(ADD_EMPTY), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONEXCLAMATION);
-		delete cs;
 		return TRUE;
 	}
 
-	if(cs->getMatch().find(_T("$Re:")) == 0) {
-		PME reg(cs->getMatch().substr(4));
+	if(cs.getMatch().find(_T("$Re:")) == 0) {
+		PME reg(cs.getMatch().substr(4));
 		if(! reg.IsValid()){
 			MessageBox(CTSTRING(BAD_REGEXP), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK | MB_ICONEXCLAMATION);
-			delete cs;
 			return TRUE;
 		}
 	}
 
 	//add the string to the listview
-	ctrlStrings.insert( ctrlStrings.GetItemCount(), cs->getMatch(), 0, (LPARAM)cs );
+	highlights.push_back(cs);
+	ctrlStrings.insert( ctrlStrings.GetItemCount(), cs.getMatch());
 	ctrlStrings.SelectItem(ctrlStrings.GetItemCount()-1);
 
 	return TRUE;
@@ -121,16 +116,14 @@ LRESULT FulHighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(sel == -1)
 		return true;
 
-	ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
+	ColorSettings *cs = &highlights[sel];
 	tstring old = cs->getMatch();
 
-	HighlightManager::getInstance()->wLock();
 	getValues(cs);
-	HighlightManager::getInstance()->wUnlock();
-	
+		
 	if(old.compare(cs->getMatch()) != 0){
 		ctrlStrings.DeleteItem(sel);
-		ctrlStrings.insert(sel, cs->getMatch(), 0, (LPARAM)cs);
+		ctrlStrings.insert(sel, cs->getMatch());
 		ctrlStrings.SelectItem(sel);
 		
 	}
@@ -140,14 +133,20 @@ LRESULT FulHighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT FulHighlightPage::onMove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int sel = ctrlStrings.GetSelectedIndex();
 	if(wID == IDC_MOVEUP && sel > 0){
-		ctrlStrings.moveItem(sel, sel-1);
+		ColorSettings cs = highlights[sel];
+		highlights[sel] = highlights[sel-1];
+		highlights[sel-1] = cs;
+		ctrlStrings.DeleteItem(sel);
+		ctrlStrings.insert(sel-1, cs.getMatch());
 		ctrlStrings.SelectItem(sel-1);
 	} else if(wID == IDC_MOVEDOWN && sel < ctrlStrings.GetItemCount()-1){
 		//hmm odd, moveItem handles the move but the list doesn't get updated
 		//so well this works instead =)
-		ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
+		ColorSettings cs = highlights[sel];
+		highlights[sel] = highlights[sel+1];
+		highlights[sel+1] = cs;
 		ctrlStrings.DeleteItem(sel);
-		ctrlStrings.insert(sel+1, cs->getMatch(), 0, (LPARAM)cs);
+		ctrlStrings.insert(sel+1, cs.getMatch());
 		ctrlStrings.SelectItem(sel+1);
 	}
 
@@ -157,12 +156,13 @@ LRESULT FulHighlightPage::onMove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 LRESULT FulHighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	if(ctrlStrings.GetSelectedCount() == 1) {
 		int sel = ctrlStrings.GetSelectedIndex();
-		ColorSettings* cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
 		ctrlStrings.DeleteItem(sel);
-		HighlightManager::getInstance()->wLock();
-		delete cs;
-		cs = NULL;
-		HighlightManager::getInstance()->wUnlock();
+		int j = 0;
+		ColorIter i = highlights.begin();
+		for(; j <= sel; ++i, ++j);
+
+		if(i != highlights.end())
+			highlights.erase(i);
 	}
 	
 	return TRUE;
@@ -267,7 +267,7 @@ LRESULT FulHighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& 
 		return TRUE;
 	}
 	int sel = ctrlStrings.GetSelectedIndex();
-	ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
+	ColorSettings *cs = &highlights[sel];
 
 	if(cs == NULL)
 		return TRUE;

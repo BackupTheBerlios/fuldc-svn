@@ -156,7 +156,7 @@ void CFulEditCtrl::Colorize(const tstring& aLine, int begin) {
 
 	//compare the last line against all strings in the vector
 	for(ColorIter i = cList->begin(); i != cList->end(); ++i) {
-		ColorSettings* cs = *i;
+		ColorSettings* cs = &(*i);
 		int pos;
 		
 		//set start position for find
