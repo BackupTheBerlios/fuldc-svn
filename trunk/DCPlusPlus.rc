@@ -282,8 +282,8 @@ BEGIN
     EDITTEXT        IDC_POST_UPLOAD,60,138,198,12,ES_AUTOHSCROLL
     CONTROL         "Log system messages",IDC_LOG_SYSTEM,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,18,153,240,10
-    CONTROL         "Log status messages",IDC_SETTINGS_LOG_STATUS_MESSAGES,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,165,240,10
+    CONTROL         "Log status messages",IDC_SETTINGS_LOG_STATUS_MESSAGES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,165,240,10
     GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,186,264,42
     CONTROL         "Make an annoying sound every time a private message is received",
                     IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
@@ -431,7 +431,7 @@ BEGIN
                     52
 END
 
-IDD_WEB_SHORTCUTS DIALOGEX 0, 0, 264, 153
+IDD_WEB_SHORTCUTS DIALOGEX 0, 0, 264, 238
 STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | 
     DS_CENTER | WS_POPUP | WS_CAPTION
 CAPTION "Web Shortcut Properties"
@@ -448,9 +448,11 @@ BEGIN
     EDITTEXT        IDC_WEB_SHORTCUT_URL,41,44,216,13,ES_AUTOHSCROLL
     RTEXT           "&URL",IDC_WEB_SHORTCUT_URL_DESC,7,46,29,8,0,
                     WS_EX_TRANSPARENT
-    GROUPBOX        "How to use",IDC_WEB_SHORTCUTS_HOWTO,7,62,250,84
-    LTEXT           "",IDC_WEB_SHORTCUTS_DESC,15,73,232,66,0,
-                    WS_EX_TRANSPARENT
+    GROUPBOX        "How to use",IDC_WEB_SHORTCUTS_HOWTO,7,76,250,118
+    LTEXT           "Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One ""%s"" which will be replaced with the string you'll enter. If no ""%s"" exists, nothing will be pasted to the url, and the page will just open up. An example is:\nhttp://domain.com/search=%s\n\nNote: The key is case sensitive!\n\nClean search string means that things like year, xvid, dvdrip, dots and other meaningless info will be removed from the string. e.g ""Movie.Name.2003.DVDRip.XviD-ABC"" will become ""Movie Name""",
+                    IDC_WEB_SHORTCUTS_DESC,15,91,232,103,0,WS_EX_TRANSPARENT
+    CONTROL         "Clean search term",IDC_WEB_SHORTCUTS_CLEAN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,41,61,215,10
 END
 
 IDD_PRIORITY DIALOGEX 0, 0, 186, 51
@@ -691,6 +693,11 @@ BEGIN
         VERTGUIDE, 56
         TOPMARGIN, 7
         BOTTOMMARGIN, 171
+    END
+
+    IDD_WEB_SHORTCUTS, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 230
     END
 
     IDD_HIGHLIGHTPAGE, DIALOG

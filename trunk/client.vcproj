@@ -259,6 +259,9 @@
 				RelativePath=".\client\Util.cpp">
 			</File>
 			<File
+				RelativePath=".\client\WebShortcuts.cpp">
+			</File>
+			<File
 				RelativePath=".\client\Wildcards.cpp">
 			</File>
 			<File
@@ -465,6 +468,9 @@
 			</File>
 			<File
 				RelativePath=".\client\version.h">
+			</File>
+			<File
+				RelativePath=".\client\WebShortcuts.h">
 			</File>
 			<File
 				RelativePath=".\client\Wildcards.h">

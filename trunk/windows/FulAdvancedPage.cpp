@@ -113,7 +113,6 @@ LRESULT FulAdvancedPage::onClickedShortcuts(WORD /* wNotifyCode */, WORD wID, HW
 	} else if (wID == IDC_WEB_SHORTCUTS_PROPERTIES) {
 		if (ctrlWebShortcuts.GetSelectedCount() == 1) {
 			int sel = ctrlWebShortcuts.GetSelectedIndex();
-			//dcassert(sel >= 0 && sel < (int)wsList.size());
 			WebShortcut* ws = wsList[sel];
 			WebShortcutsProperties wsp(wsList, ws);
 			if (wsp.DoModal() == IDOK) {

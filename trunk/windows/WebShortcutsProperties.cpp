@@ -19,12 +19,13 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 #include "../client/ResourceManager.h"
+#include "../client/WebShortcuts.h"
 #include "Resource.h"
 
 #include "WebShortcutsProperties.h"
-#include "WebShortcuts.h"
 
-const string WebShortcutsProperties::badkeys = " refresh slots search odc odc++ nmdc dc++ away back zeros shutdown lastlog me join clear ts password showjoins close userlist connection favorite help pm ";
+
+const string WebShortcutsProperties::badkeys = " refresh refreshi slots search dc++ away back lastlog me join clear ts password showjoins close userlist connection favorite help pm ";
 
 // Initialize dialog
 LRESULT WebShortcutsProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
@@ -37,15 +38,14 @@ LRESULT WebShortcutsProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
 	SetDlgItemText(IDC_WEB_SHORTCUT_URL_DESC, CSTRING(URL));
 	SetDlgItemText(IDC_WEB_SHORTCUTS_HOWTO, CSTRING(SETTINGS_WS_HOWTO));
 	SetDlgItemText(IDC_WEB_SHORTCUTS_DESC, CSTRING(SETTINGS_WS_DESCR));
+	SetDlgItemText(IDC_WEB_SHORTCUTS_CLEAN, CSTRING(SETTINGS_WS_CLEAN));
 
-	SetDlgItemText(IDC_WEB_SHORTCUT_NAME, this->ws->name.c_str());
-	SetDlgItemText(IDC_WEB_SHORTCUT_KEY,  this->ws->key.c_str());
-	SetDlgItemText(IDC_WEB_SHORTCUT_URL,  this->ws->url.c_str());
+	SetDlgItemText(IDC_WEB_SHORTCUT_NAME,	ws->name.c_str());
+	SetDlgItemText(IDC_WEB_SHORTCUT_KEY,	ws->key.c_str());
+	SetDlgItemText(IDC_WEB_SHORTCUT_URL,	ws->url.c_str());
+	CheckDlgButton(IDC_WEB_SHORTCUTS_CLEAN, ws->clean ? BST_CHECKED : BST_UNCHECKED);
 
 	::SetFocus(GetDlgItem(IDC_WEB_SHORTCUT_NAME));
-
-	// Center dialog
-	//CenterWindow(GetParent());
 
 	return FALSE;
 }
@@ -86,9 +86,12 @@ LRESULT WebShortcutsProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND 
 		GetDlgItemText(IDC_WEB_SHORTCUT_URL, buf, 2048);
 		string sUrl = buf;
 
-		this->ws->name = sName;
-		this->ws->key = sKey;
-		this->ws->url = sUrl;
+		bool bClean = (IsDlgButtonChecked(IDC_WEB_SHORTCUTS_CLEAN) == BST_CHECKED);
+
+		ws->name = sName;
+		ws->key = sKey;
+		ws->url = sUrl;
+		ws->clean = bClean;
 	}
 
 	EndDialog(wID);

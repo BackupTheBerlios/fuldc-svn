@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "WebShortcuts.h"
+#include "../client/WebShortcuts.h"
 
 #include "PropPage.h"
 #include "ExListViewCtrl.h"

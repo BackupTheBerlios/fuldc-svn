@@ -16,14 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
+#include "stdinc.h"
+#include "DCPlusPlus.h"
 
-#include "../client/SettingsManager.h"
-#include "../client/StringTokenizer.h"
-#include "../client/oxmllib.h"
-#include "../client/SimpleXML.h"
-
+#include "SettingsManager.h"
+#include "StringTokenizer.h"
+#include "oxmllib.h"
+#include "SimpleXML.h"
 #include "WebShortcuts.h"
 
 WebShortcuts::WebShortcuts() {
@@ -114,13 +113,13 @@ WebShortcut* WebShortcuts::getShortcutByKey(WebShortcut::List& _list, const stri
 WebShortcut::List WebShortcuts::copyList() {
 	WebShortcut::List lst;
 	for (WebShortcut::Iter i = list.begin(); i != list.end(); ++i)
-		lst.push_back(new WebShortcut( (*i)->name, (*i)->key, (*i)->url ));
+		lst.push_back(new WebShortcut( (*i)->name, (*i)->key, (*i)->url, (*i)->clean ));
 	return lst;
 }
 void WebShortcuts::replaceList(WebShortcut::List& new_list) {
 	clear();
 	for (WebShortcut::Iter i = new_list.begin(); i != new_list.end(); ++i)
-		list.push_back(new WebShortcut( (*i)->name, (*i)->key, (*i)->url ));
+		list.push_back(new WebShortcut( (*i)->name, (*i)->key, (*i)->url, (*i)->clean ));
 }
 
 void WebShortcuts::clear() {

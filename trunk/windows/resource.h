@@ -359,6 +359,8 @@
 #define IDC_STRIPISP                    1229
 #define IDC_POPUP                       1229
 #define IDC_REFRESH_INCOMING            1229
+#define IDC_CLEAN                       1229
+#define IDC_WEB_SHORTCUTS_CLEAN         1229
 #define IDC_MESSAGE                     1230
 #define IDC_REFRESH_SHARE               1230
 #define IDC_DISPLAYTIME                 1231

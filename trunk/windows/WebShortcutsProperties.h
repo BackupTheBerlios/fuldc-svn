@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "WebShortcuts.h"
+#include "../client/WebShortcuts.h"
 
 class WebShortcutsProperties : public CDialogImpl<WebShortcutsProperties> {
 public:
@@ -32,7 +32,7 @@ public:
 	WebShortcutsProperties::WebShortcutsProperties(vector<WebShortcut*>& _wslist, WebShortcut* _ws) : wslist(_wslist), ws(_ws) { };
 	virtual ~WebShortcutsProperties() { };
 
-	// Dilaog unique id
+	// Dialog unique id
 	enum { IDD = IDD_WEB_SHORTCUTS };
 	
 	// Inline message map

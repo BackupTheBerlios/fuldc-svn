@@ -24,7 +24,7 @@
 #include "PrivateFrame.h"
 #include "SearchFrm.h"
 #include "LineDlg.h"
-#include "WebShortcuts.h"
+#include "../client/WebShortcuts.h"
 
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
@@ -683,79 +683,74 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 	if(ws == NULL)
 		return;
 
-	regex::rpattern regexp;
-	regex::match_results result;
-	regex::rpattern::backref_type br;
+	if(ws->clean) {
+		regex::rpattern regexp;
+		regex::match_results result;
+		regex::rpattern::backref_type br;
 
-	string strSearch = strSearchString;
-	string strStoplistText = "xvid|divx|dvdrip|dvdr|dvd-r|pal|ntsc|screener|dvdscr|complete|proper|.*|.ws.|ac3|internal|directoryfix|pdtv|hdtv|rerip|tvrip|swedish";
-	int intPos = 0;
+		string strSearch = strSearchString;
+		string strStoplistText = "xvid|divx|dvdrip|dvdr|dvd-r|pal|ntsc|screener|dvdscr|complete|proper|.*|.ws.|ac3|internal|directoryfix|pdtv|hdtv|rerip|tvrip|swedish";
+		int intPos = 0;
 
-	// Convert the stoplist string to a vector
-	StringTokenizer t(strStoplistText, '|');
-	StringList strStoplist = t.getTokens();
-	
-	// To lower case
-	strSearch = Util::toLower(strSearch);
-	// Loop all words and remove those that exists in the search string
-	for (unsigned int i = 0; i < strStoplist.size(); i++) {
-		int intPos = strSearch.find(strStoplist[i]);
+		// Convert the stoplist string to a vector
+		StringTokenizer t(strStoplistText, '|');
+		StringList strStoplist = t.getTokens();
+		
+		// To lower case
+		strSearch = Util::toLower(strSearch);
+		// Loop all words and remove those that exists in the search string
+		for (unsigned int i = 0; i < strStoplist.size(); i++) {
+			int intPos = strSearch.find(strStoplist[i]);
+			while (intPos > 0) {
+				strSearch = strSearch.substr(0, intPos) + strSearch.substr(intPos + strStoplist[i].length());
+				intPos = strSearch.find(strStoplist[i]);
+			}
+		}
+		// Just include the text until the first "-"
+		intPos = strSearch.find("-");
+		if (intPos > 0) {
+			strSearch = strSearch.substr(0, intPos);
+		}
+		// Exchange all "." with " "
+		intPos = 0;
+		while ( (intPos = strSearch.find_first_of("._", intPos)) != string::npos) {
+			strSearch.replace(intPos, 1, " ");
+		}
+		
+		// Remove 4 digits (year)
+		regexp.init("\\d{4}");
+		br = regexp.match(strSearch, result);
+		if(br.matched) {
+			strSearch.replace(result.rstart(), result.rlength(), "");
+		}
+		// search for "s01e01" and remove
+		regexp.init("s\\d{2}(e\\d{2})?", regex::NOCASE);
+		br = regexp.match(strSearch, result);
+		if (br.matched) {
+			strSearch.replace(result.rstart(), result.rlength(), "");
+		}
+		// search for "1x01" and remove
+		//regExp.Parse("{ [0-9]x[0-9][0-9]}", false);
+		regexp.init("\\dx\\d{2}", regex::NOCASE);
+		br = regexp.match(strSearch, result);
+		if (br.matched) {
+			strSearch.replace(result.rstart(), result.rlength(), "");
+		}
+		// Remove trailing spaces
+		intPos = strSearch.length() - 1;
 		while (intPos > 0) {
-			strSearch = strSearch.substr(0, intPos) + strSearch.substr(intPos + strStoplist[i].length());
-			intPos = strSearch.find(strStoplist[i]);
+			if (strSearch[intPos] != ' ') {
+				break;
+			}
+			intPos--;
 		}
+		strSearchString = strSearch.substr(0, intPos + 1);
 	}
-	// Just include the text until the first "-"
-	intPos = strSearch.find("-");
-	if (intPos > 0) {
-		strSearch = strSearch.substr(0, intPos);
-	}
-	// Exchange all "." with " "
-	intPos = 0;
-	while ( (intPos = strSearch.find_first_of("._", intPos)) != string::npos) {
-		strSearch.replace(intPos, 1, " ");
-	}
-	// Exchange all "_" with " "
-	//intPos = strSearch.find("_");
-	//while (intPos > 0) {
-	//	strSearch.replace(intPos, 1, " ");
-	//	intPos = strSearch.find("_");
-	//}
-	// Remove 4 digits (year)
-	regexp.init("\\d{4}");
-	br = regexp.match(strSearch, result);
-	if(br.matched) {
-		strSearch.replace(result.rstart(), result.rlength(), "");
-	}
-	// search for "s01e01" and remove
-	regexp.init("s\\d{2}(e\\d{2})?", regex::NOCASE);
-	br = regexp.match(strSearch, result);
-	if (br.matched) {
-		strSearch.replace(result.rstart(), result.rlength(), "");
-	}
-	// search for "1x01" and remove
-	//regExp.Parse("{ [0-9]x[0-9][0-9]}", false);
-	regexp.init("\\dx\\d{2}", regex::NOCASE);
-	br = regexp.match(strSearch, result);
-	if (br.matched) {
-		strSearch.replace(result.rstart(), result.rlength(), "");
-	}
-	// Remove trailing spaces
-	intPos = strSearch.length() - 1;
-	while (intPos > 0) {
-		if (strSearch[intPos] != ' ') {
-			break;
-		}
-		intPos--;
-	}
-	strSearch = strSearch.substr(0, intPos + 1);
-	// Do the search
-	char *buf = new char[ws->url.length() + strSearch.length()];
 	
-	if(ws->url.compare("%s") != 0)
-		sprintf(buf, ws->url.c_str(), strSearch.c_str());
-	else
-		sprintf(buf, ws->url.c_str(), strSearchString.c_str());
+	// Do the search
+	char *buf = new char[ws->url.length() + strSearchString.length()];
+	
+	sprintf(buf, ws->url.c_str(), strSearchString.c_str());
 	WinUtil::openLink(buf);
 }
 

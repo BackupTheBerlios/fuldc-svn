@@ -19,13 +19,8 @@
 #ifndef _WEBSHORTCUTS_H
 #define _WEBSHORTCUTS_H
 
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
-
-
-#include "../client/Singleton.h"
-#include "../client/SettingsManager.h"
+#include "Singleton.h"
+#include "SettingsManager.h"
 
 class WebShortcut {
 public:
