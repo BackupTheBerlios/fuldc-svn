@@ -329,10 +329,13 @@ void PrivateFrame::onEnter()
 				muted = false;
 				addClientLine(STRING(UNMUTED));
 			} else if(Util::stricmp(s.c_str(), "pop") == 0) {
-				if( Util::stricmp(param, "on") == 0)
+				if( Util::stricmp(param, "on") == 0){
 					doPopups = true;
-				else if( Util::stricmp(param, "off") == 0)
+					addClientLine(STRING(POPUPS_ACTIVATED));
+				}else if( Util::stricmp(param, "off") == 0){
 					doPopups = false;
+					addClientLine(STRING(POPUPS_DEACTIVATED));
+				}
 			} else {
 				if(user->isOnline()) {
 					sendMessage(s);

@@ -429,6 +429,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	
 	int findUser(const User::Ptr& aUser);
+	UserInfo* findUser(string & nick);
 
 	bool updateUser(const User::Ptr& u);
 	void removeUser(const User::Ptr& u);

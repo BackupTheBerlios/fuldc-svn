@@ -270,84 +270,37 @@ void HubFrame::onEnter() {
 			} else if((Util::stricmp(cmd.c_str(), "favorite") == 0) || (Util::stricmp(cmd.c_str(), "fav") == 0)) {
 				addAsFavorite();
 			} else if(Util::stricmp(cmd.c_str(), "getlist") == 0){
-				if( !param.empty() ){
-					UserInfo* ui = ctrlUsers.getItemData(ctrlUsers.GetNextItem(-1, LVNI_SELECTED));
-					if(ui != NULL) {
-						if( ui->getText(COLUMN_NICK).find(param) != string::npos ) {
-							ui->getList();
-						}else {
-							int k = ctrlUsers.findItem(param);
-							if(k != -1) {
-								ctrlUsers.getItemData(k)->getList();
-							}
-						}
-					} else {
-						int k = ctrlUsers.findItem(param);
-						if(k != -1) {
-							ctrlUsers.getItemData(k)->getList();
-						}
-					}
-				}
+				UserInfo * ui = findUser(param);
+				if(ui != NULL)
+					ui->getList();
 			} else if(Util::stricmp(cmd.c_str(), "grant") == 0) {
-				if( !param.empty() ){
-					UserInfo* ui = ctrlUsers.getItemData(ctrlUsers.GetNextItem(-1, LVNI_SELECTED));
-					if(ui != NULL){
-						if( ui->getText(COLUMN_NICK).find(param) != string::npos ) {
-							ui->grant();
-							addClientLine( param + " granted");
-						}else {
-							int k = ctrlUsers.findItem(param);
-							if(k != -1) {
-								ui = ctrlUsers.getItemData(k);
-								ui->grant();
-								addClientLine( ui->getText(COLUMN_NICK) + " granted");
-							}
-						}
-					} else {
-						int k = ctrlUsers.findItem(param);
-						if(k != -1) {
-							ui = ctrlUsers.getItemData(k);
-							ui->grant();
-							addClientLine( ui->getText(COLUMN_NICK) + " granted");
-						}
-					}
+				UserInfo* ui = findUser(param);
+				if(ui != NULL){
+					ui->grant();
+					addClientLine(ui->getText(COLUMN_NICK) + "granted");
 				}
 			} else if(Util::stricmp(cmd.c_str(), "help") == 0) {
 				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message]");
 			} else if(Util::stricmp(cmd.c_str(), "pm") == 0) {
-				//hmm this code is horrible, need to clean it up a bit someday
-				//when i'm not tired =)
+				string nick, msg;
 				string::size_type j = param.find(' ');
-				UserInfo* ui = ctrlUsers.getItemData(ctrlUsers.GetNextItem(-1, LVNI_SELECTED));
-				
-				if(j != string::npos) {
-					string nick = param.substr(0, j);
-					if(ui != NULL) {
-						if(ui->getText(COLUMN_NICK).find(nick) == string::npos )
-							ui = ctrlUsers.getItemData(ctrlUsers.findItem(nick));
-					} else {
-						ui = ctrlUsers.getItemData(ctrlUsers.findItem(nick));
-					}
-					if(ui != NULL) {
-						if(param.size() > j + 1)
-							if (BOOLSETTING(POPUP_PMS) ) {
-								PrivateFrame::openWindow(ui->user, param.substr(j+1));
-							} else {
-								//client->privateMessage((User*)ui->user, "<" + client->getNick() + "> " + param.substr(j+1));
-								ui->user->privateMessage("<" + client->getNick() + "> " + param.substr(j+1));
-							}
+				if(j != string::npos ){
+					nick = param.substr(0, j);
+					msg = param.substr(j+1);
+				} else {
+					nick = param;
+				}
 
-						else
-							PrivateFrame::openWindow(ui->user);
-					}
-				} else if(!param.empty()) {
-					if(ui != NULL) {
-						if(ui->getText(COLUMN_NICK).find(param) == string::npos )
-							ui = ctrlUsers.getItemData(ctrlUsers.findItem(param));
-					} else {
-						ui = ctrlUsers.getItemData(ctrlUsers.findItem(param));
-					}
-					if(ui != NULL)
+				UserInfo *ui = findUser(nick);
+				
+				if(ui != NULL){
+					if(!msg.empty()){
+						if (BOOLSETTING(POPUP_PMS) ) {
+							PrivateFrame::openWindow(ui->user, msg);
+						} else {
+							ui->user->privateMessage("<" + client->getNick() + "> " + msg);
+						}
+					} else
 						PrivateFrame::openWindow(ui->user);
 				}
 			}else if(Util::stricmp(cmd.c_str(), "topic") == 0) {
@@ -1521,6 +1474,29 @@ LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 	ShellExecute(NULL, "open", Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
 	
 	return 0;
+}
+
+HubFrame::UserInfo* HubFrame::findUser(string & nick){
+	if( !nick.empty() ){
+		UserInfo* ui = ctrlUsers.getItemData(ctrlUsers.GetNextItem(-1, LVNI_SELECTED));
+		if(ui != NULL) {
+			if( ui->getText(COLUMN_NICK).find(nick) != string::npos ) {
+				return ui;
+			}else {
+				int k = ctrlUsers.findItem(nick);
+				if(k != -1) {
+					return ctrlUsers.getItemData(k);
+				}
+			}
+		} else {
+			int k = ctrlUsers.findItem(nick);
+			if(k != -1) {
+				return ctrlUsers.getItemData(k);
+			}
+		}
+	}
+
+	return NULL;
 }
 
 
