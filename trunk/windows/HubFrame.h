@@ -434,8 +434,6 @@ private:
 	void updateUserList();
 	void addAsFavorite();
 
-	bool getUserInfo() { return ctrlShowUsers.GetCheck() == BST_CHECKED; }
-
 	void clearUserList() {
 		{
 			Lock l(updateCS);

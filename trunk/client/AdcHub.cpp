@@ -167,7 +167,7 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 	if(c.getParameters().size() < 3)
 		return;
 
-	if(c.getParam(1) != CLIENT_PROTOCOL) {
+	if(c.getParam(0) != CLIENT_PROTOCOL) {
 		// Protocol unhandled...
 		Command cc(Command::STA(), p->getCID());
 		cc.addParam(Util::toString(Command::ERROR_PROTOCOL_UNSUPPORTED));
@@ -188,9 +188,11 @@ void AdcHub::handle(Command::RCM, Command& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p || p == getMe())
 		return;
-	if(c.getParameters().size() != 2 || c.getParameters()[1] != "ADC/0.8")
+	if(c.getParameters().empty() || c.getParameters()[0] != CLIENT_PROTOCOL)
 		return;
-    connect(&*p, c.getParameters()[0]);
+	string token;
+	c.getParam("TO", 1, token);
+    connect(&*p, token);
 }
 
 void AdcHub::connect(const User* user) {
@@ -203,9 +205,9 @@ void AdcHub::connect(const User* user, string const& token) {
 		return;
 
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		send(Command(Command::CTM(), user->getCID()).addParam(token).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))));
+		send(Command(Command::CTM(), user->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))).addParam(token));
 	} else {
-		send(Command(Command::CTM(), user->getCID()).addParam(CLIENT_PROTOCOL));
+		send(Command(Command::RCM(), user->getCID()).addParam(CLIENT_PROTOCOL));
 	}
 }
 
@@ -303,7 +305,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HN", Util::toString(counts.normal));
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
-	ADDPARAM("VE", "++ " VERSIONSTRING);
+	ADDPARAM("VE", "++\\ " VERSIONSTRING);
 	ADDPARAM("I4", "0.0.0.0");
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
@@ -328,7 +330,7 @@ string AdcHub::checkNick(const string& aNick) {
 }
 
 string AdcHub::getHubURL() {
-	return "adc://" + getAddressPort();
+	return getAddressPort();
 }
 
 void AdcHub::on(Connected) throw() { 

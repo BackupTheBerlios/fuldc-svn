@@ -956,7 +956,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		}
 		targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CTSTRING(BROWSE));
 		if(WinUtil::lastDirs.size() > 0) {
-			targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+			targetMenu.AppendMenu(MF_SEPARATOR);
 			for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
 				n++;
@@ -974,7 +974,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			}
 
 			if(targets.size() > 0) {
-				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+				targetMenu.AppendMenu(MF_SEPARATOR);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, Text::toT(*i).c_str());
 					n++;

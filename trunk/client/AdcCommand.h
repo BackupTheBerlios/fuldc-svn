@@ -100,6 +100,8 @@ public:
 		parse(aLine, nmdc);
 	}
 
+	static Command makeSTA(Severity sev, Error err, const string& desc) { return Command(STA()).addParam(Util::toString(sev * 100 + err)).addParam(desc); }
+
 	void parse(const string& aLine, bool nmdc = false);
 
 	u_int32_t getCommand() const { return cmdInt; }

@@ -89,8 +89,8 @@ public:
 		List directories;
 		File::List files;
 		
-		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false) 
-			: name(aName), parent(aParent), adls(_adls) { };
+		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false, bool aComplete = true) 
+			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
 		
 		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
@@ -113,6 +113,7 @@ public:
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
 		GETSET(bool, adls, Adls);
+		GETSET(bool, complete, Complete);
 
 	private:
 		Directory(const Directory&);

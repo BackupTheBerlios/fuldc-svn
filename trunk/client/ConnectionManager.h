@@ -68,7 +68,7 @@ public:
 	void connect(const string& aServer, short aPort, const string& aNick);
 	void connect(const string& aServer, short aPort, const CID& cid, const string& aToken);
 	void getDownloadConnection(const User::Ptr& aUser);
-	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
+	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
 	void putUploadConnection(UserConnection* aSource);
 	
 	void removeConnection(const User::Ptr& aUser, int isDownload);

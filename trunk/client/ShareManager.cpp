@@ -848,7 +848,7 @@ void ShareManager::generateNmdcList(bool force /* = false */) {
 	}
 }
 
-MemoryInputStream* ShareManager::generatePartialList(const string& dir) {
+MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool recurse) {
 	if(dir.length() < 3 || dir[0] != '/' || dir[dir.size()-1] != '/')
 		return NULL;
 

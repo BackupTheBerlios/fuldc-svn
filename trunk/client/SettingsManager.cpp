@@ -161,7 +161,7 @@ SettingsManager::SettingsManager()
 	setDefault(COMPRESS_TRANSFERS, true);
 	setDefault(SHOW_PROGRESS_BARS, true);
 	setDefault(SFV_CHECK, false);
-	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. I might answer later if you're lucky.");
+	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. State your business and I might answer later if you're lucky.");
 	setDefault(TIME_STAMPS_FORMAT, "%H:%M:%S");
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
@@ -331,6 +331,9 @@ void SettingsManager::load(string const& aFileName)
 		if(SETTING(CLIENT_ID).empty())
 			set(CLIENT_ID, CID::generate().toBase32());
 
+#ifdef _DEBUG
+		set(CLIENT_ID, CID::generate().toBase32());
+#endif
 		setDefault(UDP_PORT, SETTING(IN_PORT));
 
 		xml.resetCurrentChild();

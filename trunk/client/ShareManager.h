@@ -67,7 +67,7 @@ public:
 
 	StringPairList getDirectories() const { RLock<> l(cs); return virtualMap; }
 
-	MemoryInputStream* generatePartialList(const string& dir);
+	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
 	MemoryInputStream* getTree(const string& aFile);
 
 	int64_t getShareSize() throw();

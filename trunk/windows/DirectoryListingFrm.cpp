@@ -161,7 +161,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
-	fileMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	fileMenu.AppendMenu(MF_SEPARATOR);
 	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
 	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
@@ -511,7 +511,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CTSTRING(BROWSE));
 
 		if(WinUtil::lastDirs.size() > 0) {
-			targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+			targetMenu.AppendMenu(MF_SEPARATOR);
 			for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
 			}
@@ -581,7 +581,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
 
 			if(WinUtil::lastDirs.size() > 0) {
-				targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+				targetDirMenu.AppendMenu(MF_SEPARATOR);
 				for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (n++), i->c_str());
 				}

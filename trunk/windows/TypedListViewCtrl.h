@@ -58,6 +58,8 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
+		MESSAGE_HANDLER(WM_LBUTTONUP, onButton)
+		MESSAGE_HANDLER(WM_RBUTTONUP, onButton)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -302,6 +304,13 @@ public:
 		
 		return 0;
 	}
+
+	LRESULT onButton(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		bHandled = FALSE;
+		if(GetItemCount > 0)
+		//::InvalidateRect(m_hWnd, NULL, FALSE);
+		return 1;
+	}
 	
 	LRESULT onPaint(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		if(!ownerDraw) {
@@ -311,11 +320,10 @@ public:
 
 		state = 0;
 		
-		CRect rc;
+		CRect updateRect;
 		CRect crc;
 		GetClientRect(&crc);
-
-		if(GetUpdateRect(&rc, FALSE)) {
+		if(GetUpdateRect(updateRect, FALSE)){
 			CPaintDC dc(m_hWnd);
 			dc.SetBkColor(WinUtil::bgColor);
 			CMemDC memDC(&dc, &crc);
@@ -353,7 +361,7 @@ public:
 			int count = 0;
 
 			if(GetItemRect(0, &itemRect, LVIR_BOUNDS) != 0){
-				count = crc.Height() / itemRect.Height();
+				count = min(crc.Height() / itemRect.Height(), GetItemCount());
 			}
 
 			for(int i = 0; i < count; ++i) {
@@ -384,6 +392,16 @@ public:
 		lvItem.mask = LVIF_IMAGE | LVIF_STATE;
 		lvItem.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
 		GetItem(&lvItem);
+
+		if(ld->itemID == 0) {
+			dcdebug("item 0: ");
+			if(lvItem.state & LVIS_FOCUSED)
+				dcdebug(" har focus ");
+			if(lvItem.state & LVIS_SELECTED)
+				dcdebug(" har sel");
+
+			dcdebug("\n");
+		}
 
 		COLORREF oldTextColor = 0;
 
