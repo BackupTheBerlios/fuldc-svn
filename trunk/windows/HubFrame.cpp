@@ -996,8 +996,6 @@ void HubFrame::onTab() {
 		}
 	}
 
-	Lock l(updateCS);
-
 	int y = ctrlUsers.GetItemCount();
 
 	for(int x = 0; x < y; ++x)
@@ -1005,6 +1003,11 @@ void HubFrame::onTab() {
 
 	int end = usermap.size();
 	bool found = false;
+
+	Lock l(updateCS);
+
+	if(!up && curUser == usermap.end())
+		curUser = usermap.begin();
 
 	for(int i = 0; i < end; ++i){
 		if(up){

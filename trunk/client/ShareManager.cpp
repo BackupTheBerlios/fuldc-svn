@@ -573,10 +573,11 @@ int ShareManager::run() {
 		if(refreshDir && !refreshDirs){
 			StringList dirs = getDirectories();
 			for(StringIter k = dirs.begin(); k != dirs.end(); ++k){
-				if(Util::toLower(*k).compare(refreshDirName) == 0){
+				if((*k).compare(refreshDirName) == 0){
 					removeDirectory(*k);
 					addDirectory(refreshDirName);
 					refreshDirName = "";
+					break;
 				}
 			}
 			refreshDir = false;

@@ -155,18 +155,18 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 				d->setSource("files.xml.bz2");
 			} else if(aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
-			d->setSource("MyList.bz2");
-		}
+				d->setSource("MyList.bz2");
+			}
 		}
 
+		d->bytesLeft = d->getSize() - d->getPos();
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && (aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) || aConn->isSet(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK)) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
-			d->bytesLeft = d->getSize() - d->getPos();
 			aConn->getZBlock(d->getSource(), d->getPos(), d->bytesLeft, d->isSet(Download::FLAG_UTF8));
 		} else if(d->isSet(Download::FLAG_UTF8)) {
 			aConn->getBlock(d->getSource(), d->getPos(), d->bytesLeft, true);
-		} else {
+		} else{
 			aConn->get(d->getSource(), d->getPos());
 		}
 		return;
@@ -294,43 +294,43 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	}
 
 	d->setFile(file);
-	
+
 	if(d->isSet(Download::FLAG_ROLLBACK)) {
 		d->setFile(new RollbackOutputStream<true>(file, d->getFile(), SETTING(ROLLBACK)));
 	}
 
 	bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
-		
+
 	if(sfvcheck) {
 		d->setFlag(Download::FLAG_CALC_CRC32);
 		Download::CrcOS* crc = new Download::CrcOS(d->getFile());
 		d->setCrcCalc(crc);
 		d->setFile(crc);
 	}
-	
+
 	if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
 		d->setFile(new FilteredOutputStream<UnZFilter, true>(d->getFile()));
-}	
+	}
 	dcassert(d->getPos() != -1);
 	d->setStart(GET_TICK());
 	aSource->setState(UserConnection::STATE_DONE);
-
+	
 	fire(DownloadManagerListener::STARTING, d);
 	
 	return true;
-}
+}	
 
 void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int aLen) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
-			try {
+	try {
 		d->addPos(d->getFile()->write(aData, aLen));
 		d->addActual(aLen);
 		if(d->getPos() == d->getSize()) {
 			handleEndData(aSource);
-					aSource->setLineMode();
-					}
+			aSource->setLineMode();
+		}
 	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, e.getError());
 
@@ -531,7 +531,7 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 				// Ok, set the pos to whereever it was last writing and hope for the best...
 				d->unsetFlag(Download::FLAG_ANTI_FRAG);
-			}
+			} 
 		} catch(const Exception&) {
 			finished = false;
 		}
@@ -643,5 +643,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.4 2004/02/14 13:24:37 trem Exp $
+ * $Id: DownloadManager.cpp,v 1.93 2004/03/02 09:30:19 arnetheduck Exp $
  */
