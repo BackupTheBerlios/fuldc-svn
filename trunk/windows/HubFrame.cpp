@@ -326,13 +326,7 @@ void HubFrame::onEnter() {
 						addClientLine(CSTRING(LASTSEEN_ERROR));
 				}
 			}else if(Util::stricmp(cmd.c_str(), "lastlog") == 0) {
-				string * str = new string;
-				if(param.empty())
-					ctrlClient.LastLog(str);
-				else
-					ctrlClient.LastLog(str, Util::toInt(param));
-				TextFrame::openWindow(*str, false);
-				delete str;
+				TextFrame::openWindow(ctrlClient.LastLog());
 			}else if(Util::stricmp(cmd.c_str(), "df") == 0) {
 				client->hubMessage(WinUtil::DiskSpaceInfo());
 			} else {

@@ -445,7 +445,7 @@ LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ScrollToEnd();
 			
 	bHandled = FALSE;
-	return 1;
+	return FALSE;
 }
 
 LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
@@ -609,23 +609,11 @@ bool CFulEditCtrl::LastSeen(string & nick){
 
 void CFulEditCtrl::AddLogLine(string & line){
 	if(lastlog.size() == 100)
-		lastlog.pop_back();
+		lastlog.pop_front();
 	
-	lastlog.push_front(line);
+	lastlog.push_back(line);
 }
 
-void CFulEditCtrl::LastLog(string *str, int nrLines){
-	int i = 0;
-	deque<string>::iterator j;
-
-	stack<string> t;
-	
-	for(j = lastlog.begin(); j != lastlog.end() && i < nrLines; ++i, ++j){
-		t.push((*j) + "\r\n");
-	}
-
-	while(t.size() > 0){
-		*str += t.top();
-		t.pop();
-	}
+deque<string> *CFulEditCtrl::LastLog(){
+	return &lastlog;
 }

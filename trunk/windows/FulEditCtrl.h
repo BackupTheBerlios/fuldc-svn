@@ -24,7 +24,8 @@ public:
 	int		TextUnderCursor(POINT p, string& x);
 	void	Find();
 	bool	LastSeen(string & nick);
-	void	LastLog(string * str, int nrLines = 100);
+	
+	deque<string>* LastLog();
 	
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

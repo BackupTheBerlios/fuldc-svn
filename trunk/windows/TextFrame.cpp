@@ -26,8 +26,13 @@
 
 #define MAX_TEXT_LEN 32768
 
-void TextFrame::openWindow(const string& aFileName, bool aFile) {
-	TextFrame* frame = new TextFrame(aFileName, aFile);
+void TextFrame::openWindow(const string& aFileName) {
+	TextFrame* frame = new TextFrame(aFileName);
+	frame->CreateEx(WinUtil::mdiClient);
+}
+
+void TextFrame::openWindow(deque<string>* aLog) {
+	TextFrame* frame = new TextFrame(aLog);
 	frame->CreateEx(WinUtil::mdiClient);
 }
 
@@ -45,12 +50,14 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::SetIcon(m_hWnd, "notepad.ico");
 	bHandled = FALSE;
 
-	if(!isFile){
+	if(file.empty()){
 		SetWindowText("Lastlog");
 		ctrlPad.SetFont(WinUtil::font);
 		ctrlPad.SetBackgroundColor(WinUtil::bgColor);
 		ctrlPad.SetTextColor(WinUtil::textColor);
-		ctrlPad.AddLine(file);
+		deque<string>::iterator i = log->begin();
+		for(; i != log->end(); ++i)
+			ctrlPad.AddLine(*i);
 		return 1;
 	}
 

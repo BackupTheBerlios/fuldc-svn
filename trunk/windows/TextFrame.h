@@ -30,11 +30,13 @@
 class TextFrame : public MDITabChildWindowImpl<TextFrame>
 {
 public:
-	static void openWindow(const string& aFileName, bool aFile = true);
+	static void openWindow(const string& aFileName);
+	static void openWindow(deque<string>* aLog);
 	
 	DECLARE_FRAME_WND_CLASS_EX("TextFrame", 0, 0, COLOR_3DFACE);
 
-	TextFrame(const string& fileName, bool aFile = true) : file(fileName), isFile(aFile) { }
+	TextFrame(const string& fileName) : file(fileName){ }
+	TextFrame(deque<string> *aLog) : log(aLog) {}
 	
 	~TextFrame() { }
 	
@@ -74,7 +76,7 @@ public:
 	}
 	
 private:
-	bool isFile;
+	deque<string> *log;
 	string file;
 	CFulEditCtrl ctrlPad;
 };
