@@ -109,7 +109,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	}
 
 	if(f != NULL)
-		(*f)(p, tku[index], STRING(DOWNLOAD_QUEUE));
+		(*f)(p, tku[index], TSTRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
 
 }

@@ -467,7 +467,9 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 		} else {
 			// Not a directory, assume it's a file...make sure we're not sharing the settings file...
 			if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
-				(Util::stricmp(name.c_str(), "Favorites.xml") != 0)) {
+				(Util::stricmp(name.c_str(), "Favorites.xml") != 0) &&
+				(Util::stricmp(Util::getFileExt(name).c_str(), ".dctmp") != 0) &&
+				(Util::stricmp(Util::getFileExt(name).c_str(), ".antifrag") != 0) ){
 
 				int64_t size = i->getSize();
 
