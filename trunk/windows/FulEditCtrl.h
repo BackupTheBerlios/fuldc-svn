@@ -60,7 +60,6 @@ public:
 	void	SetTextColor( COLORREF color );
 	void	ScrollToEnd();
 	void	ScrollToBeginning();
-	void	FlashWindow();
 
 	int		TextUnderCursor(POINT p, tstring& x);
 	bool	LastSeen(tstring & nick);

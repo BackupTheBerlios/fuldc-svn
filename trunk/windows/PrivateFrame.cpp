@@ -133,7 +133,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				}
 
 				if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
-					p->FlashWindow();
+					WinUtil::flashWindow();
 				}
 				break;
 			}
@@ -162,7 +162,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				}
 
 				if(BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)){
-					p->FlashWindow();
+					WinUtil::flashWindow();
 				}
 			}
 		}
@@ -178,7 +178,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 		}
 
 		if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
-			p->FlashWindow();
+			WinUtil::flashWindow();
 		}
 
 		i->second->addLine(aMessage);
@@ -629,21 +629,6 @@ void PrivateFrame::closeAll(){
 	FrameMap::iterator i = frames.begin();
 	for(; i != frames.end(); ++i)
 		i->second->PostMessage(WM_CLOSE, 0, 0);
-}
-
-void PrivateFrame::FlashWindow() {
-	if( GetForegroundWindow() != WinUtil::mainWnd ) {
-		DWORD flashCount;
-		SystemParametersInfo(SPI_GETFOREGROUNDFLASHCOUNT, 0, &flashCount, 0);
-		FLASHWINFO flash;
-		flash.cbSize = sizeof(FLASHWINFO);
-		flash.dwFlags = FLASHW_ALL;
-		flash.uCount = flashCount;
-		flash.hwnd = WinUtil::mainWnd;
-		flash.dwTimeout = 0;
-
-		FlashWindowEx(&flash);
-	}
 }
 
 void PrivateFrame::readLog() {

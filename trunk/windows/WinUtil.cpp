@@ -1350,6 +1350,25 @@ int WinUtil::checkParam( const tstring& param ){
 	return -1;
 }
 
+bool WinUtil::flashWindow() {
+	if( GetForegroundWindow() != WinUtil::mainWnd ) {
+		DWORD flashCount;
+		SystemParametersInfo(SPI_GETFOREGROUNDFLASHCOUNT, 0, &flashCount, 0);
+		FLASHWINFO flash;
+		flash.cbSize = sizeof(FLASHWINFO);
+		flash.dwFlags = FLASHW_ALL;
+		flash.uCount = flashCount;
+		flash.hwnd = WinUtil::mainWnd;
+		flash.dwTimeout = 0;
+
+		FlashWindowEx(&flash);
+
+		return true;
+	}
+
+	return false;
+}
+
 /**
  * @file
  * $Id: WinUtil.cpp,v 1.21 2004/02/21 15:43:54 trem Exp $

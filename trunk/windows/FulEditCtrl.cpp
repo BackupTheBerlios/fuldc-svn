@@ -19,19 +19,19 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
+
 #include "../client/highlightmanager.h"
-#include "../client/LogManager.h"
 #include "../client/ResourceManager.h"
 #include "../client/version.h"
 #include "../client/pme.h"
 
 
-#include "fuleditctrl.h"
+#include "FuleditCtrl.h"
 #include "PopupManager.h"
-#include <stack>
+#include "WinUtil.h"
+
 #include <MMSystem.h>
 
-#include "WinUtil.h"
 
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
@@ -415,7 +415,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 	}
 
 	if(cs->getFlashWindow())
-		FlashWindow();
+		WinUtil::flashWindow();
 					
 	if( cs->getTimestamps() || cs->getUsers() )
 		return tstring::npos;
@@ -485,7 +485,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 	}
 
 	if(cs->getFlashWindow())
-		FlashWindow();
+		WinUtil::flashWindow();
 	
 	return tstring::npos;
 }
@@ -565,7 +565,7 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 }
 
 LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
-	LPFINDREPLACE fr = (LPFINDREPLACE)lParam;
+	LPFINDREPLACE fr = reinterpret_cast<LPFINDREPLACE>(lParam);
 
 	if(fr->Flags & FR_DIALOGTERM){
 		WinUtil::findDialog = NULL;
@@ -727,7 +727,7 @@ BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 		tstring line;
 		int start = TextUnderCursor(pt, line);
 		if( start != tstring::npos ) {
-			int end = line.find_first_of(_T(" \t\r\n"), start+1);
+			int end = line.find_first_of(_T(" \t\r"), start+1);
 			if(end == tstring::npos)
 				end = line.length();
 			searchTerm = line.substr(start, end-start);
@@ -739,19 +739,4 @@ BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 	WinUtil::AppendSearchMenu(searchMenu);
 	
 	return menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, hWnd );
-}
-
-void CFulEditCtrl::FlashWindow() {
-	if( GetForegroundWindow() != WinUtil::mainWnd ) {
-		DWORD flashCount;
-		SystemParametersInfo(SPI_GETFOREGROUNDFLASHCOUNT, 0, &flashCount, 0);
-		FLASHWINFO flash;
-		flash.cbSize = sizeof(FLASHWINFO);
-		flash.dwFlags = FLASHW_ALL;
-		flash.uCount = flashCount;
-		flash.hwnd = WinUtil::mainWnd;
-		flash.dwTimeout = 0;
-
-		FlashWindowEx(&flash);
-	}
 }

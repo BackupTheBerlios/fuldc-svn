@@ -98,6 +98,7 @@ public:
 	static void setClipboard(const tstring & str);
 	static void search(tstring searchTerm, int searchMode, bool tth = false);
 	static void AppendSearchMenu(CMenu& menu);
+	static bool flashWindow();
 
 	static tstring DiskSpaceInfo(bool onlyTotal = false);
 	static tstring Help(const tstring& command);

@@ -494,11 +494,15 @@ private:
 			GetHeader().GetItem(column, &hd);
 			ci->pos = hd.iOrder;
 			
-			DeleteColumn(column);
+			int itemCount = GetHeader().GetItemCount();
+			if(itemCount >= 0 && sortColumn > itemCount - 2)
+				setSortColumn(0);
+
 			if(sortColumn == ci->pos)
-				sortColumn = 0;
+				setSortColumn(0);
+
+			DeleteColumn(column);
 		}
-		
 	}
 
 	int findColumn(ColumnInfo* ci){
