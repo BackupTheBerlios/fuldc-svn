@@ -125,10 +125,6 @@ public:
 	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL, const char* defExt = NULL);
 	static bool browseDirectory(string& target, HWND owner = NULL);
 
-	// Hash related
-	static void bitziLink(TTHValue* /*aHash*/);
-	static void copyMagnet(TTHValue* /*aHash*/, const string& /*aFile*/);
-	
 	static void openLink(const string& url);
 	static void openFile(const string& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);

@@ -585,15 +585,10 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 
 /** Download finished! */
 void DownloadManager::handleEndData(UserConnection* aSource) {
-	
-	//dcassert(aSource->getState() == UserConnection::STATE_DONE);
+	dcassert(aSource->getState() == UserConnection::STATE_DONE);
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 	
-	//ugly hack until someone that actually understands the code fixes it =)
-	if(d->getFile() == NULL)
-		return;
-
 	if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 		d->getFile()->flush();
 		delete d->getFile();

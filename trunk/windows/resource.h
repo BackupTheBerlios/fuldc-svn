@@ -40,9 +40,7 @@
 #define IDC_TOOLBAR                     129
 #define IDC_PUBLIST                     130
 #define IDC_HUBLIST                     131
-#define IDC_BITZI_LOOKUP                131
 #define IDR_MDIDIRECTORY                132
-#define IDC_COPY_MAGNET                 132
 #define IDC_SERVER                      133
 #define IDD_HUBS                        134
 #define IDC_FILES                       135

@@ -111,8 +111,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CSTRING(SEARCH_FOR_ALTERNATES));
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CSTRING(SEARCH_BY_TTH));
-	singleMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CSTRING(LOOKUP_AT_BITZI));
-	singleMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CSTRING(COPY_MAGNET));
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_STRING, CSTRING(ENTER_SEARCH_STRING));
 	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CSTRING(MOVE));
 	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
@@ -929,12 +927,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 			if(ii->getTTH() == NULL) {
 				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
-				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
-				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
 			} else {
 				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
-				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
-				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
 			}
 			
 			singleMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -1019,24 +1013,6 @@ LRESULT QueueFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		}
 	} 
 
-	return 0;
-}
-
-LRESULT QueueFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		WinUtil::bitziLink(ii->getTTH());
-	}
-	return 0;
-}
-
-LRESULT QueueFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		WinUtil::copyMagnet(ii->getTTH(), ii->getTargetFileName());
-	}
 	return 0;
 }
 
