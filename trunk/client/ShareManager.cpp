@@ -764,6 +764,8 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 			
 			xml->addTag("FileListing");
 			xml->addChildAttrib("Version", 1);
+			xml->addChildAttrib("CID", SETTING(CLIENT_ID));
+			xml->addChildAttrib("Base", string("/"));
 			xml->addChildAttrib("Generator", string(APPNAME " " VERSIONSTRING));
 			xml->stepIn();
 
