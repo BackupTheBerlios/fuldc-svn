@@ -180,7 +180,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlResults.insertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 
-	ctrlResults.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlResults.setColumnOrderArray(COLUMN_LAST, columnIndexes);
 	ctrlResults.setSortColumn(COLUMN_FILENAME);
 	ctrlResults.setVisible(SETTING(SEARCHFRAME_VISIBLE));
 
@@ -189,7 +189,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.SetTextColor(WinUtil::textColor);
 	ctrlResults.SetFont(WinUtil::systemFont, FALSE);	// use Util::font instead to obey Appearace settings
 	
-	ctrlHubs.InsertColumn(0, "Dummy", LVCFMT_LEFT, LVSCW_AUTOSIZE, 0);
+	ctrlHubs.insertColumn(0, "Dummy", LVCFMT_LEFT, LVSCW_AUTOSIZE, 0);
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);

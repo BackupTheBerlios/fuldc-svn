@@ -390,36 +390,26 @@ void HubFrame::onEnter() {
 
 struct CompareItems {
 	CompareItems(int aCol) : col(aCol) { }
-	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) {
+	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) const {
 		return HubFrame::UserInfo::compareItems(&a, &b, col) == -1;
 	}
-	int col;
+	const int col;
 };
 
 int HubFrame::findUser(const User::Ptr& aUser) {
+	for(UserMap::iterator i = usermap.begin(); i != usermap.end(); ++i){
+		if(Util::stricmp(aUser->getNick(), i->second->user->getNick()) == 0)
+			break;
+	}
+	
+	if(i == usermap.end())
+		return -1;
+
 	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
 		// Sort order of the other columns changes too late when the user's updated
-		UserInfo ui(aUser, stripIsp);
-		{
-			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
-				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
-			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
-				if(i->getUser() == aUser)
-					return i - ctrlUsers.begin();
-			}
-		}
-		if(aUser->isSet(User::OP)) {
-			// Might still be sorted as a non-op...search again...
-			ui.setOp(false);
-			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
-				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
-			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
-				if(i->getUser() == aUser)
-					return i - ctrlUsers.begin();
-			}
-
-		}
-		return -1;
+		UserInfo* ui = i->second;
+		//dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
+		return ctrlUsers.getSortPos(ui);
 	}
 	return ctrlUsers.findItem(aUser->getNick());
 }
@@ -471,7 +461,8 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 		ctrlUsers.getItemData(i)->update();
 		ctrlUsers.updateItem(i);
 		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-		
+		if(u->isSet(User::OP))
+			ctrlUsers.resort();
 		return false;
 	}
 
@@ -516,15 +507,10 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 					if(updateUser(u)) {
 						if(showJoins)
 							addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
-					} else {
-						userUpdated = true;
-					}
+					} 
 					break;
 				case UPDATE_USERS:
-					if(updateUser(u))
-						userAdded = true;
-					else
-						userUpdated = true;
+					updateUser(u);
 					break;
 				case REMOVE_USER:
 					removeUser(u);
@@ -533,10 +519,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 			updateList.clear();
 		}
-		if(extraSort || userAdded || (userUpdated && (ctrlUsers.getSortColumn() != COLUMN_NICK)))
+		if(ctrlUsers.getSortColumn() != COLUMN_NICK)
 			ctrlUsers.resort();
-		extraSort = false;
-
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
 		clearUserList();
@@ -557,7 +541,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		addClientLine(*x, false);
 		delete x;
 	} else if(wParam == SET_WINDOW_TITLE) {
-		SetWindowText(((string*)lParam)->c_str());
+		string* x = (string*)lParam;
+		SetWindowText(x->c_str());
+		delete x;
 	} else if(wParam == STATS) {
 		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
 		if(client->getUserInfo()){
