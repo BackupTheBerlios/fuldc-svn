@@ -147,14 +147,9 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 	// Get the bounding rectangle of the client area. 
 	ctrlTransfers.GetWindowRect(&rc);
-	ctrlTransfers.GetHeader().GetWindowRect(&rc2);
-	if(PtInRect(&rc2, pt)){
-		ctrlTransfers.showMenu(pt);
-		return TRUE;
-	}
 
 	if ((HWND)wParam == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) { 
-		if(pt.x < 0 || pt.y < 0) {
+		if(pt.x == -1 && pt.y == -1) {
 			pt.x = pt.y = 0;
 			ctrlTransfers.ClientToScreen(&pt);
 		}

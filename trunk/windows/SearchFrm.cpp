@@ -985,14 +985,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
-	ctrlResults.GetHeader().GetWindowRect(&rc);
-	if(PtInRect(&rc, pt)){
-		ctrlResults.showMenu(pt);
-		return TRUE;
-	}
-
 	if ((HWND)wParam == ctrlResults && ctrlResults.GetSelectedCount() > 0) {
-		if(pt.x < 0 || pt.y < 0) {
+		if(pt.x == -1 && pt.y == -1) {
 			pt.x = pt.y = 0;
 			ctrlResults.ClientToScreen(&pt);
 		}

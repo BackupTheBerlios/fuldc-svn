@@ -864,13 +864,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		// Get the bounding rectangle of the client area. 
 		ctrlUsers.GetWindowRect(&rc);
 		
-		CRect rc2;
-		ctrlUsers.GetHeader().GetWindowRect(&rc2);
-		
-		if (PtInRect(&rc2, pt)) {
-			ctrlUsers.showMenu(pt);
-			return TRUE;
-		}else if (PtInRect(&rc, pt)) { 
+		if (PtInRect(&rc, pt)) { 
 			doMenu = true;
 		}else{
 			bHandled = FALSE; //needed to popup context menu under userlist

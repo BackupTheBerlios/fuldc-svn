@@ -58,6 +58,7 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -296,6 +297,26 @@ public:
 			return 1;
 		}
 		
+		return 0;
+	}
+
+	LRESULT onContextMenu(UINT /*msg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		//make sure we're not handling the context menu if it's invoked from the
+		//keyboard
+		if(pt.x == -1 && pt.y == -1) {
+			bHandled = FALSE;
+			return 0;
+		}
+
+		CRect rc;
+		GetHeader().GetWindowRect(&rc);
+
+		if (PtInRect(&rc, pt)) {
+			showMenu(pt);
+			return 0;
+		}
+		bHandled = FALSE;
 		return 0;
 	}
 

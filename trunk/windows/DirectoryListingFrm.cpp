@@ -542,19 +542,13 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 
 	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
 
-	ctrlList.GetHeader().GetWindowRect(&rc);
-	if(PtInRect(&rc, pt)){
-		ctrlList.showMenu(pt);
-		return TRUE;
-	}
-
 	// Get the bounding rectangle of the client area. 
 	ctrlList.GetClientRect(&rc);
 	
 	WinUtil::AppendSearchMenu(searchMenu);
 
 	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) {
-		if(pt.x < 0 || pt.y < 0) {
+		if(pt.x == -1 && pt.y == -1) {
 			pt.x = pt.y = 0;
 			ctrlList.ClientToScreen(&pt);
 		}
@@ -613,7 +607,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 		return TRUE; 
 	} else if((HWND)wParam == ctrlTree && ctrlTree.GetSelectedItem() != NULL) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		if(pt.x < 0 || pt.y < 0) {
+		if(pt.x == -1 && pt.y == -1) {
 			pt.x = pt.y = 0;
 			ctrlTree.ClientToScreen(&pt);
 		} else {
