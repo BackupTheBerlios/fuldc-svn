@@ -80,6 +80,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
+		COMMAND_ID_HANDLER(IDC_ONLYTTH, onTTH)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadWholeTarget)
@@ -112,8 +113,10 @@ public:
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		filterBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		filterContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
+		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0)
+		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
+		onlyTTH(false)
 	{	
 		SearchManager::getInstance()->addListener(this);
 		downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
@@ -173,6 +176,11 @@ public:
 
 	LRESULT onFreeSlots(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onlyFree = (ctrlSlots.GetCheck() == 1);
+		return 0;
+	}
+
+	LRESULT onTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		onlyTTH = (ctrlTTH.GetCheck() == BST_CHECKED);
 		return 0;
 	}
 
@@ -418,11 +426,12 @@ private:
 	CContainedWindow doSearchContainer;
 	CContainedWindow resultsContainer;
 	CContainedWindow hubsContainer;
+	CContainedWindow tthContainer;
 	CContainedWindow filterContainer;
 	CContainedWindow filterBoxContainer;
 
 	CStatic searchLabel, sizeLabel, optionLabel, typeLabel, hubsLabel, filterLabel;
-	CButton ctrlSlots, ctrlShowUI;
+	CButton ctrlSlots, ctrlShowUI, ctrlTTH;
 	bool showUI;
 
 	TypedListViewCtrl<SearchInfo, IDC_RESULTS> ctrlResults;
@@ -447,6 +456,7 @@ private:
 
 	bool onlyFree;
 	bool isHash;
+	bool onlyTTH;
 
 	int results;
 	int filtered;

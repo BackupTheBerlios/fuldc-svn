@@ -245,7 +245,6 @@ private:
 			save();
 
 		SettingsManager::getInstance()->removeListener(this);
-
 		if(c) {
 			c->removeListener(this);
 			delete c;

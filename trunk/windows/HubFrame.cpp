@@ -771,11 +771,10 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 	if(logMainChat) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		if(BOOLSETTING(ROTATE_LOG)) {
-			LOGMC(client->getAddressPort(), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
-		} else {
-			LOG(client->getAddressPort(), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
-		}
+		params["hub"] = client->getName();
+		params["hubaddr"] = client->getAddressPort();
+		params["mynick"] = client->getNick(); 
+		LOG(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
 	}
 	
 	if(ctrlClient.AddLine(aLine, timeStamps)) 
@@ -1247,8 +1246,11 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 			PopupManager::getInstance()->ShowDisconnected(server, m_hWnd);
 		}
 	}
-	if(BOOLSETTING(LOG_STATUS_MESSAGES) && inChat) {
-		LOGDT(client->getAddressPort() + "_Status", Text::fromT(aLine));
+	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
+		StringMap params;
+		params["hub"] = client->getName();
+		params["hubaddr"] = client->getAddressPort();
+		LOGDT(Util::formatParams(SETTING(LOG_FILE_STATUS), params), Text::fromT(aLine));
 	}
 }
 
@@ -1467,21 +1469,16 @@ void HubFrame::updateUserList() {
 
 LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring path = Text::toT(SETTING(LOG_DIRECTORY));
-	if(BOOLSETTING(ROTATE_LOG))
-		path += server;
-	if(wID == IDC_SHOW_HUB_LOG){
-		path += _T("\\");
-		if(BOOLSETTING(ROTATE_LOG)){
-			TCHAR buf[20];
-			time_t now = time(NULL);
-			_tcsftime(buf, 20, _T("%Y-%m-%d "), localtime(&now));
-			path += buf;
-		}
-		path += server + _T(".log");
-	}
 	
+
+	StringMap params;
+	params["hub"] = client->getName();
+	params["hubaddr"] = client->getAddressPort();
+	params["mynick"] = client->getNick(); 
+
+	path += Text::toT(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params));
 	ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
-	
+		
 	return 0;
 }
 

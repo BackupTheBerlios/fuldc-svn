@@ -144,6 +144,9 @@
 				RelativePath=".\settings_usercommands.html">
 			</File>
 			<File
+				RelativePath=".\settings_expert.html">
+			</File>
+			<File
 				RelativePath=".\settings_colors_and_sounds.html">
 			</File>
 		</Filter>

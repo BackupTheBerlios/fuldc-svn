@@ -69,6 +69,7 @@
 		<String Name="Destination">Destination</String>
 		<String Name="Directory">Directory</String>
 		<String Name="DirectoryAlreadyShared">Directory already shared</String>
+		<String Name="DirectoryAddError">Directory or directory name already exists</String>
 		<String Name="DiscFull">Disk full(?)</String>
 		<String Name="DisconnectUser">Disconnect user(s)</String>
 		<String Name="Disconnected">Disconnected</String>
@@ -106,6 +107,8 @@
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
 		<String Name="FavJoinShowingOn">Join/part of favorite users showing on</String>
+		<String Name="FavoriteDirName">Favorite name</String>
+		<String Name="FavoriteDirNameLong">Under what name you see the directory</String>
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
@@ -255,6 +258,7 @@
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
+		<String Name="OnlyTth">Only results with TTH root</String>
 		<String Name="OnlyWhereOp">Only where I'm op</String>
 		<String Name="Open">Open</String>
 		<String Name="OpenDownloadPage">Open download page?</String>
@@ -317,6 +321,7 @@
 		<String Name="SettingsAddFolder">&amp;Add folder</String>
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAdvanced">DC++\\Advanced</String>
+		<String Name="SettingsAdvanced3">DC++\\Advanced\\Experts only</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">DC++\\Appearance</String>
@@ -347,6 +352,9 @@
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
 		<String Name="SettingsExampleText">Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
+		<String Name="SettingsFavoriteDirsPage">Downloads\\Download to</String>
+		<String Name="SettingsFavoriteDirs">Favorite download to directories</String>
+		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>
@@ -366,13 +374,14 @@
 		<String Name="SettingsLogSystemMessages">Log system messages</String>
 		<String Name="SettingsLogUploads">Log uploads</String>
 		<String Name="SettingsLogging">Logging</String>
-		<String Name="SettingsLogs">DC++\\Logs and Sound</String>
+		<String Name="SettingsLogs">DC++\\Logs</String>
 		<String Name="SettingsMaxHashSpeed">Max hash speed</String>
 		<String Name="SettingsMaxTabRows">Max tab rows</String>
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
 		<String Name="SettingsOnlyHashed">Note; New files are added to the share only once they've been hashed!</String>
+		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenFavoriteHubs">Open the favorite hubs window at startup</String>
 		<String Name="SettingsOpenFinishedDownloads">Open the finished downloads window at startup</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
@@ -517,7 +526,6 @@
 		<String Name="HubBoldTabs">Make tabs bold on status messages in Hubs</String>
 		<String Name="PmBoldTabs">Make tabs bold on status messages in private messages</String>
 		<String Name="HighPrioSample">Set high priority on sample and sub files when enqueued</String>
-		<String Name="RotateLog">Create new main chat log every midnight</String>
 		<String Name="PopupAway">Only show popups if away</String>
 		<String Name="PopupMinimized">Only show popups if minimized to tray</String>
 		<String Name="PopupOnPm">Show popup on PM</String>

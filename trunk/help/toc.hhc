@@ -105,6 +105,12 @@
 					<param name="Local" value="settings_usercommands.html">
 					</OBJECT>
 			</UL>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Experts only">
+					<param name="Local" value="settings_expert.html">
+					</OBJECT>
+			</UL>
 		</UL>
 		<LI> <OBJECT <TYPE="text/sitemap">
 			<param name="Name" value="fulDC">

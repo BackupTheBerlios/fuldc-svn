@@ -39,36 +39,26 @@ public:
 class LogManager : public Singleton<LogManager>, public Speaker<LogManagerListener>
 {
 public:
-	bool log(const string& area, const string& msg) throw() {
+	void log(const string& area, const string& msg) throw() {
 		Lock l(cs);
 		try {
-			File f(Util::validateFileName(SETTING(LOG_DIRECTORY) + area + ".log"), File::WRITE, File::OPEN | File::CREATE);
+			string aArea = Util::validateFileName(SETTING(LOG_DIRECTORY) + area);
+			File::ensureDirectory(aArea);
+			File f(aArea, File::WRITE, File::OPEN | File::CREATE);
 			f.setEndPos(0);
-			f.write( Text::utf8ToAcp( msg ) + "\r\n" );
+			f.write(msg + "\r\n");
 		} catch (const FileException&) {
 			// ...
-			return false;
 		}
-		return true;
-	};
+	}
 
 	void logDateTime(const string& area, const string& msg) throw() {
 		log(area, Util::formatTime("%Y-%m-%d %H:%M: ", TimerManager::getInstance()->getTime()) + msg);
 	}
 
-	void logMainChat(const string& area, const string& msg) throw() {
-		char buf[20];
-		time_t now = time(NULL);
-		strftime(buf, 20, "%Y-%m-%d ", localtime(&now));
-		if(!log(area + "\\" + buf + area, msg)) {
-			::CreateDirectoryW( Text::utf8ToWide(SETTING(LOG_DIRECTORY) + Util::validateFileName(area) ).c_str(), NULL);
-			log(area + "\\" + buf + area, msg);
-		}
-	}
-
 	void message(const string& msg) {
 		if(BOOLSETTING(LOG_SYSTEM)) {
-			log("system", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
+			log("system.log", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
 		}
 		fire(LogManagerListener::Message(), msg);
 	}
@@ -84,7 +74,6 @@ private:
 
 #define LOG(area, msg) LogManager::getInstance()->log(area, msg)
 #define LOGDT(area, msg) LogManager::getInstance()->logDateTime(area, msg)
-#define LOGMC(area, msg) LogManager::getInstance()->logMainChat(area, msg)
 
 #endif // !defined(AFX_LOGMANAGER_H__73C7E0F5_5C7D_4A2A_827B_53267D0EF4C5__INCLUDED_)
 

@@ -55,6 +55,7 @@ public:
 
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onHeaderMenu)
+		MESSAGE_HANDLER(WM_CHAR, onChar)
 		
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
@@ -379,6 +380,19 @@ public:
 			lvc.iOrder = columnList[i]->pos = piArray[i];
 			SetColumn(i, &lvc);
 		}
+	}
+
+	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if((GetKeyState(65) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
+			int count = GetItemCount();
+			for(int i = 0; i < count; ++i)
+				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
+
+			return 0;
+		}
+		
+		bHandled = FALSE;
+		return 1;
 	}
 
 

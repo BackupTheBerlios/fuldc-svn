@@ -262,6 +262,9 @@
 				RelativePath=".\windows\Advanced2Page.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\Advanced3Page.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\AdvancedPage.cpp">
 			</File>
 			<File
@@ -429,6 +432,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\Advanced2Page.h">
+			</File>
+			<File
+				RelativePath=".\windows\Advanced3Page.h">
 			</File>
 			<File
 				RelativePath=".\windows\AdvancedPage.h">
