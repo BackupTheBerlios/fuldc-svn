@@ -916,7 +916,15 @@ LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARA
 		MENUITEMINFO inf;
 		inf.cbSize = sizeof(MENUITEMINFO);
 		inf.fMask = MIIM_ID;
-		fileMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+		if(fileMenu.m_hMenu == (HMENU)lParam) {
+			fileMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+		} else if(copyMenu.m_hMenu == (HMENU)lParam) {
+			copyMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+		} else if(targetMenu.m_hMenu == (HMENU)lParam) {
+			targetMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+		} else if(targetDirMenu.m_hMenu == (HMENU)lParam) {
+			targetDirMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+		}
 		PostMessage(WM_COMMAND, inf.wID, 0);
 	}
 	return 0;

@@ -269,7 +269,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 
 	if(BOOLSETTING(LOG_UPLOADS)  && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
 		StringMap params;
-		params["source"] = u->getFileName();
+		params["source"] = u->getLocalFileName();
 		params["user"] = aSource->getUser()->getNick();
 		params["hub"] = aSource->getUser()->getLastHubName();
 		params["hubip"] = aSource->getUser()->getLastHubAddress();
