@@ -731,5 +731,6 @@
 		<String Name="PresetJoins">Joins</String>
 		<String Name="PresetParts">Parts</String>
 		<String Name="PresetReleases">Releases</String>
+		<String Name="ReaddSourceToQueue">re-add user to queue</String>
 	</Strings>
 </Language>

@@ -525,6 +525,27 @@ void QueueManager::readd(const string& target, User::Ptr& aUser) throw(QueueExce
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
+void QueueManager::readdUser(User::Ptr& aUser) throw() {
+	bool wantConnection = false;
+	{
+		Lock l(cs);
+		QueueItem::StringMap queue = fileQueue.getQueue();
+		QueueItem *q = NULL;
+		for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
+			q = i->second;
+			if(q != NULL && q->isBadSource(aUser)) {
+				try{
+					QueueItem::Source* s = *q->getBadSource(aUser);
+					wantConnection = addSource(q, s->getPath(), aUser, QueueItem::Source::FLAG_MASK, s->isSet(QueueItem::Source::FLAG_UTF8));
+				} catch(const QueueException& /* e*/){
+				}
+			}
+		}
+	}
+	if(wantConnection && aUser->isOnline())
+		ConnectionManager::getInstance()->getDownloadConnection(aUser);
+}
+
 string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
 #ifdef _WIN32
 	if(aTarget.length() > MAX_PATH) {
@@ -669,7 +690,8 @@ int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 			}
 			if(equal) {
 				try {
-					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, curDl->getUtf8());
+					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), 
+						QueueItem::Source::FLAG_FILE_NOT_AVAILABLE | QueueItem::Source::FLAG_REMOVED, curDl->getUtf8());
 					matches++;
 				} catch(const Exception&) {
 				}
@@ -1580,11 +1602,11 @@ void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, b
 
 	string tmp = path.substr(0, pos);
 
-	StringIntIter i = totalSizeMap.find(tmp);
+	StringInt64Iter i = totalSizeMap.find(tmp);
 
 	if(add){
 		if( i == totalSizeMap.end() ) 
-			totalSizeMap.insert(StringIntPair(tmp, size));
+			totalSizeMap.insert(pair<string, u_int64_t>(tmp, size));
 		else
 			i->second += size;
 	} else {
@@ -1605,7 +1627,7 @@ u_int64_t QueueManager::getTotalSize(const string & path){
 
 	string tmp = path.substr(0, pos);
 
-	StringIntIter i = totalSizeMap.find(tmp);
+	StringInt64Iter i = totalSizeMap.find(tmp);
 
 	if(i == totalSizeMap.end())
 		return 0;

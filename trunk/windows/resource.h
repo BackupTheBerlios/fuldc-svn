@@ -576,6 +576,7 @@
 #define IDC_DOWNLOAD_WHOLE_TARGET       7500
 #define IDC_REMOVE_SOURCES              8000
 #define IDC_REMOVE_SOURCE_ALL           8500
+#define IDC_READD_QUEUE                 9000
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

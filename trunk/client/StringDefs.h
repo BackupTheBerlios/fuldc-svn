@@ -735,5 +735,6 @@ enum Strings { // @DontAdd
 	PRESET_JOINS, // "Joins"
 	PRESET_PARTS, // "Parts"
 	PRESET_RELEASES, // "Releases"
+	READD_SOURCE_TO_QUEUE, // "Re-add user to queue"
 	LAST // @DontAdd
 };

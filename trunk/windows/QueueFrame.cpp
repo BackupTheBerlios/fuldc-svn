@@ -105,6 +105,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	priorityMenu.CreatePopupMenu();
 	dirMenu.CreatePopupMenu();
 	readdMenu.CreatePopupMenu();
+	readdQueueMenu.CreatePopupMenu();
 
 	copyMenu.CreatePopupMenu();
 	int i = 0;
@@ -117,6 +118,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)browseMenu, CTSTRING(GET_FILE_LIST));
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)readdMenu, CTSTRING(READD_SOURCE));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)readdQueueMenu, CTSTRING(READD_SOURCE_TO_QUEUE));
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
 	singleMenu.AppendMenu(MF_SEPARATOR);
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeMenu, CTSTRING(REMOVE_SOURCE));
@@ -795,6 +797,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		}
 		while(readdMenu.GetMenuItemCount() > 2) {
 			readdMenu.RemoveMenu(2, MF_BYPOSITION);
+			readdQueueMenu.RemoveMenu(2, MF_BYPOSITION);
 		}
 
 		if(ctrlQueue.GetSelectedCount() == 1) {
@@ -838,6 +841,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					mi.dwItemData = (ULONG_PTR)&(*i);
 					mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
 					readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
+					mi.wID = IDC_READD_QUEUE + 1 + readdItems; // "All" is before sources
+					readdQueueMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);
 					readdItems++;
 				}
 			}
@@ -862,9 +867,11 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 			if(readdItems == 0) {
 				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MFS_GRAYED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdQueueMenu, MFS_GRAYED);
 			}
 			else {
 				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MFS_ENABLED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdQueueMenu, MFS_ENABLED);
  			}
 
 			
@@ -951,17 +958,30 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 
 		CMenuItemInfo mi;
 		mi.fMask = MIIM_DATA;
+		if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
+			readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		} else {
+			readdQueueMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		}
 		
-		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		if(wID == IDC_READD) {
 			// re-add all sources
 			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
 				QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
 			}
+		} else if(wID == IDC_READD_QUEUE) {
+			// re-add all sources
+			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+				QueueManager::getInstance()->readdUser(s->getUser());
+			}
 		} else {
 			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
 			try {
-				QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
+				if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
+					QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
+				} else {
+					QueueManager::getInstance()->readdUser(s->getUser());
+				}
 			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			}

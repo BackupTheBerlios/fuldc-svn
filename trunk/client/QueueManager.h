@@ -101,6 +101,9 @@ public:
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 
+	/** Readd a source that was removed to all queueitems it was removed from */
+	void readdUser(User::Ptr& aUser) throw();
+
 	/** Add a directory to the queue (downloads filelist and matches the directory). */
 	void addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
 	
@@ -174,7 +177,9 @@ private:
 	typedef HASH_MAP_X(CID, string, CID::Hash, equal_to<CID>, less<CID>) PfsQueue;
 	typedef PfsQueue::iterator PfsIter;
 
-	StringIntMap totalSizeMap;
+	typedef map<string, u_int64_t> StringInt64Map;
+	typedef StringInt64Map::iterator StringInt64Iter;
+	StringInt64Map totalSizeMap;
 
 	void updateTotalSize(const string & path, const u_int64_t& size, bool add = true);
 	

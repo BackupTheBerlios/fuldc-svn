@@ -732,6 +732,7 @@ string ResourceManager::strings[] = {
 "Joins", 
 "Parts", 
 "Releases", 
+"re-add user to queue", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1464,4 +1465,5 @@ string ResourceManager::names[] = {
 "PresetJoins", 
 "PresetParts", 
 "PresetReleases", 
+"ReaddSourceToQueue", 
 };

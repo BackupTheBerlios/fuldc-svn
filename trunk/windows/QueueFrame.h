@@ -83,6 +83,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCES, IDC_REMOVE_SOURCES + 1 + menuItems, onRemoveSources)
 		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
 		COMMAND_RANGE_HANDLER(IDC_READD, IDC_READD + 1 + readdItems, onReadd)
+		COMMAND_RANGE_HANDLER(IDC_READD_QUEUE, IDC_READD_QUEUE +1 + readdItems, onReadd)
 		CHAIN_MSG_MAP(splitBase)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(SHOWTREE_MESSAGE_MAP)
@@ -335,6 +336,7 @@ private:
 	CMenu readdMenu;
 	CMenu dirMenu;
 	CMenu copyMenu;
+	CMenu readdQueueMenu;
 
 	CButton ctrlShowTree;
 	CButton ctrlSetPriority;
