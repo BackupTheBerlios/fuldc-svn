@@ -19,17 +19,16 @@
 #ifndef _BLOOM_FILTER
 #define _BLOOM_FILTER
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
-#include "File.h"
+#include "ZUtils.h"
 
 struct CRC32Hash {
-	size_t operator()(const char* c, int n) { 
-		CRC32 crc;
-		for(int i = 0; i < n; ++i)
-			crc.update(c[i]);
-		return crc.getValue();
-	}
+	size_t operator()(const void* buf, size_t len) { f(buf, len); return f.getValue(); }
+private:
+	CRC32Filter f;
 };
 
 template<size_t N, class HashFunc = CRC32Hash>
@@ -81,12 +80,12 @@ private:
 			}
 		} 
 	}
-	size_t getPos(const string& s, int i, int l) { return ((HashFunc()(&s[i], l)) % table.size()); }
+	size_t getPos(const string& s, int i, int l) { HashFunc h; return (h(&s[i], l) % table.size()); }
 	
 	vector<bool> table;
 };
 
-#endif _BLOOM_FILTER
+#endif // _BLOOM_FILTER
 
 /**
  * @file

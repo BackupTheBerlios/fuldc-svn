@@ -19,7 +19,9 @@
 #ifndef _HASH_MANAGER
 #define _HASH_MANAGER
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 #include "Singleton.h"
 #include "MerkleTree.h"
@@ -61,8 +63,16 @@ public:
 	 * Retrieves TTH root or queue's file for hashing.
 	 * @return TTH root if available, otherwise NULL
 	 */
-	TTHValue* getTTHRoot(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
-	TTHValue* getTTHRoot(const string& aFileName, int64_t aSize);
+	TTHValue* getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
+	TTHValue* getTTH(const string& aFileName, int64_t aSize);
+
+	/**
+	 * Rebuild hash data file
+	 */
+	void rebuild() {
+		Lock l(cs);
+		store.rebuild();
+	}
 
 	void startup() {
 		hasher.start();
@@ -111,17 +121,18 @@ private:
 	class HashStore {
 	public:
 		HashStore();
-		void addFile(const string& aFileName, TigerTree& tth);
+		void addFile(const string& aFileName, TigerTree& tth, bool aUsed);
 
 		void load();
 		void save();
 
-		//void rebuild();
+		void rebuild();
 
-		TTHValue* getTTHRoot(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
+		TTHValue* getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 			TTHIter i = indexTTH.find(aFileName);
 			if(i != indexTTH.end()) {
 				if(i->second->getSize() == aSize && i->second->getTimeStamp() == aTimeStamp) {
+					i->second->setUsed(true);
 					return &(i->second->getRoot());
 				} else {
 					delete i->second;
@@ -131,11 +142,11 @@ private:
 			}
 			return NULL;
 		}
-
-		TTHValue* getTTHRoot(const string& aFileName, int64_t aSize) {
+		TTHValue* getTTH(const string& aFileName, int64_t aSize) {
 			TTHIter i = indexTTH.find(aFileName);
 			if(i != indexTTH.end()) {
 				if(i->second->getSize() == aSize) {
+					i->second->setUsed(true);
 					return &(i->second->getRoot());
 				} else {
 					delete i->second;
@@ -151,8 +162,8 @@ private:
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
 		public:
-			FileInfo(const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp) :
-			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp) { }
+			FileInfo(const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
+			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed) { }
 
 			TTHValue& getRoot() { return root; }
 			void setRoot(const TTHValue& aRoot) { root = aRoot; }
@@ -162,6 +173,7 @@ private:
 			GETSET(int64_t, index, Index);
 			GETSET(size_t, blockSize, BlockSize);
 			GETSET(u_int32_t, timeStamp, TimeStamp);
+			GETSET(bool, used, Used);
 		};
 
 		typedef HASH_MAP_X(string, FileInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) TTHMap;
@@ -177,6 +189,7 @@ private:
 		bool dirty;
 
 		void createDataFile(const string& name);
+		int64_t addLeaves(TigerTree::MerkleList& leaves);
 	};
 
 	friend class HashLoader;
@@ -188,7 +201,7 @@ private:
 
 	void hashDone(const string& aFileName, TigerTree& tth);
 
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t) {
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 		if(type == TimerManagerListener::MINUTE) {
 			Lock l(cs);
 			store.save();

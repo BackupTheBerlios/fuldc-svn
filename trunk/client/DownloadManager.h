@@ -27,11 +27,11 @@
 
 #include "UserConnection.h"
 #include "Singleton.h"
+#include "FilteredFile.h"
 #include "ZUtils.h"
 
 class QueueItem;
 class ConnectionQueueItem;
-class ZDecompressor;
 
 class Download : public Transfer, public Flags {
 public:
@@ -54,23 +54,7 @@ public:
 
 	Download(QueueItem* qi) throw();
 
-	virtual ~Download() {
-		if(rollbackBuffer)
-			delete[] rollbackBuffer;
-		dcassert(comp == NULL);
-	}
-
-	u_int8_t* getRollbackBuffer() { return rollbackBuffer; };
-
-	void setRollbackBuffer(int aSize) { 
-		if(rollbackBuffer) 
-			delete[] rollbackBuffer;
-
-		rollbackBuffer = (aSize > 0) ? new u_int8_t[aSize] : NULL;
-		rollbackSize = aSize;
-	}
-
-	int getRollbackSize() { return rollbackSize; };
+	virtual ~Download() { }
 
 	string getTargetFileName() {
 		string::size_type i = getTarget().rfind('\\');
@@ -86,22 +70,20 @@ public:
 		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;			
 	}
 
+	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSETREF(string, source, Source);
 	GETSETREF(string, target, Target);
 	GETSETREF(string, tempTarget, TempTarget);
-	GETSET(UnZFilter*, comp, Comp);
+	GETSET(OutputStream*, file, File);
+	GETSET(CrcOS*, crcCalc, CrcCalc);
 
 	int64_t bytesLeft;
 private:
-	Download() { };
+	Download();
 	Download(const Download&);
 
 	Download& operator=(const Download&);
-
-	u_int8_t* rollbackBuffer;
-	int rollbackSize;
 };
-
 
 class DownloadManagerListener {
 public:
@@ -196,7 +178,6 @@ private:
 	};
 	
 	void checkDownloads(UserConnection* aConn);
-	bool handleData(UserConnection* aSource, const u_int8_t* aData, int aLen);
 	void handleEndData(UserConnection* aSource);
 	
 	// UserConnectionListener

@@ -433,8 +433,12 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			if(q->getSize() != aSize) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 			}
-			if(root != NULL && q->getTTHRoot() != NULL && !(*root == *q->getTTHRoot())) {
+			if(root != NULL) {
+				if(q->getTTH() == NULL) {
+					q->setTTH(new TTHValue(*root));
+				} else if(!(*root == *q->getTTH())) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
+			}
 			}
 			q->setFlag(aFlags);
 
@@ -593,6 +597,15 @@ typedef pair<SizeIter, SizeIter> SizePair;
 
 static DirectoryListing* curDl = NULL;
 static SizeMap sizeMap;
+static string utfTmp;
+
+static const string& utfEscaper(const string& x) {
+	if(curDl->getUtf8() && Util::needsAcp(x)) {
+		utfTmp = x;
+		return Util::toAcp(utfTmp);
+	}
+	return x;
+}
 
 int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 	int matches = 0;
@@ -607,7 +620,8 @@ int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 		SizePair files = sizeMap.equal_range(adjustSize((u_int32_t)df->getSize(), df->getName()));
 		for(SizeIter j = files.first; j != files.second; ++j) {
 			QueueItem* qi = j->second;
-			if(Util::stricmp(df->getName(), qi->getTargetFileName()) == 0 && df->getSize() == qi->getSize()) {
+			if(Util::stricmp(utfEscaper(df->getName()), qi->getTargetFileName()) == 0) {
+				dcassert(df->getSize() == qi->getSize());			
 				try {
 					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), false, curDl->getUtf8());
 					matches++;
@@ -996,8 +1010,9 @@ void QueueManager::saveQueue() throw() {
 		
 #define STRINGLEN(n) n, sizeof(n)-1
 #define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? escaper(n, tmp) : n
+		File ff(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedOutputStream<false> f(&ff);
 		
-		BufferedFile f(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE, false, 256);
 		f.write(SimpleXML::w1252Header);
 		f.write(STRINGLEN("<Downloads>\r\n"));
 		string tmp;
@@ -1012,6 +1027,12 @@ void QueueManager::saveQueue() throw() {
 				f.write(Util::toString((int)d->getPriority()));
 				f.write(STRINGLEN("\" TempTarget=\""));
 				f.write(CHECKESCAPE(d->getTempTarget()));
+				f.write(STRINGLEN("\" Added=\""));
+				f.write(Util::toString(d->getAdded()));
+				if(d->getTTH() != NULL) {
+					f.write(STRINGLEN("\" TTH=\""));
+					f.write(d->getTTH()->toBase32());
+				}
 				if(!d->getSearchString().empty()) {
 					f.write(STRINGLEN("\" SearchString=\""));
 					f.write(CHECKESCAPE(d->getSearchString()));
@@ -1020,12 +1041,6 @@ void QueueManager::saveQueue() throw() {
 					f.write(STRINGLEN("\" Downloaded=\""));
 					f.write(Util::toString(d->getDownloadedBytes()));
 				}
-				if(d->getTTHRoot() != NULL) {
-					f.write(STRINGLEN("\" TTHRoot=\""));
-					f.write(d->getTTHRoot()->toBase32());
-				}
-				f.write(STRINGLEN("\" Added=\""));
-				f.write(Util::toString(d->getAdded()));
 				f.write(STRINGLEN("\">\r\n"));
 
 				for(QueueItem::Source::List::const_iterator j = d->sources.begin(); j != d->sources.end(); ++j) {
@@ -1057,16 +1072,17 @@ void QueueManager::saveQueue() throw() {
 		}
 		
 		f.write("</Downloads>\r\n");
-		f.flushBuffers();
-		f.close();
+		f.flush();
+		ff.close();
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
 
 		dirty = false;
-		lastSave = GET_TICK();
 	} catch(const FileException&) {
 		// ...
 	}
+	// Put this here to avoid very many saves tries when disk is full...
+	lastSave = GET_TICK();
 }
 
 class QueueLoader : public SimpleXMLReader::CallBack {
@@ -1105,7 +1121,7 @@ static const string sDirectory = "Directory";
 static const string sSearchString = "SearchString";
 static const string sAdded = "Added";
 static const string sUtf8 = "Utf8";
-static const string sTTHRoot = "TTHRoot";
+static const string sTTH = "TTH";
 
 void QueueLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
 	QueueManager* qm = QueueManager::getInstance();
@@ -1113,28 +1129,29 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 		inDownloads = true;
 	} else if(inDownloads) {
 		if(cur == NULL && name == sDownload) {
-			const string& tempTarget = getAttrib(attribs, sTempTarget);
-			int64_t size = Util::toInt64(getAttrib(attribs, sSize));
+			int flags = QueueItem::FLAG_RESUME;
+			int64_t size = Util::toInt64(getAttrib(attribs, sSize, 1));
 			if(size == 0)
 				return;
-			int flags = QueueItem::FLAG_RESUME;
-
 			try {
-				target = QueueManager::checkTarget(getAttrib(attribs, sTarget), size, flags);
+				target = QueueManager::checkTarget(getAttrib(attribs, sTarget, 0), size, flags);
 				if(target.empty())
 					return;
 			} catch(const Exception&) {
 				return;
 			}
-			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority));
-			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded));
-			const string& searchString = getAttrib(attribs, sSearchString);
-			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded));
-			const string& tthRoot = getAttrib(attribs, sTTHRoot);
+			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority, 3));
+			const string& tempTarget = getAttrib(attribs, sTempTarget, 4);
+			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded, 5));
+			const string& tthRoot = getAttrib(attribs, sTTH, 6);
+			const string& searchString = getAttrib(attribs, sSearchString, 7);
+			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded, 8));
 
 			if(added == 0)
 				added = GET_TIME();
+
 			QueueItem* qi = qm->fileQueue.find(target);
+
 			if(qi == NULL) {
 				if(tthRoot.empty())
 					qi = qm->fileQueue.add(target, size, searchString, flags, p, tempTarget, downloaded, added, NULL);
@@ -1147,13 +1164,13 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			if(!simple)
 				cur = qi;
 		} else if(cur != NULL && name == sSource) {
-			const string& nick = getAttrib(attribs, sNick);
+			const string& nick = getAttrib(attribs, sNick, 0);
 				if(nick.empty())
 				return;
-			const string& path = getAttrib(attribs, sPath);
+			const string& path = getAttrib(attribs, sPath, 1);
 				if(path.empty())
 				return;
-			const string& utf8 = getAttrib(attribs, sUtf8);
+			const string& utf8 = getAttrib(attribs, sUtf8, 2);
 			bool isUtf8 = (utf8 == "1");
 				User::Ptr user = ClientManager::getInstance()->getUser(nick);
 				try {
@@ -1163,16 +1180,16 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				return;
 				}
 		} else if(cur == NULL && name == sDirectory) {
-			const string& source = getAttrib(attribs, sSource);
-			if(source.empty())
-				return;
-			const string& targetd = getAttrib(attribs, sTarget);
+			const string& targetd = getAttrib(attribs, sTarget, 0);
 			if(targetd.empty())
 				return;
-			const string& nick = getAttrib(attribs, sNick);
+			const string& nick = getAttrib(attribs, sNick, 1);
 			if(nick.empty())
 				return;
-			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority));
+			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority, 2));
+			const string& source = getAttrib(attribs, sSource, 3);
+			if(source.empty())
+				return;
 
 			qm->addDirectory(source, ClientManager::getInstance()->getUser(nick), targetd, p);
 			} 
@@ -1191,7 +1208,7 @@ void QueueLoader::endTag(const string& name, const string&) {
 void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 	File f(aFile, File::READ, File::OPEN);
 	
-	u_int32_t size = (u_int32_t)f.getSize();
+	size_t size = (size_t)f.getSize();
 	
 	string tmp;
 	if(size > 16) {

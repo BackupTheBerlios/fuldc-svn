@@ -34,13 +34,13 @@
 #define FILE_LIST_NAME "File Lists"
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
-COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED };
+COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED, COLUMN_TTH };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 200, 200, 100 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 200, 200, 100, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, ResourceManager::DOWNLOADED,
 ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING,
-ResourceManager::ADDED };
+ResourceManager::ADDED, ResourceManager::TTH_ROOT };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -249,26 +249,26 @@ void QueueFrame::QueueItemInfo::update() {
 
 	if(colMask & MASK_ERRORS) {
 		string tmp;
-			SourceIter j;
-			for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
-				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
-				if(tmp.size() > 0)
-					tmp += ", ";
-					tmp += j->getUser()->getNick();
-				tmp += " (";
-					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
-					tmp += STRING(FILE_NOT_AVAILABLE);
-					} else if(j->isSet(QueueItem::Source::FLAG_PASSIVE)) {
-					tmp += STRING(PASSIVE_USER);
-					} else if(j->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
-					tmp += STRING(ROLLBACK_INCONSISTENCY);
-					} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
-					tmp += STRING(SFV_INCONSISTENCY);
-				}
-				tmp += ')';
+		SourceIter j;
+		for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
+			if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
+			if(tmp.size() > 0)
+				tmp += ", ";
+				tmp += j->getUser()->getNick();
+			tmp += " (";
+				if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
+				tmp += STRING(FILE_NOT_AVAILABLE);
+				} else if(j->isSet(QueueItem::Source::FLAG_PASSIVE)) {
+				tmp += STRING(PASSIVE_USER);
+				} else if(j->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
+				tmp += STRING(ROLLBACK_INCONSISTENCY);
+				} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
+				tmp += STRING(SFV_INCONSISTENCY);
 			}
+			tmp += ')';
 		}
-			display->columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
+			}
+		display->columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
 	}
 	
 	if(colMask & MASK_SEARCHSTRING) {
@@ -277,7 +277,10 @@ void QueueFrame::QueueItemInfo::update() {
 
 	if(colMask & MASK_ADDED) {
 			display->columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", getAdded());
-		}
+	}
+	if(colMask & MASK_TTH && getTTH() != NULL) {
+		display->columns[COLUMN_TTH] = getTTH()->toBase32();
+	}
 	}
 }
 
@@ -574,6 +577,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		ii->setPriority(aQI->getPriority());
 		ii->setStatus(aQI->getStatus());
 		ii->setDownloadedBytes(aQI->getDownloadedBytes());
+		ii->setTTH(aQI->getTTH());
 
 		{
 			for(QueueItemInfo::SourceIter i = ii->getSources().begin(); i != ii->getSources().end(); ) {
@@ -603,7 +607,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 				}
 			}
 		}
-		ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED;
+		ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED | QueueItemInfo::MASK_TTH;
 	}
 
 	speak(UPDATE_ITEM, ii);

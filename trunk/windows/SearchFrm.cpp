@@ -30,12 +30,12 @@
 StringList SearchFrame::lastSearches;
 
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
-	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE };
-int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80 };
+	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_TTH };
+int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::USER, ResourceManager::TYPE, ResourceManager::SIZE, 
 	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION, 
-	ResourceManager::HUB, ResourceManager::EXACT_SIZE };
+	ResourceManager::HUB, ResourceManager::EXACT_SIZE, ResourceManager::TTH_ROOT };
 
 void SearchFrame::openWindow(const string& str /* = Util::emptyString */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
 	SearchFrame* pChild = new SearchFrame();
@@ -341,7 +341,7 @@ void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), 
-				Util::getTempPath() + fileName, NULL, Util::emptyString,
+				Util::getTempPath() + fileName, sr->getTTH(), Util::emptyString,
 				(QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT));
 		}
 	} catch(const Exception&) {
@@ -352,7 +352,7 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				tgt + si->fileName, NULL);
+				tgt + si->fileName, si->sr->getTTH());
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), tgt );
 		}
@@ -374,11 +374,20 @@ void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), tgt, NULL);
+			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
+				tgt, si->sr->getTTH());
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), tgt);
 		}
 	} catch(const Exception&) {
+	}
+}
+
+void SearchFrame::SearchInfo::getList() {
+	try {
+		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW, getPath());
+	} catch(const Exception&) {
+		// Ignore for now...
 	}
 }
 
@@ -785,7 +794,6 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			}
 		}
 		
-
 		SearchInfo::CheckSize cs = ctrlResults.forEachSelectedT(SearchInfo::CheckSize());
 
 		if(cs.size != -1) {
@@ -889,11 +897,7 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 }
 
 LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while((i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		SearchInfo* ii = ctrlResults.getItemData(i);
-		QueueManager::getInstance()->addList(ii->user, QueueItem::FLAG_CLIENT_VIEW, ii->getPath());
-	}	
+	ctrlResults.forEachSelected(&SearchInfo::getList);
 	return 0;
 }
 

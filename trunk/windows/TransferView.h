@@ -109,6 +109,7 @@ private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_USER = COLUMN_FIRST,
+		COLUMN_HUB,
 		COLUMN_STATUS,
 		COLUMN_TIMELEFT,
 		COLUMN_SPEED,
@@ -157,6 +158,7 @@ private:
 
 		enum {
 			MASK_USER = 1 << COLUMN_USER,
+			MASK_HUB = 1 << COLUMN_HUB,
 			MASK_STATUS = 1 << COLUMN_STATUS,
 			MASK_TIMELEFT = 1 << COLUMN_TIMELEFT,
 			MASK_SPEED = 1 << COLUMN_SPEED,
@@ -190,6 +192,7 @@ private:
 
 			switch(col) {
 			case COLUMN_USER: return Util::stricmp(a->user->getNick(), b->user->getNick());
+			case COLUMN_HUB: return Util::stricmp(a->user->getClientName(), b->user->getClientName());
 			case COLUMN_STATUS: return 0;
 			case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
 			case COLUMN_SPEED: return compare(a->speed, b->speed);

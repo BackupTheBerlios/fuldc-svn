@@ -168,11 +168,13 @@ bool ShareManager::loadXmlList(){
 	
 	//try to read the xml from the file
 	try{
-		FilteredFileReader<UnBZFilter> *xmlFile = new FilteredFileReader<UnBZFilter>(Util::getAppPath() + "Share.xml.bz2", File::READ, File::OPEN);
-		while((pos = xmlFile->read(buf, 65536)) > 0) {
+		::File f(Util::getAppPath() + "Share.xml.bz2", File::READ, File::OPEN);
+		FilteredInputStream<UnBZFilter, false> *xmlFile = new FilteredInputStream<UnBZFilter, false>(&f);
+		size_t BUF_SIZE = 64*1024;
+		while((pos = xmlFile->read(buf, BUF_SIZE)) > 0) {
 			xmlString->append(buf, pos);
 		}
-		xmlFile->close();
+		f.close();
 		delete xmlFile;
 	}catch (Exception&) { 
 		//if we for some reason failed, return false to indicate that a refresh is needed
@@ -231,8 +233,7 @@ void ShareManager::save(SimpleXML* aXml) {
 void ShareManager::saveXmlList(){
 	RLock l(cs);
 	string indent;
-	
-	FilteredFileWriter<BZFilter> *xmlFile = new FilteredFileWriter<BZFilter>(Util::getAppPath() + "Share.xml.bz2", File::WRITE, File::TRUNCATE | File::CREATE);
+	FilteredOutputStream<BZFilter, true> *xmlFile = new FilteredOutputStream<BZFilter, true>(new File(Util::getAppPath() + "Share.xml.bz2", File::WRITE, File::TRUNCATE | File::CREATE));
 	try{
 		xmlFile->write(SimpleXML::utf8Header);
 		xmlFile->write("<Share>\r\n");
@@ -241,10 +242,9 @@ void ShareManager::saveXmlList(){
 			i->second->toXmlList(xmlFile, indent, i->first);
 		}
 		xmlFile->write("</Share>");
+		xmlFile->flush();
 	}catch(Exception&){}
 	
-	xmlFile->close();
-
 	try{
 		delete xmlFile;
 		xmlFile = NULL;
@@ -311,7 +311,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	while (xml->findChild("File")) {
 		string name = xml->getChildAttrib("Name");
 		u_int64_t size = xml->getIntChildAttrib("Size");
-		TTHValue *tth = HashManager::getInstance()->getTTHRoot(name, size);
+		TTHValue *tth = HashManager::getInstance()->getTTH(name, size);
 
 		lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, tth));
 
@@ -384,7 +384,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
                                 continue;
 			if(name.find('$') != string::npos)
 				continue;
-			if(!BOOLSETTING(SHARE_HIDDEN) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+			if(!BOOLSETTING(SHARE_HIDDEN) && ((data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) || (name[0] == '.')) )
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 					string newName = aName + PATH_SEPARATOR + name;
@@ -400,7 +400,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 						dir->addSearchType(getMask(name));
 						dir->addType(getType(name));
 					int64_t size = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
-					TTHValue* root = HashManager::getInstance()->getTTHRoot(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));
+					TTHValue* root = HashManager::getInstance()->getTTH(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));
 					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, root));
 
 					if(root != NULL)
@@ -611,7 +611,7 @@ int ShareManager::run() {
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
 
-				FilteredFileWriter<BZFilter> newXmlFile(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE);
+				FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
 				newXmlFile.write(SimpleXML::utf8Header);
 				newXmlFile.write("<FileListing Version=\"1\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
 
@@ -619,6 +619,7 @@ int ShareManager::run() {
 					i->second->toString(tmp, &newXmlFile, indent);
 				}
 				newXmlFile.write("</FileListing>");
+				newXmlFile.flush();
 			}
 
 			if(xFile != NULL) {
@@ -632,7 +633,11 @@ int ShareManager::run() {
 			
 			string newBZName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".bz2";
 
-			FilteredFileWriter<BZFilter>(newBZName, File::WRITE, File::TRUNCATE | File::CREATE).write(tmp);
+			{
+				FilteredOutputStream<BZFilter, true> f(new File(newBZName, File::WRITE, File::TRUNCATE | File::CREATE));
+				f.write(tmp);
+				f.flush();
+			}
 
 			if(bFile != NULL) {
 				delete bFile;
@@ -677,7 +682,7 @@ static const string& escaper(const string& n, string& tmp) {
 }
 
 #define LITERAL(n) n, sizeof(n)-1
-void ShareManager::Directory::toString(string& tmp, ::File* xmlFile, string& indent) {
+void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, string& indent) {
 	string tmp2;
 
 	tmp.append(indent);
@@ -708,7 +713,7 @@ void ShareManager::Directory::toString(string& tmp, ::File* xmlFile, string& ind
 		xmlFile->write(LITERAL("\" Size=\""));
 		xmlFile->write(Util::toString(j->getSize()));
 		if(j->getTTH()) {
-			xmlFile->write(LITERAL("\" TTHRoot=\""));
+				xmlFile->write(LITERAL("\" TTH=\""));
 			xmlFile->write(j->getTTH()->toBase32());
 		}
 		xmlFile->write(LITERAL("\"/>\r\n"));
@@ -721,14 +726,16 @@ void ShareManager::Directory::toString(string& tmp, ::File* xmlFile, string& ind
 	xmlFile->write(LITERAL("</Directory>\r\n"));
 }
 
-void ShareManager::Directory::toXmlList(::File* xmlFile, string& indent, const string& path){
+void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, const string& path){
 	string tmp, tmp2;
     
 	xmlFile->write(indent);
 	xmlFile->write(LITERAL("<Directory Name=\""));
-	xmlFile->write(escaper(name, tmp));
+	tmp = name;
+	xmlFile->write(SimpleXML::escape(tmp, false, false));
 	xmlFile->write(LITERAL("\" Path=\""));
-	xmlFile->write(escaper(path, tmp2));
+	tmp = path;
+	xmlFile->write(SimpleXML::escape(tmp, false, false));
 	xmlFile->write(LITERAL("\">\r\n"));
 
 	indent += '\t';
@@ -740,7 +747,8 @@ void ShareManager::Directory::toXmlList(::File* xmlFile, string& indent, const s
 	while(j != files.end()) {
 		xmlFile->write(indent);
 		xmlFile->write(LITERAL("<File Name=\""));
-		xmlFile->write(escaper(j->getName(), tmp2));
+		tmp = j->getName();
+		xmlFile->write(SimpleXML::escape(tmp,false, false));
 		xmlFile->write(LITERAL("\" Size=\""));
 		xmlFile->write(Util::toString(j->getSize()));
 		xmlFile->write(LITERAL("\"/>\r\n"));

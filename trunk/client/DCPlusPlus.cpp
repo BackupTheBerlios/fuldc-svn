@@ -117,6 +117,8 @@ void startup(void (*f)(void*, const string&), void* p) {
 		}
 	}
 
+	if(f != NULL)
+		(*f)(p, STRING(HASH_DATABASE));
 	HashManager::getInstance()->startup();
 	if(f != NULL)
 		(*f)(p, STRING(SHARED_FILES));

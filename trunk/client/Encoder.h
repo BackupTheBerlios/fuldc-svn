@@ -19,7 +19,9 @@
 #ifndef _ENCODER
 #define _ENCODER
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 class Encoder
 {
@@ -31,7 +33,7 @@ private:
 	static const char base32Alphabet[];
 };
 
-#endif _ENCODER
+#endif // _ENCODER
 
 /**
  * @file

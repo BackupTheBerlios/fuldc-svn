@@ -108,7 +108,6 @@ void UploadPage::write()
 		settings->set(SettingsManager::SLOTS, 1);
 
 	// Do specialized writing here
-
 	ShareManager::getInstance()->refresh();
 }
 

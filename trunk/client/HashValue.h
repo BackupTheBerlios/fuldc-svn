@@ -19,7 +19,10 @@
 #ifndef _HASH_VALUE
 #define _HASH_VALUE
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
+
 #include "FastAlloc.h"
 
 template<class Hasher>
@@ -32,6 +35,7 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 	HashValue(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); }
 	HashValue& operator=(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); return *this; }
 	bool operator==(const HashValue& rhs) const { return memcmp(data, rhs.data, SIZE) == 0; }
+	bool operator<(const HashValue& rhs) const { return memcmp(data, rhs.data, SIZE) < 0; }
 
 	string toBase32() { return Encoder::toBase32(data, SIZE); };
 

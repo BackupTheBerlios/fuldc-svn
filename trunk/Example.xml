@@ -105,6 +105,8 @@
 		<String Name="GetFileList">Get file list</String>
 		<String Name="GoToDirectory">Go to directory</String>
 		<String Name="GrantExtraSlot">Grant extra slot</String>
+		<String Name="HashDatabase">Hash database</String>
+		<String Name="HashRebuilt">Hash database rebuilt</String>
 		<String Name="HashingFinished">Finished hashing </String>
 		<String Name="High">High</String>
 		<String Name="Highest">Highest</String>
@@ -357,6 +359,7 @@
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
+		<String Name="Settings">Settings</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>
 		<String Name="SharedFiles">Shared Files</String>
@@ -463,13 +466,13 @@
 		<String Name="TabInactiveText">Inactive text color</String>
 		<String Name="TabInactiveBorder">Inactive border color</String>
 		<String Name="TabInactiveBgNotify">Inactive notification color</String>
-		<String Name="FinishedSearching">Finished searching the document</String>
+		<String Name="FinishedSearching">Finished searching the chat</String>
 		<String Name="LastseenError">User hasn't been seen</String>
 		<String Name="Removed">Removed</String>
 		<String Name="DirectoryNotFound">Directory not shared</String>
 		<String Name="MenuFulpage">fulDC Homepage</String>
 		<String Name="MenuCloseAllPm">Close all PM windows</String>
-		<String Name="MenuCloseAllDirList">Close all file lists</String>
+		<String Name="MenuCloseAllDirList">Close all file list windows</String>
 		<String Name="CustomSound">Play custom sound on PM's</String>
 		<String Name="Muted">Muted</String>
 		<String Name="Unmuted">Unmuted</String>

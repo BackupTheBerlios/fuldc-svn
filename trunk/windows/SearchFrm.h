@@ -44,7 +44,7 @@ class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)
 {
 public:
 	static void openWindow(const string& str = Util::emptyString, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
-
+	
 	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", 0, 0, COLOR_3DFACE)
 
 	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
@@ -211,6 +211,7 @@ private:
 		COLUMN_CONNECTION,
 		COLUMN_HUB,
 		COLUMN_EXACT_SIZE,
+		COLUMN_TTH,
 		COLUMN_LAST
 	};
 
@@ -225,6 +226,7 @@ private:
 			sr->decRef(); 
 		};
 
+		void getList();
 		void view();
 		struct Download {
 			Download(const string& aTarget) : tgt(aTarget) { };
@@ -262,6 +264,7 @@ private:
 				case COLUMN_CONNECTION: return sr->getUser()->getConnection();
 				case COLUMN_HUB: return sr->getHubName();
 				case COLUMN_EXACT_SIZE: return exactSize;
+				case COLUMN_TTH: return tth;
 				default: return Util::emptyString;
 			}
 		}
@@ -286,6 +289,7 @@ private:
 				case COLUMN_CONNECTION: return Util::stricmp(a->sr->getUser()->getConnection(), b->sr->getUser()->getConnection());
 				case COLUMN_HUB: return Util::stricmp(a->sr->getHubName(), b->sr->getHubName());
 				case COLUMN_EXACT_SIZE: return compare(a->sr->getSize(), b->sr->getSize());
+				case COLUMN_TTH: return Util::stricmp(a->getTTH(), b->getTTH());
 				default: return 0;
 			}
 		}
@@ -310,6 +314,8 @@ private:
 				type = STRING(DIRECTORY);
 			}
 			slots = sr->getSlotString();
+			if(sr->getTTH() != NULL)
+				setTTH(sr->getTTH()->toBase32());
 		}
 
 		GETSETREF(string, fileName, FileName);
@@ -318,6 +324,7 @@ private:
 		GETSETREF(string, size, Size);
 		GETSETREF(string, slots, Slots);
 		GETSETREF(string, exactSize, ExactSize);
+		GETSETREF(string, tth, TTH);
 	};
 
 	struct HubInfo {

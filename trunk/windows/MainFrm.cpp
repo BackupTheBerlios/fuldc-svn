@@ -105,7 +105,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
 	images.CreateFromImage("icons\\toolbar.bmp", 16, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	//images.CreateFromImage(IDB_TOOLBAR, 16, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	m_CmdBar.m_hImageList = images;
 
 	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
@@ -564,9 +563,20 @@ void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 				xml.resetCurrentChild();
 				if(xml.findChild("VeryOldVersion")) {
 					if(atof(xml.getChildData().c_str()) >= VERSIONFLOAT) {
+						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
+						MessageBox((msg + "\r\nPlease get a new one at " + url).c_str());
+						oldshutdown = true;
+						PostMessage(WM_CLOSE);
+					}
+				}
 						xml.resetCurrentChild();
-						if(xml.findChild("URL")) {
-							MessageBox(("Your version of DC++ is very old and will be shut down. Please get a new one at \r\n" + xml.getChildData()).c_str());
+				if(xml.findChild("BadVersions")) {
+					xml.stepIn();
+					while(xml.findChild("BadVersion")) {
+						float v = atof(xml.getChildAttrib("Version").c_str());
+						if(v == VERSIONFLOAT) {
+							string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
+							MessageBox((msg + "\r\nPlease get a new one at " + url).c_str());
 							oldshutdown = true;
 							PostMessage(WM_CLOSE);
 						}
@@ -752,7 +762,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		WaitForSingleObject(stopperThread, 60*1000);
 		CloseHandle(stopperThread);
 		stopperThread = NULL;
-		MDIDestroy(m_hWnd);
+		bHandled = FALSE;
 	}
 
 	return 0;
@@ -924,8 +934,6 @@ LRESULT MainFrame::onSwitchWindow(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	return 0;
 }
 
-
-
 void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	if(type == TimerManagerListener::SECOND) {
 		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
@@ -984,4 +992,3 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
  * @file
  * $Id: MainFrm.cpp,v 1.13 2004/02/22 01:24:11 trem Exp $
  */
-

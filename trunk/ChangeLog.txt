@@ -1,4 +1,34 @@
- -- 0.306 --
+ -- 0.307 --
+* Experimental release, lots and lots of core code has changed => high fatal bug probability.
+* Fixed full name being displayed in user commands with submenus
+* Bloom filters dramatically improve cpu efficiency on incoming searches (if you have a large share)
+* Auto match results shown in status bar
+* Added option to match autosearch filenames exactly to further avoid the wrong file being downloaded (default on)
+* End of zlib transfer test period, semantics slightly changed ($GetTestZBlock -> $GetZBlock, $Sending changed)
+* Speed increase when loading shares with many files of the same size (thanks farcry)
+* Added file hashing, turn it off in advanced settings (experimental)
+* Merkle trees and tiger hashing added for TTH hash support
+* Compression totally rewritten, should also fix a few minor issues
+* Compression (GetZBlock) and hashing (TTHSearch) is advertised to hubs through $Supports, I advise hubs to advise 
+  its users to keep at least hashes on so that searching by hashes will work efficiently (as it's only useful if 
+  all clients on the hub support it).
+* Fixed bug where no/invalid file listing would be written if there was no disk space (the old one is used now 
+  instead...)
+* XML File lists that contain hashes if available, and support full utf-8 names (correct viewing is not guaranteed,
+  but download should work)
+* Upgraded to zlib 1.2.1 (thanks garg)
+* Extra column for hub in transfer list (thanks torgny nyblom)
+* Copy nick to favorites in transfer list (thanks torgny nyblom)
+* Files starting with a '.' are no longer shared if hidden files are not shared (...unix...)
+* Fixed a minor memory leak when an invalid search result is returned (exploitable minor security issue)
+* Slight speedup of file list loading
+* File IO rewritten (major change)
+* Rollback no longer depends on buffer size
+* /rebuilddb rebuilds the hash database and potentially reduces the size of the raw hash data file (also checks
+  its integrity)
+
+
+ -- 0.306 2004-01-09 --
 * Fixed an issue with UNC paths (those starting with "\\")
 * Changed autosearch so that it only searches if less than 5 sources are online, this should stop galloping
   filelist downloads as well

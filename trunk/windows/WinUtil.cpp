@@ -35,6 +35,7 @@
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
 #include "../client/WebShortcuts.h"
+#include "../client/HashManager.h"
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
@@ -205,7 +206,7 @@ void WinUtil::init(HWND hWnd) {
 	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CSTRING(MENU_CLOSE_DISCONNECTED));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_PM, CSTRING(MENU_CLOSE_ALL_PM));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_DIR_LIST, CSTRING(MENU_CLOSE_ALL_DIR_LIST));
-
+	
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CSTRING(MENU_WINDOW));
 
 	CMenuHandle help;
@@ -427,12 +428,14 @@ char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n" LIN
 "\r\n-- I can share huge amounts of files, can you?\r\n" LINE2,
 "\r\n-- My client doesn't spam the chat with useless debug messages, does yours?\r\n" LINE2,
 "\r\n-- I can add multiple users to the same download and have the client connect to another automatically when one goes offline, can you?\r\n" LINE2,
-"\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n" LINE2
+"\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n" LINE2,
+"\r\n-- My client supports TTH hashes, does yours?\r\n" LINE2,
+"\r\n-- My client supports XML file lists, does yours?\r\n" LINE2
 };
 
-#define MSGS 14
+#define MSGS 16
 
-string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /fuldc, /share <dir>, /unshare <dir>, /lastseen <nick>, /lastlog #";
+string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /fuldc, /share <dir>, /unshare <dir>, /lastseen <nick>, /lastlog #, /rebuild";
 
 bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& status) {
 	string::size_type i = cmd.find(' ');
@@ -519,6 +522,9 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		message = "http://paxi.myftp.org <fulDC " + string(FULVERSIONSTRING) + ">";
 	} else if(WebShortcuts::getInstance()->getShortcutByKey(cmd) != NULL) {
 		WinUtil::SearchSite(WebShortcuts::getInstance()->getShortcutByKey(cmd), param);
+	} else if(Util::stricmp(cmd.c_str(), "rebuild") == 0) {
+		HashManager::getInstance()->rebuild();
+		status = STRING(HASH_REBUILT);
 	} else {
 		return false;
 	}
@@ -547,10 +553,28 @@ void WinUtil::openLink(const string& url) {
 					end = cmd.length();
 
 				cmd = cmd.substr(start, end-start);
-
-				if((int)::ShellExecute(NULL, NULL, cmd.c_str(), url.c_str(), NULL, SW_SHOWNORMAL) > 32) {
+				::ShellExecute(NULL, cmd.c_str(), url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+				/*size_t p = cmd.find("%1");
+				if(p != string::npos)
+					cmd.replace(p, 2, url);
+				
+				STARTUPINFO si = { sizeof(si), 0 };
+				PROCESS_INFORMATION pi = { 0 };
+				AutoArray<char> buf(cmd.length() + url.length() + 4);
+				size_t pos = 0;
+				buf[pos++] = '"';
+				strcpy(buf + pos, cmd.c_str());
+				pos += cmd.size();
+				buf[pos++] = '"';
+				buf[pos++] = ' ';
+				strcpy(buf + pos, url.c_str());
+				pos += url.length();
+				buf[pos++] = 0;
+				if(::CreateProcess(NULL, buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+					::CloseHandle(pi.hThread);
+					::CloseHandle(pi.hProcess);
 					return;
-				}
+				}*/
 			}
 		}
 	}

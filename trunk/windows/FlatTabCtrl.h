@@ -445,7 +445,7 @@ public:
 		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* ti = *i;
 			if(ti->row == -1) {
-				mi.dwTypeData = (LPSTR)ti->name;
+				mi.dwTypeData = (LPSTR)ti->name.c_str();
 				mi.dwItemData = (DWORD)ti->hWnd;
 				mi.fState = MFS_ENABLED | (ti->dirty ? MFS_CHECKED : 0);
 				mi.wID = IDC_SELECT_WINDOW + n;
@@ -493,19 +493,20 @@ private:
 		typedef vector<TabInfo*> List;
 		typedef typename List::iterator ListIter;
 
-		enum { MAX_LENGTH = 20 };
-
 		TabInfo(HWND aWnd, COLORREF c, HICON icon) : hWnd(aWnd), len(0), xpos(0), row(0), 
-			dirty(false), hIcon(icon), disconnected(false), notification(false), wCode(-1) { 
+			dirty(false), hIcon(icon), disconnected(false), notification(false), wCode(-1),
+			MAX_LENGTH(SETTING(TAB_SIZE)){ 
 			memset(&size, 0, sizeof(size));
 			memset(&boldSize, 0, sizeof(boldSize));
-			name[0] = 0;
 			update();
+
+			
 		};
 
+		const int MAX_LENGTH;
 		HWND hWnd;
-		char name[MAX_LENGTH];
 		int len;
+		string name;
 		SIZE size;
 		SIZE boldSize;
 		int xpos;
@@ -520,49 +521,27 @@ private:
 		HICON hIcon;
 
 		bool update() {
-			char name2[MAX_LENGTH];
-			len = ::GetWindowTextLength(hWnd);
-			if(len >= MAX_LENGTH) {
-				::GetWindowText(hWnd, name2, MAX_LENGTH - 3);
-				name2[MAX_LENGTH - 4] = '.';
-				name2[MAX_LENGTH - 3] = '.';
-				name2[MAX_LENGTH - 2] = '.';
-				name2[MAX_LENGTH - 1] = 0;
-				len = MAX_LENGTH - 1;
-			} else {
-				::GetWindowText(hWnd, name2, MAX_LENGTH);
-			}
-			if(strcmp(name, name2) == 0) {
-				return false;
-			}
-			strcpy(name, name2);
-			CDC dc(::GetDC(hWnd));
-			HFONT f = dc.SelectFont(WinUtil::font);
-			dc.GetTextExtent(name, len, &size);
-			dc.SelectFont(WinUtil::boldFont);
-			dc.GetTextExtent(name, len, &boldSize);
-			dc.SelectFont(f);		
-			::ReleaseDC(hWnd, dc);
-			return true;
+			char *name2 = new char[MAX_LENGTH+2];
+			::GetWindowText(hWnd, name2, MAX_LENGTH+1);
+			bool ret = updateText(name2);
+			delete[] name2;
+			return ret;
 		};
 
 		bool updateText(LPCTSTR text) {
 			len = strlen(text);
-			if(len >= MAX_LENGTH) {
-				::strncpy(name, text, MAX_LENGTH - 3);
-				name[MAX_LENGTH - 4] = '.';
-				name[MAX_LENGTH - 3] = '.';
-				name[MAX_LENGTH - 2] = '.';
-				name[MAX_LENGTH - 1] = 0;
-				len = MAX_LENGTH - 1;
+			if(len >= MAX_LENGTH && MAX_LENGTH > 7) {
+				name.assign(text, MAX_LENGTH - 3);
+				name.append("...");
 			} else {
-				strcpy(name, text);
+				name.assign(text);
 			}
+			len = name.length();
 			CDC dc(::GetDC(hWnd));
 			HFONT f = dc.SelectFont(WinUtil::font);
-			dc.GetTextExtent(name, len, &size);
+			dc.GetTextExtent(name.c_str(), len, &size);
 			dc.SelectFont(WinUtil::boldFont);
-			dc.GetTextExtent(name, len, &boldSize);
+			dc.GetTextExtent(name.c_str(), len, &boldSize);
 			dc.SelectFont(f);		
 			::ReleaseDC(hWnd, dc);
 			return true;
@@ -723,10 +702,10 @@ private:
 
 		if(tab->dirty) {
 			HFONT f = dc.SelectFont(WinUtil::boldFont);
-			dc.TextOut(pos + spacing, ypos + 3, tab->name, tab->len);
+			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->len);
 			dc.SelectFont(f);		
 		} else {
-			dc.TextOut(pos + spacing, ypos + 3, tab->name, tab->len);
+			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->len);
 		}
 	
 		//restore the old tools

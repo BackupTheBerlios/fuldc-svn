@@ -20,6 +20,7 @@
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
+#include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/ConnectionManager.h"
 
@@ -27,10 +28,10 @@
 #include "TransferView.h"
 #include "LineDlg.h"
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_RATIO };
-int TransferView::columnSizes[] = { 150, 250, 75, 75, 175, 100, 200, 75 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_RATIO };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 75 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::STATUS,
+static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
 ResourceManager::RATIO};
 
@@ -41,7 +42,6 @@ TransferView::~TransferView() {
 LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 
 	arrows.CreateFromImage("icons\\arrows.bmp", 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	//arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 
@@ -293,7 +293,10 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		columns[COLUMN_USER] = user->getFullNick();
+		columns[COLUMN_USER] = user->getNick();
+	}
+	if(colMask & MASK_HUB) {
+		columns[COLUMN_HUB] = user->getClientName();
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;

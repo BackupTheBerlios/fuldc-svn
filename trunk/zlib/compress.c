@@ -3,8 +3,9 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: compress.c,v 1.1 2003/12/15 16:52:10 trem Exp $ */
+/* @(#) $Id: compress.c,v 1.2 2004/02/23 17:42:17 arnetheduck Exp $ */
 
+#define ZLIB_INTERNAL
 #include "zlib.h"
 
 /* ===========================================================================
@@ -65,4 +66,14 @@ int ZEXPORT compress (dest, destLen, source, sourceLen)
     uLong sourceLen;
 {
     return compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
+}
+
+/* ===========================================================================
+     If the default memLevel or windowBits for deflateInit() is changed, then
+   this function needs to be updated.
+ */
+uLong ZEXPORT compressBound (sourceLen)
+    uLong sourceLen;
+{
+    return sourceLen + (sourceLen >> 12) + (sourceLen >> 14) + 11;
 }

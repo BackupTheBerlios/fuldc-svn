@@ -452,7 +452,7 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 
 	}
 	UserInfo *ui = new UserInfo(u, stripIsp);
-	usermap.insert( UserPair(u->getShortNick(), ui) );
+	usermap.insert( UserPair(Util::toLower(u->getShortNick()), ui) );
 	bool add = false;
 	
 	if(filter.empty()){
@@ -590,7 +590,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 		int tmp = (sr.Width()) > 332 ? 232 : ((sr.Width() > 132) ? sr.Width()-100 : 32);
 		
-		w[0] = sr.right - tmp -40;
+		w[0] = sr.right - tmp -30;
 		w[1] = w[0] + (tmp-100)/2;
 		w[2] = w[0] + (tmp-100);
 		w[3] = w[2] + 96;
@@ -673,13 +673,20 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
 		if(fhe != NULL){
-			CRect rc, rc2;
+			RECT rc, rc2;
 			
 			//Get position of window
-			GetWindowRect(rc);
+			GetWindowRect(&rc);
+			::GetWindowRect(GetParent(), &rc2);
 
 			//convert the position so it's relative to main window
-			ScreenToClient(rc);
+			//+2 pixels seems to work well to avoid the windows moving down and right
+			//every time they're closed
+			rc.top -= (rc2.top+2);
+			rc.left -= (rc2.left+2);
+			rc.right -= (rc2.left+2);
+			rc.bottom -= (rc2.top+2);
+			
 
 			//save the position
 			fhe->setBottom(rc.bottom > 0 ? rc.bottom : 0);
@@ -1027,7 +1034,7 @@ void HubFrame::onTab() {
 			}
 		}
 		ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
-		string tmp = curUser->first;
+		string tmp = u->user->getShortNick();;
 		if(tmp[0] == '['){
 			int pos = tmp.find_last_of("]");
 			tmp = tmp.substr(pos+1);

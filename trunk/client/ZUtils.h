@@ -19,6 +19,10 @@
 #ifndef _Z_UTILS
 #define _Z_UTILS
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #ifdef _WIN32
 #include "../zlib/zlib.h"
 #else
@@ -59,7 +63,16 @@ private:
 	z_stream zs;
 };
 
-#endif _Z_UTILS
+class CRC32Filter {
+public:
+	CRC32Filter() : crc(crc32(0, NULL, 0)) { }
+	void operator()(const void* buf, size_t len) { crc = crc32(crc, (const Bytef*)buf, len); }
+	u_int32_t getValue() const { return crc; }
+private:
+	u_int32_t crc;
+};
+
+#endif // _Z_UTILS
 
 /**
  * @file

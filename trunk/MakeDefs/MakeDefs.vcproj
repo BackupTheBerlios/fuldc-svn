@@ -28,7 +28,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="WIN32,NDEBUG,_CONSOLE"
+				PreprocessorDefinitions="_CONSOLE"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -41,7 +41,8 @@
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CallingConvention="1"/>
+				CallingConvention="1"
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -92,13 +93,13 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="WIN32,_DEBUG,_CONSOLE"
+				PreprocessorDefinitions="_CONSOLE"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="FALSE"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
@@ -173,13 +174,6 @@
 				RelativePath=".\StdAfx.h">
 			</File>
 		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
-		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

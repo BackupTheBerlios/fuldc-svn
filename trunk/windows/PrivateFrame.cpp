@@ -414,6 +414,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 	ucParams["mynick"] = user->getClientNick();
 
 	user->getParams(ucParams);
+
 	user->send(Util::formatParams(uc.getCommand(), ucParams));
 	return;
 };

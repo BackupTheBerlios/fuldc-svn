@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 #include "../client/SettingsManager.h"
 
 #include "../greta/regexpr2.h"
@@ -484,7 +485,7 @@ LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 		//if we find the end of the document, notify the user and return
 		int result = (int)SendMessage(EM_FINDTEXT, (WPARAM)flags, (LPARAM)&ft);
 		if(-1 == result){
-			MessageBox(CSTRING(FINISHED_SEARCHING), "fulDC", MB_OK | MB_ICONINFORMATION);
+			//MessageBox(CSTRING(FINISHED_SEARCHING), "fulDC", MB_OK | MB_ICONINFORMATION);
 			curFindPos = 0;
 			return 0;
 		}

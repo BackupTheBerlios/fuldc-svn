@@ -24,13 +24,13 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="WIN32,_DEBUG,_LIB,ZLIB_COMPILE"
+				PreprocessorDefinitions="ZLIB_COMPILE"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="FALSE"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
@@ -56,7 +56,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -86,7 +85,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="WIN32,NDEBUG,_LIB,ZLIB_COMPILE"
+				PreprocessorDefinitions="ZLIB_COMPILE"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -95,8 +94,7 @@
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="0"
-				AssemblerOutput="4"
-				WarningLevel="4"
+				WarningLevel="0"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CallingConvention="1"/>
@@ -116,7 +114,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
 				Culture="1053"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -141,13 +138,10 @@
 				RelativePath=".\zlib\compress.c">
 			</File>
 			<File
+				RelativePath=".\zlib\crc32.c">
+			</File>
+			<File
 				RelativePath=".\zlib\deflate.c">
-			</File>
-			<File
-				RelativePath=".\zlib\infblock.c">
-			</File>
-			<File
-				RelativePath=".\zlib\infcodes.c">
 			</File>
 			<File
 				RelativePath=".\zlib\inffast.c">
@@ -157,9 +151,6 @@
 			</File>
 			<File
 				RelativePath=".\zlib\inftrees.c">
-			</File>
-			<File
-				RelativePath=".\zlib\infutil.c">
 			</File>
 			<File
 				RelativePath=".\zlib\trees.c">
@@ -175,13 +166,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\zlib\crc32.h">
+			</File>
+			<File
 				RelativePath=".\zlib\deflate.h">
-			</File>
-			<File
-				RelativePath=".\zlib\infblock.h">
-			</File>
-			<File
-				RelativePath=".\zlib\infcodes.h">
 			</File>
 			<File
 				RelativePath=".\zlib\inffast.h">
@@ -190,10 +178,10 @@
 				RelativePath=".\zlib\inffixed.h">
 			</File>
 			<File
-				RelativePath=".\zlib\inftrees.h">
+				RelativePath=".\zlib\inflate.h">
 			</File>
 			<File
-				RelativePath=".\zlib\infutil.h">
+				RelativePath=".\zlib\inftrees.h">
 			</File>
 			<File
 				RelativePath=".\zlib\trees.h">

@@ -107,8 +107,6 @@ private:
 class Util  
 {
 public:
-	static u_int32_t crcTable[];
-
 	static string emptyString;
 
 	static void initialize();
@@ -209,7 +207,7 @@ public:
 		}
 		return tmp;
 #else // _WIN32
-		return emptyString;
+		return strerror(aError);
 #endif // _WIN32
 	}
 

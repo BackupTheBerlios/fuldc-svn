@@ -39,10 +39,11 @@ LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 1;
 }
 
-LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(timerId != 0)
 		KillTimer(timerId);
-	MDIDestroy(m_hWnd);
+	
+	bHandled = FALSE;
 	return 0;
 }
 

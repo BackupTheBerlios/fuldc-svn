@@ -57,7 +57,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	
 	if(dirty || ctrlPad.GetModify()) {
 		AutoArray<char> buf(ctrlPad.GetWindowTextLength() + 1);
@@ -69,7 +69,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		}
 	}
 
-	MDIDestroy(m_hWnd);
+	bHandled = FALSE;
 	return 0;
 	
 }

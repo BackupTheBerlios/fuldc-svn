@@ -70,6 +70,8 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		SetWindowText((Util::getFileName(file) + ": " + e.getError()).c_str());
 	}
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return 1;
 }

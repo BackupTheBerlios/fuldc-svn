@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "SettingsManager.h"
+#include "ResourceManager.h"
 
 #include "SimpleXML.h"
 #include "Util.h"
@@ -61,7 +62,7 @@ const string SettingsManager::settingTags[] =
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"PopupTextColor", "FreeSlotsSize", "ShowStatusbar", "ShowToolbar", "ShowTransferView",
-	"CustomSound", 
+	"CustomSound", "TabSize",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -199,6 +200,7 @@ SettingsManager::SettingsManager()
 	setDefault(TAB_SHOW_ICONS, true);
 	setDefault(DOWNLOAD_TO_PATHS, "");
 	setDefault(CUSTOM_SOUND, false);
+	setDefault(TAB_SIZE, 20);
 	
 	
 	
@@ -391,10 +393,12 @@ void SettingsManager::save(string const& aFileName) {
 	fire(SettingsManagerListener::SAVE, &xml);
 
 	try {
-		BufferedFile f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		File ff(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedOutputStream<false> f(&ff);
 		f.write(SimpleXML::w1252Header);
 		xml.toXML(&f);
-		f.close();
+		f.flush();
+		ff.close();
 		File::deleteFile(aFileName);
 		File::renameFile(aFileName + ".tmp", aFileName);
 	} catch(const FileException&) {

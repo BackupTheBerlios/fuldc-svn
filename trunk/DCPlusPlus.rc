@@ -519,14 +519,19 @@ EXSTYLE WS_EX_RTLREADING | WS_EX_LEFTSCROLLBAR
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "Minislots",IDC_STATIC,14,14,245,78
-    LTEXT           "Free slots file extensions",IDC_STATIC,24,26,225,8
-    EDITTEXT        IDC_FREE_SLOTS_EXTENSIONS,24,39,230,14,ES_AUTOHSCROLL
-    LTEXT           "Free slots file size in kB",IDC_STATIC,24,58,193,8
-    EDITTEXT        IDC_FREE_SLOTS_SIZE,24,71,40,14,ES_AUTOHSCROLL
-    GROUPBOX        "Static download to directories",IDC_STATIC,16,99,243,32
-    EDITTEXT        IDC_PATHS,22,111,176,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse",IDC_BROWSE,202,111,50,14
+    GROUPBOX        "Minislots",IDC_STATIC,14,14,245,46
+    LTEXT           "Free slots file extensions",IDC_STATIC,22,24,134,8
+    EDITTEXT        IDC_FREE_SLOTS_EXTENSIONS,24,39,178,14,ES_AUTOHSCROLL
+    LTEXT           "Free slots file size in kB",IDC_STATIC,178,24,76,8
+    EDITTEXT        IDC_FREE_SLOTS_SIZE,211,38,40,14,ES_AUTOHSCROLL
+    GROUPBOX        "Static ""download to"" directories",IDC_STATIC,14,66,
+                    245,43
+    EDITTEXT        IDC_PATHS,22,91,176,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_BROWSE,202,90,50,14
+    LTEXT           "Separate paths with |",IDC_STATIC,24,77,176,14
+    GROUPBOX        "Size of string to display in tabs",IDC_STATIC,14,115,
+                    110,32
+    EDITTEXT        IDC_TAB_SIZE,23,127,93,14,ES_AUTOHSCROLL
 END
 
 

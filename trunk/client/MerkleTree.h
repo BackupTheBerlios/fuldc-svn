@@ -19,7 +19,9 @@
 #ifndef _MERKLE_TREE
 #define _MERKLE_TREE
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 #include "TigerHash.h"
 #include "Encoder.h"
@@ -52,12 +54,12 @@ public:
 	 * @param data Pointer to (aFileSize + aBlockSize - 1) / aBlockSize) hash values,
 	 *             stored consecutively left to right
 	 */
-	MerkleTree(int64_t aFileSize, u_int32_t lastMod, size_t aBlockSize, u_int8_t* aData) : 
+	MerkleTree(int64_t aFileSize, u_int32_t aTimeStamp, size_t aBlockSize, u_int8_t* aData) : 
 		fileSize(aFileSize), timeStamp(aTimeStamp), blockSize(aBlockSize) 
 	{
-		size_t n = (size_t)((fileSize + blockSize - 1) / blockSize);
+		size_t n = calcBlocks(aFileSize, aBlockSize);
 		for(int i = 0; i < n; i++)
-			leaves.push_back(HashValue(data + i * Hasher::HASH_SIZE));
+			leaves.push_back(MerkleValue(aData + i * Hasher::HASH_SIZE));
 
 		calcRoot();
 	}
@@ -71,6 +73,9 @@ public:
 		while((maxHashes * tmp) < aFileSize)
 			tmp *= 2;
 		return tmp;
+	}
+	static size_t calcBlocks(int64_t aFileSize, size_t aBlockSize) {
+		return max((size_t)((aFileSize + aBlockSize - 1) / aBlockSize), (size_t)1);
 	}
 
 	/**

@@ -1,6 +1,10 @@
 #ifndef _CFULEDITCTRL_H_
 #define _CFULEDITCTRL_H_
 
+#if _MSC_VER >= 1000
+#pragma once
+#endif // _MSC_VER >= 1000
+
 class CFulEditCtrl : /*public CRichEditCtrl*/ public CWindowImpl<CFulEditCtrl, CRichEditCtrl>
 {
 public:

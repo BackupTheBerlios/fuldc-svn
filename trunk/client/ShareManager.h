@@ -41,6 +41,7 @@ STANDARD_EXCEPTION(ShareException);
 class SimpleXML;
 class Client;
 class File;
+class OutputStream;
 
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
 	private HashManagerListener
@@ -196,8 +197,8 @@ private:
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
 		
-		void toString(string& tmp, ::File* xmlFile, string& indent);
-		void toXmlList(::File* xmlFile, string& indent, const string& path);
+		void toString(string& tmp, OutputStream* xmlFile, string& indent);
+		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 		
 		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);

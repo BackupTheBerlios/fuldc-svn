@@ -34,7 +34,7 @@
 #include "FulPage2.h"
 #include "FulAdvancedPage.h"
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet("Settings")
+PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CSTRING(SETTINGS))
 {
 	pages[0]  = new GeneralPage(s);
 	pages[1]  = new DownloadPage(s);

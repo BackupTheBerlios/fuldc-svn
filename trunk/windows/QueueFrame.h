@@ -200,6 +200,7 @@ private:
 		COLUMN_ERRORS,
 		COLUMN_SEARCHSTRING,
 		COLUMN_ADDED,
+		COLUMN_TTH,
 		COLUMN_LAST
 	};
 	enum Tasks {
@@ -242,13 +243,14 @@ private:
 			MASK_PATH = 1 << COLUMN_PATH,
 			MASK_ERRORS = 1 << COLUMN_ERRORS,
 			MASK_SEARCHSTRING = 1 << COLUMN_SEARCHSTRING,
-			MASK_ADDED = 1 << COLUMN_ADDED
+			MASK_ADDED = 1 << COLUMN_ADDED,
+			MASK_TTH = 1 << COLUMN_TTH
 		};
 
 		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(aQI->getTarget()),
 			searchString(aQI->getSearchString()), path(Util::getFilePath(aQI->getTarget())),
 			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
-			added(aQI->getAdded()), priority(aQI->getPriority()), status(aQI->getStatus()),
+			added(aQI->getAdded()), tth(aQI->getTTH()), priority(aQI->getPriority()), status(aQI->getStatus()),
 			updateMask((u_int32_t)-1), display(NULL)
 		{ 
 			for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
@@ -315,6 +317,7 @@ private:
 		GETSET(u_int32_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
 		GETSET(QueueItem::Status, status, Status);
+		GETSET(TTHValue*, tth, TTH);
 		u_int32_t updateMask;
 
 	private:
