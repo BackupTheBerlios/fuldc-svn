@@ -136,7 +136,7 @@ LRESULT HighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 }
 
 LRESULT HighlightPage::onFgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-	CColorDialog dlg(WinUtil::textColor, CC_FULLOPEN);
+	CColorDialog dlg(fgColor, CC_FULLOPEN);
 	if(dlg.DoModal() == IDOK) {
 		fgColor = dlg.GetColor();
 	}
@@ -144,7 +144,7 @@ LRESULT HighlightPage::onFgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT HighlightPage::onBgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-	CColorDialog dlg(WinUtil::bgColor, CC_FULLOPEN);
+	CColorDialog dlg(bgColor, CC_FULLOPEN);
 	if(dlg.DoModal() == IDOK) {
 		bgColor = dlg.GetColor();
 	}
