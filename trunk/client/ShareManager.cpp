@@ -792,7 +792,7 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 
 		try {
 			SimpleXML *xml = new SimpleXML();
-			
+
 			xml->addTag("FileListing");
 			xml->addChildAttrib("Version", 1);
 			xml->addChildAttrib("CID", SETTING(CLIENT_ID));
@@ -801,7 +801,7 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 			xml->stepIn();
 
 			for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-				i->second->toXml(xml);
+				i->second->toXml(xml, true);
 			}
 			
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
@@ -883,53 +883,67 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 	if(dir[0] != '/' || dir[dir.size()-1] != '/')
 		return NULL;
 
-	string xml = SimpleXML::utf8Header;
-	string tmp;
-	xml += "<FileListing Version=\"1\" CID=\"" + SETTING(CLIENT_ID) + "\" Base=\"" + SimpleXML::escape(dir, tmp, false) + "\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n";
-	StringOutputStream sos(xml);
-	string indent = "\t";
+	SimpleXML *xml = new SimpleXML();
 
+	xml->addTag("FileListing");
+	xml->addChildAttrib("Version", 1);
+	xml->addChildAttrib("CID", SETTING(CLIENT_ID));
+	xml->addChildAttrib("Base", dir);
+	xml->addChildAttrib("Generator", string(APPNAME " " VERSIONSTRING));
+	xml->stepIn();
+	
+	bool found = false;
+	
 	RLock<> l(cs);
 	if(dir == "/") {
+		found = true;
 		for(ShareManager::Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			tmp.clear();
-			//i->second->toXml(sos, indent, tmp, recurse);
+			i->second->toXml(xml, recurse);
 		}
 	} else {
-		string::size_type i = 1, j = 1;
-		ShareManager::Directory::MapIter it = directories.end();
-		bool first = true;
-		while( (i = dir.find('/', j)) != string::npos) {
-			if(i == j) {
-				j++;
-				continue;
-			}
+		StringList l = StringTokenizer<string>(dir, '/').getTokens();
 
-			if(first) {
-				first = false;
-				StringPairIter k = lookupVirtual(dir.substr(j, i-j));
-				if(k == virtualMap.end())
-					return NULL;
-				it = directories.find(k->second);
-				if(it == directories.end())
-					return NULL;
-			} else {
-				ShareManager::Directory::MapIter it2 = it->second->directories.find(dir.substr(j, i-j));
-				if(it2 == it->second->directories.end()) {
-					return NULL;
+		for(StringPairIter i = virtualMap.begin(); i != virtualMap.end(); ++i) {
+			if(Util::stricmp(i->first, l[0]) == 0) {
+				ShareManager::Directory::MapIter j, m = directories.find(i->second);
+				if(m == directories.end())
+					continue;
+				
+				StringIter k = l.begin();
+				//skip the first dir since we've already checked it
+				++k;
+
+				for(; k != l.end(); ++k) {
+					j = m->second->directories.find(*k);
+					if(j == m->second->directories.end()) {
+						//oops this path doesn't exist in this physical dir, abort...
+						break;
+					}
+					m = j;
 				}
-				it = it2;
+
+				//did we reach the end of the list? if so we found our dir =)
+				if(k == l.end()) {
+					found = true;
+					for(j = m->second->directories.begin(); j != m->second->directories.end(); ++j) {
+						j->second->toXml(xml, recurse);
+					}
+				}
 			}
-			j = i + 1;
 		}
-		for(ShareManager::Directory::MapIter it2 = it->second->directories.begin(); it2 != it->second->directories.end(); ++it2) {
-			//it2->second->toXml(sos, indent, tmp, recurse);
-		}
-		//it->second->filesToXml(sos, indent, tmp);
 	}
 
-	xml += "</FileListing>";
-	return new MemoryInputStream(xml);
+	MemoryInputStream *mis = NULL;
+	if(found) {
+		string tmp = SimpleXML::utf8Header;
+		StringOutputStream sos(tmp);
+		xml->toXML(&sos);
+		mis = new MemoryInputStream(tmp);
+	}
+	
+	delete xml;
+
+	return mis;
 }
 
 bool ShareManager::getTTH(const string& aFile, TTHValue& tth) throw() {
@@ -1007,7 +1021,7 @@ void ShareManager::Directory::toNmdc(string& nmdc, string& indent, string& tmp2)
 	indent.erase(indent.length()-1);
 }
 
-void ShareManager::Directory::toXml(SimpleXML* xml) {
+void ShareManager::Directory::toXml(SimpleXML* xml, bool recurse) {
 	bool create = true;
 	xml->resetCurrentChild();
 
@@ -1026,8 +1040,10 @@ void ShareManager::Directory::toXml(SimpleXML* xml) {
 
 	xml->stepIn();
 
-	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		i->second->toXml(xml);
+	if(recurse) {
+		for(MapIter i = directories.begin(); i != directories.end(); ++i) {
+			i->second->toXml(xml, recurse);
+		}
 	}
 
 	for(Directory::File::Iter i = files.begin(); i != files.end(); ++i) {

@@ -138,7 +138,7 @@ LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 			ctrlHubs.ClientToScreen(&pt);
 		}
 
-		int status = ctrlHubs.GetSelectedCount() > 0;
+		int status = ctrlHubs.GetSelectedCount() > 0 ? MF_ENABLED : MF_GRAYED;
 		hubsMenu.EnableMenuItem(IDC_CONNECT, status);
 		hubsMenu.EnableMenuItem(IDC_EDIT, status);
 		hubsMenu.EnableMenuItem(IDC_MOVE_UP, status);

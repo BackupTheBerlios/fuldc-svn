@@ -194,7 +194,7 @@ private:
 		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw();
 
 		void toNmdc(string& nmdc, string& indent, string& tmp2);
-		void toXml(SimpleXML* xml);
+		void toXml(SimpleXML* xml, bool recurse);
 		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 
 		File::Iter findFile(const string& aFile) { return find_if(files.begin(), files.end(), Directory::File::StringComp(aFile)); }
