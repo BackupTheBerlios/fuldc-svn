@@ -60,7 +60,7 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		
 		// See if we're already trying to connect
 		if(find(pendingDown.begin(), pendingDown.end(), aUser) != pendingDown.end())
-				return;
+			return;
 
 		// Check if we have an active download connection already
 		for(ConnectionQueueItem::Iter j = active.begin(); j != active.end(); ++j) {

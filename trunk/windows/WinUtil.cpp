@@ -803,8 +803,8 @@ void WinUtil::AppendSearchMenu(CMenu& menu) {
 	}
 
 	WebShortcut::Iter i = WebShortcuts::getInstance()->list.begin();
-	for(int j = 1; i != WebShortcuts::getInstance()->list.end(); ++i, ++j) {
-		menu.AppendMenu(MF_STRING, IDC_SEARCH+j, (*i)->name.c_str());
+	for(; i != WebShortcuts::getInstance()->list.end(); ++i) {
+		menu.AppendMenu(MF_STRING, 0, (*i)->name.c_str());
 	}
 }
 

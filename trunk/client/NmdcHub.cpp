@@ -34,7 +34,7 @@
 
 
 NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),  
-	state(STATE_CONNECT), adapter(this),
+	adapter(this), state(STATE_CONNECT),
 	lastActivity(GET_TICK()), 
 	reconnect(true), lastUpdate(0)
 {
@@ -138,7 +138,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				return;
 			}
 		}
-		
+
 		i = j + 1;
 		
 		{

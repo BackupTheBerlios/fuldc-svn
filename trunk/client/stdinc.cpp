@@ -18,13 +18,17 @@
 
 #include "stdinc.h"
 
-#if defined(HAS_STLPORT) && (_STLPORT_VERSION != 0x462)
+#ifdef HAS_STLPORT
+
+#if (_STLPORT_VERSION != 0x462)
 #error STLPort not correctly installed, read compile.txt
 #endif
 
 #ifdef _STLP_NO_IOSTREAMS
 #error You have not compiled iostream support
 #endif
+
+#endif // HAS_STLPORT
 
 /**
  * @file

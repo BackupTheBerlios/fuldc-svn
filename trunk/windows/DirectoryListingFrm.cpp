@@ -166,6 +166,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CSTRING(COPY_TO_CLIPBOARD));
 	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH, CSTRING(SEARCH));
 	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CSTRING(SEARCH_SITES));
+	
+	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
+	MENUINFO inf;
+	inf.cbSize = sizeof(MENUINFO);
+	inf.fMask = MIM_STYLE | MIM_APPLYTOSUBMENUS;
+	inf.dwStyle = MNS_NOTIFYBYPOS;
+	fileMenu.SetMenuInfo(&inf);
 
 	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
 	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
@@ -874,7 +881,7 @@ LRESULT DirectoryListingFrame::onCopySize(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	string searchTerm;
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 	if( ii->type == ItemInfo::FILE ){
@@ -883,7 +890,7 @@ LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD wID, HWND /*h
 		searchTerm = ii->dir->getName();
 	}
 
-	WinUtil::search(searchTerm, wID - IDC_SEARCH);
+	WinUtil::search(searchTerm, 0);
 	return 0;
 }
 
@@ -894,6 +901,26 @@ void DirectoryListingFrame::closeAll(){
 	frames.clear();
 }
 
+LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if(searchMenu.m_hMenu == (HMENU)lParam) {
+		string searchTerm;
+		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+		if( ii->type == ItemInfo::FILE ){
+			searchTerm = ii->file->getName();
+		}else {
+			searchTerm = ii->dir->getName();
+		}
+
+		WinUtil::search(searchTerm, wParam+1);
+	} else {
+		MENUITEMINFO inf;
+		inf.cbSize = sizeof(MENUITEMINFO);
+		inf.fMask = MIIM_ID;
+		fileMenu.GetMenuItemInfo(wParam, TRUE, &inf);
+		PostMessage(WM_COMMAND, inf.wID, 0);
+	}
+	return 0;
+}
 /**
  * @file
  * $Id: DirectoryListingFrm.cpp,v 1.11 2004/02/21 15:14:43 trem Exp $

@@ -45,7 +45,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 public:
 	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 		lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
-		closing(false) 
+		closing(false), missedAutoConnect(false) 
 	{ 
 		memset(statusSizes, 0, sizeof(statusSizes));
 	};
@@ -305,7 +305,7 @@ private:
 	string versionInfo;
 	CImageList images;
 	CImageList largeImages, largeImagesHot;
-		
+	
 	UINT trayMessage;
 	/** Is the tray icon visible? */
 	bool trayIcon;
@@ -325,6 +325,8 @@ private:
 	int statusSizes[7];
 	
 	HANDLE stopperThread;
+
+	bool missedAutoConnect;
 
 	HWND createToolbar();
 	void buildMenu();

@@ -67,6 +67,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
@@ -78,9 +79,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_SHOWLOG, onShowLog)
 		COMMAND_ID_HANDLER(IDC_SHOW_HUB_LOG, onShowHubLog)
 		COMMAND_ID_HANDLER(IDC_OPEN_LOG_DIR, onShowHubLog)
-		COMMAND_RANGE_HANDLER(IDC_SEARCH, IDC_SEARCH + 15, onSearch)
+		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_RANGE_HANDLER(IDC_COPY+1, IDC_COPY+1+COLUMN_LAST, onCopy);
-		//COMMAND_RANGE_HANDLER(IDC_HEADER_MENU, IDC_HEADER_MENU + 10, ctrlUsers.onHeaderMenu)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
 		CHAIN_MSG_MAP(baseClass)
@@ -118,8 +118,9 @@ public:
 	LRESULT onEnterUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onFilterChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	

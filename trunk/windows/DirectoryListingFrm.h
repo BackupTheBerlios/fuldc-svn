@@ -76,6 +76,7 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
@@ -86,9 +87,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_COPY_FILENAME, onCopyFilename)
 		COMMAND_ID_HANDLER(IDC_COPY_PATH, onCopyPath)
 		COMMAND_ID_HANDLER(IDC_COPY_SIZE, onCopySize)
+		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadTargetDir)
-		COMMAND_RANGE_HANDLER(IDC_SEARCH, IDC_SEARCH + 15, onSearch)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
@@ -114,6 +115,7 @@ public:
 	LRESULT onCopyPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopySize(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
 	void downloadList(const string& aTarget, bool view = false);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);

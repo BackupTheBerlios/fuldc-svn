@@ -58,7 +58,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 			{
 				if(type == TYPE_DIRECT && first) {
 					to = CID(cur);
-			} else {
+				} else {
 					parameters.push_back(cur);
 				}
 				cur.clear();
@@ -69,7 +69,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		}
 
 		i++;
-		}
+	}
 	if(!first && !cur.empty()) {
 		parameters.push_back(cur);
 	}

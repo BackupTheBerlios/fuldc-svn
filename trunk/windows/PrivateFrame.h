@@ -66,6 +66,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
@@ -76,7 +77,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_COPY, onCopy)
 		COMMAND_ID_HANDLER(IDC_SHOWLOG, onViewLog)
 		COMMAND_ID_HANDLER(IDC_FIND, onFind)
-		COMMAND_RANGE_HANDLER(IDC_SEARCH, IDC_SEARCH + 15, onSearch)
+		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
@@ -100,6 +101,7 @@ public:
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void addLine(const string& aLine);
 	void onEnter();
