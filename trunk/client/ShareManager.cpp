@@ -584,8 +584,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				string fileName = aName + name;
 #ifdef USE_TTH
 				try {
-					if(HashManager::getInstance()->checkTTH(fileName, size, i->getLastWriteTime()))
-						lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, HashManager::getInstance()->getTTH(fileName, size)));
+					HashManager::getInstance()->checkTTH(fileName, size, i->getLastWriteTime());
+					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, HashManager::getInstance()->getTTH(fileName, size)));
 				} catch(const HashException&) {
 				}
 #else
