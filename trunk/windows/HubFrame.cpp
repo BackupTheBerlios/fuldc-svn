@@ -1505,11 +1505,14 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 	} else if(Util::strnicmp(filter.c_str(), _T("!="), 2) == 0) {
 		mode = 5;
 		start = 2;
-	} else if(Util::strnicmp(filter.c_str(), _T("<"), 1) == 0) {
+	} else if(filter[0] == _T('<')) {
 		mode = 4;
 		start = 1;
-	} else if(Util::strnicmp(filter.c_str(), _T(">"), 1) == 0) {
+	} else if(filter[0] == _T('>')) {
 		mode = 3;
+		start = 1;
+	} else if(filter[0] == _T('=')) {
+		mode = 1;
 		start = 1;
 	}
 

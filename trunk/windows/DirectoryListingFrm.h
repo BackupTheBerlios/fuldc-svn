@@ -246,7 +246,7 @@ private:
 			else
 				dupe = false;
 		};
-		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
+		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d), dupe(false) { 
 			if(utf8) {
 				columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			} else {

@@ -641,19 +641,18 @@ private:
 		HBRUSH brBackground;
 		if(aActive)
 			brBackground = ::CreateSolidBrush(SETTING(TAB_ACTIVE_BG));
-		else if(tab->disconnected && !aActive)
+		else if(tab->disconnected)
 			brBackground = ::CreateSolidBrush(SETTING(TAB_INACTIVE_BG_DISCONNECTED));
-		else if(tab->notification && !aActive)
+		else if(tab->notification)
 			brBackground = ::CreateSolidBrush(SETTING(TAB_INACTIVE_BG_NOTIFY));
-		else{
-			if( tab->dirty && BOOLSETTING(BLEND_TABS) ){
-				COLORREF bgBase = SETTING(TAB_INACTIVE_BG);
-				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? - SETTING(TAB_DIRTY_BLEND) : SETTING(TAB_DIRTY_BLEND);
-				brBackground = ::CreateSolidBrush( HLS_TRANSFORM(bgBase, mod, 0) );
-			} else {
-				brBackground = ::CreateSolidBrush( SETTING(TAB_INACTIVE_BG) );
-			}
+		else if(tab->dirty && BOOLSETTING(BLEND_TABS)){
+			COLORREF bgBase = SETTING(TAB_INACTIVE_BG);
+			int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? - SETTING(TAB_DIRTY_BLEND) : SETTING(TAB_DIRTY_BLEND);
+			brBackground = ::CreateSolidBrush( HLS_TRANSFORM(bgBase, mod, 0) );
+		} else {
+			brBackground = ::CreateSolidBrush( SETTING(TAB_INACTIVE_BG) );
 		}
+		
 
 		
 		//Create the pen used to draw the borders
@@ -662,43 +661,29 @@ private:
 
 		oldPen = dc.SelectPen(borderPen);
 		
-		POINT p[4];
-		dc.BeginPath();
-		dc.MoveTo(pos, ypos);
-		p[0].x = pos + tab->getWidth();
-		p[0].y = ypos;
-		p[1].x = pos + tab->getWidth();
-		p[1].y = ypos + getTabHeight();
-		p[2].x = pos;
-		p[2].y = ypos + getTabHeight();
-		p[3].x = pos;
-		p[3].y = ypos;
-		
-		dc.PolylineTo(p, 4);
-		dc.CloseFigure();
-		dc.EndPath();
+		CRect rc(pos, ypos, pos + tab->getWidth(), ypos + getTabHeight());
 		
 		//paint the background
 		oldBrush = dc.SelectBrush(brBackground);
-		dc.FillPath();
+		dc.FillRect(rc, brBackground);
 		
 		//draw the borders
 		if(aActive) {
 			//draw right line
-			dc.MoveTo(p[1].x , p[1].y);
-			dc.LineTo(p[0].x , p[0].y);
+			dc.MoveTo(rc.right , rc.top);
+			dc.LineTo(rc.right , rc.bottom);
 			
 			//draw the bottom line
-			dc.MoveTo(p[2].x, p[2].y);
-			dc.LineTo(p[1].x, p[1].y);
+			dc.MoveTo(rc.left, rc.bottom);
+			dc.LineTo(rc.right, rc.bottom);
 		} else {
 			//draw right line
-			dc.MoveTo(p[1].x , p[1].y - 2);
-			dc.LineTo(p[0].x , p[0].y + 2);
+			dc.MoveTo(rc.right , rc.bottom - 2);
+			dc.LineTo(rc.right , rc.top + 2);
 			
 			//draw left line
-			dc.MoveTo(p[2].x, p[2].y - 2);
-			dc.LineTo(p[3].x, p[3].y + 2);
+			dc.MoveTo(rc.left, rc.bottom - 2);
+			dc.LineTo(rc.left, rc.top + 2);
 		}
 
 		dc.SetBkMode(TRANSPARENT);

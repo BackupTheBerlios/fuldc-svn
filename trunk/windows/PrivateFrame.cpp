@@ -53,6 +53,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClient.SetFont(WinUtil::font);
 	ctrlClient.SetBackgroundColor(WinUtil::bgColor);
 	ctrlClient.SetTextColor(WinUtil::textColor);
+
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, WS_EX_CLIENTEDGE);
 	
@@ -83,6 +84,20 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	if(BOOLSETTING(STRIP_ISP_PM))
 		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
+
+	tstring nick = Text::toT(user->getClientNick());
+	if(BOOLSETTING(STRIP_ISP_PM)) {
+		tstring::size_type pos = nick.find(_T("["));
+		if( pos != tstring::npos ) {
+			tstring::size_type rpos = nick.rfind(_T("]"));
+			if( rpos == nick.length() -1 && rpos > 0 ) // this user has a stupid fucking nick bah ugly hate it
+				rpos = nick.rfind(_T("]"), rpos-1);
+			if(rpos != tstring::npos) 
+				nick = nick.substr(rpos+1);
+		}
+	}
+
+	ctrlClient.SetNick(nick);
 
 	bHandled = FALSE;
 	return 1;
