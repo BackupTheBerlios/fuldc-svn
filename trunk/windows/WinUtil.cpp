@@ -970,18 +970,37 @@ string WinUtil::Uptime() {
 	HQUERY    hQuery	= NULL;
 	HCOUNTER  hCounter	= NULL;
 	string ret = Util::emptyString;
-	
+		
 	if ( PdhOpenQuery( NULL, 0, &hQuery ) == ERROR_SUCCESS ) {
-		if(PdhAddCounter( hQuery, "\\System\\System Up Time", 0, &hCounter ) == ERROR_SUCCESS) {
-			PDH_FMT_COUNTERVALUE  pdhCounterValue;
+		//create some variables to fetch and store the counter path	
+		char path[PDH_MAX_COUNTER_PATH];
+		char tmp[PDH_MAX_COUNTER_PATH];
+		DWORD maxPath = PDH_MAX_COUNTER_PATH;
 
-			if ( PdhCollectQueryData( hQuery ) == ERROR_SUCCESS )	{
-				if ( PdhGetFormattedCounterValue( hCounter, PDH_FMT_LARGE, NULL, &pdhCounterValue ) == ERROR_SUCCESS )
-					ret = Util::formatTime(pdhCounterValue.largeValue, false);
+		//fetch the first part of the counter path, the object name.
+		if(PdhLookupPerfNameByIndex(NULL, 2, tmp, &maxPath) == ERROR_SUCCESS){
+			//store it so that we can reuse the tmp variable.
+			strcpy(path, "\\");
+			strcat(path, tmp);
+			//restore maxPath to it's max length
+			maxPath = PDH_MAX_COUNTER_PATH;
+
+			//get the counter part of the path.
+			if(PdhLookupPerfNameByIndex(NULL, 674, tmp, &maxPath) == ERROR_SUCCESS){
+				strcat(path, "\\");
+				strcat(path, tmp);
+
+				if(PdhAddCounter( hQuery, path, 0, &hCounter ) == ERROR_SUCCESS) {
+					PDH_FMT_COUNTERVALUE  pdhCounterValue;
+
+					if ( PdhCollectQueryData( hQuery ) == ERROR_SUCCESS )	{
+						if ( PdhGetFormattedCounterValue( hCounter, PDH_FMT_LARGE, NULL, &pdhCounterValue ) == ERROR_SUCCESS )
+							ret = Util::formatTime(pdhCounterValue.largeValue, false);
+					}
+				}
 			}
 		}
 	}
-	
 	
 	if ( hCounter )   
 		PdhRemoveCounter( hCounter );
