@@ -774,7 +774,7 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 		params["hub"] = client->getName();
 		params["hubaddr"] = client->getAddressPort();
 		params["mynick"] = client->getNick(); 
-		LOG(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
+		LOG(LogManager::CHAT, params);
 	}
 	
 	if(ctrlClient.AddLine(aLine, timeStamps)) 
@@ -1250,7 +1250,8 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 		StringMap params;
 		params["hub"] = client->getName();
 		params["hubaddr"] = client->getAddressPort();
-		LOGDT(Util::formatParams(SETTING(LOG_FILE_STATUS), params), Text::fromT(aLine));
+		params["message"] = Text::fromT(aLine);
+		LOG(LogManager::STATUS, params);
 	}
 }
 

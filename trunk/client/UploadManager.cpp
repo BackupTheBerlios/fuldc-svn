@@ -292,7 +292,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		}
 		params["ip"] = aSource->getRemoteIp();
 
-		LOG(Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)), Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
+		LOG(LogManager::UPLOAD, params);
 	}
 
 	fire(UploadManagerListener::Complete(), u);

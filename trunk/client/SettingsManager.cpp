@@ -43,7 +43,7 @@ const string SettingsManager::settingTags[] =
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", 
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
-	"QueueFrameVisible", 
+	"QueueFrameVisible", "LogFileSystem", "LogFormatStatus", "LogFormatSystem", 
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -136,8 +136,11 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
 	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
+	setDefault(LOG_FORMAT_STATUS, "[%Y-%m-%d %H:%M] %[message]");
+	setDefault(LOG_FORMAT_SYSTEM, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FILE_MAIN_CHAT, "%[hubaddr].log");
 	setDefault(LOG_FILE_STATUS, "%[hubaddr]_status.log");
+	setDefault(LOG_FILE_SYSTEM, "system.log");
 	setDefault(LOG_FILE_PRIVATE_CHAT, "%[user].log");
 	setDefault(LOG_FILE_UPLOAD, "Uploads.log");
 	setDefault(LOG_FILE_DOWNLOAD, "Downloads.log");

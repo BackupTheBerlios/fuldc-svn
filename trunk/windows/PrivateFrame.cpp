@@ -406,7 +406,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 		params["mynick"] = user->getClientNick(); 
 		params["mycid"] = user->getClientCID().toBase32(); 
 		params["cid"] = user->getCID().toBase32(); 
-		LOG(Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params), Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params));
+		LOG(LogManager::PM, params);
 	}
 
 	if(ctrlClient.AddLine(aLine, BOOLSETTING(TIME_STAMPS)))

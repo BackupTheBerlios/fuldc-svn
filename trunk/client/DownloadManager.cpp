@@ -783,7 +783,7 @@ noCRC:
 		if(hash != NULL) {
 			params["tth"] = d->getTTH()->toBase32();
 		}
-		LOG(Util::formatTime(SETTING(LOG_FILE_DOWNLOAD), time(NULL)), Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
+		LOG(LogManager::DOWNLOAD, params);
 	}
 
 	// Check if we need to move the file

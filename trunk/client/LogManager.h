@@ -39,10 +39,53 @@ public:
 class LogManager : public Singleton<LogManager>, public Speaker<LogManagerListener>
 {
 public:
+	enum LogArea { UPLOAD, DOWNLOAD, SYSTEM, PM, CHAT, STATUS };
+
+	void log(LogArea area, StringMap& params) throw() {
+		string path = SETTING(LOG_DIRECTORY);
+		string msg;
+		switch(area){
+			case UPLOAD:
+				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)), params);
+				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_POST_UPLOAD), time(NULL)), params);
+				break;
+			case DOWNLOAD:
+				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_DOWNLOAD), time(NULL)), params);
+				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_POST_DOWNLOAD), time(NULL)), params);
+				break;
+			case PM:
+				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_PRIVATE_CHAT), time(NULL)), params);
+				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_PRIVATE_CHAT), time(NULL)), params);
+				break;
+			case CHAT:
+				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_MAIN_CHAT), time(NULL)), params);
+				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_MAIN_CHAT), time(NULL)), params);
+				break;
+			case STATUS:
+				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_STATUS), time(NULL)), params);
+				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_STATUS), time(NULL)), params);
+			case SYSTEM:
+				path += Util::formatParams(Util::formatTime(SETTING(LOG_FILE_SYSTEM), time(NULL)), params);
+				msg = Util::formatParams(Util::formatTime(SETTING(LOG_FORMAT_SYSTEM), time(NULL)), params);
+		}
+
+		log(path, msg);
+	}
+
+	void message(const string& msg) {
+		if(BOOLSETTING(LOG_SYSTEM)) {
+			StringMap params;
+			params["message"] = msg;
+			log(LogManager::SYSTEM, params);
+		}
+		fire(LogManagerListener::Message(), msg);
+	}
+
+private:
 	void log(const string& area, const string& msg) throw() {
 		Lock l(cs);
 		try {
-			string aArea = Util::validateFileName(SETTING(LOG_DIRECTORY) + area);
+			string aArea = Util::validateFileName(area);
 			File::ensureDirectory(aArea);
 			File f(aArea, File::WRITE, File::OPEN | File::CREATE);
 			f.setEndPos(0);
@@ -54,13 +97,6 @@ public:
 
 	void logDateTime(const string& area, const string& msg) throw() {
 		log(area, Util::formatTime("%Y-%m-%d %H:%M: ", TimerManager::getInstance()->getTime()) + msg);
-	}
-
-	void message(const string& msg) {
-		if(BOOLSETTING(LOG_SYSTEM)) {
-			log("system.log", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
-		}
-		fire(LogManagerListener::Message(), msg);
 	}
 
 private:
