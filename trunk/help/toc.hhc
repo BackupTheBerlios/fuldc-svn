@@ -138,6 +138,10 @@
 				<param name="Local" value"settings_fuldc_sharing.html">
 				</OBJECT>
 			<LI> <OBJECT <TYPE="text/sitemap">
+				<param name="Name" value="Ignore">
+				<param name="Local" value"settings_fuldc_ignore.html">
+				</OBJECT>
+			<LI> <OBJECT <TYPE="text/sitemap">
 				<param name="Name" value="Appearance">
 				<param name="Local" value"settings_fuldc_appearance.html">
 				</OBJECT>

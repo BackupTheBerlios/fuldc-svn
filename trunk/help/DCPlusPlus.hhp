@@ -33,6 +33,7 @@ settings_fuldc_appearance.html
 settings_fuldc_popups.html
 settings_fuldc_tabs.html
 settings_fuldc_highlight.html
+settings_fuldc_ignore.html
 chat_commands.html
 non-routable.html
 plusplus_tag.html
@@ -78,6 +79,7 @@ IDD_FULAPPEARANCEPAGE=settings_fuldc_appearance.html
 IDD_FULPOPUPPAGE=settings_fuldc_popups.html
 IDD_FULTABSPAGE=settings_fuldc_tabs.html
 IDD_HIGHLIGHTPAGE=settings_fuldc_highlight.html
+IDD_FULIGNOREPAGE=settings_fuldc_ignore.html
 
 [MAP]
 #include ..\windows\resource.h

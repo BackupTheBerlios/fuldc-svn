@@ -135,7 +135,16 @@
 				RelativePath=".\settings_appearance.html">
 			</File>
 			<File
+				RelativePath=".\settings_colors_and_sounds.html">
+			</File>
+			<File
+				RelativePath=".\settings_connection.html">
+			</File>
+			<File
 				RelativePath=".\settings_downloads.html">
+			</File>
+			<File
+				RelativePath=".\settings_expert.html">
 			</File>
 			<File
 				RelativePath=".\settings_favoritedirs.html">
@@ -153,6 +162,9 @@
 				RelativePath=".\settings_fuldc_highlight.html">
 			</File>
 			<File
+				RelativePath=".\settings_fuldc_ignore.html">
+			</File>
+			<File
 				RelativePath=".\settings_fuldc_popups.html">
 			</File>
 			<File
@@ -165,9 +177,6 @@
 				RelativePath=".\settings_general.html">
 			</File>
 			<File
-				RelativePath=".\settings_connection.html">
-			</File>
-			<File
 				RelativePath=".\settings_logs.html">
 			</File>
 			<File
@@ -175,12 +184,6 @@
 			</File>
 			<File
 				RelativePath=".\settings_usercommands.html">
-			</File>
-			<File
-				RelativePath=".\settings_expert.html">
-			</File>
-			<File
-				RelativePath=".\settings_colors_and_sounds.html">
 			</File>
 		</Filter>
 	</Files>

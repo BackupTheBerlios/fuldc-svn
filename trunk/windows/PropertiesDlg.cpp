@@ -55,12 +55,13 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[9]  = new UCPage(s);
 	pages[10] = new FulDownloadPage(s);
 	pages[11] = new FulSharePage(s);
-	pages[12] = new FulAdvancedPage(s);
-	pages[13] = new FulAppearancePage(s);
-	pages[14] = new FulHighlightPage(s);
-	pages[15] = new FulPopupsPage(s);
-	pages[16] = new FulTabsPage(s);
-	pages[17] = new FulIgnorePage(s);
+	pages[12] = new FulIgnorePage(s);
+	pages[13] = new FulAdvancedPage(s);
+	pages[14] = new FulAppearancePage(s);
+	pages[15] = new FulHighlightPage(s);
+	pages[16] = new FulPopupsPage(s);
+	pages[17] = new FulTabsPage(s);
+	
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());
