@@ -1316,7 +1316,7 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 					// Only download list for exact matches
 					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (Util::stricmp(target, fileName) == 0)){
 						QueueItem *qi = fileQueue.find(sr->getFile());
-						if(qi != NULL && qi->getSources().size() < BOOLSETTING(MAX_AUTO_MATCH_SOURCES))
+						if(qi != NULL && qi->getSources().size() < SETTING(MAX_AUTO_MATCH_SOURCES))
 							addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 					}
 				} catch(const Exception&) {
@@ -1492,6 +1492,9 @@ void QueueManager::onTimerSearch() {
 }
 
 void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, bool add /* = true */){
+	if(path.find("FileLists") != string::npos)
+		return;
+
 	int pos = path.rfind("\\");
 
 	string tmp = path.substr(0, pos);
@@ -1511,6 +1514,9 @@ void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, b
 }
 
 u_int64_t QueueManager::getTotalSize(const string & path){
+	if(path.find("FileLists") != string::npos)
+		return 0;
+
 	int pos = path.rfind("\\");
 
 	string tmp = path.substr(0, pos);

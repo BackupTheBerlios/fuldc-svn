@@ -52,6 +52,8 @@ int64_t Download::getTotalSecondsLeft() {
 	int64_t avg = DownloadManager::getInstance()->getAverageSpeed(target);
 	u_int64_t pos = DownloadManager::getInstance()->getAveragePos(target);
 	u_int64_t size = QueueManager::getInstance()->getTotalSize(target);
+	if(size == 0)
+		size = pos;
 	return (avg > 0) ? ((size - pos) / avg) : 0;
 }
 
