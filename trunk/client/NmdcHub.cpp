@@ -374,7 +374,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		}
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::Supports(), this, sl);
 	} else if(cmd == "$UserCommand") {
-		string::size_type i = string::npos;
+		string::size_type i = 0;
 		string::size_type j = param.find(' ');
 		if(j == string::npos)
 			return;

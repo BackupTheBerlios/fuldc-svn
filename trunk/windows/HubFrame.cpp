@@ -1051,15 +1051,15 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 					bHandled = FALSE;
 				}
 				break;
-		case VK_TAB:
+			case VK_TAB:
 				bHandled = TRUE;
-  				break;
-  			default:
-  				bHandled = FALSE;
 				break;
-			}
+			default:
+				bHandled = FALSE;
+				break;
+		}
 		return 0;
-			}
+	}
 
 	switch(wParam) {
 		case VK_TAB:
@@ -1070,9 +1070,9 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				(GetKeyState(VK_MENU) & 0x8000) ) {
 					bHandled = FALSE;
 				} else {
-						onEnter();
-					}
-			break;
+					onEnter();
+				}
+				break;
 		case VK_UP:
 			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				//scroll up in chat command history
@@ -1133,8 +1133,8 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				ctrlMessage.SetWindowText(currentCommand.c_str());
 			} else {
 				bHandled = FALSE;
-				}
-				break;
+			}
+			break;
 		default:
 			bHandled = FALSE;
 	}

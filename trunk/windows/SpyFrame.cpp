@@ -152,7 +152,7 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
 	string* x = new string(s);
-	string::size_type i = string::npos;
+	string::size_type i = 0;
 	while( (i=x->find('$')) != string::npos) {
 		(*x)[i] = ' ';
 	}

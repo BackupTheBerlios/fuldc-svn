@@ -693,16 +693,16 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 }
 
 void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
- 	missedAutoConnect = false;
+	missedAutoConnect = false;
 	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 		FavoriteHubEntry* entry = *i;
- 		if(entry->getConnect()) {
- 			if(!entry->getNick().empty() || !SETTING(NICK).empty())
+		if(entry->getConnect()) {
+			if(!entry->getNick().empty() || !SETTING(NICK).empty())
 				HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
- 			else
- 				missedAutoConnect = true;
- 		}
- 	}
+			else
+				missedAutoConnect = true;
+		}
+	}
 }
 
 void MainFrame::updateTray(bool add /* = true */) {
@@ -832,7 +832,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		}
 		bHandled = TRUE;
 	} else {
-		// This should end immideately, as it only should be the stopper that sends another WM_CLOSE
+		// This should end immediately, as it only should be the stopper that sends another WM_CLOSE
 		WaitForSingleObject(stopperThread, 60*1000);
 		CloseHandle(stopperThread);
 		stopperThread = NULL;
