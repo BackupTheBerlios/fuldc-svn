@@ -43,7 +43,7 @@ static char buf[DEBUG_BUFSIZE];
 #ifndef _DEBUG
 
 FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
-	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
+	MessageBox(WinUtil::mainWnd, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
 	exit(-1);
 }
 
@@ -77,7 +77,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 	if(File::getSize(Util::getAppPath() + "DCPlusPlus.pdb") == -1) {
 		// No debug symbols, we're not interested...
-		::MessageBox(NULL, "DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution...", "DC++ has crashed", MB_OK);
+		::MessageBox(WinUtil::mainWnd, "DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution...", "DC++ has crashed", MB_OK);
 #ifndef _DEBUG
 		exit(1);
 #else
@@ -119,7 +119,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	f.close();
 
-	MessageBox(NULL, "fulDC just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of fulDC. A file named \"exceptioninfo.txt\" has been generated in the same directory as fulDC. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "fulDC Has Crashed", MB_OK | MB_ICONERROR);
+	MessageBox(WinUtil::mainWnd, "fulDC just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of fulDC. A file named \"exceptioninfo.txt\" has been generated in the same directory as fulDC. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "fulDC Has Crashed", MB_OK | MB_ICONERROR);
 
 #ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();

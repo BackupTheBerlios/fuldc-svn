@@ -1275,6 +1275,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			}
 		}
 	}
+
 	if(added && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (users < SETTING(MAX_AUTO_MATCH_SOURCES))) {
 		addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 	}

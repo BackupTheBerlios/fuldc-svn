@@ -337,31 +337,31 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,203,167,10
 END
 
-IDD_ADLS_PROPERTIES DIALOGEX 0, 0, 173, 125
+IDD_ADLS_PROPERTIES DIALOGEX 0, 0, 190, 125
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ADLSearch Properties"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
+    LTEXT           "Search string",IDC_STATIC,7,7,42,8
     EDITTEXT        IDC_SEARCH_STRING,7,17,88,12,ES_AUTOHSCROLL
-    COMBOBOX        IDC_SOURCE_TYPE,105,17,61,78,CBS_DROPDOWNLIST | 
+    LTEXT           "Source Type",IDC_STATIC,105,7,42,8
+    COMBOBOX        IDC_SOURCE_TYPE,105,17,78,78,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
+    LTEXT           "Min Filesize",IDC_STATIC,7,39,37,8
     EDITTEXT        IDC_MIN_FILE_SIZE,7,50,41,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Max Filesize",IDC_STATIC,54,39,39,8
     EDITTEXT        IDC_MAX_FILE_SIZE,53,50,41,12,ES_AUTOHSCROLL | ES_NUMBER
-    COMBOBOX        IDC_SIZE_TYPE,105,50,61,68,CBS_DROPDOWNLIST | WS_VSCROLL | 
+    LTEXT           "Size Type",IDC_STATIC,105,39,32,8
+    COMBOBOX        IDC_SIZE_TYPE,105,50,78,68,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP,WS_EX_CLIENTEDGE
+    LTEXT           "Destination Directory",IDC_STATIC,8,72,66,8
     EDITTEXT        IDC_DEST_DIR,7,83,88,12,ES_AUTOHSCROLL
-    CONTROL         "Active Search",IDC_IS_ACTIVE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,105,72,61,10
+    CONTROL         "Enabled",IDC_IS_ACTIVE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,105,72,42,10
+    CONTROL         "Download Matches",IDC_AUTOQUEUE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,105,87,77,10
     DEFPUSHBUTTON   "OK",IDOK,32,104,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,88,104,50,14
-    LTEXT           "Search string",IDC_STATIC,7,7,42,8
-    LTEXT           "Source Type",IDC_STATIC,105,7,42,8
-    LTEXT           "Destination Directory",IDC_STATIC,8,72,66,8
-    LTEXT           "Min Filesize",IDC_STATIC,7,39,37,8
-    LTEXT           "Max Filesize",IDC_STATIC,54,39,39,8
-    LTEXT           "Size Type",IDC_STATIC,105,39,32,8
-    CONTROL         "AutoQueue",IDC_AUTOQUEUE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,106,87,60,10
 END
 
 IDD_UCPAGE DIALOGEX 0, 0, 275, 225
@@ -369,13 +369,13 @@ STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
+    CONTROL         "",IDC_MENU_ITEMS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,261,192
     PUSHBUTTON      "&Add",IDC_ADD_MENU,7,204,50,14
     PUSHBUTTON      "Chang&e",IDC_CHANGE_MENU,59,204,50,14
     PUSHBUTTON      "Move &Up",IDC_MOVE_UP,111,204,50,14
     PUSHBUTTON      "Move &Down",IDC_MOVE_DOWN,163,204,50,14
-    CONTROL         "",IDC_MENU_ITEMS,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
-                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,261,192
     PUSHBUTTON      "&Remove",IDC_REMOVE_MENU,215,204,50,14
 END
 
@@ -451,7 +451,7 @@ BEGIN
     RTEXT           "&URL",IDC_WEB_SHORTCUT_URL_DESC,7,46,29,8,0,
                     WS_EX_TRANSPARENT
     GROUPBOX        "How to use",IDC_WEB_SHORTCUTS_HOWTO,7,76,250,118
-    LTEXT           "Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One ""%s"" which will be replaced with the string you'll enter. If no ""%s"" exists, nothing wi??",
+    LTEXT           "Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One ""%s"" which will be replaced with the string you'll enter. If no ""%s"" exists, nothing wi¡?",
                     IDC_WEB_SHORTCUTS_DESC,15,91,232,103,0,WS_EX_TRANSPARENT
     CONTROL         "Clean search term",IDC_WEB_SHORTCUTS_CLEAN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,41,61,215,10
@@ -674,7 +674,8 @@ BEGIN
     IDD_ADLS_PROPERTIES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 166
+        RIGHTMARGIN, 183
+        VERTGUIDE, 105
         TOPMARGIN, 7
         BOTTOMMARGIN, 118
     END

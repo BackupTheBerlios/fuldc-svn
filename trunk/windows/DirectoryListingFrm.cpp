@@ -29,6 +29,8 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 #include "stack"
+#include "SearchFrm.h"
+#include "../client/MerkleTree.h"
 
 DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
 void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser, const string& start) {
@@ -154,8 +156,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)copyMenu, CSTRING(COPY_TO_CLIPBOARD));
+	fileMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH, CSTRING(SEARCH));
+	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CSTRING(SEARCH_BY_TTH));
+	fileMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CSTRING(LOOKUP_AT_BITZI));
+	fileMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CSTRING(COPY_MAGNET));
 	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CSTRING(SEARCH_SITES));
+	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 	
 	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
 	MENUINFO inf;
@@ -378,6 +385,32 @@ LRESULT DirectoryListingFrame::onCopyTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
+LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+	if(ii != NULL) {
+		SearchFrame::openWindow(ii->getText(COLUMN_TTH), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+	if(ii != NULL) {
+		TTHValue tmp(ii->getText(COLUMN_TTH));
+		WinUtil::bitziLink(&tmp);
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+	if(ii != NULL) {
+		TTHValue tmp(ii->getText(COLUMN_TTH));
+		WinUtil::copyMagnet(&tmp, ii->getText(COLUMN_FILENAME));
+	}
+	return 0;
+}
+
 LRESULT DirectoryListingFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int x = QueueManager::getInstance()->matchListing(dl);
 	char* buf = new char[STRING(MATCHED_FILES).length() + 32];
@@ -477,6 +510,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
+
 		
 		if(downloadPaths.size() > 0) {
 			for(StringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
@@ -486,6 +520,17 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			targetMenu.AppendMenu(MF_SEPARATOR);
 		}
 		
+		string hash = ii->getText(COLUMN_TTH);
+		if (ctrlList.GetSelectedCount() == 1 && hash.length() == 39) {
+			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
+			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
+		} else {
+			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
+			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
+		}
+
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
 			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
 			targets.clear();
@@ -502,6 +547,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
 				}
 			}
+
 			if(ii->file->getAdls())	{
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CSTRING(GO_TO_DIRECTORY));
 			}

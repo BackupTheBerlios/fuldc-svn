@@ -155,11 +155,12 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 
 LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	char buf[MAX_PATH];
+	static const char types[] = "Language Files\0*.xml\0All Files\0*.*\0";
 
 	GetDlgItemText(IDC_LANGUAGE, buf, MAX_PATH);
 	string x = buf;
 
-	if(WinUtil::browseFile(x, m_hWnd, false) == IDOK) {
+	if(WinUtil::browseFile(x, m_hWnd, false, Util::getAppPath(), types) == IDOK) {
 		SetDlgItemText(IDC_LANGUAGE, x.c_str());
 	}
 	return 0;

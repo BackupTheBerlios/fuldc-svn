@@ -899,7 +899,7 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	SetSplitterRect(rc2);
 }
 
-static const char types[] = "File Lists\0*.DcLst;*.bz2\0All Files\0*.*\0";
+static const char types[] = "File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0";
 
 LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	string file;
