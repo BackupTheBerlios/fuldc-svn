@@ -152,7 +152,6 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(i == string::npos)
 			throw ShareException("File Not Available");
 		
-		RLock<> l(cs);
 		string aDir = file.substr(1, i-1);
 		file = file.substr(i+1);
 		bool found = false;
@@ -683,12 +682,15 @@ int ShareManager::run() {
 	{
 		if( refreshDir && !refreshDirs ){
 			Directory::Map newDirs;
-			for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
-				Directory::MapIter i = directories.find( *j );
-				if( i != directories.end() ){
-					Directory* dp = buildTree(i->first, NULL);
-					dp->setName(findVirtual(i->first)->first);
-					newDirs.insert(make_pair(i->first, dp));
+			{
+				RLock<> l(cs);
+				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
+					Directory::MapIter i = directories.find( *j );
+					if( i != directories.end() ){
+						Directory* dp = buildTree(i->first, NULL);
+						dp->setName(findVirtual(i->first)->first);
+						newDirs.insert(make_pair(i->first, dp));
+					}
 				}
 			}
 			{
@@ -697,6 +699,7 @@ int ShareManager::run() {
 				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
 					removeDirectory(*j, true);
 				}
+				refreshPaths.clear();
 				virtualMap = dirs;
 
 				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
@@ -704,9 +707,7 @@ int ShareManager::run() {
 					directories.insert(*i);
 				}
 			}
-
 			refreshDir = false;
-			refreshPaths.clear();
 		}
 
 		if(refreshIncoming && !refreshDirs) {
@@ -737,7 +738,7 @@ int ShareManager::run() {
 					directories.insert(*i);
 				}
 			}
-				refreshIncoming = false;
+			refreshIncoming = false;
 		}
 
 		if(refreshDirs) {
@@ -1598,12 +1599,7 @@ void ShareManager::saveXmlList(){
 		xmlFile->flush();
 	}catch(Exception&){}
 
-	try{
-		delete xmlFile;
-		xmlFile = NULL;
-	}catch (Exception&) {
-	}
-
+	delete xmlFile;
 }
 
 void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, const string& path){
