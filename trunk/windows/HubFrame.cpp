@@ -98,10 +98,11 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_SHARED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlUsers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		ctrlUsers.insertColumn(j, STRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
 	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlUsers.setVisible(SETTING(HUBFRAME_VISIBLE));
 	
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextBkColor(WinUtil::bgColor);
@@ -672,8 +673,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			i++;
 		}
 
-		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER, 
-			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		ctrlUsers.saveHeaderOrder(SettingsManager::HUBFRAME_ORDER, SettingsManager::HUBFRAME_WIDTHS,
+			SettingsManager::HUBFRAME_VISIBLE);
 
 		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
 		if(fhe != NULL){
@@ -847,12 +848,18 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	} else {
 		// Get the bounding rectangle of the client area. 
 		ctrlUsers.GetWindowRect(&rc);
-
-		if (PtInRect(&rc, pt)) { 
+		
+		CRect rc2;
+		ctrlUsers.GetHeader().GetWindowRect(&rc2);
+		
+		if (PtInRect(&rc2, pt)) {
+			ctrlUsers.showMenu(pt);
+		}else if (PtInRect(&rc, pt)) { 
 			doMenu = true;
 		}else{
 			bHandled = FALSE; //needed to popup context menu under userlist
 		}
+		
 	}
 
 	if(doMenu) {

@@ -25,18 +25,35 @@
 
 #include "ListViewArrows.h"
 
+class ColumnInfo {
+public:
+	ColumnInfo(string aName, int aPos, int aFormat, int aWidth): name(aName), pos(aPos), width(aWidth), 
+		format(aFormat), visible(true){}
+		string name;
+		bool visible;
+		int pos;
+		int width;
+		int format;
+};
+
 template<class T, int ctrlId>
 class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, CControlWinTraits>,
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:
 	TypedListViewCtrl() : sortColumn(-1), sortAscending(true) { };
+	~TypedListViewCtrl() {
+		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i){
+			delete (*i);
+		}
+	}
 
 	typedef TypedListViewCtrl<T, ctrlId> thisClass;
 	typedef CListViewCtrl baseClass;
 	typedef ListViewArrows<thisClass> arrowBase;
 
 	BEGIN_MSG_MAP(thisClass)
+		COMMAND_RANGE_HANDLER(IDC_HEADER_MENU, IDC_HEADER_MENU + columnList.size(), onHeaderMenu)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -77,6 +94,7 @@ public:
 		return InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i, 
 			LPSTR_TEXTCALLBACK, 0, 0, image, (LPARAM)item);
 	}
+
 	T* getItemData(int iItem) { return (T*)GetItemData(iItem); }
 	T* getSelectedItem() { return (GetSelectedCount() > 0 ? getItemData(GetNextItem(-1, LVNI_SELECTED)) : NULL); }
 
@@ -166,7 +184,103 @@ public:
 	int getSortColumn() { return sortColumn; };
 	bool isAscending() { return sortAscending; };
 
+	int insertColumn(int nCol, string columnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1 ){
+		columnList.push_back(new ColumnInfo(columnHeading, nCol, nFormat, nWidth));
+		return InsertColumn(nCol, columnHeading.c_str(), nFormat, nWidth, nSubItem);
+	}
+
+	void showMenu(POINT &pt){
+		headerMenu.DestroyMenu();
+		headerMenu.CreatePopupMenu();
+		int j = 0;
+		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++j) {
+			headerMenu.AppendMenu(MF_STRING, IDC_HEADER_MENU + j, (*i)->name.c_str());
+			if((*i)->visible)
+				headerMenu.CheckMenuItem(j, MF_BYPOSITION | MF_CHECKED);
+		}
+		headerMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+	}
+
+	LRESULT onHeaderMenu(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		int pos = wID - IDC_HEADER_MENU;
+		ColumnIter i = columnList.begin();
+		for(int j = 0; j < pos; ++j, ++i );
+
+		ColumnInfo * ci = (*i);
+		ci->visible = ! ci->visible;
+
+		SetRedraw(FALSE);
+
+		if(!ci->visible){
+			removeColumn(ci);
+		} else {
+			InsertColumn(ci->pos, ci->name.c_str(), ci->format, ci->width, -1);
+		}
+
+		SetRedraw();
+		Invalidate();
+		UpdateWindow();
+
+		return 0;
+	}
+
+	void saveHeaderOrder(SettingsManager::StrSetting order, SettingsManager::StrSetting widths, 
+		SettingsManager::StrSetting visible) throw() {
+		string tmp, tmp2, tmp3;
+		int size = GetHeader().GetItemCount();
+		int *columnArray = new int[size];
+		GetColumnOrderArray(size, columnArray);
+
+		int j = 0, k = 0;
+		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++k){
+			ColumnInfo* ci = *i;
+
+			if(ci->visible){
+				ci->pos = columnArray[j++];
+				ci->width = GetColumnWidth(ci->pos);
+				tmp3 += "1,";
+			} else {
+				ci->pos = size++;
+				tmp3 += "0,";
+			}
+
+			tmp += Util::toString(ci->pos);
+			tmp += ',';
+
+			tmp2 += Util::toString(ci->width);
+			tmp2 += ',';
+		}
+
+		tmp.erase(tmp.size()-1, 1);
+		tmp2.erase(tmp2.size()-1, 1);
+		tmp3.erase(tmp3.size()-1, 1);
+		SettingsManager::getInstance()->set(order, tmp);
+		SettingsManager::getInstance()->set(widths, tmp2);
+		SettingsManager::getInstance()->set(visible, tmp3);
+
+		delete[] columnArray;
+	}
+
+	void setVisible(string vis){
+		StringTokenizer tok(vis, ',');
+		StringList l = tok.getTokens();
+
+		StringIter i = l.begin();
+		ColumnIter j = columnList.begin();
+		for(; j != columnList.end() && i != l.end(); ++i, ++j){
+			ColumnInfo *ci = *j;
+
+			if(Util::toInt(*i) == 1)
+				ci->visible = true;
+			else {
+				ci->visible = false;
+				removeColumn(ci);
+			}
+		}
+	}
+
 private:
+	CMenu headerMenu;
 
 	int sortColumn;
 	bool sortAscending;
@@ -175,6 +289,33 @@ private:
 		thisClass* t = (thisClass*)lParamSort;
 		int result = T::compareItems((T*)lParam1, (T*)lParam2, t->sortColumn);
 		return (t->sortAscending ? result : -result);
+	}
+
+	typedef vector< ColumnInfo* > ColumnList;
+	typedef vector< ColumnInfo* >::iterator ColumnIter;
+
+	ColumnList columnList;
+
+	void removeColumn(ColumnInfo* ci){
+		CHAR *buf = new CHAR[512];
+		LVCOLUMN lvcl;
+		lvcl.mask = LVCF_TEXT;
+		lvcl.pszText = buf;
+		lvcl.cchTextMax = 512;
+
+		int columns = GetHeader().GetItemCount();
+
+		for(int k = 0; k < columns; ++k){
+
+			GetColumn(k, &lvcl);
+			if(Util::stricmp(ci->name.c_str(), lvcl.pszText) == 0){
+				ci->width = GetColumnWidth(k);
+				DeleteColumn(k);
+				break;
+			}
+		}
+
+		delete[] buf;
 	}
 };
 
