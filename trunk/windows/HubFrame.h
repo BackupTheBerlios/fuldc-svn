@@ -38,7 +38,7 @@
 #include "UCHandler.h"
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
-#define FILTER_MESSAGE_MAP 11
+#define FILTER_MESSAGE_MAP 8
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
 	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
@@ -126,7 +126,7 @@ public:
 	
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void addLine(string& aLine);
+	void addLine(string aLine);
 	void addClientLine(const string& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();

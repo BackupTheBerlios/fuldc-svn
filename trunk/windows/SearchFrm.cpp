@@ -527,7 +527,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 
 LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	dcassert((wID-IDC_DOWNLOAD_WHOLE_TARGET) < (int)WinUtil::lastDirs.size());
-	int newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
+	unsigned int newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
 	if(newId < downloadPaths.size()){
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(downloadPaths[newId]));
 	}else {

@@ -1326,7 +1326,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 					}
 
 					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH)) {
-						if(qi->getSources().size() < SETTING(MAX_AUTO_MATCH_SOURCES))
+						if((int)qi->getSources().size() < SETTING(MAX_AUTO_MATCH_SOURCES))
 							addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 					}
 				} catch (QueueException&) {
@@ -1371,7 +1371,7 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 void QueueManager::checkNotify(){
 	StringList tmp;
 	StringList::iterator i = notifyList.begin();
-	string::size_type pos;
+	int pos;
 	QueueItem::StringMap queue = fileQueue.getQueue();
 	for(; i != notifyList.end(); ++i) {
 		pos = string::npos;
@@ -1384,8 +1384,6 @@ void QueueManager::checkNotify(){
 		
 		if(pos == string::npos) {
 			fire(QueueManagerListener::ReleaseDone(), (*i));
-			//PopupManager::getInstance()->Show((*i));
-			dcdebug("Removing notification\n");
 			removeNotification((*i));
 			return;
 		}

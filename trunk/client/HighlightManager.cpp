@@ -40,8 +40,8 @@ void HighlightManager::load(SimpleXML *aXml){
 			cs->setMatchType( aXml->getIntChildAttrib("MatchType") );
 			cs->setHasFgColor( aXml->getBoolChildAttrib("HasFgColor") );
 			cs->setHasBgColor( aXml->getBoolChildAttrib("HasBgColor") );
-			cs->setBgColor( aXml->getLongLongChildAttrib("BgColor") );
-			cs->setFgColor( aXml->getLongLongChildAttrib("FgColor") );
+			cs->setBgColor( (int)aXml->getLongLongChildAttrib("BgColor") );
+			cs->setFgColor( (int)aXml->getLongLongChildAttrib("FgColor") );
 			cs->setSoundFile( aXml->getChildAttrib("SoundFile") );
 
 			colorSettings.push_back(cs);

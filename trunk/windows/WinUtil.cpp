@@ -698,7 +698,7 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 	// To lower case
 	strSearch = Util::toLower(strSearch);
 	// Loop all words and remove those that exists in the search string
-	for (int i = 0; i < strStoplist.size(); i++) {
+	for (unsigned int i = 0; i < strStoplist.size(); i++) {
 		int intPos = strSearch.find(strStoplist[i]);
 		while (intPos > 0) {
 			strSearch = strSearch.substr(0, intPos) + strSearch.substr(intPos + strStoplist[i].length());
@@ -793,7 +793,7 @@ void WinUtil::search(string searchTerm, int searchMode) {
 				searchTerm = string();
 			}else{
 				--searchMode;
-				if(searchMode < WebShortcuts::getInstance()->list.size()) {
+				if(searchMode < (int)WebShortcuts::getInstance()->list.size()) {
 					WebShortcut *ws = WebShortcuts::getInstance()->list[searchMode];
 					if(ws != NULL)
 						WinUtil::SearchSite(ws, searchTerm);
@@ -973,32 +973,26 @@ string WinUtil::Help(const string& command) {
 }
 
 string WinUtil::Uptime() {
-	HQUERY    m_hQuery;
-	HCOUNTER  m_hCounter;
+	HQUERY    hQuery	= NULL;
+	HCOUNTER  hCounter	= NULL;
 	string ret = Util::emptyString;
 	
-	if ( PdhOpenQuery( NULL, 0, &m_hQuery ) == ERROR_SUCCESS ) {
-		ret = "PdhOpenQuery";
-		if(PdhAddCounter( m_hQuery, "\\System\\System Up Time", 0, &m_hCounter ) == ERROR_SUCCESS) {
-			ret = "PdhAddCounter";
+	if ( PdhOpenQuery( NULL, 0, &hQuery ) == ERROR_SUCCESS ) {
+		if(PdhAddCounter( hQuery, "\\System\\System Up Time", 0, &hCounter ) == ERROR_SUCCESS) {
 			PDH_FMT_COUNTERVALUE  pdhCounterValue;
 
-			if ( PdhCollectQueryData( m_hQuery ) == ERROR_SUCCESS )	{
-				ret = "PdhCollectQueryData";
-				if ( PdhGetFormattedCounterValue( m_hCounter, PDH_FMT_LARGE, NULL, &pdhCounterValue ) == ERROR_SUCCESS )
+			if ( PdhCollectQueryData( hQuery ) == ERROR_SUCCESS )	{
+				if ( PdhGetFormattedCounterValue( hCounter, PDH_FMT_LARGE, NULL, &pdhCounterValue ) == ERROR_SUCCESS )
 					ret = Util::formatTime(pdhCounterValue.largeValue, false);
 			}
 		}
 	}
 	
 	
-	if ( m_hCounter )   
-		PdhRemoveCounter( m_hCounter );
-	if ( m_hQuery )
-		PdhCloseQuery   ( m_hQuery );
-
-	m_hQuery   = NULL;
-	m_hCounter = NULL;
+	if ( hCounter )   
+		PdhRemoveCounter( hCounter );
+	if ( hQuery )
+		PdhCloseQuery   ( hQuery );
 
 	return ret;
 }

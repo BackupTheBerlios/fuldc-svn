@@ -545,6 +545,7 @@ string ResourceManager::strings[] = {
 "Resolve IP", 
 "resolves to", 
 "Not found in help file", 
+"Reply to your own searches", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1090,4 +1091,5 @@ string ResourceManager::names[] = {
 "ResolveIp", 
 "ResolvesTo", 
 "NotFound", 
+"ReplyToOwnSearches", 
 };

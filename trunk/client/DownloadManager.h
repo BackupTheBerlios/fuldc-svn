@@ -160,7 +160,7 @@ public:
 		return avg;
 	}
 
-	int getAverageSpeed(const string & path){
+	int64_t getAverageSpeed(const string & path){
 		int pos = path.rfind("\\");
 		string tmp = path.substr(0, pos);
 		
@@ -179,9 +179,9 @@ public:
 		return downloads.size();
 	}
 private:
-	typedef HASH_MAP< string, int > StringIntMap;
+	typedef HASH_MAP< string, int64_t > StringIntMap;
 	typedef StringIntMap::iterator StringIntIter;
-	typedef pair< string, int> StringIntPair;
+	typedef pair< string, int64_t > StringIntPair;
 
 	StringIntMap averageSpeedMap;
 	StringIntMap averagePosMap;

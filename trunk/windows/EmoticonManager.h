@@ -24,12 +24,11 @@ public:
 	~EmoticonManager(void){};
 		
 
-	void load(HWND aWnd) {
-		/*GdiplusStartupInput gdiplusStartupInput;
+	void load() {
+		GdiplusStartupInput gdiplusStartupInput;
 		ULONG_PTR gdiplusToken;
 		GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-		wnd = aWnd;
 		try {
 			File f(Util::getAppPath() + "Emoticons.xml", File::READ, File::OPEN);
 			string buf = f.read();
@@ -49,17 +48,17 @@ public:
 				pattern = xml.getChildAttrib("ReplacedText");
 				file = xml.getChildAttrib("BitmapPath");
 
-				CreateRtfBitmap(pattern, Util::getAppPath() + file);
+				CreateRtfBitmap(pattern, file);
 				//CreateRtfMetafile(pattern, Util::getAppPath() + file);
 			}
-		} catch (FileException &e ){
+		} catch (FileException){
 			//...
-		} catch (SimpleXMLException &e ) {
+		} catch (SimpleXMLException) {
 			//...
 		}
 
 		GdiplusShutdown(gdiplusToken);
-		*/
+		
 	}
 	StringMap* getEmoticons() {
 		return &emoticons;
@@ -125,12 +124,13 @@ private:
 
 	void CreateRtfBitmap(string& pattern, string& path) {
 		WCHAR* wPath = new WCHAR[512];
-		MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, wPath, 512);
-		Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromFile(wPath, true);
-		
+		MultiByteToWideChar(CP_UTF8, 0, (Util::getAppPath() + path).c_str(), -1, wPath, 512);
+		Bitmap* bitmap = Bitmap::FromFile(wPath);
+		if(!bitmap) // if we failed to load the image there's no point to continue
+			return;
+
 		HDC winDC = GetDC(NULL);
-		HDC memDC = CreateCompatibleDC(winDC);
-				
+						
 		float iDpiY     = (float)GetDeviceCaps(winDC, LOGPIXELSY);
 		float iDpiX     = (float)GetDeviceCaps(winDC, LOGPIXELSX);
 		int iWidthMM    = GetDeviceCaps(winDC, HORZSIZE) * 100; 
@@ -151,58 +151,58 @@ private:
 		int pichgoal = int(((bitmap->GetHeight() / iDpiY) * 1440.0) + 0.5);
 
 
-		HDC metaDC = CreateEnhMetaFile(NULL, NULL, &rc, NULL);
+		//HDC metaDC = CreateEnhMetaFile(NULL, NULL, &rc, NULL);
 		//SetMapMode(metaDC, MM_ANISOTROPIC);
-		//Metafile* meta = new Metafile(winDC, RectF(0, 0, bitmap->GetWidth(), bitmap->GetHeight()),
-		//	MetafileFrameUnitPixel, EmfTypeEmfPlusDual);
+		//Metafile meta(winDC, RectF(0, 0, bitmap->GetWidth(), bitmap->GetHeight()),
+		//	MetafileFrameUnitGdi, EmfTypeEmfPlusDual);
+		Metafile meta(winDC, EmfTypeEmfPlusDual);
 		
-		Graphics* graphics = new Graphics(metaDC);
-		//Graphics* graphics = Graphics::FromImage(meta);
+		//Graphics* graphics = new Graphics(metaDC);
+		Graphics* graphics = new Graphics(&meta);
 		
-		graphics->DrawImage(bitmap, 0, 0, bitmap->GetWidth(), bitmap->GetHeight());
+		if(graphics->DrawImage(bitmap, 0, 0, bitmap->GetWidth(), bitmap->GetHeight()) == Ok){
 			
-		HENHMETAFILE hEmf = CloseEnhMetaFile(metaDC);
-		//HENHMETAFILE hEmf = meta->GetHENHMETAFILE();
+			//HENHMETAFILE hEmf = CloseEnhMetaFile(metaDC);
+			HENHMETAFILE hEmf = meta.GetHENHMETAFILE();
 
 
-		UINT size = 0;
-		size = Metafile::EmfToWmfBits(hEmf, 0, NULL, MM_ANISOTROPIC, EmfToWmfBitsFlagsDefault);
-		//size = GetWinMetaFileBits(hEmf, 0, NULL, MM_ANISOTROPIC, metaDC);
+			UINT size = 0;
+			size = Metafile::EmfToWmfBits(hEmf, 0, NULL, MM_ANISOTROPIC, EmfToWmfBitsFlagsDefault);
+			//size = GetWinMetaFileBits(hEmf, 0, NULL, MM_ANISOTROPIC, metaDC);
 
-		
+			
 
-		BYTE* buf = new BYTE[size];
-		size = Metafile::EmfToWmfBits(hEmf, size, buf, MM_ANISOTROPIC, EmfToWmfBitsFlagsDefault);
-		//size = GetWinMetaFileBits(hEmf, size, buf, MM_ANISOTROPIC, metaDC);
-		
+			BYTE* buf = new BYTE[size];
+			size = Metafile::EmfToWmfBits(hEmf, size, buf, MM_ANISOTROPIC, EmfToWmfBitsFlagsDefault);
+			//size = GetWinMetaFileBits(hEmf, size, buf, MM_ANISOTROPIC, metaDC);
+			
 
 
-		//create the string so it's ready to be inserted into the richedit
-		//\\viewkind4\\uc1\\pard\\f0\\fs17
-		string tmp = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033{\\fonttbl{\\f0\\\\fnil\\fcharset0 Microsoft Sans Serif;}}{\\pict\\wmetafile8\\picw" + 
-			Util::toString(picw) + "\\pich" + Util::toString(pich) + 
-			"\\picwgoal" + Util::toString(picwgoal) +  "\\pichgoal" + 
-			Util::toString(pichgoal) +	" " + toHex(buf, size) + "}";
+			//create the string so it's ready to be inserted into the richedit
+			//\\viewkind4\\uc1\\pard\\f0\\fs17
+			string tmp = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033{\\fonttbl{\\f0\\\\fnil\\fcharset0 Microsoft Sans Serif;}}{\\pict\\wmetafile8\\picw" + 
+				Util::toString(picw) + "\\pich" + Util::toString(pich) + 
+				"\\picwgoal" + Util::toString(picwgoal) +  "\\pichgoal" + 
+				Util::toString(pichgoal) +	" " + toHex(buf, size) + "}";
 
-		
-		//File e("f:\\temp\\emotest.txt", File::READ, File::OPEN);
-		//emoticons[pattern] = e.read(8096);
-		//e.close();
-		emoticons[pattern] = tmp;
-		File f("f:\\temp\\testemot.txt", File::WRITE, File::CREATE | File::TRUNCATE);
-		f.write(tmp);
-		f.flush();
-		f.close();
+			
+			//File e("f:\\temp\\emotest.txt", File::READ, File::OPEN);
+			//emoticons[pattern] = e.read(8096);
+			//e.close();
+			emoticons[pattern] = tmp;
+			File f("f:\\temp\\testemot.txt", File::WRITE, File::CREATE | File::TRUNCATE);
+			f.write(tmp);
+			f.flush();
+			f.close();
+			
+			delete[] buf;
+			DeleteEnhMetaFile(hEmf);
+		}
 		//cleanup
-		delete[] buf;
 		delete bitmap;
 		delete graphics;
 		//return the handle to avoid mem leaks
-		ReleaseDC(wnd, winDC);
-		DeleteDC(memDC);
-		DeleteEnhMetaFile(hEmf);
-
-		
+		ReleaseDC(NULL, winDC);
 	}
 
 	string toHex(LPBYTE buf, int size) {

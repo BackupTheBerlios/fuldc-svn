@@ -138,7 +138,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				return;
 			}
 		}
-
+		
 		i = j + 1;
 		
 		{

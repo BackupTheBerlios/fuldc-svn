@@ -30,7 +30,7 @@ static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb,
 {
 	StreamInfo *pstr = (StreamInfo *)dwCookie;
 
-	if( pstr->msg->length() < cb )
+	if( (LONG)pstr->msg->length() < cb )
 	{
 		*pcb = (pstr->msg->length() - pstr->pos);
 		memcpy(pbBuff, pstr->msg->substr(pstr->pos).c_str(), *pcb );
@@ -44,6 +44,7 @@ static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb,
 		memcpy(pbBuff, pstr->msg->substr(pstr->pos).c_str(), *pcb );
 		pstr->pos += cb;
 	}
+	
 	return 0;
 }
 
@@ -378,16 +379,13 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex) {
 	int begin = 0, end = 0;
 	
-	if(pos == string::npos || pos >= line.length())
-		return string::npos;
-
 	try{
 	
 		regex::rpattern regexp(cs->getMatch().substr(4), regex::GLOBAL | regex::NOCASE | regex::SINGLELINE | regex::MULTILINE | regex::ALLBACKREFS);
 		regex::rpattern::backref_type br;
 		regex::match_results result;
 		
-		br = regexp.match(line, result, pos);
+		br = regexp.match(line, result);
 
 		if(!br.matched)
 			return string::npos;

@@ -212,9 +212,6 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_AUTO_MATCH_SOURCES, 5);
 	setDefault(MAX_MSG_LENGTH, 90);
 	setDefault(POPUP_MINIMIZED, false);
-	
-	
-	
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

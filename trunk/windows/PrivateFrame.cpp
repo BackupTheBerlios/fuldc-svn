@@ -379,9 +379,7 @@ void PrivateFrame::addLine(const string& aLine) {
 			//get current active window and the window with focus
 			HWND focus = ::SetFocus(NULL);
 			HWND active = ::GetParent(focus);
-			BOOL maxi =  FALSE;
-			
-			maxi = ::IsZoomed(active);
+						
 			CreateEx(WinUtil::mdiClient);
 			
 			::SetWindowPos(active, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
