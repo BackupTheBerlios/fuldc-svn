@@ -247,15 +247,13 @@ private:
 		};
 
 		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
-			if(a->type == DIRECTORY) {
-				if(b->type == DIRECTORY) {
-					switch(col) {
-					case COLUMN_SIZE: return compare(a->dir->getSize(), b->dir->getSize());
-					default: return Util::stricmp(a->columns[col], b->columns[col]);
-					}
-				} else {
-					return -1;
+			if(a->type == DIRECTORY && b->type == DIRECTORY) {
+				switch(col) {
+				case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
+				default: return Util::stricmp(a->columns[col], b->columns[col]);
 				}
+			} else if(a->type == DIRECTORY)	{
+				return -1;
 			} else if(b->type == DIRECTORY) {
 				return 1;
 			} else {

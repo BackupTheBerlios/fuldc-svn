@@ -10,7 +10,9 @@
 class FulPage : public CPropertyPage<IDD_FULPAGE>, public PropPage
 {
 public:
-	FulPage(SettingsManager *s) : PropPage(s) {	};
+	FulPage(SettingsManager *s) : PropPage(s) {
+		SetTitle(CSTRING(SETTINGS_FUL));
+	};
 	~FulPage() {};
 
 	BEGIN_MSG_MAP(FulPage)
@@ -25,7 +27,6 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 	
 protected:
 	static Item items[];

@@ -810,11 +810,28 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 		strSearchString = strSearch.substr(0, intPos + 1);
 	}
 	
-	// Do the search
-	char *buf = new char[ws->url.length() + strSearchString.length()];
-	
-	sprintf(buf, ws->url.c_str(), strSearchString.c_str());
-	WinUtil::openLink(buf);
+	DWORD escapedSize = strSearchString.length() * 2;
+	char* escapedBuf = new char[escapedSize+1];
+
+	HRESULT res = UrlEscape(strSearchString.c_str(), escapedBuf, &escapedSize, URL_ESCAPE_SEGMENT_ONLY | URL_ESCAPE_PERCENT);
+
+	if( E_POINTER == res ){
+		delete[] escapedBuf;
+		escapedBuf = new char[escapedSize+1];
+		res = UrlEscape(strSearchString.c_str(), escapedBuf, &escapedSize, URL_ESCAPE_SEGMENT_ONLY | URL_ESCAPE_PERCENT);
+	}
+    
+	if( S_OK == res){
+		// Do the search
+		char *buf = new char[ws->url.length() + escapedSize];
+
+		sprintf(buf, ws->url.c_str(), escapedBuf);
+		WinUtil::openLink(buf);
+
+		delete[] buf;
+	}
+
+	delete[] escapedBuf;
 }
 
 void WinUtil::search(string searchTerm, int searchMode) {

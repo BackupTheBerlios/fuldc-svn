@@ -404,7 +404,7 @@ public:
 		return buf;
 	}
 	static string toHexEscape(char val) {
-		char buf[sizeof(int)*2+1];
+		char buf[sizeof(int)*2+2];
 		sprintf(buf, "%%%X", val);
 		return buf;
 	}
@@ -414,6 +414,7 @@ public:
 		return static_cast<char>(res);
 	}
 	static string encodeURI(const string& /*aString*/, bool reverse = false);
+	
 	static string getLocalIp();
 	static bool isPrivateIp(string const& ip);
 	/**

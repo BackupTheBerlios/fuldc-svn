@@ -1208,6 +1208,7 @@ LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		lastLines.erase(lastLines.size() - 2);
 	}
 	nm->lpszText = const_cast<char*>(lastLines.c_str());
+	nm->uFlags &= ~TTF_DI_SETITEM;
 	return 0;
 }
 

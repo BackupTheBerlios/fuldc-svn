@@ -466,10 +466,11 @@
 		<String Name="PopupsDeactivated">Popups turned off</String>
 		<String Name="ShowLog">View Log</String>
 		<String Name="OpenLogDir">Open Log Directory</String>
-		<String Name="SettingsFulAdvanced">FulDC\Advanced</String>
-		<String Name="SettingsFulHighlight">FulDC\Highlight</String>
-		<String Name="SettingsFulMore">FulDC\More</String>
-		<String Name="SettingsFulAppearance">FulDC\Appearance</String>
+		<String Name="SettingsFul">fulDC</String>
+		<String Name="SettingsFulAdvanced">fulDC\Advanced</String>
+		<String Name="SettingsFulHighlight">fulDC\Highlight</String>
+		<String Name="SettingsFulMore">fulDC\More</String>
+		<String Name="SettingsFulAppearance">fulDC\Appearance</String>
 		<String Name="SettingsAutoUpdateIncoming">Automatically refresh incoming</String>
 		<String Name="SettingsSbSkiplistDownload">Skiplist Downloads</String>
 		<String Name="SettingsStSkiplistDownload">Skiplist (separate files with |):</String>
@@ -558,7 +559,7 @@
 		<String Name="Results">Results: </String>
 		<String Name="Filtered">Filtered: </String>
 		<String Name="NotifyMe">Notify Me</String>
-		<String Name="TimeStampsHelp">%a - Abbreviated weekday name\n%A - Full weekday name\n%b - Abbreviated month name\n%B - Full month name\n%c - Date and time representation appropriate for locale\n%d - Day of month as decimal number (01 – 31)\n%H - Hour in 24-hour format (00 – 23)\n%I - Hour in 12-hour format (01 – 12)\n%j - Day of year as decimal number (001 – 366)\n%m - Month as decimal number (01 – 12)\n%M - Minute as decimal number (00 – 59)\n%p - Current locale's A.M./P.M. indicator for 12-hour clock\n%S - Second as decimal number (00 – 59)\n%U - Week of year as decimal number, with Sunday as first day of week (00 – 53)\n%w - Weekday as decimal number (0 – 6; Sunday is 0)\n%W - Week of year as decimal number, with Monday as first day of week (00 – 53)\n%x - Date representation for current locale\n%X - Time representation for current locale\n%y - Year without century, as decimal number (00 – 99)\n%Y - Year with century, as decimal number\n%z, %Z - Either the time-zone name or time zone abbreviation, depending on registry settings; no characters if time zone is unknown\n%% - Percent sign</String>
+		<String Name="HelpTimeStamps">%a - Abbreviated weekday name\n%A - Full weekday name\n%b - Abbreviated month name\n%B - Full month name\n%c - Date and time representation appropriate for locale\n%d - Day of month as decimal number (01 – 31)\n%H - Hour in 24-hour format (00 – 23)\n%I - Hour in 12-hour format (01 – 12)\n%j - Day of year as decimal number (001 – 366)\n%m - Month as decimal number (01 – 12)\n%M - Minute as decimal number (00 – 59)\n%p - Current locale's A.M./P.M. indicator for 12-hour clock\n%S - Second as decimal number (00 – 59)\n%U - Week of year as decimal number, with Sunday as first day of week (00 – 53)\n%w - Weekday as decimal number (0 – 6; Sunday is 0)\n%W - Week of year as decimal number, with Monday as first day of week (00 – 53)\n%x - Date representation for current locale\n%X - Time representation for current locale\n%y - Year without century, as decimal number (00 – 99)\n%Y - Year with century, as decimal number\n%z, %Z - Either the time-zone name or time zone abbreviation, depending on registry settings; no characters if time zone is unknown\n%% - Percent sign</String>
 		<String Name="TimeStampsHelpCaption">Time Format</String>
 		<String Name="SettingsTimeStampHelp">Help</String>
 		<String Name="SettingsSbTimeStamps">Time Format</String>

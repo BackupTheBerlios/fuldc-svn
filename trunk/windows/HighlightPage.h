@@ -48,7 +48,6 @@ class HighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	//virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 
 	void getValues(ColorSettings* );
 protected:

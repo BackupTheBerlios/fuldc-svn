@@ -115,7 +115,7 @@ LRESULT FulAppearancePage::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 }
 
 LRESULT FulAppearancePage::onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	MessageBox(CSTRING(TIME_STAMPS_HELP), CSTRING(TIME_STAMPS_HELP_CAPTION), MB_OK | MB_ICONINFORMATION);
+	MessageBox(CSTRING(HELP_TIME_STAMPS), CSTRING(TIME_STAMPS_HELP_CAPTION), MB_OK | MB_ICONINFORMATION);
 
 	return 0;
 }

@@ -724,21 +724,24 @@ string Util::getIpCountry (string IP) {
 }
 
 string Util::getShortTimeString() {
-	size_t bufSize = SETTING(TIME_STAMPS_FORMAT).length() * 2;
-	AutoArray<char> buf(bufSize);
+	if(SETTING(TIME_STAMPS_FORMAT).empty())
+		return Util::emptyString;
 
+	size_t bufSize = SETTING(TIME_STAMPS_FORMAT).length() * 2;
+
+	bufSize = bufSize > 20 ? bufSize : 20;
+
+	AutoArray<char> buf(bufSize);
+	
 	time_t _tt = time(NULL);
 	tm* _tm = localtime(&_tt);
 	if(_tm == NULL) {
-		if(bufSize < 9)
-			buf.resize(9);
-		strcpy(buf, "xx:xx:xx");
+		return Util::emptyString;
 	} else {
 		while(0 == strftime(buf, bufSize, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm) ){
 			bufSize *= 2;
 			buf.resize(bufSize);
 		}
-
 	}
 	return buf;
 }

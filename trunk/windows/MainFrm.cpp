@@ -668,6 +668,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			lastLines.erase(lastLines.size() - 2);
 		}
 		pDispInfo->lpszText = const_cast<char*>(lastLines.c_str());
+		pDispInfo->uFlags &= ~TTF_DI_SETITEM;
 	}
 	return 0;
 }
