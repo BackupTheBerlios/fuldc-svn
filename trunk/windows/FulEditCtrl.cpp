@@ -377,22 +377,27 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 
 int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int &lineIndex) {
 	int begin = 0, end = 0;
-	
+	bool found = false;
+		
 	PME regexp(cs->getMatch().substr(4), "gims");
 				
-		if( regexp.match(line) == 0)
-			return string::npos;
+	while( regexp.match(line) != 0 ){
+		found = true;
 
-	for(int j = 0; j < regexp.NumBackRefs(); ++j) {
-		begin = lineIndex + regexp.GetStartPos(j);
-		end = begin + regexp.GetLength(j);
-		
-		SetSel(begin, end);
-		SetSelectionCharFormat(cf);
+		for(int j = 0; j < regexp.NumBackRefs(); ++j) {
+			begin = lineIndex + regexp.GetStartPos(j);
+			end = begin + regexp.GetLength(j);
+			
+			SetSel(begin, end);
+			SetSelectionCharFormat(cf);
 
-		SetSel(GetTextLength()-1, GetTextLength()-1);
-		SetSelectionCharFormat(selFormat);
+			SetSel(GetTextLength()-1, GetTextLength()-1);
+			SetSelectionCharFormat(selFormat);
+		}
 	}
+
+	if(!found)
+		return string::npos;
 	
 
 	SetSel(GetTextLength()-1, GetTextLength()-1);

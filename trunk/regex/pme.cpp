@@ -546,7 +546,7 @@ int PME::GetLength( int _backRef )
 	if( _backRef >= nMatches || _backRef < 0 )
 		return -1;
 
-	return m_marks[_backRef].second;
+	return m_marks[_backRef].second - m_marks[_backRef].first;
 }
 
 void PME::Init(const std::string & s, unsigned opts )

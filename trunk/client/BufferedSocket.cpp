@@ -315,8 +315,6 @@ void BufferedSocket::threadRead() {
 					if(!line.empty()) {
 						fire(BufferedSocketListener::Line(), line + l.substr(0, pos));
 						line.clear();
-					} else if(pos == l.length() - 1) {
-						fire(BufferedSocketListener::Line(), l);
 					} else {
 						fire(BufferedSocketListener::Line(), l.substr(0, pos));
 					}
