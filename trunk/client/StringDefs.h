@@ -623,6 +623,8 @@ enum Strings { // @DontAdd
 	MENU_OPEN_MY_LIST, // "Open my file list"
 	RESOLVE_IP, // "Resolve IP"
 	RESOLVES_TO, // "resolves to"
+	RESOLVING, // "Resolving"
+	FAILED_RESOLVE, // "Failed to resolve"
 	NOT_FOUND, // "Not found in help file"
 	RESULTS, // "Results: "
 	NOTIFY_ME, // "Notify Me"

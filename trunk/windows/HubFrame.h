@@ -40,6 +40,8 @@
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 #define FILTER_MESSAGE_MAP 8
 
+#define RESOLVE_IP WM_APP+1
+
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
 	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
 	public UserInfoBaseHandler<HubFrame>
@@ -68,6 +70,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, ctrlClient.onMenuCommand)
+		MESSAGE_HANDLER(RESOLVE_IP, onResolvedIP)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
@@ -120,6 +123,7 @@ public:
 	LRESULT onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	
 	
@@ -293,6 +297,8 @@ private:
 		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
 		client->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
+
+		resolveBuffer = NULL;
 		
 		tabList.push_back(_T("/away"));
 		tabList.push_back(_T("/back"));
@@ -332,6 +338,9 @@ private:
 
 	~HubFrame() {
 		ClientManager::getInstance()->putClient(client);
+
+		if(resolveBuffer)
+			delete[] resolveBuffer;
 	}
 
 	typedef HASH_MAP<tstring, HubFrame*> FrameMap;
@@ -411,6 +420,9 @@ private:
 	
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
+
+	char *resolveBuffer;
+	bool isIP;
 	
 	int findUser(const User::Ptr& aUser);
 	UserInfo* findUser(tstring & nick);
@@ -481,6 +493,7 @@ private:
 	void speak(Speakers s, const User::Ptr& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u, line)); };
 
 	void openLinksInTopic();
+	bool resolve(const wstring& aDns);
 };
 /////////////////////////////////////////////////////////////////////////////
 

@@ -619,6 +619,8 @@
 		<String Name="MenuOpenMyList">Open my file list</String>
 		<String Name="ResolveIp">Resolve IP</String>
 		<String Name="ResolvesTo">resolves to</String>
+		<String Name="Resolving">Resolving</String>
+		<String Name="FailedResolve">Failed to resolve</String>
 		<String Name="NotFound">Not found in help file</String>
 		<String Name="Results">Results: </String>
 		<String Name="NotifyMe">Notify Me</String>

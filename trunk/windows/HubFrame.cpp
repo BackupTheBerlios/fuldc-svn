@@ -350,13 +350,20 @@ void HubFrame::onEnter() {
 				client->hubMessage(Text::fromT(WinUtil::DiskSpaceInfo()));
 			}else if(Util::stricmp(cmd.c_str(), _T("me")) == 0) {
 				client->hubMessage(Text::fromT(s));
+			} else if(Util::stricmp(cmd.c_str(), _T("dns")) == 0) {
+				if( !param.empty() ) {
+					if( resolve(param) )
+						addClientLine(TSTRING(RESOLVING) + _T(" ") + param + _T(" ..."), BOOLSETTING(STATUS_IN_CHAT));
+					else
+						addClientLine(TSTRING(FAILED_RESOLVE) + _T(" ") + param, BOOLSETTING(STATUS_IN_CHAT));
+				}
 			} else {
 				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
 					client->hubMessage(Text::fromT(s));
 				} else {
 					addClientLine(TSTRING(UNKNOWN_COMMAND) + cmd);
 				}
-			}
+			} 
 		} else {
 			client->hubMessage(Text::fromT(s));
 		}
@@ -1491,6 +1498,59 @@ HubFrame::UserInfo* HubFrame::findUser(tstring & nick){
 	return NULL;
 }
 
+bool HubFrame::resolve(const wstring& aDns) {
+	HANDLE res;
+	bool ret = false;
+	if(resolveBuffer == NULL) {
+        
+		resolveBuffer = new char[MAXGETHOSTSTRUCT];
+		
+		//PME regexp("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\..*");
+		PME regexp("\\b(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\b");
+		
+		if(regexp.match(aDns)) {
+			unsigned long l = inet_addr(Text::wideToAcp(aDns).c_str());
+
+			res = WSAAsyncGetHostByAddr(m_hWnd, RESOLVE_IP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT);
+			isIP = true;
+		} else {
+			res = WSAAsyncGetHostByName(m_hWnd, RESOLVE_IP, Text::wideToAcp(aDns).c_str(), resolveBuffer, MAXGETHOSTSTRUCT);
+			isIP = false;
+		}
+
+		if( res == 0 ) {
+			delete[] resolveBuffer;
+			resolveBuffer = NULL;
+		} else
+			ret = true;
+	}
+
+	return ret;
+}
+
+LRESULT HubFrame::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
+	if( resolveBuffer && WSAGETASYNCERROR(lParam) == 0 ) {
+		hostent *h = (hostent*)resolveBuffer;
+		in_addr a;
+		
+		memcpy(&a.S_un.S_addr, h->h_addr_list[0], 4);
+		char * c = inet_ntoa(a);
+		if( isIP )
+			addClientLine(Text::acpToWide(c) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(h->h_name), BOOLSETTING(STATUS_IN_CHAT));
+		else
+			addClientLine(Text::acpToWide(h->h_name) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(c), BOOLSETTING(STATUS_IN_CHAT));
+	
+	//since the user can't do anything about these errors avoid showing them
+	} else if( WSAGETASYNCERROR(lParam) && !( WSAGETASYNCERROR(lParam) & ( WSAENOBUFS | WSAEFAULT) ) ) {
+		addClientLine(Text::acpToWide( Util::translateError(WSAGetLastError())), BOOLSETTING(STATUS_IN_CHAT));
+	}
+	
+	if(resolveBuffer) {
+		delete[] resolveBuffer;
+		resolveBuffer = NULL;
+	}
+	return 0;
+}
 
 
 /**
