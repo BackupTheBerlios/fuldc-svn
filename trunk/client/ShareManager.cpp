@@ -154,22 +154,14 @@ string ShareManager::translateFileName(const string& aFile, bool adc) throw(Shar
 			throw ShareException("File Not Available");
 		
 		string aDir = file.substr(0, i);
+		file = file.substr(i + 1);
 
 		RLock l(cs);
-		/*StringPairIter j = lookupVirtual(aDir);
-		if(j == virtualMap.end()) {
-			throw ShareException("File Not Available");
-		}
-
-		file = file.substr(i + 1);
-		
-		if(!checkFile(j->second, file)) {
-			throw ShareException("File Not Available");
-		}*/
 
 		bool found = false;
 
-		for(StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j) {
+		StringPairIter j = virtualMap.begin();
+		for(; j != virtualMap.end(); ++j) {
 			if( Util::stricmp(aDir, j->first) == 0 ){
 				if( checkFile(j->second, file) ){
 					found = true;
@@ -178,7 +170,7 @@ string ShareManager::translateFileName(const string& aFile, bool adc) throw(Shar
 			}
 		}
 
-		if( ! found )
+		if( !found )
 			throw ShareException("File Not Available");
 		
 		return j->second + file;
@@ -211,6 +203,7 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 	string::size_type i;
 	string::size_type j = 0;
 	while( (i = aFile.find(PATH_SEPARATOR, j)) != string::npos) {
+		dcdebug("dir=%s", aFile.substr(j, i-j).c_str() );
 		mi = d->directories.find(aFile.substr(j, i-j));
 		j = i + 1;
 		if(mi == d->directories.end())
@@ -364,7 +357,7 @@ string ShareManager::Directory::getADCPath() const throw() {
 string ShareManager::Directory::getFullName() const throw() {
 	if(parent == NULL)
 		return getName() + '\\';
-	return parent->getName() + '\\' + getName() + '\\';
+	return parent->getFullName() + getName() + '\\';
 }
 
 void ShareManager::Directory::addType(u_int32_t type) throw() {

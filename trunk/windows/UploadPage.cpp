@@ -68,13 +68,12 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	// Prepare shared dir list
 	ctrlDirectories.InsertColumn(0, CTSTRING(VIRTUAL_NAME), LVCFMT_LEFT, 80, 0);
 	ctrlDirectories.InsertColumn(1, CTSTRING(DIRECTORY), LVCFMT_LEFT, 197, 1);
-    ctrlDirectories.InsertColumn(2, CTSTRING(SIZE), LVCFMT_RIGHT, 90, 2);
-
+	ctrlDirectories.InsertColumn(2, CTSTRING(SIZE), LVCFMT_RIGHT, 90, 2);
 	StringPairList directories = ShareManager::getInstance()->getDirectories();
 	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
 		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->first));
-		ctrlDirectories.SetItemText( i, 1, Text::toT(j->second).c_str() );
+		ctrlDirectories.SetItemText(i, 1, Text::toT(j->second).c_str() );
 		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
 		ctrlDirectories.SetCheckState(i, ShareManager::getInstance()->isIncoming(j->second) );
 	}
@@ -160,6 +159,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i = -1;
 	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		item.iItem = i;
+		item.iSubItem = 1;
 		ctrlDirectories.GetItem(&item);
 		string t = Text::fromT(buf);
 		ShareManager::getInstance()->removeDirectory( t );
@@ -214,8 +214,8 @@ void UploadPage::addDirectory(const tstring& aPath){
 		if(virt.DoModal(m_hWnd) == IDOK) {
 			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(virt.line));
 			ShareManager::getInstance()->setIncoming(Text::fromT(path), false);
-			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), virt.line.c_str());
-			ctrlDirectories.SetItemText(i, 1, path.c_str() );
+			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), virt.line );
+			ctrlDirectories.SetItemText(i, 1, path.c_str());
 			ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))).c_str());
 			ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		}

@@ -24,7 +24,7 @@
 #ifdef _DEBUG
 #define FULVERSIONSTRING "6.51 svn$WCREV$"
 #else
-#define FULVERSIONSTRING "6.51 Beta 5"
+#define FULVERSIONSTRING "6.51 Beta 6"
 #endif
 
 /* Update the .rc file as well... */
