@@ -426,7 +426,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			}
 		}
 	} else if(wParam == DOWNLOAD_COMPLETE) {
-		dcdebug("MainFrame::onSpeaker: %s", (string*)lParam);
 		PopupManager::getInstance()->ShowDownloadComplete((string*)lParam);
 	} else if(wParam == WM_CLOSE) {
 		PopupManager::getInstance()->Remove((int)lParam);

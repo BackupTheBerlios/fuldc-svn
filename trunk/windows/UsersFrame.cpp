@@ -56,6 +56,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	
 	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlUsers.setSortColumn(COLUMN_NICK);
 	usersMenu.CreatePopupMenu();
 	appendUserItems(usersMenu);
 	usersMenu.AppendMenu(MF_SEPARATOR);

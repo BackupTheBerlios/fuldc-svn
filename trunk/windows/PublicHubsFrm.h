@@ -113,6 +113,8 @@ public:
 			PostMessage(WM_CLOSE);
 			return 0;
 		} else {
+			WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::PUBLICHUBSFRAME_ORDER,
+				SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 			MDIDestroy(m_hWnd);
 			return 0;
 		}

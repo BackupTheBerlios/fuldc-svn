@@ -32,10 +32,12 @@ public:
 
 		bmp = hBmp;
 
+		parent = hWnd;
+
 		if(bmp == NULL)
-			Create(hWnd, rc, NULL, WS_CAPTION | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN );
+			Create(NULL, rc, NULL, WS_CAPTION | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_TOOLWINDOW );
 		else
-			Create(hWnd, rc, NULL, WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN );
+			Create(NULL, rc, NULL, WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_TOOLWINDOW );
 
 		WinUtil::decodeFont(SETTING(POPUP_FONT), logFont);
 		font = ::CreateFontIndirect(&logFont);
@@ -49,10 +51,9 @@ public:
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/){
 		CRect rc;
 		GetWindowRect(rc);
-		::PostMessage(GetParent(), WM_SPEAKER, WM_CLOSE, (LPARAM)rc.bottom);
+		::PostMessage(parent, WM_SPEAKER, WM_CLOSE, (LPARAM)rc.bottom);
 		return 0;
 	}
-
 
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
 		//if we have a background don't create CStatic control
@@ -142,6 +143,7 @@ private:
 	HBITMAP bmp;
 	LOGFONT logFont;
 	HFONT   font;
+	HWND	parent;
 
 };
 

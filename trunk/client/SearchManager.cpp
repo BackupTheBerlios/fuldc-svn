@@ -43,7 +43,11 @@ string SearchResult::toSR() const {
 	tmp.append(1, '/');
 	tmp.append(Util::toString(slots));
 	tmp.append(1, '\x05');
+	if(getTTH() == NULL) {
 	tmp.append(hubName);
+	} else {
+		tmp.append("TTH:" + getTTH()->toBase32());
+	}
 	tmp.append(" (", 2);
 	tmp.append(hubIpPort);
 	tmp.append(")|", 2);

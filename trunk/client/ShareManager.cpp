@@ -967,7 +967,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		// We satisfied all the search words! Add the directory...
 		SearchResult* sr = new SearchResult(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false),
 			SearchResult::TYPE_DIRECTORY, SETTING(SLOTS), UploadManager::getInstance()->getFreeSlots(),
-			0, getFullName(), aClient->getName(), aClient->getIpPort());
+			0, getFullName(), aClient->getName(), aClient->getIpPort(), NULL);
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
@@ -992,8 +992,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 				
 				SearchResult* sr = new SearchResult(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false),
 					SearchResult::TYPE_FILE, SETTING(SLOTS), UploadManager::getInstance()->getFreeSlots(),
-					i->getSize(), getFullName() + i->getName(), 
-					i->getTTH() != NULL ? ("TTH:"+i->getTTH()->toBase32()) : aClient->getName(), aClient->getIpPort());
+					i->getSize(), getFullName() + i->getName(), aClient->getName(), aClient->getIpPort(), i->getTTH());
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 				if(aResults.size() >= maxResults) {
@@ -1021,7 +1020,7 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 				SearchResult* sr = new SearchResult(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false),
 					SearchResult::TYPE_FILE, SETTING(SLOTS), UploadManager::getInstance()->getFreeSlots(),
 					i->second->getSize(), i->second->getParent()->getFullName() + i->second->getName(), 
-					"TTH:"+i->second->getTTH()->toBase32(), aClient->getIpPort());
+					aClient->getName(), aClient->getIpPort(), i->second->getTTH());
 				results.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 			}

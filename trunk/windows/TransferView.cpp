@@ -66,7 +66,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlTransfers.SetTextColor(WinUtil::textColor);
 
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
-	ctrlTransfers.setSortColumn(COLUMN_STATUS);
+	ctrlTransfers.setSortColumn(COLUMN_USER);
 
 	openMenu.CreatePopupMenu();
 	openMenu.AppendMenu(MF_STRING, IDC_OPEN, CSTRING(OPEN));
@@ -88,6 +88,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
+	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
 
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
@@ -285,6 +286,12 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 	default:
 		return CDRF_DODEFAULT;
 	}
+}
+
+LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+	ctrlTransfers.getItemData(item->iItem)->pm();
+	return 0;
 }
 
 LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {

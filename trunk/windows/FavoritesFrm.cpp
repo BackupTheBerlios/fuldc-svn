@@ -99,6 +99,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	hubsMenu.AppendMenu(MF_STRING, IDC_MOVE_DOWN, CSTRING(MOVE_DOWN));
 	hubsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	hubsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 
 	nosave = false;
 
