@@ -37,6 +37,7 @@ public:
 	typedef X<5> StatusUpdated;
 	typedef X<6> SearchStringUpdated;
 	typedef X<7> ReleaseDone;
+	typedef X<8> SearchAlternates;
 
 	virtual void on(Added, QueueItem*) throw() { }
 	virtual void on(Finished, QueueItem*) throw() { }
@@ -45,7 +46,8 @@ public:
 	virtual void on(SourcesUpdated, QueueItem*) throw() { }
 	virtual void on(StatusUpdated, QueueItem*) throw() { }
 	virtual void on(SearchStringUpdated, QueueItem*) throw() { }
-	virtual void on(ReleaseDone, string) throw() {}
+	virtual void on(ReleaseDone, string) throw() { }
+	virtual void on(SearchAlternates, string, int) throw() { }
 };
 
 #endif

@@ -100,16 +100,18 @@ void HubManager::onHttpFinished() throw() {
 		} else {
 			i = 0;
 
-			while( (i < x->size()) && ((j=x->find("\r\n", i)) != string::npos)) {
-				StringTokenizer<string> tok(x->substr(i, j-i), '|');
+			string utfText = Text::acpToUtf8(*x);
+
+			while( (i < utfText.size()) && ((j=utfText.find("\r\n", i)) != string::npos)) {
+				StringTokenizer<string> tok(utfText.substr(i, j-i), '|');
 				i = j + 2;
 				if(tok.getTokens().size() < 4)
 					continue;
 
 				StringList::const_iterator k = tok.getTokens().begin();
-				const string& name = Text::acpToUtf8( *k++ );
-				const string& server = Text::acpToUtf8( *k++ );
-				const string& desc = Text::acpToUtf8( *k++ );
+				const string& name = *k++;
+				const string& server = *k++;
+				const string& desc = *k++;
 				const string& usersOnline = *k++;
 				publicHubs.push_back(HubEntry(name, server, desc, usersOnline));
 			}

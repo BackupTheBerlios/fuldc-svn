@@ -81,7 +81,7 @@ public:
 	static string fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
 #else
 	static tstring toT(const string& str) throw() { return utf8ToAcp(str); }
-	static tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToAcp(str); }
+	static tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToAcp(str, tmp); }
 
 	static string fromT(const tstring& str) throw() { return acpToUtf8(str); }
 	static string& fromT(const tstring& str, string& tmp) throw() { return acpToUtf8(str, tmp); }
@@ -117,7 +117,7 @@ private:
 
 };
 
-#endif TEXT_H
+#endif
 
 /**
  * @file

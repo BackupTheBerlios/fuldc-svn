@@ -243,7 +243,7 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 			{
 				if(!hasChildren) {
 					data = tmp.substr(start, i - start - 2);
-					SimpleXML::escape(data, false, utf8);
+					SimpleXML::escape(data, false, true, utf8);
 				} else {
 					data.clear();
 				}

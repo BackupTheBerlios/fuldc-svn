@@ -605,6 +605,7 @@ string ResourceManager::strings[] = {
 "Name already exists", 
 "Name to be displayed in menus", 
 "Blend tabs instead of using bold font when dirty(see appearance page)", 
+"file left", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1210,4 +1211,5 @@ string ResourceManager::names[] = {
 "NameExists", 
 "DisplayName", 
 "BlendTabs", 
+"FileLeft", 
 };

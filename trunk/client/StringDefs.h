@@ -608,5 +608,6 @@ enum Strings { // @DontAdd
 	NAME_EXISTS, // "Name already exists"
 	DISPLAY_NAME, // "Name to be displayed in menus"
 	BLEND_TABS, // "Blend tabs instead of using bold font when dirty(see appearance page)"
+	FILE_LEFT, // "file left"
 	LAST // @DontAdd
 };

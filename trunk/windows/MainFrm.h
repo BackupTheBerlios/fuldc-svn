@@ -293,7 +293,6 @@ private:
 		DirectoryListInfo(LPARAM lp = NULL) : lParam(lp) { };
 		User::Ptr user;
 		tstring file;
-		tstring start;
 		LPARAM lParam;
 	};
 	

@@ -663,6 +663,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	} else {
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
+		HubManager::getInstance()->removeUserCommand(Text::fromT(server));
 
 		ctrlUsers.saveHeaderOrder(SettingsManager::HUBFRAME_ORDER, SettingsManager::HUBFRAME_WIDTHS,
 			SettingsManager::HUBFRAME_VISIBLE);

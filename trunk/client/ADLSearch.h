@@ -59,7 +59,8 @@ public:
 		stringSearchList.clear();
 
 		if(searchString.find("$Re:") == 0){
-			regexp.Init(searchString.substr(4), "i");
+			regexp.Init(Text::utf8ToAcp(searchString.substr(4)), "i");
+			bUseRegexp = true;
 		} else {
 			// Replace parameters such as %[nick]
 			string stringParams = Util::formatParams(searchString, params);
@@ -223,7 +224,7 @@ private:
 
 	bool SearchAll(const string& s) {
 		if(bUseRegexp){
-			if(regexp.match(s))
+			if(regexp.match( Text::utf8ToAcp(s) ))
 				return true;
 			else
 				return false;

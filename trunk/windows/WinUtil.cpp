@@ -66,6 +66,7 @@ HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
 tstring WinUtil::tth;
+StringPairList WinUtil::initialDirs;
 HWND WinUtil::findDialog = NULL;
 const time_t WinUtil::startTime = GET_TIME();
 DWORD WinUtil::comCtlVersion = 0;

@@ -371,7 +371,7 @@ public:
 		return (float)toDouble(aString.c_str());
 	}
 
-	static string toString(const int64_t& val) {
+	static string toString(int64_t val) {
 		char buf[32];
 #ifdef _WIN32
 		return _i64toa(val, buf, 10);
@@ -390,15 +390,20 @@ public:
 		// TODO A better conversion the day we hit 64 bits
 		return toString((u_int32_t)val);
 	}
-	static string toString(int val) {
+	static string toString(int32_t val) {
 		char buf[16];
 		sprintf(buf, "%d", val);
 		return buf;
 	}
-
-	static string toString(long val) {
+	static string toString(int16_t val) {
+		return toString((int32_t) val);
+	}
+	static string toString(u_int16_t val) {
+		return toString((u_int32_t)val);
+	}
+	static string toString(int val) {
 		char buf[16];
-		sprintf(buf, "%ld", val);
+		sprintf(buf, "%d", val);
 		return buf;
 	}
 	static string toString(double val) {
@@ -463,8 +468,7 @@ public:
 #ifdef _WIN32
 		return ::_wcsicmp(a, b);
 #else
-#warning FIXME
-		return 0;
+		return wcscasecmp(a, b);
 #endif
 		// return ::stricmp(a, b);
 		
@@ -474,8 +478,7 @@ public:
 #ifdef _WIN32
 		return ::_wcsnicmp(a, b, n);
 #else
-#warning FIXME
-		return 0;
+		return ::wcsncasecmp(a, b, n);
 #endif
 	}
 

@@ -1253,8 +1253,8 @@ void QueueFrame::collapse(HTREEITEM item) {
 LRESULT QueueFrame::onSearchReleaseAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	HTREEITEM item = ctrlDirs.GetSelectedItem();
 	if(item != ctrlDirs.GetRootItem()){
-		string path = ((string*)ctrlDirs.GetItemData(item))->c_str();
-		QueueManager::getInstance()->SearchAlternates(path);
+		tstring path = ((tstring*)ctrlDirs.GetItemData(item))->c_str();
+		QueueManager::getInstance()->SearchAlternates( Text::fromT(path) );
 	}
 
 	return 0;
@@ -1277,6 +1277,16 @@ LRESULT QueueFrame::onNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	else
 		QueueManager::getInstance()->addNotification(name);
 	return 0;
+}
+
+void QueueFrame::on(QueueManagerListener::SearchAlternates, string aMsg, int nr) {
+	tstring txt = Text::toT(STRING(SEARCHING_FOR) + aMsg + " | " + Util::toString(nr) + " ");
+	if(nr == 1)
+		txt += TSTRING(FILE_LEFT);
+	else
+		txt += TSTRING(FILES_LEFT);
+	
+	ctrlStatus.SetText( 1, txt.c_str() );
 }
 /**
  * @file

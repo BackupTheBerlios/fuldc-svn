@@ -32,9 +32,8 @@
 #include "../client/MerkleTree.h"
 
 DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
-void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser, const tstring& start) {
-	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser, start);
-
+void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
+	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
 	if(BOOLSETTING(POPUNDER_FILELIST))
 		WinUtil::hiddenCreateEx(frame);
 	else
@@ -44,9 +43,9 @@ void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aU
 		
 }
 
-DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser, const tstring& s) :
+DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-	treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(s)
+		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(Text::toT(WinUtil::getInitialDir(aUser)))
 {
 	tstring tmp;
 	if(aFile.size() < 4) {
@@ -266,7 +265,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 
 		if(ii->type == ItemInfo::FILE) {
 			try {
-				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + Text::fromT(ii->getText(COLUMN_FILENAME)));
+				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + Text::fromT(ii->getText(COLUMN_FILENAME)), false, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			}
@@ -289,7 +288,7 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		try {
-			dl->download(dir, SETTING(DOWNLOAD_DIRECTORY));
+			dl->download(dir, SETTING(DOWNLOAD_DIRECTORY), (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 		}
@@ -306,7 +305,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 			WinUtil::addLastDir(target);
 			
 			try {
-				dl->download(dir, Text::fromT(target));
+				dl->download(dir, Text::fromT(target), (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			}
@@ -327,9 +326,9 @@ void DirectoryListingFrame::downloadList(const tstring& aTarget, bool view /* = 
 				if(view) {
 					File::deleteFile(Text::fromT(target) + Util::validateFileName(ii->file->getName()));
 				}
-				dl->download(ii->file, Text::fromT(target + ii->getText(COLUMN_FILENAME)), view);
+				dl->download(ii->file, Text::fromT(target + ii->getText(COLUMN_FILENAME)), view, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 			} else if(!view) {
-				dl->download(ii->dir, Text::fromT(target));
+				dl->download(ii->dir, Text::fromT(target), (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 			} 
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
@@ -351,13 +350,13 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 				tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + ii->getText(COLUMN_FILENAME);
 				if(WinUtil::browseFile(target, m_hWnd)) {
 					WinUtil::addLastDir(Util::getFilePath(target));
-					dl->download(ii->file, Text::fromT(target));
+					dl->download(ii->file, Text::fromT(target), false, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 				}
 			} else {
 				tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
 				if(WinUtil::browseDirectory(target, m_hWnd)) {
 					WinUtil::addLastDir(target);
-					dl->download(ii->dir, Text::fromT(target));
+					dl->download(ii->dir, Text::fromT(target), (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 				}
 			} 
 		} catch(const Exception& e) {
@@ -600,11 +599,11 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 				if(newId < downloadPaths.size()){
 					StringMapIter j = downloadPaths.begin();
 					for(size_t i = 0; i < newId; ++i, ++j);
-					dl->download(ii->file, j->second + ii->file->getName());
+					dl->download(ii->file, j->second + ii->file->getName(), false, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 				} else if( (newId - downloadPaths.size()) < WinUtil::lastDirs.size() )
-					dl->download(ii->file, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]) + ii->file->getName());
+					dl->download(ii->file, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]) + ii->file->getName(), false, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 				else
-					dl->download(ii->file, targets[newId - downloadPaths.size() - WinUtil::lastDirs.size()]);
+					dl->download(ii->file, targets[newId - downloadPaths.size() - WinUtil::lastDirs.size()], false, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 
 			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
@@ -640,9 +639,9 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 			if(newId < downloadPaths.size()){
 				StringMapIter j = downloadPaths.begin();
 				for(size_t i = 0; i < newId; ++i, ++j);
-				dl->download(dir, j->second );
+				dl->download(dir, j->second, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 			} else
-				dl->download(dir, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]));
+				dl->download(dir, Text::fromT(WinUtil::lastDirs[newId - downloadPaths.size()]), (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());

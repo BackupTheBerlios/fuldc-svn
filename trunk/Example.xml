@@ -604,5 +604,6 @@
 		<String Name="NameExists">Name already exists</String>
 		<String Name="DisplayName">Name to be displayed in menus</String>
 		<String Name="BlendTabs">Blend tabs instead of using bold font when dirty(see appearance page)</String>
+		<String Name="FileLeft">file left</String>
 	</Strings>
 </Language>

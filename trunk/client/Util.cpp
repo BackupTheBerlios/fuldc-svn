@@ -98,7 +98,7 @@ void Util::initialize() {
 #else // _WIN32
 	char* home = getenv("HOME");
 	if (home) {
-		Util::toUtf8(home, appPath);
+		appPath = Text::fromT(home);
 		appPath += "/.dc++/";
 	}
 #endif // _WIN32
@@ -489,18 +489,18 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 		return 0;
 
 	// Hm, should start measure in characters or in bytes? bytes for now...
-	u_int8_t* tx = (u_int8_t*)aString.c_str() + start;
-	u_int8_t* px = (u_int8_t*)aSubString.c_str();
+	const u_int8_t* tx = (const u_int8_t*)aString.c_str() + start;
+	const u_int8_t* px = (const u_int8_t*)aSubString.c_str();
 
-	u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
+	const u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
 
 	wchar_t wp = utf8ToLC(px);
 
 	while(tx < end) {
-		u_int8_t* otx = tx;
+		const u_int8_t* otx = tx;
 		if(wp == utf8ToLC(tx)) {
-			u_int8_t* px2 = px;
-			u_int8_t* tx2 = tx;
+			const u_int8_t* px2 = px;
+			const u_int8_t* tx2 = tx;
 
 			for(;;) {
 				if(*px2 == 0)
