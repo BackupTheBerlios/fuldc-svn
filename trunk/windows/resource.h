@@ -133,6 +133,7 @@
 #define IDC_FH_PASSWORD                 271
 #define IDC_FH_USER_DESC                272
 #define IDC_USER_CMD_PREVIEW            273
+#define IDC_USER_CMD_OPEN_HELP          274
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002

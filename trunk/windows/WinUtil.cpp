@@ -868,6 +868,11 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 		strSearchString = strSearch.substr(0, intPos + 1);
 	}
 	
+	if(ws->url.find(_T("google.")) != tstring::npos)
+		strSearchString = Text::utf8ToWide(Util::encodeURI(Text::wideToUtf8(strSearchString)));
+	else
+		strSearchString	= Text::acpToWide(Util::encodeURI(Text::wideToAcp(strSearchString)));
+
 	TCHAR *buf = new TCHAR[ws->url.length() + strSearchString.length()];
 	_stprintf(buf, ws->url.c_str(), strSearchString.c_str());
 

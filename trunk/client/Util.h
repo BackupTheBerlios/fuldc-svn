@@ -436,11 +436,13 @@ public:
 		swprintf(buf, L"%0.2f", val);
 		return buf;
 	}
+
 	static string toHexEscape(char val) {
-		char buf[sizeof(int)*2+1+1];
+		char buf[sizeof(int)*2+2];
 		sprintf(buf, "%%%X", val&0x0FF);
 		return buf;
 	}
+
 	static char fromHexEscape(const string aString) {
 		int res = 0;
 		sscanf(aString.c_str(), "%X", &res);

@@ -173,6 +173,8 @@ private:
 		void toXml(SimpleXML* xml);
 		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 
+		File::Iter findFile(const string& aFile) { return find_if(files.begin(), files.end(), Directory::File::StringComp(aFile)); }
+
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
 	private:
@@ -246,6 +248,7 @@ private:
 	u_int32_t lastIncomingUpdate;
 
 	mutable RWLock cs;
+	CriticalSection listGenLock;
 
 	// Map real name to directory structure
 	Directory::Map directories;

@@ -125,7 +125,6 @@ ShareManager::Directory::~Directory() {
 #endif
 }
 
-
 string ShareManager::translateFileName(const string& aFile, bool adc) throw(ShareException) {
 	RLock l(cs);
 	if(aFile == "MyList.DcLst") {
@@ -136,7 +135,6 @@ string ShareManager::translateFileName(const string& aFile, bool adc) throw(Shar
 		return getBZXmlFile();
 	} else {
 		string file;
-
 		if(adc) {
 			// Check for tth root identifier
 			if(aFile.compare(0, 4, "TTH/") == 0) {
@@ -291,7 +289,6 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 	{
 		RLock l(cs);
 
-
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			if(Util::strnicmp(d, i->first, i->first.length()) == 0) {
 				// Trying to share an already shared directory
@@ -302,9 +299,11 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 			}
 		}
 
-		dp = buildTree(d, NULL);
-		dp->setName(aName);
 	}
+	
+	dp = buildTree(d, NULL);
+	dp->setName(aName);
+
 	{
 		WLock l(cs);
 		addTree(d, dp);
@@ -505,7 +504,6 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 #endif
 
 				lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, NULL));
-
 			}
 		}
 	}
@@ -529,7 +527,7 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 		string fileName = fullName + f.getName();
 
 #ifdef USE_TTH		
-		f.setTTH(HashManager::getInstance()->getTTH(fileName));
+		f.setTTH(HashManager::getInstance()->getTTH(fileName, f.getSize()));
 
 		if(f.getTTH() != NULL) {
 #endif
@@ -586,15 +584,12 @@ int ShareManager::run() {
 	{
 		if( refreshDir && !refreshDirs ){
 			Directory::Map newDirs;
-			{
-				RLock l(cs);
-				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
-					Directory::MapIter i = directories.find( *j );
-					if( i != directories.end() ){
-						Directory* dp = buildTree(i->first, NULL);
-						dp->setName(findVirtual(i->first)->first);
-						newDirs.insert(make_pair(i->first, dp));
-					}
+			for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
+				Directory::MapIter i = directories.find( *j );
+				if( i != directories.end() ){
+					Directory* dp = buildTree(i->first, NULL);
+					dp->setName(findVirtual(i->first)->first);
+					newDirs.insert(make_pair(i->first, dp));
 				}
 			}
 			{
@@ -648,19 +643,21 @@ int ShareManager::run() {
 
 		if(refreshDirs) {
 			lastFullUpdate = GET_TICK();
-			
+			StringPairList dirs;
 			Directory::Map newDirs;
 			{
 				RLock l(cs);
-				for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-					Directory* dp = buildTree(i->first, NULL);
-					dp->setName(findVirtual(i->first)->first);
-					newDirs.insert(make_pair(i->first, dp));
-				}
+				dirs = virtualMap;
 			}
+
+			for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
+				Directory* dp = buildTree(i->second, NULL);
+				dp->setName(i->first);
+				newDirs.insert(make_pair(i->second, dp));
+			}
+
 			{
 				WLock l(cs);
-				StringPairList dirs = virtualMap;
 				for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
 					removeDirectory(i->second, true);
 				}
@@ -688,7 +685,8 @@ int ShareManager::run() {
 }
 
 void ShareManager::generateXmlList(bool force /* = false */ ) {
-	if(xmlDirty && (lastXmlUpdate + 15 * 60 * 1000 < GET_TICK() || force ) ) {
+	Lock l(listGenLock);
+	if(xmlDirty && (lastXmlUpdate + 15 * 60 * 1000 < GET_TICK() || lastXmlUpdate < lastFullUpdate || force ) ) {
 		listN++;
 
 		try {
@@ -738,7 +736,8 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 	}
 }
 void ShareManager::generateNmdcList(bool force /* = false */) {
-	if(nmdcDirty && (lastNmdcUpdate + 15 * 60 * 1000 < GET_TICK() || force) ) {
+	Lock l(listGenLock);
+	if(nmdcDirty && (lastNmdcUpdate + 15 * 60 * 1000 < GET_TICK() || lastNmdcUpdate < lastFullUpdate || force) ) {
 		listN++;
 
 		try {
@@ -1250,7 +1249,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 	WLock l(cs);
 	Directory* d = getDirectory(fname);
 	if(d != NULL) {
-		Directory::File::Iter i = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(Util::getFileName(fname)));
+        Directory::File::Iter i = d->findFile(Util::getFileName(fname));
 		if(i != d->files.end()) {
 			if(i->getTTH() != NULL) { // TTH of file updated?
 				dcassert(tthIndex.find(i->getTTH()) != tthIndex.end());

@@ -330,8 +330,10 @@ string Util::formatBytes(int64_t aBytes) {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GB));
-	} else {
+	} else if(aBytes < (int64_t)1024*1024*1024*1024*1024) {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TB));
+	} else {
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
 	}
 
 	return buf;
