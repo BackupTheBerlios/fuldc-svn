@@ -893,7 +893,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 			StringMap tmp = ucParams;
 			u->user->getParams(tmp);
 			client->escapeParams(tmp);
-			client->send(Util::formatParams(uc.getCommand(), tmp));
+			client->send( Text::utf8ToAcp( Util::formatParams(uc.getCommand(), tmp) ) );
 		}
 	}
 	return;

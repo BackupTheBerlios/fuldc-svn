@@ -684,14 +684,14 @@ void NmdcHub::kick(const User::Ptr& aUser, const string& aMsg) {
 	dcdebug("NmdcHub::kick\n");
 	static const char str[] = 
 		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
-	string msg2 = toNmdc(Util::validateMessage(aMsg, false));
+	string msg2 = Util::validateMessage(aMsg, false);
 	
 	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
 	const char* u = aUser->getNick().c_str();
 	const char* n = getNick().c_str();
 	const char* m = msg2.c_str();
 	sprintf(tmp, str, u, n, n, m, n, n, u, m);
-	send(tmp);
+	send( toNmdc(tmp) );
 	delete[] tmp;
 	
 	// Short, short break to allow the message to reach the NmdcHub...
@@ -705,14 +705,14 @@ void NmdcHub::kick(const User* aUser, const string& aMsg) {
 	
 	static const char str[] = 
 		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
-	string msg2 = toNmdc(Util::validateMessage(aMsg, false));
+	string msg2 = Util::validateMessage(aMsg, false);
 	
 	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
 	const char* u = aUser->getNick().c_str();
 	const char* n = getNick().c_str();
 	const char* m = msg2.c_str();
 	sprintf(tmp, str, u, n, n, m, n, n, u, m);
-	send(tmp);
+	send( toNmdc(tmp) );
 	delete[] tmp;
 	
 	// Short, short break to allow the message to reach the NmdcHub...
