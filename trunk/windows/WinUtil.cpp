@@ -648,6 +648,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		HashManager::getInstance()->rebuild();
 	}else if(Util::stricmp(cmd.c_str(), _T("df")) == 0) {
 		message = WinUtil::DiskSpaceInfo();
+	} else if(Util::stricmp(cmd.c_str(), _T("regen")) == 0) {
+		ShareManager::getInstance()->generateXmlList(true);
 	} else {
 		return false;
 	}

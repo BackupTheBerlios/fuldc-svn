@@ -1507,7 +1507,10 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 		multiplier = 1000*1000;
 	} else if((end = Util::findSubString(filter, _T("kB"))) != tstring::npos) {
 		multiplier = 1000;
+	} else if((end = Util::findSubString(filter, _T("B"))) != tstring::npos) {
+		multiplier = 1;
 	}
+
 
 	if(end == tstring::npos) {
 		end = filter.length();
