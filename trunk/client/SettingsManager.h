@@ -114,7 +114,10 @@ public:
 		} else {
 			strSettings[key - STR_FIRST] = value;
 		}
-		isSet[key] = !value.empty();
+		if(key == TEMP_DOWNLOAD_DIRECTORY)
+			isSet[key] = true;
+		else
+			isSet[key] = !value.empty();
 	}
 
 	void set(IntSetting key, int value) {

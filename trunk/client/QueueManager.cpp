@@ -48,7 +48,6 @@
 #endif
 
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
-const string QueueManager::TEMP_EXTENSION = ".dctmp";
 
 QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, const string& aSearchString, 
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget,
@@ -68,6 +67,8 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 		if(aTempTarget.empty()) {
 			if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(qi->getTarget()) == -1)) {
 				qi->setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(qi->getTargetFileName(), root));
+			} else if(File::getSize(qi->getTarget()) == -1) {
+				qi->setTempTarget(Util::getFilePath(qi->getTarget()) + getTempName(qi->getTargetFileName(), root));
 			}
 		} else {
 			qi->setTempTarget(aTempTarget);
@@ -396,7 +397,7 @@ string QueueManager::getTempName(const string& aFileName, const TTHValue* aRoot)
 		TTHValue tmpRoot(*aRoot);
 		tmp = tmpRoot.toBase32() + ".";
 	}
-	tmp += aFileName + TEMP_EXTENSION;
+	tmp += aFileName + Util::tempExtension;
 	return tmp;
 }
 

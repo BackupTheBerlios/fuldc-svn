@@ -135,6 +135,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	mcMenu.CreatePopupMenu();
 	mcMenu.AppendMenu(MF_STRING, IDC_COPY, CSTRING(COPY));
 	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH, CSTRING(SEARCH));
+	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CSTRING(SEARCH_BY_TTH));
 	mcMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CSTRING(SEARCH_SITES));
 
 	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
@@ -336,6 +337,30 @@ void HubFrame::onEnter() {
 				TextFrame::openWindow(ctrlClient.LastLog());
 			}else if(Util::stricmp(cmd.c_str(), "df") == 0) {
 				client->hubMessage(WinUtil::DiskSpaceInfo());
+			}else if(Util::stricmp(cmd.c_str(), "watch") == 0){
+				if(param.find("add") == 0) {
+					string nick = param.substr(4);
+					bool add = true;
+					StringIter i = watchList.begin();
+					for(; i != watchList.end(); ++i){
+						if(Util::stricmp(*i, nick) == 0){
+							add = false;
+							break;
+						}
+					}
+					if(add)
+						watchList.push_back(nick);
+
+				} else if(param.find("remove") == 0 ){
+					string nick = param.substr(7);
+					StringIter i = watchList.begin();
+					for(; i != watchList.end(); ++i){
+						if(Util::stricmp(*i, nick) == 0){
+							watchList.erase(i);
+							break;
+						}
+					}
+				}
 			} else {
 				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
 					client->hubMessage(s);
@@ -484,6 +509,15 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 								addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
 							}
 						}
+						string nick = stripIsp ? u->getShortNick() : u->getNick();
+						for(StringIter i = watchList.begin(); i != watchList.end(); ++i){
+							if(Util::stricmp(*i, nick) == 0){
+								addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
+								setNotify();
+								break;
+							}
+						}
+				
 					}
 					break;
 				case UPDATE_USERS:
@@ -1337,8 +1371,11 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
 }
 
-LRESULT HubFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	WinUtil::search(searchTerm, 0);
+LRESULT HubFrame::onSearch(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(wID == IDC_SEARCH_BY_TTH)
+		WinUtil::search(searchTerm, 0, true);
+	else
+		WinUtil::search(searchTerm, 0, false);
 	searchTerm = Util::emptyString;
 	return 0;
 }
@@ -1422,6 +1459,13 @@ void HubFrame::removeUser(const User::Ptr& u) {
 	if(showJoins) {
 		if (!favShowJoins || u->isFavoriteUser()) {
 			addLine("*** " + STRING(PARTS) + nick);
+		}
+	}
+	for(StringIter i = watchList.begin(); i != watchList.end(); ++i){
+		if(Util::stricmp(*i, nick) == 0){
+			addLine("*** " + STRING(PARTS) + nick);
+			setNotify();
+			break;
 		}
 	}
 }

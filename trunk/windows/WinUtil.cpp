@@ -229,6 +229,7 @@ void WinUtil::init(HWND hWnd) {
 	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CSTRING(MENU_CLOSE_DISCONNECTED));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_PM, CSTRING(MENU_CLOSE_ALL_PM));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_DIR_LIST, CSTRING(MENU_CLOSE_ALL_DIR_LIST));
+	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_SEARCH_FRAME, CSTRING(MENU_CLOSE_ALL_SEARCHFRAME));
 	
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CSTRING(MENU_WINDOW));
 
@@ -834,7 +835,7 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 	delete[] escapedBuf;
 }
 
-void WinUtil::search(string searchTerm, int searchMode) {
+void WinUtil::search(string searchTerm, int searchMode, bool tth) {
 	if(!searchTerm.empty()) {
 		//skapa listan över icke tillåtna karaktärer
 		char chars[33] = {'<', '>', ',', ';', '.', ':', '-', '_', '!', '\"', '@', '#', '£',
@@ -863,7 +864,10 @@ void WinUtil::search(string searchTerm, int searchMode) {
 		if(!searchTerm.empty()) {
 			if(0 == searchMode) {
 				SearchFrame* pChild = new SearchFrame();
-				pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
+				if(tth)
+					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_HASH);
+				else
+					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
 				pChild->CreateEx(WinUtil::mdiClient);
 				searchTerm = string();
 			}else{

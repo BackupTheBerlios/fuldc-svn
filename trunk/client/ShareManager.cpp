@@ -479,7 +479,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			} else {
 				// Not a directory, assume it's a file...make sure we're not sharing the settings file...
 				if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
-					(Util::stricmp(name.c_str(), "Favorites.xml") != 0)) {
+					(Util::stricmp(name.c_str(), "Favorites.xml") != 0) &&
+					(Util::stricmp(Util::getFileExt(name).c_str(), Util::tempExtension.c_str()) != 0) ) {
 
 					int64_t size = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 					TTHValue* root = HashManager::getInstance()->getTTH(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));

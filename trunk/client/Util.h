@@ -112,6 +112,7 @@ class Util
 {
 public:
 	static string emptyString;
+	static const string tempExtension;
 
 	static void initialize();
 

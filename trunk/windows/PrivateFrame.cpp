@@ -325,7 +325,7 @@ void PrivateFrame::onEnter()
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), "help") == 0) {
-				addLine("*** " + WinUtil::commands + ", /getlist, /clear, /grant, /close, /favorite");
+				addLine("*** " + WinUtil::commands + ", /getlist, /clear, /grant, /close, /favorite, /mute, /unmute, /pop on|off");
 			} else if(Util::stricmp(s.c_str(), "me") == 0) {
 				sendMessage("/" + s + " " + param);
 			} else if(Util::stricmp(s.c_str(), "mute") == 0) {

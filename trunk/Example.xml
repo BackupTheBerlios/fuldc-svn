@@ -546,6 +546,7 @@
 		<String Name="MenuFulpage">fulDC Homepage</String>
 		<String Name="MenuCloseAllPm">Close all PM windows</String>
 		<String Name="MenuCloseAllDirList">Close all file list windows</String>
+		<String Name="MenuCloseAllSearchframe">Close all search windows</String>
 		<String Name="CustomSound">Play custom sound on PM's</String>
 		<String Name="Muted">Muted</String>
 		<String Name="Unmuted">Unmuted</String>
@@ -563,5 +564,6 @@
 		<String Name="TimeStampsHelpCaption">Time Format</String>
 		<String Name="SettingsTimeStampHelp">Help</String>
 		<String Name="SettingsSbTimeStamps">Time Format</String>
+		<String Name="UserCameOnline">User came online</String>
 	</Strings>
 </Language>

@@ -47,6 +47,7 @@ class SearchFrame : public MDITabChildWindowImpl<SearchFrame>,
 {
 public:
 	static void openWindow(const string& str = Util::emptyString, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
+	static void closeAll();
 	
 	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", 0, 0, COLOR_3DFACE)
 
@@ -439,6 +440,12 @@ private:
 
 	static int columnIndexes[];
 	static int columnSizes[];
+
+	typedef map<HWND, SearchFrame*> FrameMap;
+	typedef FrameMap::iterator FrameIter;
+	typedef pair<HWND, SearchFrame*> FramePair;
+
+	static FrameMap frames;
 
 	void downloadSelected(const string& aDir, bool view = false); 
 	void downloadWholeSelected(const string& aDir);

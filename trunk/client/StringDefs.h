@@ -550,6 +550,7 @@ enum Strings { // @DontAdd
 	MENU_FULPAGE, // "fulDC Homepage"
 	MENU_CLOSE_ALL_PM, // "Close all PM windows"
 	MENU_CLOSE_ALL_DIR_LIST, // "Close all file list windows"
+	MENU_CLOSE_ALL_SEARCHFRAME, // "Close all search windows"
 	CUSTOM_SOUND, // "Play custom sound on PM's"
 	MUTED, // "Muted"
 	UNMUTED, // "Unmuted"
@@ -567,5 +568,6 @@ enum Strings { // @DontAdd
 	TIME_STAMPS_HELP_CAPTION, // "Time Format"
 	SETTINGS_TIME_STAMP_HELP, // "Help"
 	SETTINGS_SB_TIME_STAMPS, // "Time Format"
+	USER_CAME_ONLINE, // "User came online"
 	LAST // @DontAdd
 };

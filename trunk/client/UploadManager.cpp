@@ -286,7 +286,9 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
 	}
 
-	fire(UploadManagerListener::Complete(), u);
+	if(!u->isSet(Upload::FLAG_TTH_LEAVES))
+		fire(UploadManagerListener::Complete(), u);
+
 	removeUpload(u);
 }
 

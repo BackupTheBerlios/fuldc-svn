@@ -76,9 +76,19 @@ public:
 
 	User(const CID& aCID) : cid(aCID), bytesShared(0), client(NULL), favoriteUser(NULL) { }
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL), favoriteUser(NULL) { 
-		if( aNick[0] == '[' ) {
-			shortNick = aNick.substr(aNick.find("]")+1);
-			isp = aNick.substr(1, aNick.find("]")-1);
+		string::size_type pos = aNick.find("[");
+		if( pos != string::npos ) {
+			string::size_type rpos = aNick.rfind("]");
+			dcdebug("rpos=%d aNick.length()=%d", rpos, aNick.length());
+			if( rpos == aNick.length() -1 && rpos > 0 ) // this user has a stupid fucking nick bah ugly hate it
+				rpos = aNick.rfind("]", rpos-1);
+			if(rpos != string::npos) {
+				shortNick = aNick.substr(rpos+1);
+				isp = aNick.substr(pos+1, rpos-1);
+			} else {
+				shortNick = aNick;
+				isp = Util::emptyString;
+			}
 		}else{
 			shortNick = aNick;
 			isp = Util::emptyString;

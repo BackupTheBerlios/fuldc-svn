@@ -42,6 +42,7 @@
 #define IDC_HUBLIST                     131
 #define IDR_MDIDIRECTORY                132
 #define IDC_SERVER                      133
+#define IDC_CLOSE_ALL_SEARCH_FRAME      133
 #define IDD_HUBS                        134
 #define IDC_FILES                       135
 #define IDC_PRIORITY                    136
@@ -398,7 +399,6 @@
 #define IDC_ST_DISPLAYTIME              1276
 #define IDC_ST_MESSAGE_LENGTH           1277
 #define IDC_SB_MINISLOTS                1278
-#define IDC_SB_TIMESTAMPS               1278
 #define IDC_SB_TIME_STAMPS              1278
 #define IDC_ST_MINISLOTS_EXT            1279
 #define IDC_ST_MINISLOTS_SIZE           1280
@@ -459,6 +459,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32818
 #define _APS_NEXT_CONTROL_VALUE         1290
-#define _APS_NEXT_SYMED_VALUE           133
+#define _APS_NEXT_SYMED_VALUE           135
 #endif
 #endif

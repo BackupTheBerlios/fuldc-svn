@@ -80,6 +80,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SHOW_HUB_LOG, onShowHubLog)
 		COMMAND_ID_HANDLER(IDC_OPEN_LOG_DIR, onShowHubLog)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
+		COMMAND_ID_HANDLER(IDC_SEARCH_BY_TTH, onSearch)
 		COMMAND_RANGE_HANDLER(IDC_COPY+1, IDC_COPY+1+COLUMN_LAST, onCopy);
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
@@ -420,6 +421,7 @@ private:
 	StringMap ucParams;
 	StringMap tabParams;
 	bool tabMenuShown;
+	StringList watchList;
 
 	typedef vector<pair<User::Ptr, Speakers> > UpdateList;
 	typedef UpdateList::iterator UpdateIter;

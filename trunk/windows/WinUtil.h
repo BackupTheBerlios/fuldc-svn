@@ -92,7 +92,7 @@ public:
 
 	static void SetIcon(HWND hWnd, string file, bool big = false);
 	static void copyToClipboard(const string & aStr);
-	static void search(string searchTerm, int searchMode);
+	static void search(string searchTerm, int searchMode, bool tth = false);
 	static void AppendSearchMenu(CMenu& menu);
 
 	static string DiskSpaceInfo();

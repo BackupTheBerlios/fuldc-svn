@@ -172,7 +172,7 @@ public:
 	
 private:
 	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
-		created(false), closed(false), muted(false), doPopups(true),
+		created(false), closed(false), muted(false), doPopups(true), offline(false),
 		ctrlMessageContainer("edit", this, PM_MESSAGE_MAP),
 		ctrlClientContainer("edit", this, PM_MESSAGE_MAP) {
 	}
@@ -198,6 +198,7 @@ private:
 	CContainedWindow ctrlMessageContainer;
 
 	bool closed;
+	bool offline;
 	
 	
 
@@ -218,13 +219,19 @@ private:
 		if(user->isOnline()) {
 			SetWindowText(user->getFullNick().c_str());
 			setDisconnected(false);
+			if(offline){
+				addLine("*** " + STRING(USER_CAME_ONLINE));
+				offline = false;
+			}
 		} else {
 			if(user->getClientName() == STRING(OFFLINE)) {
 				SetWindowText(user->getFullNick().c_str());
 			} else {
 				SetWindowText((user->getFullNick() + " [" + STRING(OFFLINE) + "]").c_str());
 			}
-			setDisconnected(true);
+			addLine("*** " + STRING(USER_WENT_OFFLINE));
+            setDisconnected(true);
+			offline = true;
 		}
 	}
 	

@@ -268,7 +268,6 @@ private:
 	u_int32_t nextSearch;
 	
 	static const string USER_LIST_NAME;
-	static const string TEMP_EXTENSION;
 	static string getTempName(const string& /*aFileName*/, const TTHValue* /*aRoot*/);
 
 	/** Sanity check for the target filename */

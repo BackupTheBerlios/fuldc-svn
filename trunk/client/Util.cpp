@@ -51,6 +51,7 @@ char Util::lower[256];
 int8_t Util::cmp[256][256];
 int8_t Util::cmpi[256][256];
 Util::CountryList Util::countries;
+const string Util::tempExtension = ".dctmp";
 
 static void sgenrand(unsigned long seed);
 

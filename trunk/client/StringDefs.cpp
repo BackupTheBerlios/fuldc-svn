@@ -547,6 +547,7 @@ string ResourceManager::strings[] = {
 "fulDC Homepage", 
 "Close all PM windows", 
 "Close all file list windows", 
+"Close all search windows", 
 "Play custom sound on PM's", 
 "Muted", 
 "Unmuted", 
@@ -564,6 +565,7 @@ string ResourceManager::strings[] = {
 "Time Format", 
 "Help", 
 "Time Format", 
+"User came online", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1111,6 +1113,7 @@ string ResourceManager::names[] = {
 "MenuFulpage", 
 "MenuCloseAllPm", 
 "MenuCloseAllDirList", 
+"MenuCloseAllSearchframe", 
 "CustomSound", 
 "Muted", 
 "Unmuted", 
@@ -1128,4 +1131,5 @@ string ResourceManager::names[] = {
 "TimeStampsHelpCaption", 
 "SettingsTimeStampHelp", 
 "SettingsSbTimeStamps", 
+"UserCameOnline", 
 };
