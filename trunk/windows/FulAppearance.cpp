@@ -34,23 +34,6 @@ void FulAppearancePage::write() {
 	PropPage::write((HWND)*this, items);
 }
 
-LRESULT FulAppearancePage::onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CColorDialog dlg(SETTING(POPUP_TEXTCOLOR), CC_FULLOPEN);
-	if(dlg.DoModal() == IDOK)
-		SettingsManager::getInstance()->set(SettingsManager::POPUP_TEXTCOLOR, (int)dlg.GetColor());
-	return 0;
-}
-
-LRESULT FulAppearancePage::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	LOGFONT font;  
-	WinUtil::decodeFont(Text::toT(SETTING(POPUP_FONT)), font);
-	CFontDialog dlg(&font, CF_EFFECTS | CF_SCREENFONTS);
-	if(dlg.DoModal() == IDOK){
-		settings->set(SettingsManager::POPUP_FONT, Text::fromT(WinUtil::encodeFont(font)));
-	}
-	return 0;
-}
-
 LRESULT FulAppearancePage::onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	MessageBox(CTSTRING(HELP_TIME_STAMPS), CTSTRING(TIME_STAMPS_HELP_CAPTION), MB_OK | MB_ICONINFORMATION);
 

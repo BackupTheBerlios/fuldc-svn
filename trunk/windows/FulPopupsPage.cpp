@@ -5,6 +5,7 @@
 #include "../client/SettingsManager.h"
 
 #include "FulPopupsPage.h"
+#include "WinUtil.h"
 
 PropPage::TextItem FulPopupsPage::texts[] = {
 	{ IDC_POPUP_AWAY,			ResourceManager::POPUP_AWAY					},
@@ -38,6 +39,23 @@ LRESULT FulPopupsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	PropPage::translate((HWND)(*this), texts);
 
 	return TRUE;
+}
+
+LRESULT FulPopupsPage::onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CColorDialog dlg(SETTING(POPUP_TEXTCOLOR), CC_FULLOPEN);
+	if(dlg.DoModal() == IDOK)
+		SettingsManager::getInstance()->set(SettingsManager::POPUP_TEXTCOLOR, (int)dlg.GetColor());
+	return 0;
+}
+
+LRESULT FulPopupsPage::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	LOGFONT font;  
+	WinUtil::decodeFont(Text::toT(SETTING(POPUP_FONT)), font);
+	CFontDialog dlg(&font, CF_EFFECTS | CF_SCREENFONTS);
+	if(dlg.DoModal() == IDOK){
+		settings->set(SettingsManager::POPUP_FONT, Text::fromT(WinUtil::encodeFont(font)));
+	}
+	return 0;
 }
 
 void FulPopupsPage::write() {

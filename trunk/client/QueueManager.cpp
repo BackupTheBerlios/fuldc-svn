@@ -1251,7 +1251,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 					users = qi->countOnlineUsers();
 
 					if( regexp.match(sr->getFile(), sr->getFile().length()-4) > 0 )
-						addAlternates(sr->getFile(), sr->getUser());
+						addAlternates(sr->getFile(), sr->getUser(), false);
 				} catch(const Exception&) {
 					// ...
 				}
@@ -1323,7 +1323,7 @@ void QueueManager::checkNotify(){
 	}
 }
 
-bool QueueManager::addAlternates(string aFile, User::Ptr aUser) {
+bool QueueManager::addAlternates(string aFile, User::Ptr aUser, bool utf8) {
 	string path, file;
 	string::size_type pos, pos2;
 	bool wantConnection = false;
@@ -1349,7 +1349,7 @@ bool QueueManager::addAlternates(string aFile, User::Ptr aUser) {
 			if( i->first->find(file) != string::npos) {
 				string file = path + i->first->substr(i->first->find_last_of("\\"));
 				if(!i->second->isSource(aUser, file)) {
-					wantConnection = addSource(i->second, file, aUser, false, i->second->isSet(QueueItem::FLAG_SOURCE_UTF8));
+					wantConnection = addSource(i->second, file, aUser, 0, utf8);
 				}	
 			}
 		}

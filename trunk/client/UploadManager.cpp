@@ -283,6 +283,10 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		params["actualsizeshort"] = Util::formatBytes(u->getActual());
 		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
+		TTHValue *hash = HashManager::getInstance()->getTTH(u->getFileName());
+		if(hash != NULL) {
+			params["tth"] = hash->toBase32();
+		}
 		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
 	}
 

@@ -40,8 +40,11 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlSearches.SetTextColor(WinUtil::textColor);
 
 	ctrlSearches.AddColumn(CTSTRING(SEARCH_STRING), COLUMN_STRING, COLUMN_STRING);
-	ctrlSearches.AddColumn(CTSTRING(COUNT), COLUMN_COUNT, COLUMN_COUNT);
-	ctrlSearches.AddColumn(CTSTRING(TIME), COLUMN_TIME, COLUMN_TIME);
+	ctrlSearches.AddColumn(CTSTRING(COUNT), COLUMN_COUNT, COLUMN_COUNT,
+		LVCF_FMT | LVCF_TEXT | LVCF_WIDTH, LVCFMT_RIGHT);
+
+	ctrlSearches.AddColumn(CTSTRING(TIME), COLUMN_TIME, COLUMN_TIME,
+		LVCF_FMT | LVCF_TEXT | LVCF_WIDTH, LVCFMT_RIGHT);
 
 	ctrlSearches.setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
 
@@ -185,7 +188,10 @@ LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 }
 
 LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	SearchFrame::openWindow(searchString);
+	if(Util::strnicmp(searchString.c_str(), _T("TTH:"), 4) == 0 && searchString.size() > 4)
+		SearchFrame::openWindow(searchString.substr(4), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+	else
+		SearchFrame::openWindow(searchString);
 	return 0;
 };
 

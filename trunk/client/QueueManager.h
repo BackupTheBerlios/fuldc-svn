@@ -181,7 +181,7 @@ private:
 	PME regexp;
 	deque< QueueItem::Ptr > searchQueue;
 	StringList notifyList;
-	bool addAlternates(string, User::Ptr);
+	bool addAlternates(string, User::Ptr, bool utf8);
 	void onTimerSearch();
 	void checkNotify();
 

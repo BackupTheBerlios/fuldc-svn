@@ -401,11 +401,6 @@ public:
 	static string toString(u_int16_t val) {
 		return toString((u_int32_t)val);
 	}
-	static string toString(int val) {
-		char buf[16];
-		sprintf(buf, "%d", val);
-		return buf;
-	}
 	static string toString(double val) {
 		char buf[16];
 		sprintf(buf, "%0.2f", val);

@@ -497,8 +497,9 @@ int HashManager::Hasher::run() {
 				tth = &fastTTH;
 				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size)) {
 					tth = &slowTTH;
-					u_int32_t lastRead = GET_TICK();
 #endif
+					u_int32_t lastRead = GET_TICK();
+
 					do {
 						size_t bufSize = BUF_SIZE;
 						if(SETTING(MAX_HASH_SPEED) > 0) {

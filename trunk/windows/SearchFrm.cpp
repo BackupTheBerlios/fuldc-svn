@@ -776,6 +776,10 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		ucParams["file"] = sr->getFile();
 		ucParams["filesize"] = Util::toString(sr->getSize());
 		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());
+		TTHValue *hash = sr->getTTH();
+		if(hash != NULL) {
+			ucParams["tth"] = hash->toBase32();
+		}
 
 		StringMap tmp = ucParams;
 		sr->getUser()->getParams(tmp);

@@ -38,6 +38,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fnmatch.h>
 #endif
 
 #include <limits>
@@ -1478,7 +1479,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	Directory::File::Iter lastFileIter = dir->files.begin();
 	while (xml->findChild("File")) {
 		string name = xml->getChildAttrib("Name");
-		u_int64_t size = xml->getIntChildAttrib("Size");
+		u_int64_t size = xml->getLongLongChildAttrib("Size");
 
 #ifdef USE_TTH
 		if( aPath[ aPath.length() -1 ] == PATH_SEPARATOR )
