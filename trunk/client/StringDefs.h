@@ -572,6 +572,7 @@ enum Strings { // @DontAdd
 	SETTINGS_SELECT_SOUND, // "Select Sound File"
 	SETTINGS_POPUP, // "Display Popup"
 	SETTINGS_PLAY_SOUND, // "Play Sound"
+	SETTINGS_FLASH_WINDOW, // "Flash Window"
 	SETTINGS_INCLUDE_NICK, // "Include Nick"
 	SETTINGS_WHOLE_LINE, // "Whole Line"
 	SETTINGS_CASE_SENSITIVE, // "Case Sensitive"

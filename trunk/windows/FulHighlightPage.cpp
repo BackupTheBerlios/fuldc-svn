@@ -30,6 +30,7 @@ PropPage::TextItem FulHighlightPage::texts[] = {
 	{ IDC_STRIKEOUT,	 ResourceManager::STRIKEOUT					},
 	{ IDC_POPUP,		 ResourceManager::SETTINGS_POPUP			},
 	{ IDC_SOUND,		 ResourceManager::SETTINGS_PLAY_SOUND		},
+	{ IDC_FLASHWINDOW,	 ResourceManager::SETTINGS_FLASH_WINDOW		},
 	{ IDC_INCLUDENICK,	 ResourceManager::SETTINGS_INCLUDE_NICK		},
 	{ IDC_WHOLELINE,	 ResourceManager::SETTINGS_WHOLE_LINE		},
 	{ IDC_CASESENSITIVE, ResourceManager::SETTINGS_CASE_SENSITIVE	},
@@ -207,6 +208,7 @@ void FulHighlightPage::clear() {
 	CheckDlgButton(IDC_TABCOLOR,		BST_UNCHECKED);
 	CheckDlgButton(IDC_SOUND,			BST_UNCHECKED);
 	CheckDlgButton(IDC_LASTLOG,			BST_UNCHECKED);
+	CheckDlgButton(IDC_FLASHWINDOW,		BST_UNCHECKED);
 
 	ctrlMatchType.SetCurSel(1);
 
@@ -243,6 +245,7 @@ void FulHighlightPage::getValues(ColorSettings* cs){
 	cs->setTab(			  IsDlgButtonChecked(IDC_TABCOLOR)		== BST_CHECKED );
 	cs->setPlaySound(	  IsDlgButtonChecked(IDC_SOUND)			== BST_CHECKED );
 	cs->setLog(			  IsDlgButtonChecked(IDC_LASTLOG)		== BST_CHECKED );
+	cs->setFlashWindow(	  IsDlgButtonChecked(IDC_FLASHWINDOW)	== BST_CHECKED );
 	cs->setHasBgColor(	  IsDlgButtonChecked(IDC_HAS_BG_COLOR)	== BST_CHECKED );
     cs->setHasFgColor(	  IsDlgButtonChecked(IDC_HAS_FG_COLOR)	== BST_CHECKED );
 
@@ -282,6 +285,7 @@ LRESULT FulHighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& 
 	CheckDlgButton(IDC_TABCOLOR		, cs->getTab()			 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_SOUND		, cs->getPlaySound()	 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_LASTLOG		, cs->getLog()			 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_FLASHWINDOW  , cs->getFlashWindow()   ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_HAS_BG_COLOR , cs->getHasBgColor()	 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_HAS_FG_COLOR , cs->getHasFgColor()	 ? BST_CHECKED : BST_UNCHECKED);
 

@@ -103,7 +103,7 @@ public:
 	static tstring Help(const tstring& command);
 	static tstring Uptime();
 	static tstring UselessInfo();
-	
+
 	static void addInitalDir(const User::Ptr& user, string dir) {
 		// Clear out previos initial dirs, just in case
 		getInitialDir(user);

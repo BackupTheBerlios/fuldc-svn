@@ -22,13 +22,14 @@ public:
 	GETSET(bool, bItalic, Italic);
 	GETSET(bool, bStrikeout, Strikeout);
 	GETSET(bool, bLastLog, Log);
+	GETSET(bool, bFlashWindow, FlashWindow);
 	GETSET(int,  iMatchType, MatchType);
 	GETSET(int,  iBgColor, BgColor);
 	GETSET(int,  iFgColor, FgColor);
 	GETSET(bool, bHasBgColor, HasBgColor);
 	GETSET(bool, bHasFgColor, HasFgColor);
 	GETSET(tstring, strSoundFile, SoundFile);
-	
+    	
 	void setMatch(tstring match){
 		if( match.compare(_T("$ts$")) == 0){
 			bTimestamps = true;

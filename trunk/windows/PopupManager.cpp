@@ -46,14 +46,10 @@ void PopupManager::Show(const tstring& aMsg ) {
 	PopupWnd *p = new PopupWnd(aMsg, rc, hBitmap);
 			
 	//move the window to the top of the z-order and display it
-	p->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-	p->ShowWindow(SW_SHOWNA);
-	
-		
+	p->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+
 	//restore focus to window
 	::SetFocus(gotFocus);
-
-	
 	
 	//increase offset so we know where to place the next popup
 	offset = offset + height;

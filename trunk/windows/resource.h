@@ -393,7 +393,6 @@
 #define IDC_WEB_SHORTCUTS_CLEAN         1229
 #define IDC_MESSAGE                     1230
 #define IDC_REFRESH_SHARE               1230
-#define IDC_STRIPISP2                   1230
 #define IDC_LOGMAINCHAT                 1230
 #define IDC_DISPLAYTIME                 1231
 #define IDC_FUL_ADVANCED_BOOLEANS       1234
@@ -414,6 +413,8 @@
 #define IDC_BTN_FONT                    1246
 #define IDC_FREE_SLOTS_EXTENSIONS       1247
 #define IDC_MINISLOTS_EXTENSIONS        1247
+#define IDC_LASTLOG2                    1247
+#define IDC_FLASHWINDOW                 1247
 #define IDC_FREE_SLOTS_SIZE             1249
 #define IDC_MINISLOTS_SIZE              1249
 #define IDC_HAS_BG_COLOR                1250

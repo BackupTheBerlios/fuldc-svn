@@ -380,6 +380,9 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 		matchedSound = true;
 		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 	}
+
+	if(cs->getFlashWindow())
+		FlashWindow();
 					
 	if( cs->getTimestamps() || cs->getUsers() )
 		return tstring::npos;
@@ -443,6 +446,9 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 		matchedSound = true;
 		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 	}
+
+	if(cs->getFlashWindow())
+		FlashWindow();
 	
 	return tstring::npos;
 }
@@ -695,4 +701,17 @@ BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 	WinUtil::AppendSearchMenu(searchMenu);
 	
 	return menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, hWnd );
+}
+
+void CFulEditCtrl::FlashWindow() {
+	DWORD flashCount;
+	SystemParametersInfo(SPI_GETFOREGROUNDFLASHCOUNT, 0, &flashCount, 0);
+	FLASHWINFO flash;
+	flash.cbSize = sizeof(FLASHWINFO);
+	flash.dwFlags = FLASHW_ALL;
+	flash.uCount = flashCount;
+	flash.hwnd = WinUtil::mainWnd;
+	flash.dwTimeout = 0;
+
+	FlashWindowEx(&flash);
 }

@@ -1265,6 +1265,7 @@ int WinUtil::checkParam( const tstring& param ){
 
 	return -1;
 }
+
 /**
  * @file
  * $Id: WinUtil.cpp,v 1.21 2004/02/21 15:43:54 trem Exp $

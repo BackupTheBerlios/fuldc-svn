@@ -491,47 +491,49 @@ BEGIN
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
                     WS_BORDER | WS_TABSTOP,7,7,197,98
     CONTROL         "Bold",IDC_BOLD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,
-                    122,29,10
+                    119,29,10
     CONTROL         "Italic",IDC_ITALIC,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,14,134,31,10
+                    WS_TABSTOP,14,131,31,10
     CONTROL         "Underline",IDC_UNDERLINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,14,146,46,10
+                    WS_TABSTOP,14,143,46,10
     CONTROL         "Strikeout",IDC_STRIKEOUT,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,14,158,45,10
+                    WS_TABSTOP,14,155,45,10
     CONTROL         "Display Popup",IDC_POPUP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,14,170,61,10
+                    WS_TABSTOP,14,167,61,10
     CONTROL         "Play Sound",IDC_SOUND,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,182,51,10
+                    WS_TABSTOP,86,179,51,10
     CONTROL         "Include Nick",IDC_INCLUDENICK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,122,54,10
+                    WS_TABSTOP,86,119,54,10
     CONTROL         "Whole Line",IDC_WHOLELINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,134,54,10
+                    WS_TABSTOP,86,131,54,10
     CONTROL         "Case Sensitive",IDC_CASESENSITIVE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,86,146,68,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,86,143,68,10
     CONTROL         "Entire word",IDC_WHOLEWORD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,158,54,10
+                    WS_TABSTOP,86,155,54,10
     CONTROL         "Change Tabcolor",IDC_TABCOLOR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,86,170,70,10
-    LTEXT           "Match Type",IDC_ST_MATCH_TYPE,179,115,58,8
-    COMBOBOX        IDC_MATCHTYPE,190,126,66,30,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP,86,167,70,10
+    LTEXT           "Match Type",IDC_ST_MATCH_TYPE,191,112,58,8
+    COMBOBOX        IDC_MATCHTYPE,190,123,66,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Background Color",IDC_BGCOLOR,190,143,66,14,WS_DISABLED
-    PUSHBUTTON      "Text Color",IDC_FGCOLOR,190,161,66,14,WS_DISABLED
-    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,190,179,66,14,
+    PUSHBUTTON      "Background Color",IDC_BGCOLOR,190,140,66,14,WS_DISABLED
+    PUSHBUTTON      "Text Color",IDC_FGCOLOR,190,158,66,14,WS_DISABLED
+    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,190,176,66,14,
                     WS_DISABLED
-    EDITTEXT        IDC_STRING,14,197,242,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STRING,14,204,242,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Add",IDC_ADD,209,7,59,14
     PUSHBUTTON      "Update",IDC_UPDATE,209,27,59,14
     PUSHBUTTON      "Delete",IDC_DELETE,209,48,59,14
     PUSHBUTTON      "Move Up",IDC_MOVEUP,209,69,59,14
     PUSHBUTTON      "Move Down",IDC_MOVEDOWN,209,90,59,14
-    GROUPBOX        "Settings",IDC_SB_SETTINGS,7,109,261,109
+    GROUPBOX        "Settings",IDC_SB_SETTINGS,7,105,261,119
     CONTROL         "",IDC_HAS_BG_COLOR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,173,146,10,10
+                    WS_TABSTOP,173,143,10,10
     CONTROL         "",IDC_HAS_FG_COLOR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,173,164,10,10
+                    WS_TABSTOP,173,161,10,10
     CONTROL         "LastLog",IDC_LASTLOG,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,14,182,41,10
+                    WS_TABSTOP,14,179,41,10
+    CONTROL         "Flash Window",IDC_FLASHWINDOW,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,14,191,60,10
 END
 
 IDD_FULDOWNLOADPAGE DIALOGEX 0, 0, 275, 225
@@ -803,14 +805,14 @@ BEGIN
         VERTGUIDE, 14
         VERTGUIDE, 86
         VERTGUIDE, 183
+        VERTGUIDE, 191
         VERTGUIDE, 209
         VERTGUIDE, 256
         TOPMARGIN, 7
-        BOTTOMMARGIN, 218
+        BOTTOMMARGIN, 224
         HORZGUIDE, 7
         HORZGUIDE, 105
-        HORZGUIDE, 116
-        HORZGUIDE, 195
+        HORZGUIDE, 204
     END
 
     IDD_FULDOWNLOADPAGE, DIALOG

@@ -568,6 +568,7 @@
 		<String Name="SettingsSelectSound">Select Sound File</String>
 		<String Name="SettingsPopup">Display Popup</String>
 		<String Name="SettingsPlaySound">Play Sound</String>
+		<String Name="SettingsFlashWindow">Flash Window</String>
 		<String Name="SettingsIncludeNick">Include Nick</String>
 		<String Name="SettingsWholeLine">Whole Line</String>
 		<String Name="SettingsCaseSensitive">Case Sensitive</String>

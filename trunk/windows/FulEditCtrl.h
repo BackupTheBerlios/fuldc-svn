@@ -38,9 +38,12 @@ public:
 	};
 
 	bool	AddLine(const tstring & line, bool timeStamps = false);
+	
 	void	SetTextColor( COLORREF color );
 	void	ScrollToEnd();
 	void	ScrollToBeginning();
+	void	FlashWindow();
+
 	int		TextUnderCursor(POINT p, tstring& x);
 	bool	LastSeen(tstring & nick);
 	BOOL	ShowMenu(HWND hWnd, POINT &pt);
