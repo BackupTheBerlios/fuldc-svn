@@ -55,10 +55,10 @@ void User::updated(User::Ptr& aUser) {
 	}
 }
 
-const string& User::getClientName(bool topic) const {
+const string& User::getClientName() const {
 	RLock l(cs);
 	if(client) {
-		return client->getName(topic);
+		return client->getName();
 	} else if(!getLastHubName().empty()) {
 		return getLastHubName();
 	} else {
@@ -118,14 +118,6 @@ void User::clientMessage(const string& aMsg) {
 	}
 }
 
-void User::clientPM(const string& aTo, const string& aMsg) {
-	RLock l(cs);
-	if(client) {
-		//client->privateMessage(aTo, aMsg);
-		dcassert(0);
-	}
-}
-
 void User::setClient(Client* aClient) { 
 	WLock l(cs); 
 	client = aClient; 
@@ -136,7 +128,7 @@ void User::setClient(Client* aClient) {
 	}
 	else {
 		setLastHubAddress(aClient->getIpPort());
-		setLastHubName(aClient->getName(BOOLSETTING(REMOVE_TOPIC)));
+		setLastHubName(aClient->getName());
 		setFlag(ONLINE);
 		unsetFlag(QUIT_HUB);
 	}

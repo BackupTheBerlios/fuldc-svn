@@ -178,8 +178,8 @@ string::size_type SimpleXMLReader::loadAttribs(const string& name, const string&
 		i = tmp.find_first_not_of(' ', y + 1);
 		if(tmp[i] == '/' || tmp[i] == '>') {
 			return i;
+		}
 	}
-}
 }
 
 string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, string::size_type start, bool inTag) throw(SimpleXMLException) {
@@ -187,7 +187,7 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 	string::size_type j;
 
 	bool hasChildren = false;
-	
+
 	for(;;) {
 		if((j = tmp.find('<', i)) == string::npos) {
 			if(inTag) {
@@ -244,37 +244,33 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 		if((j = tmp.find_first_of(" />", i)) == string::npos) {
 			throw SimpleXMLException("Missing '>' in " + n);
 		}
-		
+
 		string name = tmp.substr(i, j-i);
 		hasChildren = true;
 		if(tmp[j] == ' ') {
 			if((j = tmp.find_first_not_of(' ', j+1)) == string::npos) {
-			throw SimpleXMLException("Missing '>' in " + name);
-		}
+				throw SimpleXMLException("Missing '>' in " + name);
+			}
 		}		
-		
+
 		attribs.clear();
 		if(tmp[j] != '/' && tmp[j] != '>') {
 			// We have attribs...
 			j = loadAttribs(name, tmp, j);
 		}
-		
-		try{
-			if(tmp[j] == '>') {
-				// This is a real tag with data etc...
-				cb->startTag(name, attribs, false);
-				j = fromXML(tmp, name, j+1, true);
-				cb->endTag(name, data);
-			} else {
-				// A simple tag (<xxx/>
-				cb->startTag(name, attribs, true);
-				j++;
-			}
-			i = j;
-		} catch( SimpleXMLException )	{
-			return string::npos;
+
+		if(tmp[j] == '>') {
+			// This is a real tag with data etc...
+			cb->startTag(name, attribs, false);
+			j = fromXML(tmp, name, j+1, true);
+			cb->endTag(name, data);
+		} else {
+			// A simple tag (<xxx/>
+			cb->startTag(name, attribs, true);
+			j++;
 		}
-	}
+		i = j;
+	}	
 }
 
 void SimpleXML::addTag(const string& aName, const string& aData /* = "" */) throw(SimpleXMLException) {
@@ -283,7 +279,7 @@ void SimpleXML::addTag(const string& aName, const string& aData /* = "" */) thro
 	}
 
 	if(current == &root && !current->children.empty()) {
-			throw SimpleXMLException("Only one root tag allowed");
+		throw SimpleXMLException("Only one root tag allowed");
 	} else {
 		current->children.push_back(new Tag(aName, aData, current));
 		currentChild = current->children.end() - 1;

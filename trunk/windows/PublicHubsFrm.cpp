@@ -22,6 +22,7 @@
 
 #include "PublicHubsFrm.h"
 #include "HubFrame.h"
+#include "WinUtil.h"
 
 #include "../client/Client.h"
 #include "../client/StringTokenizer.h"
@@ -87,7 +88,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		BS_GROUPBOX, WS_EX_TRANSPARENT);
 	ctrlAddress.SetWindowText(CSTRING(MANUAL_ADDRESS));
 	ctrlAddress.SetFont(WinUtil::systemFont);
-		
+	
 	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
 	filterContainer.SubclassWindow(ctrlFilter.m_hWnd);
@@ -112,6 +113,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
 	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CSTRING(ADD_TO_FAVORITES));
+	hubsMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CSTRING(COPY_HUB));
 	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 	
 	m_hMenu = WinUtil::mainMenu;
@@ -397,6 +399,16 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	}
 	
 	return FALSE; 
+}
+
+LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlHubs.GetSelectedCount() == 1) {
+		char buf[256];
+		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
+		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
+		WinUtil::copyToClipboard(buf);
+	}
+	return 0;
 }
 
 /**

@@ -37,7 +37,7 @@ public:
 	GETSET(int,  iFgColor, FgColor);
 	GETSET(bool, bHasBgColor, HasBgColor);
 	GETSET(bool, bHasFgColor, HasFgColor);
-	GETSETREF(string, strSoundFile, SoundFile);
+	GETSET(string, strSoundFile, SoundFile);
 
 	
 

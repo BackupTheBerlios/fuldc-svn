@@ -79,8 +79,8 @@ public:
 };
 
 class IOStream : public InputStream, public OutputStream {
-	};
-	
+};
+
 class File : public IOStream {
 public:
 	enum {
@@ -378,10 +378,10 @@ private:
 template<bool managed>
 class LimitedInputStream : public InputStream {
 public:
-	LimitedInputStream(InputStream* is, int aMaxBytes) : s(is), maxBytes(aMaxBytes) {
+	LimitedInputStream(InputStream* is, int64_t aMaxBytes) : s(is), maxBytes(aMaxBytes) {
 	}
 	virtual ~LimitedInputStream() { if(managed) delete s; }
-		
+
 	size_t read(void* buf, size_t& len) throw(FileException) {
 		dcassert(maxBytes >= 0);
 		len = (size_t)min(maxBytes, (int64_t)len);
@@ -391,7 +391,7 @@ public:
 		maxBytes -= x;
 		return x;
 	}
-	
+
 private:
 	InputStream* s;
 	int64_t maxBytes;
@@ -406,18 +406,18 @@ public:
 	virtual ~BufferedOutputStream() { if(managed) delete s; delete buf; }
 
 	virtual size_t flush() throw(Exception) {
-		size_t x = 0;
 		if(pos > 0)
-			x = s->write(buf, pos);
-		return x + s->flush();
+			s->write(buf, pos);
+		return s->flush();
 	}
 
 	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
 		u_int8_t* b = (u_int8_t*)wbuf;
-		size_t written = 0;
+		size_t l2 = len;
 		while(len > 0) {
 			if(pos == 0 && len >= bufSize) {
-				return written + s->write(b, len);
+				s->write(b, len);
+				return l2;
 			} else {
 				size_t n = min(bufSize - pos, len);
 				memcpy(buf + pos, b, n);
@@ -425,12 +425,12 @@ public:
 				pos += n;
 				len -= n;
 				if(pos == bufSize) {
-					written += s->write(buf, bufSize);
-			pos = 0;
+					s->write(buf, bufSize);
+					pos = 0;
+				}
+			}
 		}
-	}
-		}
-		return written;
+		return l2;
 	}
 private:
 	OutputStream* s;

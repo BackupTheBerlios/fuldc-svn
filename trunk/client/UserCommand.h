@@ -66,9 +66,9 @@ public:
 	GETSET(int, id, Id);
 	GETSET(int, type, Type);
 	GETSET(int, ctx, Ctx);
-	GETSETREF(string, name, Name);
-	GETSETREF(string, command, Command);
-	GETSETREF(string, hub, Hub);
+	GETSET(string, name, Name);
+	GETSET(string, command, Command);
+	GETSET(string, hub, Hub);
 };
 
 #endif

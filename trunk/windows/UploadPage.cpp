@@ -103,11 +103,11 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 LRESULT UploadPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/){
 	HDROP drop = (HDROP)wParam;
 	TCHAR buf[MAX_PATH];
-	int nrFiles;
-
-	nrFiles = DragQueryFile(drop, -1, NULL, 0);
-
-	for(int i = 0; i < nrFiles; ++i){
+	UINT nrFiles;
+	
+	nrFiles = DragQueryFile(drop, (UINT)-1, NULL, 0);
+	
+	for(UINT i = 0; i < nrFiles; ++i){
 		if(DragQueryFile(drop, i, buf, MAX_PATH)){
 			if(PathIsDirectory(buf))
 				addDirectory(buf);
@@ -118,6 +118,7 @@ LRESULT UploadPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
 	return 0;
 }
+
 
 void UploadPage::write()
 {
@@ -225,7 +226,7 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-void UploadPage::addDirectory(string path) {
+void UploadPage::addDirectory(string path){
 	try {
 		// Remove trailing \ if exists
 		if (path[path.size() - 1] == '\\') {

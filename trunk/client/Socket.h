@@ -223,7 +223,7 @@ public:
 
 	string getRemoteIp() const;
 
-	GETSETREF(string, ip, Ip);
+	GETSET(string, ip, Ip);
 
 	GETSET(bool, noproxy, Noproxy);
 protected:

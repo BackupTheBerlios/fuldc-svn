@@ -62,8 +62,8 @@ public:
 	User::Ptr& getUser() { return user; };
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	
-	GETSETREF(string, name, Name);
-	GETSETREF(string, target, Target);
+	GETSET(string, name, Name);
+	GETSET(string, target, Target);
 	GETSET(QueueItem::Priority, priority, Priority);
 private:
 	User::Ptr user;
@@ -73,7 +73,7 @@ class ConnectionQueueItem;
 class QueueLoader;
 
 class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, 
-	private SearchManagerListener, private ClientManagerListener 
+	private SearchManagerListener, private ClientManagerListener
 {
 public:
 	
@@ -140,7 +140,7 @@ public:
 	void saveQueue() throw();
 	
 	GETSET(u_int32_t, lastSave, LastSave);
-	GETSETREF(string, queueFile, QueueFile);
+	GETSET(string, queueFile, QueueFile);
 
 	void addNotification(const string& aNotify){
 		notifyList.push_back(aNotify);
@@ -289,14 +289,14 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
-	void onTimerMinute(u_int32_t aTick);
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 	
 	// SearchManagerListener
-	virtual void onAction(SearchManagerListener::Types, SearchResult*) throw();
+	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
 };
 
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)

@@ -59,7 +59,7 @@ public:
 		fileSize(aFileSize), timeStamp(aTimeStamp), blockSize(aBlockSize) 
 	{
 		size_t n = calcBlocks(aFileSize, aBlockSize);
-		for(int i = 0; i < n; i++)
+		for(size_t i = 0; i < n; i++)
 			leaves.push_back(MerkleValue(aData + i * Hasher::HASH_SIZE));
 
 		calcRoot();

@@ -36,7 +36,7 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, "
 "sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, "
 "distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, "
-"theparanoidone, gadget, torgny nyblom, tremor. Keep it coming!";
+"theparanoidone, gadget, torgny nyblom, tremor, joakim tosteberg. Keep it coming!";
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
 {
@@ -96,39 +96,29 @@ private:
 
 	CAboutDlg(const CAboutDlg&) { dcassert(0); };
 	
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
-		switch(type) {
-		case HttpConnectionListener::DATA:
-			downBuf.append((char*)buf, len); break;
-		default:
-			dcassert(0);
-		}
+	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
+		downBuf.append((char*)buf, len);
 	}
 
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
-		switch(type) {
-		case HttpConnectionListener::COMPLETE:
-			c.removeListener(this);
-			if(!downBuf.empty()) {
-				SimpleXML xml;
-				xml.fromXML(downBuf);
-				if(xml.findChild("DCUpdate")) {
-					xml.stepIn();
-					if(xml.findChild("Version")) {
-						string* x = new string(xml.getChildData());
-						PostMessage(WM_VERSIONDATA, (WPARAM) x);
-					}
+	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, const string&) throw() {
+		if(!downBuf.empty()) {
+			SimpleXML xml;
+			xml.fromXML(downBuf);
+			if(xml.findChild("DCUpdate")) {
+				xml.stepIn();
+				if(xml.findChild("Version")) {
+					string* x = new string(xml.getChildData());
+					PostMessage(WM_VERSIONDATA, (WPARAM) x);
 				}
 			}
-			break;
-		case HttpConnectionListener::FAILED: 
-			c.removeListener(this);
-			{
-				string* x = new string(aLine);
-				PostMessage(WM_VERSIONDATA, (WPARAM) x);
-			}
-			break;
 		}
+		conn->removeListener(this);
+	}
+
+	virtual void on(HttpConnectionListener::Failed, HttpConnection* conn, const string& aLine) throw() {
+		string* x = new string(aLine);
+		PostMessage(WM_VERSIONDATA, (WPARAM) x);
+		conn->removeListener(this);
 	}
 
 	string downBuf;

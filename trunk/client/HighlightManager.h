@@ -33,7 +33,8 @@ private:
 	void load(SimpleXML *aXml);
 	void save(SimpleXML *aXml);
 
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw();
+	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw();
+	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw();
 };
 
 #endif

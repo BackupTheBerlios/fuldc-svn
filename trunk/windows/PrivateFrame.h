@@ -227,7 +227,9 @@ private:
 	}
 	
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr&) throw() {
+		PostMessage(WM_SPEAKER, USER_UPDATED);
+	}
 };
 
 #endif // !defined(AFX_PRIVATEFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)

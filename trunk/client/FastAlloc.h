@@ -43,7 +43,7 @@ struct FastAlloc : public FastAllocBase {
 	}
 
 	// Avoid hiding placement new that's needed by the stl container...
-	static void* operator new(size_t s, void* m) {
+	static void* operator new(size_t, void* m) {
 		return m;
 	}
 	// ...and the warning about missing placement delete...

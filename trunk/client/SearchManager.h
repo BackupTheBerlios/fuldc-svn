@@ -65,6 +65,7 @@ public:
 
 	string getFileName() const;
 	string toSR() const;
+	string toRES() const;
 
 	User::Ptr& getUser() { return user; }
 	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }

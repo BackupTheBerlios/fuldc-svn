@@ -55,7 +55,7 @@ const string SettingsManager::settingTags[] =
 	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
-	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands",
+	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands", "MaxHashSpeed",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"RotateLogs", "PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -162,6 +162,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH_EXACT, true);
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
+	setDefault(MAX_HASH_SPEED, 0);
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
 	setDefault(CHATBUFFERSIZE, 25000);
@@ -286,10 +287,7 @@ void SettingsManager::load(string const& aFileName)
 			
 			xml.stepOut();
 		}
-
-		
-				
-		fire(SettingsManagerListener::LOAD, &xml);
+		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();
 
@@ -299,7 +297,7 @@ void SettingsManager::load(string const& aFileName)
 }
 
 void SettingsManager::save(string const& aFileName) {
-	
+
 	SimpleXML xml;
 	xml.addTag("DCPlusPlus");
 	xml.stepIn();
@@ -338,10 +336,8 @@ void SettingsManager::save(string const& aFileName) {
 		}
 	}
 	xml.stepOut();
-
 	
-	
-	fire(SettingsManagerListener::SAVE, &xml);
+	fire(SettingsManagerListener::Save(), &xml);
 
 	try {
 		File ff(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);

@@ -66,7 +66,7 @@ public:
 			return getParent()->getAdls();
 		}
 
-		GETSETREF(string, name, Name);
+		GETSET(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
 		GETSET(TTHValue*, tthRoot, TTH);
@@ -107,7 +107,7 @@ public:
 			return x;
 		}
 
-		GETSETREF(string, name, Name);
+		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
 		GETSET(bool, adls, Adls);
 
@@ -120,7 +120,7 @@ public:
 	public:
 		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true), fullPath(aFullPath) { };
 
-		GETSETREF(string, fullPath, FullPath);
+		GETSET(string, fullPath, FullPath);
 	};
 
 	DirectoryListing(const User::Ptr& aUser) : user(aUser), utf8(false), root(new Directory()) {
@@ -147,7 +147,7 @@ public:
 	
 	void download(File* aFile, const string& aTarget, bool view = false);
 
-	GETSETREF(User::Ptr, user, User);
+	GETSET(User::Ptr, user, User);
 	GETSET(bool, utf8, Utf8);
 
 private:

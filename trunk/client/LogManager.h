@@ -30,15 +30,10 @@
 
 class LogManagerListener {
 public:
-	typedef LogManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
+	template<int I>	struct X { enum { TYPE = I };  };
 
-	enum Types {
-		MESSAGE			// Short message to be shown in UI
-	};
-
-	virtual void onAction(Types, const string&) throw() { };
+	typedef X<0> Message;
+	virtual void on(Message, const string&) throw() { };
 };
 
 class LogManager : public Singleton<LogManager>, public Speaker<LogManagerListener>
@@ -71,10 +66,10 @@ public:
 		}
 	}
 	void message(const string& msg) {
-		if (BOOLSETTING(LOG_SYSTEM)) {
+		if(BOOLSETTING(LOG_SYSTEM)) {
 			log("system", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
 		}
-		fire(LogManagerListener::MESSAGE, msg);
+		fire(LogManagerListener::Message(), msg);
 	}
 
 private:

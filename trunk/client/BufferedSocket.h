@@ -33,26 +33,25 @@ class InputStream;
 
 class BufferedSocketListener {
 public:
-	typedef BufferedSocketListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	
-	enum Types {
-		CONNECTING,
-		CONNECTED,
-		LINE,
-		DATA,
-		BYTES_SENT,
-		MODE_CHANGE,
-		TRANSMIT_DONE,
-		FAILED
-	};
-	
-	virtual void onAction(Types) throw() { };
-	virtual void onAction(Types, u_int32_t, u_int32_t) throw() { };
-	virtual void onAction(Types, const string&) throw() { };
-	virtual void onAction(Types, const u_int8_t*, int) throw() { };
-	virtual void onAction(Types, int) throw() { };
+	template<int I>	struct X { enum { TYPE = I };  };
+
+	typedef X<0> Connecting;
+	typedef X<1> Connected;
+	typedef X<2> Line;
+	typedef X<3> Data;
+	typedef X<4> BytesSent;
+	typedef X<5> ModeChange;
+	typedef X<6> TransmitDone;
+	typedef X<7> Failed;
+
+	virtual void on(Connecting) throw() { }
+	virtual void on(Connected) throw() { }
+	virtual void on(Line, const string&) throw() { }
+	virtual void on(Data, u_int8_t*, size_t) throw() { }
+	virtual void on(BytesSent, size_t, size_t) throw() { }
+	virtual void on(ModeChange) throw() { }
+	virtual void on(TransmitDone) throw() { }
+	virtual void on(Failed, const string&) throw() { }
 };
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket, public Thread
@@ -142,29 +141,7 @@ public:
 
 	GETSET(char, separator, Separator);
 private:
-	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(64*1024), curBuf(0), file(NULL) {
-		
-		inbuf = new u_int8_t[inbufSize];
-		
-		// MSVC: Non-standard scope for i
-		{
-			for(int i = 0; i < BUFFERS; i++) {
-				outbuf[i] = new u_int8_t[inbufSize];
-				outbufPos[i] = 0;
-				outbufSize[i] = inbufSize;
-			}
-		}
-		try {
-			start();
-		} catch(const ThreadException& e) {
-			delete[] inbuf;
-			for(int i = 0; i < BUFFERS; i++) {
-				delete[] outbuf[i];
-			}
-			throw SocketException(e.getError());
-		}
-	};
+	BufferedSocket(char aSeparator = 0x0a) throw(SocketException);
 
 	// Dummy...
 	BufferedSocket(const BufferedSocket&);
@@ -207,7 +184,7 @@ private:
 	
 	void fail(const string& aError) {
 		Socket::disconnect();
-		fire(BufferedSocketListener::FAILED, aError);
+		fire(BufferedSocketListener::Failed(), aError);
 	}
 
 	/**

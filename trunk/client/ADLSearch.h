@@ -275,7 +275,7 @@ public:
 
 	// Settings
 	GETSET(bool, breakOnFirst, BreakOnFirst);		
-	GETSETREF(User::Ptr, user, User);
+	GETSET(User::Ptr, user, User);
 
 	// Search for file match
 	void MatchesFile(DestDirList& destDirVector, DirectoryListing::File *currentFile, string& fullPath);

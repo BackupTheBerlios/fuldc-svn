@@ -102,11 +102,11 @@ private:
 	HBITMAP hBitmap;
     	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) throw();
+	virtual void on(TimerManagerListener::Second, u_int32_t tick) throw();
 
 	//QueueManagerListener
-	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQi) throw() {}
-	virtual void onAction(QueueManagerListener::Types type, string msg) throw();
+	//virtual void on(QueueManagerListener::Types type, QueueItem* aQi) throw() {}
+	virtual void on(QueueManagerListener::ReleaseDone, string msg) throw();
 
 	//call this with a preformatted message
 	void Show(const string &aMsg);

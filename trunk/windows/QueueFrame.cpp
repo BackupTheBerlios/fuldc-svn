@@ -176,40 +176,40 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 void QueueFrame::QueueItemInfo::update() {
 	if(display != NULL) {
-	int colMask = updateMask;
-	updateMask = 0;
+		int colMask = updateMask;
+		updateMask = 0;
 
-	if(colMask & MASK_TARGET) {
+		if(colMask & MASK_TARGET) {
 			display->columns[COLUMN_TARGET] = Util::getFileName(getTarget());
-	}
-	int online = 0;
-	if(colMask & MASK_USERS || colMask & MASK_STATUS) {
-		string tmp;
+		}
+		int online = 0;
+		if(colMask & MASK_USERS || colMask & MASK_STATUS) {
+			string tmp;
 
 			SourceIter j;
 			for(j = getSources().begin(); j != getSources().end(); ++j) {
-			if(tmp.size() > 0)
-				tmp += ", ";
+				if(tmp.size() > 0)
+					tmp += ", ";
 
 				if(j->getUser()->isOnline())
-				online++;
+					online++;
 
 				tmp += j->getUser()->getFullNick();
-		}
+			}
 			display->columns[COLUMN_USERS] = tmp.empty() ? STRING(NO_USERS) : tmp;
-	}
-	if(colMask & MASK_STATUS) {
+		}
+		if(colMask & MASK_STATUS) {
 			if(getStatus() == QueueItem::STATUS_WAITING) {
 
-			char buf[64];
-			if(online > 0) {
+				char buf[64];
+				if(online > 0) {
 					if(getSources().size() == 1) {
 						display->columns[COLUMN_STATUS] = STRING(WAITING_USER_ONLINE);
-				} else {
+					} else {
 						sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, getSources().size());
 						display->columns[COLUMN_STATUS] = buf;
-				}
-			} else {
+					}
+				} else {
 					if(getSources().size() == 0) {
 						display->columns[COLUMN_STATUS] = STRING(NO_USERS_TO_DOWNLOAD_FROM);
 					} else if(getSources().size() == 1) {
@@ -220,26 +220,26 @@ void QueueFrame::QueueItemInfo::update() {
 						display->columns[COLUMN_STATUS] = STRING(ALL_3_USERS_OFFLINE);
 					} else if(getSources().size() == 4) {
 						display->columns[COLUMN_STATUS] = STRING(ALL_4_USERS_OFFLINE);
-				} else {
+					} else {
 						sprintf(buf, CSTRING(ALL_USERS_OFFLINE), getSources().size());
 						display->columns[COLUMN_STATUS] = buf;
+					}
 				}
-			}
 			} else if(getStatus() == QueueItem::STATUS_RUNNING) {
 				display->columns[COLUMN_STATUS] = STRING(RUNNING);
-		} 
-	}
-	if(colMask & MASK_SIZE) {
+			} 
+		}
+		if(colMask & MASK_SIZE) {
 			display->columns[COLUMN_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(getSize());
 			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::toString(getSize());
-	}
-	if(colMask & MASK_DOWNLOADED) {
+		}
+		if(colMask & MASK_DOWNLOADED) {
 			if(getSize() > 0)
 				display->columns[COLUMN_DOWNLOADED] = Util::formatBytes(getDownloadedBytes()) + " (" + Util::toString((double)getDownloadedBytes()*100.0/(double)getSize()) + "%)";
-		else
+			else
 				display->columns[COLUMN_DOWNLOADED].clear();
-	}
-	if(colMask & MASK_PRIORITY) {
+		}
+		if(colMask & MASK_PRIORITY) {
 			switch(getPriority()) {
 		case QueueItem::PAUSED: display->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
 		case QueueItem::LOWEST: display->columns[COLUMN_PRIORITY] = STRING(LOWEST); break;
@@ -248,51 +248,51 @@ void QueueFrame::QueueItemInfo::update() {
 		case QueueItem::HIGH: display->columns[COLUMN_PRIORITY] = STRING(HIGH); break;
 		case QueueItem::HIGHEST: display->columns[COLUMN_PRIORITY] = STRING(HIGHEST); break;
 		default: dcasserta(0); break;
+			}
 		}
-	}
 
-	if(colMask & MASK_PATH) {
+		if(colMask & MASK_PATH) {
 			display->columns[COLUMN_PATH] = Util::getFilePath(getTarget());
-	}
-
-	if(colMask & MASK_ERRORS) {
-		string tmp;
-		SourceIter j;
-		for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
-			if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
-			if(tmp.size() > 0)
-				tmp += ", ";
-				tmp += j->getUser()->getNick();
-			tmp += " (";
-				if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
-				tmp += STRING(FILE_NOT_AVAILABLE);
-				} else if(j->isSet(QueueItem::Source::FLAG_PASSIVE)) {
-				tmp += STRING(PASSIVE_USER);
-				} else if(j->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
-				tmp += STRING(ROLLBACK_INCONSISTENCY);
-				} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
-				tmp += STRING(SFV_INCONSISTENCY);
-			}
-			tmp += ')';
 		}
-			}
-		display->columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
-	}
-	
-	if(colMask & MASK_SEARCHSTRING) {
-			display->columns[COLUMN_SEARCHSTRING] = getSearchString();
-	}
 
-	if(colMask & MASK_ADDED) {
+		if(colMask & MASK_ERRORS) {
+			string tmp;
+			SourceIter j;
+			for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
+				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
+					if(tmp.size() > 0)
+						tmp += ", ";
+					tmp += j->getUser()->getNick();
+					tmp += " (";
+					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
+						tmp += STRING(FILE_NOT_AVAILABLE);
+					} else if(j->isSet(QueueItem::Source::FLAG_PASSIVE)) {
+						tmp += STRING(PASSIVE_USER);
+					} else if(j->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
+						tmp += STRING(ROLLBACK_INCONSISTENCY);
+					} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
+						tmp += STRING(SFV_INCONSISTENCY);
+					}
+					tmp += ')';
+				}
+			}
+			display->columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
+		}
+
+		if(colMask & MASK_SEARCHSTRING) {
+			display->columns[COLUMN_SEARCHSTRING] = getSearchString();
+		}
+
+		if(colMask & MASK_ADDED) {
 			display->columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", getAdded());
-	}
-	if(colMask & MASK_TTH && getTTH() != NULL) {
-		display->columns[COLUMN_TTH] = getTTH()->toBase32();
-	}
+		}
+		if(colMask & MASK_TTH && getTTH() != NULL) {
+			display->columns[COLUMN_TTH] = getTTH()->toBase32();
+		}
 	}
 }
 
-void QueueFrame::onQueueAdded(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::Added, QueueItem* aQI) {
 	QueueItemInfo* ii = new QueueItemInfo(aQI);
 	{
 		Lock l(cs);
@@ -539,7 +539,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 	ctrlDirs.DeleteItem(ht);
 }
 
-void QueueFrame::onQueueRemoved(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::Removed, QueueItem* aQI) {
 	QueueItemInfo* qi = NULL;
 	{
 		Lock l(cs);
@@ -560,7 +560,7 @@ void QueueFrame::onQueueRemoved(QueueItem* aQI) {
 	speak(REMOVE_ITEM, qi);
 }
 
-void QueueFrame::onQueueMoved(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::Moved, QueueItem* aQI) {
 	QueueItemInfo* qi = NULL;
 	QueueItemInfo* qi2 = new QueueItemInfo(aQI);
 	{
@@ -575,7 +575,7 @@ void QueueFrame::onQueueMoved(QueueItem* aQI) {
 	speak(ADD_ITEM,	qi2);
 }
 
-void QueueFrame::onQueueUpdated(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) {
 	QueueItemInfo* ii = NULL;
 	{
 		Lock l(cs);
@@ -621,7 +621,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 	speak(UPDATE_ITEM, ii);
 }
 
-void QueueFrame::onQueueSearchStringUpdated(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::SearchStringUpdated, QueueItem* aQI) {
 	QueueItemInfo* ii = NULL;
 	{
 		Lock l(cs);
@@ -747,7 +747,7 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 		next = ctrlDirs.GetNextSiblingItem(next);
 	}
 	string* s = (string*)ctrlDirs.GetItemData(ht);
-	
+
 	DirectoryPair p = directories.equal_range(*s);
 	
 	for(DirectoryIter i = p.first; i != p.second; ++i) {
@@ -874,7 +874,6 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	// Get the bounding rectangle of the client area. 
 	ctrlQueue.GetClientRect(&rc);
 	ctrlQueue.ScreenToClient(&pt); 
-
 	if (PtInRect(&rc, pt) && ctrlQueue.GetSelectedCount() > 0) { 
 		usingDirMenu = false;
 		CMenuItemInfo mi;
@@ -936,10 +935,10 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		}
 		
 		return TRUE; 
-	} 
+	}
 
 	ctrlQueue.ClientToScreen(&pt);
-	
+
 	ctrlDirs.GetClientRect(&rc);
 	ctrlDirs.ScreenToClient(&pt);
 
@@ -1184,7 +1183,7 @@ void QueueFrame::updateStatus() {
 		if(dirty) {
 			tmp1 = STRING(FILES) + ": " + Util::toString(queueItems);
 			tmp2 = STRING(SIZE) + ": " + Util::formatBytes(queueSize);
-			
+
 			w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
 			if(statusSizes[3] < w) {
 				statusSizes[3] = w;
@@ -1273,8 +1272,6 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		}
 		ctrlQueue.DeleteAllItems();
 
-		//WinUtil::saveHeaderOrder(ctrlQueue, SettingsManager::QUEUEFRAME_ORDER, 
-		//	SettingsManager::QUEUEFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 		ctrlQueue.saveHeaderOrder(SettingsManager::QUEUEFRAME_ORDER, 
 			SettingsManager::QUEUEFRAME_WIDTHS, SettingsManager::QUEUEFRAME_VISIBLE);
 
@@ -1333,19 +1330,6 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 	}
 	ctrlDirs.DeleteItem(item);
 }
-
-void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) throw() { 
-	switch(type) {
-	case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
-	case QueueManagerListener::QUEUE_ITEM: onQueueAdded(aQI); break;
-	case QueueManagerListener::REMOVED: onQueueRemoved(aQI); break;
-	case QueueManagerListener::MOVED: onQueueMoved(aQI); break;
-	case QueueManagerListener::SOURCES_UPDATED: onQueueUpdated(aQI); break;
-	case QueueManagerListener::STATUS_UPDATED: onQueueUpdated(aQI); break;
-	case QueueManagerListener::SEARCH_STRING_UPDATED: onQueueSearchStringUpdated(aQI); break;
-	default: break;
-	}
-};
 
 LRESULT QueueFrame::onSetPriority(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	PriorityDlg dlg;

@@ -58,7 +58,7 @@ int64_t Download::getTotalSecondsLeft() {
 	return (avg > 0) ? ((size - pos) / avg) : 0;
 }
 
-void DownloadManager::onTimerSecond(u_int32_t /*aTick*/) {
+void DownloadManager::on(TimerManagerListener::Second, u_int32_t /*aTick*/) throw() {
 	Lock l(cs);
 
 	Download::List tickList;
@@ -89,7 +89,7 @@ void DownloadManager::onTimerSecond(u_int32_t /*aTick*/) {
 	}
 		
 	if(tickList.size() > 0)
-		fire(DownloadManagerListener::TICK, tickList);
+		fire(DownloadManagerListener::Tick(), tickList);
 }
 
 void DownloadManager::FileMover::moveFile(const string& source, const string& target) {
@@ -211,7 +211,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	removeConnection(aConn, true);
 }
 
-void DownloadManager::onSending(UserConnection* aSource, int64_t aBytes) {
+void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSource, int64_t aBytes) {
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
 		return;
@@ -222,15 +222,14 @@ void DownloadManager::onSending(UserConnection* aSource, int64_t aBytes) {
 	}
 }
 
-void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSource, int64_t aFileLength) {
 
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
 		return;
 	}
 
-	int64_t fileLength = Util::toInt64(aFileLength);
-	if(prepareFile(aSource, fileLength)) {
+	if(prepareFile(aSource, aFileLength)) {
 		aSource->setDataMode();
 		aSource->startSend();
 	}
@@ -294,7 +293,7 @@ public:
 	}
 	
 	virtual int64_t verifiedBytes() {
-		return cur.getFileSize();
+		return min(real.getFileSize(), cur.getBlockSize() * (int64_t)cur.getLeaves().size());
 	}
 private:
 	OutputStream* s;
@@ -354,14 +353,14 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		file->setPos(d->getPos());
 	} catch(const FileException& e) {
 		delete file;
-		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
+		fire(DownloadManagerListener::Failed(), d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
 		return false;
 	} catch(const Exception& e) {
 		delete file;
-		fire(DownloadManagerListener::FAILED, d, e.getError());
+		fire(DownloadManagerListener::Failed(), d, e.getError());
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
@@ -374,6 +373,9 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
 	}
 
+	if(SETTING(BUFFER_SIZE) != 0)
+		d->setFile(new BufferedOutputStream<true>(d->getFile()));
+
 	bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 
 	if(sfvcheck) {
@@ -384,7 +386,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	}
 
 	TigerTree tree;
-	if(HashManager::getInstance()->getTree(d->getDownloadTarget(), tree)) {
+	if(d->getPos() == 0 && HashManager::getInstance()->getTree(d->getDownloadTarget(), tree)) {
 		d->setFile(new TigerTreeOutputStream<true>(tree, d->getFile()));
 	}
 
@@ -395,12 +397,12 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	d->setStart(GET_TICK());
 	aSource->setState(UserConnection::STATE_DONE);
 	
-	fire(DownloadManagerListener::STARTING, d);
+	fire(DownloadManagerListener::Starting(), d);
 	
 	return true;
 }	
 
-void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int aLen) {
+void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, const u_int8_t* aData, size_t aLen) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
@@ -412,24 +414,22 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 			aSource->setLineMode();
 		}
 	} catch(const FileException& e) {
-		fire(DownloadManagerListener::FAILED, d, e.getError());
+		fire(DownloadManagerListener::Failed(), d, e.getError());
 
 		d->setPos(d->getPos() - d->getTotal());
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
+		return;
 	} catch(const Exception& e) {
-		fire(DownloadManagerListener::FAILED, d, e.getError());
+		fire(DownloadManagerListener::Failed(), d, e.getError());
 		// Nuke the bytes we have written, this is probably a compression error
 		d->setPos(d->getPos() - d->getTotal());
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
+		return;
 	}
-}
-
-void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
-	handleEndData(aSource);
 }
 
 /** Download finished! */
@@ -464,7 +464,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 			}
 		}
 	} catch(const FileException& e) {
-		fire(DownloadManagerListener::FAILED, d, e.getError());
+		fire(DownloadManagerListener::Failed(), d, e.getError());
 		
 		aSource->setDownload(NULL);
 		removeDownload(d);
@@ -507,7 +507,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 				File::deleteFile(tgt);
 				dcdebug("DownloadManager: CRC32 mismatch for %s\n", d->getTarget().c_str());
 				LogManager::getInstance()->message(STRING(SFV_INCONSISTENCY) + " (" + STRING(FILE) + ": " + d->getTarget() + ")");
-				fire(DownloadManagerListener::FAILED, d, STRING(SFV_INCONSISTENCY));
+				fire(DownloadManagerListener::Failed(), d, STRING(SFV_INCONSISTENCY));
 				
 				string target = d->getTarget();
 				
@@ -557,14 +557,14 @@ noCRC:
 			// Huh??? Now what??? Oh well...let it be...
 		}
 	}
-	fire(DownloadManagerListener::COMPLETE, d);
+	fire(DownloadManagerListener::Complete(), d);
 	
 	aSource->setDownload(NULL);
 	removeDownload(d, true);
 	checkDownloads(aSource);
 }
 
-void DownloadManager::onMaxedOut(UserConnection* aSource) { 
+void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) { 
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onMaxedOut Bad state, ignoring\n");
 		return;
@@ -573,14 +573,14 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
-	fire(DownloadManagerListener::FAILED, d, STRING(NO_SLOTS_AVAILABLE));
+	fire(DownloadManagerListener::Failed(), d, STRING(NO_SLOTS_AVAILABLE));
 
 	aSource->setDownload(NULL);
 	removeDownload(d);
 	removeConnection(aSource);
 }
 
-void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
+void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) {
 	Download* d = aSource->getDownload();
 
 	if(d == NULL) {
@@ -588,7 +588,7 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 		return;
 	}
 	
-	fire(DownloadManagerListener::FAILED, d, aError);
+	fire(DownloadManagerListener::Failed(), d, aError);
 
 	string target = d->getTarget();
 	aSource->setDownload(NULL);
@@ -650,7 +650,7 @@ void DownloadManager::abortDownload(const string& aTarget) {
 	}
 }
 
-void DownloadManager::onFileNotAvailable(UserConnection* aSource) throw() {
+void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnection* aSource) throw() {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
@@ -662,63 +662,13 @@ void DownloadManager::onFileNotAvailable(UserConnection* aSource) throw() {
 		d->setCrcCalc(NULL);
 	}
 
-	fire(DownloadManagerListener::FAILED, d, d->getTargetFileName() + ": " + STRING(FILE_NOT_AVAILABLE));
+	fire(DownloadManagerListener::Failed(), d, d->getTargetFileName() + ": " + STRING(FILE_NOT_AVAILABLE));
 
 	aSource->setDownload(NULL);
 
 	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 	removeDownload(d, false);
 	checkDownloads(aSource);
-}
-
-// UserConnectionListener
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) throw() {
-	switch(type) {
-	case UserConnectionListener::MAXED_OUT: onMaxedOut(conn); break;
-	case UserConnectionListener::FILE_NOT_AVAILABLE: onFileNotAvailable(conn); break;
-	default: break;
-	}
-}
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw() {
-	switch(type) {
-	case UserConnectionListener::FILE_LENGTH:
-		onFileLength(conn, line); break;
-	case UserConnectionListener::FAILED:
-		onFailed(conn, line); break;
-	default:
-		break;
-	}
-}
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int64_t bytes) throw() {
-	if(type == UserConnectionListener::SENDING)
-		onSending(conn, bytes);
-}
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) throw() {
-	switch(type) {
-	case UserConnectionListener::DATA:
-		onData(conn, data, len); break;
-	default:
-		break;
-	}
-}
-
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) throw() {
-	switch(type) {
-	case UserConnectionListener::MODE_CHANGE:
-		onModeChange(conn, mode); break;
-	default:
-		break;
-	}
-}
-
-// TimerManagerListener
-void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
-	switch(type) {
-	case TimerManagerListener::SECOND:
-		onTimerSecond(aTick); break;
-	default:
-		break;
-	}
 }
 
 /**

@@ -34,7 +34,7 @@ public:
 		FLAG_GRANTSLOT = 1 << 0
 	};
 
-	GETSETREF(string, description, Description);
+	GETSET(string, description, Description);
 	GETSET(u_int32_t, lastSeen, LastSeen);
 
 	FavoriteUser() : lastSeen(0) {}

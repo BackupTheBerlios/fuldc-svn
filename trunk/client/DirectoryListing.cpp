@@ -200,8 +200,9 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool) {
 				ADLSearchManager::getInstance()->MatchesFile(destDirs, f, fullPath);
 		} else if(name == sDirectory) {
 			const string& n = getAttrib(attribs, sName, 0);
-			if(n.empty())
-				throw SimpleXMLException("oops no name");
+			if(n.empty()) {
+				throw SimpleXMLException("Directory missing name attribute");
+			}
 			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n);
 			cur->directories.push_back(d);
 			cur = d;

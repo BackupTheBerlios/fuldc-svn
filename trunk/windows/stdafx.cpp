@@ -29,14 +29,6 @@
 #error WTL not correctly installed, read compile.txt
 #endif
 
-#if defined(HAS_STLPORT) && (_STLPORT_VERSION != 0x461)
-#error STLPort not correctly installed, read compile.txt
-#endif
-
-#ifdef _STLP_NO_IOSTREAMS
-#error You haven't built stlport with iostream support.
-#endif
-
 /**
  * @file
  * $Id: stdafx.cpp,v 1.3 2003/12/30 22:08:11 trem Exp $

@@ -62,6 +62,7 @@ public:
 		search(l, aString, aSearchType, Util::toInt64(aSize), aFileType, aClient, maxResults);
 	}
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
+	void search(const string& name, int64_t& size);
 	
 	int64_t getShareSize() {
 		RLock l(cs);
@@ -127,7 +128,7 @@ private:
 			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
 			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
 
-			GETSETREF(string, name, Name);
+			GETSET(string, name, Name);
 			GETSET(int64_t, size, Size);
 			GETSET(Directory*, parent, Parent);
 			GETSET(TTHValue*, tth, TTH);
@@ -199,11 +200,12 @@ private:
 		}
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
-		
+		bool search(const string& name, int64_t& size);
+
 		void toString(string& tmp, OutputStream* xmlFile, string& indent);
 		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 		
-		GETSETREF(string, name, Name);
+		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
 	private:
 		/** Set of flags that say which SearchManager::TYPE_* a directory contains */
@@ -272,13 +274,19 @@ private:
 	virtual int run();
 
 	// HashManagerListener
-	virtual void onAction(HashManagerListener::Types type, const string& fname, TTHValue* root) throw();
+	virtual void on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw();
 
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw();
+	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw() {
+		save(xml);
+		saveXmlList();
+	}
+	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+		load(xml);
+	}
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) throw();
+	virtual void on(TimerManagerListener::Minute, u_int32_t tick) throw();
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 

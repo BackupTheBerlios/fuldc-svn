@@ -31,7 +31,7 @@ public:
 #include "StringDefs.h"
 
 	void loadLanguage(const string& aFile);
-	const string& getString(Strings x) const { dcassert(x != -1); return strings[x]; };
+	const string& getString(Strings x) const { dcassert(x >= 0 && x < Strings::LAST); return strings[x]; };
 
 private:
 	friend class Singleton<ResourceManager>;

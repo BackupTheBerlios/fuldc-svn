@@ -90,11 +90,10 @@ public:
 	void setClient(Client* aClient);
 	void connect();
 	const string& getClientNick() const;
-	const string& getClientName(bool topic = true) const;
+	const string& getClientName() const;
 	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
-	void clientPM(const string& aTo, const string& aMsg);
 	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp() const;
@@ -103,7 +102,7 @@ public:
 	string getFullNick() const { 
 		string tmp(getNick());
 		tmp += " (";
-		tmp += getClientName(BOOLSETTING(REMOVE_TOPIC));
+		tmp += getClientName();
 		tmp += ")";
 		return tmp;
 	}
@@ -127,17 +126,17 @@ public:
 
 	static void updated(User::Ptr& aUser);
 	
-	GETSETREF(string, connection, Connection);
-	GETSETREF(string, nick, Nick);
-	GETSETREF(string, shortNick, ShortNick);
-	GETSETREF(string, isp, Isp);
-	GETSETREF(string, email, Email);
-	GETSETREF(string, description, Description);
-	GETSETREF(string, tag, Tag);
-	GETSETREF(string, lastHubAddress, LastHubAddress);
-	GETSETREF(string, lastHubName, LastHubName);
-	GETSETREF(string, ip, Ip);
-	GETSETREF(CID, cid, CID);
+	GETSET(string, connection, Connection);
+	GETSET(string, nick, Nick);
+	GETSET(string, shortNick, ShortNick);
+	GETSET(string, isp, Isp);
+	GETSET(string, email, Email);
+	GETSET(string, description, Description);
+	GETSET(string, tag, Tag);
+	GETSET(string, lastHubAddress, LastHubAddress);
+	GETSET(string, lastHubName, LastHubName);
+	GETSET(string, ip, Ip);
+	GETSET(CID, cid, CID);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
 	mutable RWLock cs;

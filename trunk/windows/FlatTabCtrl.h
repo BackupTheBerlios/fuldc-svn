@@ -168,8 +168,10 @@ public:
 	void setDisconnected(HWND aWnd, bool disconnected) {
 		TabInfo* ti = getTabInfo(aWnd);
 		if(ti != NULL) {
-			ti->disconnected = disconnected;
-			Invalidate();
+			if( ti->disconnected != disconnected){
+				ti->disconnected = disconnected;
+				Invalidate();
+			}
 		}
 	}
 
@@ -799,7 +801,7 @@ public:
 		{
 			::SetFocus(hWnd);
 		}
-		
+
 		return hWnd;
 	}
 
@@ -861,7 +863,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled */) {
 		PostMessage(WM_REALLY_CLOSE);
 		return 0;
 	}

@@ -99,9 +99,10 @@ void HighlightManager::wUnlock(){
 	lock.leaveWrite();
 }
 
-void HighlightManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml){
-	switch(type){
-		case SettingsManagerListener::LOAD: load(xml); break;
-		case SettingsManagerListener::SAVE: save(xml); break;
-	}
+void HighlightManager::on(SettingsManagerListener::Load, SimpleXML* xml){
+	load(xml);
+}
+
+void HighlightManager::on(SettingsManagerListener::Save, SimpleXML* xml){
+	save(xml);
 }

@@ -29,9 +29,9 @@ public:
 	enum { HASH_SIZE = 24 };
 
 	TigerHash() : pos(0) {
-		res[0]=_LL(0x0123456789ABCDEF);
-		res[1]=_LL(0xFEDCBA9876543210);
-		res[2]=_LL(0xF096A5B4C3B2E187);
+		res[0]=_ULL(0x0123456789ABCDEF);
+		res[1]=_ULL(0xFEDCBA9876543210);
+		res[2]=_ULL(0xF096A5B4C3B2E187);
 	}
 
 	~TigerHash() {

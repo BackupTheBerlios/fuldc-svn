@@ -392,6 +392,7 @@ public:
 		return buf;
 	}
 	static string getLocalIp();
+	static bool isPrivateIp(string const& ip);
 	/**
 	 * Case insensitive substring search.
 	 * @return First position found or string::npos

@@ -28,16 +28,13 @@ class SimpleXML;
 
 class SettingsManagerListener {
 public:
-	typedef SettingsManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	
-	enum Types {
-		LOAD,
-		SAVE
-	};
-	
-	virtual void onAction(Types, SimpleXML*) throw() = 0;
+	template<int I>	struct X { enum { TYPE = I };  };
+
+	typedef X<0> Load;
+	typedef X<1> Save;
+
+	virtual void on(Load, SimpleXML*) throw() { }
+	virtual void on(Save, SimpleXML*) throw() { }
 };
 
 class SettingsManager : public Singleton<SettingsManager>, public Speaker<SettingsManagerListener>
@@ -74,7 +71,7 @@ public:
 		MAX_COMPRESSION, FINISHED_DIRTY, QUEUE_DIRTY, ANTI_FRAG, MDI_MAXIMIZED, NO_AWAYMSG_TO_BOTS,
 		SKIP_ZERO_BYTE, ADLS_BREAK_ON_FIRST, TAB_COMPLETION, OPEN_FAVORITE_HUBS, OPEN_FINISHED_DOWNLOADS,
 		HUB_USER_COMMANDS, AUTO_SEARCH_AUTO_MATCH, UPLOAD_BAR_COLOR, DOWNLOAD_BAR_COLOR, LOG_SYSTEM,
-		LOG_FILELIST_TRANSFERS, AUTO_SEARCH_EXACT, SEND_UNKNOWN_COMMANDS,
+		LOG_FILELIST_TRANSFERS, AUTO_SEARCH_EXACT, SEND_UNKNOWN_COMMANDS, MAX_HASH_SPEED,
 		INCOMING_REFRESH_TIME, SHARE_REFRESH_TIME, CHATBUFFERSIZE, AUTO_UPDATE_INCOMING, EXPAND_QUEUE,
 		STRIP_ISP, STRIP_ISP_PM,HUB_BOLD_TABS, PM_BOLD_TABS, HIGH_PRIO_SAMPLE, ROTATE_LOG,
 		POPUP_TIMEOUT, POPUP_AWAY, POPUP_MINIMIZED, POPUP_ON_PM, POPUP_ON_NEW_PM, POPUP_ON_HUBSTATUS,
@@ -181,7 +178,6 @@ public:
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
-	~SettingsManager(){};
 
 	static const string settingTags[SETTINGS_LAST+1];
 

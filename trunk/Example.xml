@@ -44,6 +44,7 @@
 		<String Name="ConnectionRefused">Connection refused by target machine</String>
 		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
+		<String Name="CopyHub">Copy address to clipboard</String>
 		<String Name="CopyNick">Copy nick to clipboard</String>
 		<String Name="CouldNotOpenTargetFile">Could not open target file: </String>
 		<String Name="Count">Count</String>
@@ -133,7 +134,7 @@
 		<String Name="JoinShowingOff">Join/part showing off</String>
 		<String Name="JoinShowingOn">Join/part showing on</String>
 		<String Name="Kb">KiB</String>
-		<String Name="Kbps">kiB/s</String>
+		<String Name="Kbps">KiB/s</String>
 		<String Name="KickUser">Kick user(s)</String>
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>
 		<String Name="LastChange">Last change: </String>
@@ -314,6 +315,7 @@
 		<String Name="SettingsLogSystemMessages">Log system messages</String>
 		<String Name="SettingsLogging">Logging</String>
 		<String Name="SettingsLogs">Logs and Sound</String>
+		<String Name="SettingsMaxHashSpeed">Max hash speed</String>
 		<String Name="SettingsMaxTabRows">Max tab rows</String>
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
 		<String Name="SettingsName">Name</String>

@@ -7,6 +7,7 @@
 #define IDC_TRAY_SHOW                   103
 #define IDC_COPY_FILENAME               105
 #define IDC_COPY_PATH                   106
+#define IDC_COPY_HUB                    104
 #define IDD_GENERALPAGE                 107
 #define IDC_COPY_SIZE                   107
 #define IDC_SET_PRIORITY                108
@@ -83,6 +84,9 @@
 #define IDD_DIALOG1                     248
 #define IDD_FULPAGE2                    248
 #define IDR_PRIVATEFRAME                249
+#define IDC_SETTINGS_MAX_HASH_SPEED		250
+#define IDC_MAX_HASH_SPEED				251
+#define IDC_SETTINGS_MBS				252
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -424,7 +428,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        250
+#define _APS_NEXT_RESOURCE_VALUE        253
 #define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1263
 #define _APS_NEXT_SYMED_VALUE           127

@@ -137,7 +137,7 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 	BOOL              ret = FALSE;
 	DWORD64             dwDisp = 0;
 	DWORD             dwSymSize = 1024*16;
-	TCHAR             lpszUnDSymbol[BUFFERSIZE]=_T("?");
+   TCHAR             lpszUnDSymbol[BUFFERSIZE]=_T("?");
 	CHAR              lpszNonUnicodeUnDSymbol[BUFFERSIZE]="?";
 	LPTSTR            lpszParamSep = NULL;
 	LPCTSTR           lpszParsed = lpszUnDSymbol;

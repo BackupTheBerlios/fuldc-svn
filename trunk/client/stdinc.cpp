@@ -18,6 +18,14 @@
 
 #include "stdinc.h"
 
+#if defined(HAS_STLPORT) && (_STLPORT_VERSION != 0x462)
+#error STLPort not correctly installed, read compile.txt
+#endif
+
+#ifdef _STLP_NO_IOSTREAMS
+#error You have not compiled iostream support
+#endif
+
 /**
  * @file
  * $Id: stdinc.cpp,v 1.1 2003/12/15 16:51:51 trem Exp $

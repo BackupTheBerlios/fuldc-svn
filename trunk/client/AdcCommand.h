@@ -16,11 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef _COMMAND_H
+#define _COMMAND_H
+
 class Command {
 public:
 	template<u_int32_t T>
 	struct Type {
-		static const u_int32_t type = T;
+		enum { CMD = T };
 	};
 
 	static const char TYPE_ACTIVE = 'A';
@@ -50,17 +53,62 @@ public:
 	CMD(NTD, 'N','T','D');
 #undef CMD
 
-	Command(const string& aLine) : cmdInt(0), type(0) {
-		parse(aLine);
+	template<typename T>
+	explicit Command(T t) : cmdInt(typename T::CMD), type(0) { }
+
+	explicit Command(const string& aLine, bool nmdc = false) : cmdInt(0), type(0) {
+		parse(aLine, nmdc);
 	}
 
-	void parse(const string& aLine);
+	void parse(const string& aLine, bool nmdc = false);
 
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
 
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
+
+	string toString(bool nmdc = false) const {
+		string tmp;
+		if(nmdc) {
+			tmp += "$ADC";
+		} else {
+			tmp += getType();
+		}
+		tmp += cmdChar;
+		for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
+			tmp += ' ';
+			tmp += escape(*i);
+		}
+		if(nmdc) {
+			tmp += '|';
+		} else {
+			tmp += '$';
+		}
+	}
+	void addParam(const string& name, const string& value) {
+		parameters.push_back(name);
+		parameters.back() += value;
+	}
+	void addParam(const string& str) {
+		parameters.push_back(str);
+	}
+	const string& getParam(size_t n) {
+		return getParameters().size() > n ? getParameters()[n] : Util::emptyString;
+	}
+	/** Return a named parameter where the name is a two-letter code */
+	string getParam(const char* name, size_t start) const {
+		if(getParameters().size() <= start)
+			return Util::emptyString;
+		for(string::size_type i = start; i < getParameters().size(); ++i) {
+			if(toCode(name) == toCode(getParameters()[0].c_str())) {
+				return getParameters()[i].substr(2);
+			}
+		}
+		return Util::emptyString;
+	}
+
+	static u_int16_t toCode(const char* x) { return *((u_int16_t*)x); }
 
 	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
 
@@ -74,9 +122,9 @@ public:
 		return tmp;
 	}
 private:
-
 	StringList parameters;
 	union {
+		char cmdChar[4];
 		u_int8_t cmd[4];
 		u_int32_t cmdInt;
 	};
@@ -88,10 +136,10 @@ private:
 template<class T>
 class CommandHandler {
 public:
-	void dispatch(const string& aLine) {
-		Command c(aLine);
+	void dispatch(const string& aLine, bool nmdc = false) {
+		Command c(aLine, nmdc);
 
-#define CMD(n) case Command::CMD_##n: ((T*)this)->handle(c, Command::n()); break;
+#define CMD(n) case Command::CMD_##n: ((T*)this)->handle(Command::n(), c); break;
 		switch(c.getCommand()) {
 			CMD(SUP);
 			CMD(STA);
@@ -100,6 +148,7 @@ public:
 			CMD(SCH);
 			CMD(RES);
 			CMD(CTM);
+			CMD(GPA);
 			CMD(PAS);
 			CMD(QUI);
 			CMD(DSC);
@@ -112,6 +161,7 @@ public:
 	}
 };
 
+#endif // _COMMAND_H
 /**
 * @file
 * $Id: AdcCommand.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $

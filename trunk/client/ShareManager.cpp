@@ -203,14 +203,17 @@ bool ShareManager::loadXmlList(){
 	xmlString = NULL;
 
 	//stepin inside <Share>
-	xml->resetCurrentChild();
+    xml->resetCurrentChild();
+	xml->findChild("Share");
+	if(xml->getBoolChildAttrib("Fake"))
+		UploadManager::getInstance()->setFake();
 	xml->stepIn();
 
 	while (xml->findChild("Directory")) {
 		string name = xml->getChildAttrib("Name");
 		string path = xml->getChildAttrib("Path");
-		Util::toAcp(name);
-		Util::toAcp(path);
+		//Util::toAcp(name);
+		//Util::toAcp(path);
 				
 		directories[path] = addDirectoryFromXml(xml, NULL, name, path); 
 		dirs[name] = path;
@@ -316,7 +319,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	Directory::File::Iter lastFileIter = dir->files.begin();
 	while (xml->findChild("File")) {
 		string name = xml->getChildAttrib("Name");
-		Util::toAcp(name);
+		//Util::toAcp(name);
 		u_int64_t size = xml->getIntChildAttrib("Size");
 		TTHValue *tth = HashManager::getInstance()->getTTH(aPath + PATH_SEPARATOR + name, size);
 
@@ -335,8 +338,8 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	while (xml->findChild("Directory")) {
 		string name = xml->getChildAttrib("Name");
 		string path = xml->getChildAttrib("Path");
-		Util::toAcp(name);
-		Util::toAcp(path);
+		//Util::toAcp(name);
+		//Util::toAcp(path);
 		dir->directories[name] = addDirectoryFromXml(xml, dir, name, path);
 		dir->addSearchType(dir->directories[name]->getSearchTypes());
 	}
@@ -1047,6 +1050,30 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 	
 }
 
+void ShareManager::search(const string& name, int64_t& size){
+	for(Directory::MapIter j = directories.begin(); j != directories.end(); ++j) {
+		if(j->second->search(name, size))
+			return;
+	}
+}
+
+bool ShareManager::Directory::search(const string& name, int64_t& size){
+	for(File::Iter i = files.begin(); i != files.end(); ++i){
+		if(Util::stricmp(name, i->getName()) == 0) {
+			size = i->getSize();
+			return true;
+		}
+
+	}
+
+	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+		if(i->second->search(name, size))
+			return true;
+	}
+
+	return false;
+}
+
 ShareManager::Directory* ShareManager::getDirectory(const string& fname) {
 	for(Directory::MapIter mi = directories.begin(); mi != directories.end(); ++mi) {
 		if(Util::strnicmp(fname, mi->first, mi->first.length()) == 0 && fname[mi->first.length()] == PATH_SEPARATOR) {
@@ -1067,45 +1094,36 @@ ShareManager::Directory* ShareManager::getDirectory(const string& fname) {
 	return NULL;
 	}
 
-void ShareManager::onAction(HashManagerListener::Types type, const string& fname, TTHValue* root) throw() {
-	if(type == HashManagerListener::TTH_DONE) {
-		WLock l(cs);
-		Directory* d = getDirectory(fname);
-		if(d != NULL) {
-			Directory::File::Iter i = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(Util::getFileName(fname)));
-			if(i != d->files.end()) {
-				if(i->getTTH() != NULL) {
-					dcassert(tthIndex.find(i->getTTH()) != tthIndex.end());
-					tthIndex.erase(i->getTTH());
-				}
-				// Get rid of false constness...
-				Directory::File* f = const_cast<Directory::File*>(&(*i));
-				f->setTTH(root);
-				tthIndex.insert(make_pair(root, i));
+void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw() {
+	WLock l(cs);
+	Directory* d = getDirectory(fname);
+	if(d != NULL) {
+		Directory::File::Iter i = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(Util::getFileName(fname)));
+		if(i != d->files.end()) {
+			if(i->getTTH() != NULL) {
+				dcassert(tthIndex.find(i->getTTH()) != tthIndex.end());
+				tthIndex.erase(i->getTTH());
+			}
+			// Get rid of false constness...
+			Directory::File* f = const_cast<Directory::File*>(&(*i));
+			f->setTTH(root);
+			tthIndex.insert(make_pair(root, i));
+		}
 	}
 }
-		}
-	}
 
-// SettingsManagerListener
-void ShareManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw() {
-	switch(type) {
-	case SettingsManagerListener::LOAD: load(xml); break;
-	case SettingsManagerListener::SAVE: save(xml); saveXmlList(); break;
-		}
-	}
-
-void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) throw() {
-	if(type == TimerManagerListener::MINUTE && BOOLSETTING(AUTO_UPDATE_LIST)) {
-		if(lastUpdate + SETTING(SHARE_REFRESH_TIME) * 60 * 1000 < tick) {
+void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
+	if(BOOLSETTING(AUTO_UPDATE_LIST)) {
+		if(lastUpdate + 60 * 60 * 1000 < tick) {
 			try {
 				dirty = true;
 				refresh(true, true);
 				lastUpdate = tick;
-			} catch(const ShareException&) {}
+			} catch(const ShareException&) {
+			}
 		} 
 	}
-	if(type == TimerManagerListener::MINUTE && BOOLSETTING(AUTO_UPDATE_INCOMING)) {
+	if(BOOLSETTING(AUTO_UPDATE_INCOMING)) {
 		if(lastIncomingUpdate + SETTING(INCOMING_REFRESH_TIME) * 60 * 1000 < tick) {
 			try {
 				dirty = true;

@@ -312,9 +312,9 @@ private:
 			return false;
 		}
 		
-		GETSETREF(string, target, Target);
-		GETSETREF(string, searchString, SearchString);
-		GETSETREF(string, path, Path);
+		GETSET(string, target, Target);
+		GETSET(string, searchString, SearchString);
+		GETSET(string, path, Path);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
 		GETSET(u_int32_t, added, Added);
@@ -322,7 +322,7 @@ private:
 		GETSET(QueueItem::Status, status, Status);
 		GETSET(TTHValue*, tth, TTH);
 		u_int32_t updateMask;
-
+	
 	private:
 
 		Display* display;
@@ -458,17 +458,12 @@ private:
 	bool isItemCountAtLeast(HTREEITEM ht, unsigned int minItemCount);
 	bool isItemCountAtLeastRecursive(HTREEITEM ht, unsigned int& minItemCount);
 
-	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) throw();
-	virtual void onAction(QueueManagerListener::Types type, string msg) throw() {
-		//PopupManager::getInstance()->Show(m_hWnd, msg);
-	}
-
-
-	void onQueueAdded(QueueItem* aQI);
-	void onQueueMoved(QueueItem* aQI);
-	void onQueueRemoved(QueueItem* aQI);
-	void onQueueUpdated(QueueItem* aQI);
-	void onQueueSearchStringUpdated(QueueItem* aQI);
+	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Moved, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
+	virtual void on(QueueManagerListener::SearchStringUpdated, QueueItem* aQI) throw();
 
 	void collapse(HTREEITEM item);
 };

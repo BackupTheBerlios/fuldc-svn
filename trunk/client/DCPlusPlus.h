@@ -28,8 +28,6 @@
 #ifdef _WIN32
 // Warning C4130: '==' : logical operation on address of string constant
 #pragma warning (disable: 4130)
-//Warning C4127: conditional expression is constant
-//#pragma warning (disable: 4127)
 #endif
 
 inline void CDECL debugTrace(const char* format, ...)
@@ -54,8 +52,8 @@ inline void CDECL debugTrace(const char* format, ...)
 do { if (!(exp)) { \
 	dcdebug("Assertion hit in %s(%d): " #exp "\n", __FILE__, __LINE__); \
 	if(1 == _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, #exp)) \
-_CrtDbgBreak(); } } while (0)
-#define dcasserta(exp) dcassert(exp)
+_CrtDbgBreak(); } } while(false)
+#define dcasserta(exp) dcassert(0)
 #else
 #include <assert.h>
 #define dcasserta(exp) assert(exp)
@@ -100,8 +98,21 @@ typedef StringBoolMap::iterator StringBoolMapIter;
 extern void startup(void (*f)(void*, const string&, const string&), void* p);
 extern void shutdown();
 
-#define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };
-#define GETSETREF(type, name, name2) private: type name; public: const type& get##name2() const { return name; }; void set##name2(const type& a##name2) { name = a##name2; };
+template<typename T, bool flag> struct ReferenceSelector {
+	typedef T ResultType;
+};
+template<typename T> struct ReferenceSelector<T,true> {
+	typedef const T& ResultType;
+};
+template<typename T> struct TypeTraits {
+	typedef typename ReferenceSelector<T,(sizeof(T)>sizeof(char*))>::ResultType
+		ParameterType;
+};
+
+#define GETSET(type, name, name2) \
+private: type name; \
+public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
+	void set##name2(TypeTraits<type>::ParameterType a##name2) { name = a##name2; };
 
 #endif // _DCPLUSPLUS_H
 

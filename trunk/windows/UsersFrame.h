@@ -184,20 +184,13 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 
 	// HubManagerListener
-	virtual void onAction(HubManagerListener::Types type, const User::Ptr& aUser) throw() {
-		switch(type) {
-		case HubManagerListener::USER_ADDED: addUser(aUser); break;
-		case HubManagerListener::USER_REMOVED: removeUser(aUser); break;
-		}
-	}
+	virtual void on(UserAdded, const User::Ptr& aUser) throw() { addUser(aUser); }
+	virtual void on(UserRemoved, const User::Ptr& aUser) throw() { removeUser(aUser); }
 
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw() {
-		switch(type) {
-		case ClientManagerListener::USER_UPDATED:
-			if(aUser->isFavoriteUser()) {
-				PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
-			}
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
+		if(aUser->isFavoriteUser()) {
+			PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
 		}
 	}
 

@@ -60,43 +60,37 @@ void PopupManager::Show(const string& aMsg ) {
 	popups.push_back(p);
 }
 
-void PopupManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
-	if(TimerManagerListener::Types::SECOND == type) {
-		//we got nothing to do here
-		if(popups.empty()) {
-			return;
-		}
+void PopupManager::on(TimerManagerListener::Second type, u_int32_t tick) {
+	//we got nothing to do here
+	if(popups.empty()) {
+		return;
+	}
 
-		if(!BOOLSETTING(REMOVE_POPUPS))
-			return;
+	if(!BOOLSETTING(REMOVE_POPUPS))
+		return;
 
-		//check all popups and see if we need to remove anyone
-		PopupList::iterator i = popups.begin();
-		for(; i != popups.end(); ++i) {
+	//check all popups and see if we need to remove anyone
+	PopupList::iterator i = popups.begin();
+	for(; i != popups.end(); ++i) {
 
-			if((*i)->visible + SETTING(POPUP_TIMEOUT) * 1000 < tick) {
-				//okay remove the first popup
-				Remove();
+		if((*i)->visible + SETTING(POPUP_TIMEOUT) * 1000 < tick) {
+			//okay remove the first popup
+			Remove();
 
-				//if list is empty there is nothing more to do
-				if(popups.empty())
-					return;
+			//if list is empty there is nothing more to do
+			if(popups.empty())
+				return;
 				
-				//start over from the beginning
-				i = popups.begin();
-			}
+			//start over from the beginning
+			i = popups.begin();
 		}
-
-
-
 	}
 }
 
-void PopupManager::onAction(QueueManagerListener::Types type, string msg) {
+void PopupManager::on(QueueManagerListener::ReleaseDone, string msg) {
 	//we can't create the window in this thread, then the client will crash
 	//so post a message and let the main window thread create it
-	string *s = new string(msg);
-	::PostMessage(hWnd, WM_SPEAKER, DOWNLOAD_COMPLETE, (LPARAM)s);
+	::PostMessage(hWnd, WM_SPEAKER, DOWNLOAD_COMPLETE, (LPARAM)new string(msg));
 }
 
 void PopupManager::Remove(int pos) {
