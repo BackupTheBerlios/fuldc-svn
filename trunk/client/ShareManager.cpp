@@ -102,10 +102,10 @@ ShareManager::~ShareManager() {
 ShareManager::Directory::~Directory() {
 	for(MapIter i = directories.begin(); i != directories.end(); ++i)
 		delete i->second;
-	for(File::Iter i = files.begin(); i != files.end(); ++i) {
-		dcassert(i->getTTH() != NULL);
-		ShareManager::getInstance()->removeTTH(i->getTTH(), i);
-	}
+	//for(File::Iter i = files.begin(); i != files.end(); ++i) {
+		//dcassert(i->getTTH() != NULL);
+		//ShareManager::getInstance()->removeTTH(i->getTTH(), i);
+	//}
 }
 
 
@@ -350,7 +350,7 @@ string ShareManager::Directory::getADCPath() const throw() {
 string ShareManager::Directory::getFullName() const throw() {
 	if(parent == NULL)
 		return getName() + '\\';
-	return parent->getName() + getName() + '\\';
+	return parent->getName() + '\\' + getName() + '\\';
 }
 
 void ShareManager::Directory::addType(u_int32_t type) throw() {
@@ -637,6 +637,9 @@ int ShareManager::run() {
 		}
 	}
 
+	generateXmlList(true);
+	generateNmdcList(true);
+
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 	if(update) {
 		ClientManager::getInstance()->infoUpdated();
@@ -644,8 +647,8 @@ int ShareManager::run() {
 	return 0;
 }
 
-void ShareManager::generateXmlList() {
-	if(xmlDirty && lastXmlUpdate + 15 * 60 * 1000 < GET_TICK()) {
+void ShareManager::generateXmlList(bool force /* = false */ ) {
+	if(xmlDirty && (lastXmlUpdate + 15 * 60 * 1000 < GET_TICK() || force ) ) {
 		listN++;
 
 		try {
@@ -685,8 +688,8 @@ void ShareManager::generateXmlList() {
 		lastXmlUpdate = GET_TICK();
 	}
 }
-void ShareManager::generateNmdcList() {
-	if(nmdcDirty && lastNmdcUpdate + 15 * 60 * 1000 < GET_TICK()) {
+void ShareManager::generateNmdcList(bool force /* = false */) {
+	if(nmdcDirty && (lastNmdcUpdate + 15 * 60 * 1000 < GET_TICK() || force) ) {
 		listN++;
 
 		try {

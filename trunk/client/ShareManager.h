@@ -87,8 +87,8 @@ public:
 	GETSET(string, bzXmlFile, BZXmlFile);
 
 	bool loadXmlList();
-	void generateXmlList();
-	void generateNmdcList();
+	void generateXmlList(bool force = false);
+	void generateNmdcList(bool force = false);
 
 	bool isIncoming(const string& aDir);
 	void setIncoming(const string& aDir, bool incoming = true);
