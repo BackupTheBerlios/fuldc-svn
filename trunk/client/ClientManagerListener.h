@@ -32,8 +32,9 @@ public:
 	enum Types {
 		USER_UPDATED,
 		INCOMING_SEARCH,
-		CLIENT_ADDED,
-		CLIENT_REMOVED,
+		CLIENT_CONNECTED,
+		CLIENT_UPDATED,
+		CLIENT_DISCONNECTED,
 	};
 
 	virtual void onAction(Types, const User::Ptr&) throw() { };

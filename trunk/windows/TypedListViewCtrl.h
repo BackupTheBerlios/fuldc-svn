@@ -114,12 +114,12 @@ public:
 		return pred;
 	}
 	
-	void update(int i) {
+	void updateItem(int i) {
 		int k = GetHeader().GetItemCount();
 		for(int j = 0; j < k; ++j)
 			SetItemText(i, j, LPSTR_TEXTCALLBACK);
 	}
-	void updateItem(T* item) { int i = findItem(item); if(i != -1) update(i); };
+	void updateItem(T* item) { int i = findItem(item); if(i != -1) updateItem(i); };
 	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); };
 
 	int getSortPos(T* a) {

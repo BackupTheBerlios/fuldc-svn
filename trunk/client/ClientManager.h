@@ -79,19 +79,17 @@ public:
 		}
 	}
 
-	void search(Client::List& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
+	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
 		Lock l(cs);
 
-		Client::Iter beginOrigIt = clients.begin();
-		Client::Iter endOrigIt = clients.end();
-		Client::Iter endIt = who.end();
-		for(Client::Iter it = who.begin(); it != endIt; ++it) {
-			Client* client = *it;
-			if(find(beginOrigIt, endOrigIt, client) == endOrigIt)
-				continue;
+		for(StringIter it = who.begin(); it != who.end(); ++it) {
+			string& client = *it;
+			for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
+				Client* c = *j;
+				if(c->isConnected() && c->getIpPort() == client) {
+					c->search(aSizeMode, aSize, aFileType, aString);
 
-			if(client->isConnected()) {
-				client->search(aSizeMode, aSize, aFileType, aString);
+				}
 			}
 		}
 	}
@@ -168,6 +166,7 @@ private:
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
+	virtual void onAction(ClientListener::Types type, Client* client) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) throw();

@@ -435,7 +435,7 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
 		if( Util::stricmp(u->getNick(), ui->user->getNick()) == 0) {
 			ctrlUsers.getItemData(i)->update();
-			ctrlUsers.update(i);
+			ctrlUsers.updateItem(i);
 			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
 			
 			return false;
@@ -530,9 +530,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		addClientLine(*x, false);
 		delete x;
 	} else if(wParam == SET_WINDOW_TITLE) {
-		string* x = (string*)lParam;
-		SetWindowText(Util::validateMessage(*x, true).c_str());
-		delete x;
+		SetWindowText(((string*)lParam)->c_str());
 	} else if(wParam == STATS) {
 		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
 		if(client->getUserInfo()){
@@ -1420,10 +1418,8 @@ void HubFrame::removeUser(const User::Ptr& u) {
 	UserMap::iterator i = usermap.begin();
 	for(; i != usermap.end(); ++i) {
 		if(Util::stricmp(i->second->user->getNick(), u->getNick()) == 0){
-			if(curUser != usermap.end()){
-				if(Util::stricmp(u->getNick(), curUser->second->user->getNick()) == 0) 
-					curUser = usermap.end();
-			}
+			if(i == curUser)
+				curUser = usermap.end();
 			
 			delete i->second;
 			i->second = NULL;

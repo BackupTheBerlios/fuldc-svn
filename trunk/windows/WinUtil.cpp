@@ -784,13 +784,16 @@ void WinUtil::AppendSearchMenu(CMenu& menu) {
 	}
 }
 
-void WinUtil::SetIcon(HWND hWnd, string file) {
+void WinUtil::SetIcon(HWND hWnd, string file, bool big) {
 	string path = "icons\\" + file;
-	HICON hIcon   = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
 	HICON hIconSm = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
-	
-	::SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 	::SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIconSm);
+
+	if(big){
+		HICON hIcon   = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
+		::SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+	}
+	
 }
 
 string WinUtil::encodeFont(LOGFONT const& font){

@@ -85,7 +85,7 @@ public:
 
 	static void decodeFont(const string& setting, LOGFONT &dest);
 
-	static void SetIcon(HWND hWnd, string file);
+	static void SetIcon(HWND hWnd, string file, bool big = false);
 	static void copyToClipboard(const string & aStr);
 	static void search(string searchTerm, int searchMode);
 	static void AppendSearchMenu(CMenu& menu);

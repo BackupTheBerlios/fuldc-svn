@@ -198,7 +198,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	PopupManager::getInstance()->SetHwnd(m_hWnd);
 
-	WinUtil::SetIcon(m_hWnd, "DCPlusPlus.ico");
+	WinUtil::SetIcon(m_hWnd, "DCPlusPlus.ico", true);
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
 	return 0;
@@ -240,8 +240,8 @@ void MainFrame::startSocket() {
 
 HWND MainFrame::createToolbar() {
 	CToolBarCtrl ctrlToolbar;
-	largeImages.CreateFromImage("icons\\toolbar20.bmp", 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	largeImagesHot.CreateFromImage("icons\\toolbar20-highlight.bmp", 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImages.CreateFromImage("icons\\toolbar20.bmp", 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImagesHot.CreateFromImage("icons\\toolbar20-highlight.bmp", 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	
 	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrlToolbar.SetImageList(largeImages);

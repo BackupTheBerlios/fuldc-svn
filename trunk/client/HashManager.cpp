@@ -158,7 +158,7 @@ void HashManager::HashStore::save() {
 			string b32tmp;
 
 			f.write(SimpleXML::w1252Header);
-			f.write(LITERAL("<HashStore version=\"" HASH_FILE_VERSION_STRING "\">"));
+			f.write(LITERAL("<HashStore version=\"" HASH_FILE_VERSION_STRING "\">\r\n"));
 			for(TTHIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
 				if(i->second->getIndex() == 0)
 					continue;

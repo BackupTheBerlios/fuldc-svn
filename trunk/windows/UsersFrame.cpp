@@ -100,7 +100,7 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		if(dlg.DoModal(m_hWnd)) {
 			ui->user->setUserDescription(dlg.line);
 			ui->update();
-			ctrlUsers.update(i);
+			ctrlUsers.updateItem(i);
 			HubManager::getInstance()->save();
 		}
 	}
@@ -128,7 +128,7 @@ void UsersFrame::updateUser(const User::Ptr& aUser) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
 			ui->update();
-			ctrlUsers.update(i);
+			ctrlUsers.updateItem(i);
 		}
 	}
 }

@@ -34,12 +34,12 @@
 #define FILE_LIST_NAME "File Lists"
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
-COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED, COLUMN_TTH };
+COLUMN_USERS, COLUMN_PATH, COLUMN_EXACT_SIZE, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED, COLUMN_TTH };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 200, 200, 100, 125 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 75, 200, 200, 100, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, ResourceManager::DOWNLOADED,
-ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING,
+ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::EXACT_SIZE, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING,
 ResourceManager::ADDED, ResourceManager::TTH_ROOT };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -224,6 +224,7 @@ void QueueFrame::QueueItemInfo::update() {
 	}
 	if(colMask & MASK_SIZE) {
 			display->columns[COLUMN_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(getSize());
+			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::toString(getSize());
 	}
 	if(colMask & MASK_DOWNLOADED) {
 			if(getSize() > 0)
