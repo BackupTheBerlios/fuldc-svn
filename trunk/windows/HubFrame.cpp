@@ -219,8 +219,12 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
 				if(!param.empty()) {
 					redirect = param;
-					BOOL whatever = FALSE;
-					onFollow(0, 0, 0, whatever);
+					if(BOOLSETTING(SETTINGS_OPEN_NEW_WINDOW)) {
+						HubFrame::openWindow(param);
+					} else {
+						BOOL whatever = FALSE;
+						onFollow(0, 0, 0, whatever);
+					}
 				} else {
 					addClientLine(TSTRING(SPECIFY_SERVER));
 				}

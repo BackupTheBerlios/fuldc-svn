@@ -61,9 +61,19 @@ void Transfer::updateRunningAverage() {
 
 void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw () {
 
-	if(aLine.length() == 0)
+	if(aLine.length() < 2)
 		return;
 
+	if(aLine[0] == 'C' && !isSet(FLAG_NMDC)) {
+		dispatch(aLine);
+		return;
+	} else if(aLine[0] == '$') {
+		setFlag(FLAG_NMDC);
+	} else {
+		// We shouldn't be here?
+		dcdebug("Unknown UserConnection command: %.50s\n", aLine.c_str());
+		return;
+	}
 	string cmd;
 	string param;
 
@@ -158,7 +168,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	} else if(cmd.compare(0, 4, "$ADC") == 0) {
 		dispatch(aLine, true);
 	} else {
-		dcdebug("Unknown UserConnection command: %.50s\n", aLine.c_str());
+		dcdebug("Unknown NMDC command: %.50s\n", aLine.c_str());
 	}
 }
 

@@ -61,7 +61,7 @@ public:
 	SimpleXMLReader(CallBack* callback) : cb(callback), utf8(true) { }
 	virtual ~SimpleXMLReader() { }
 
-	string::size_type fromXML(const string& tmp, const string& n = Util::emptyString, string::size_type start = 0, bool inTag = false) throw(SimpleXMLException);
+	string::size_type fromXML(const string& tmp, const string& n = Util::emptyString, string::size_type start = 0, int depth = 0) throw(SimpleXMLException);
 private:
 	StringPairList attribs;
 	string data;
@@ -70,7 +70,7 @@ private:
 	bool utf8;
 
 	string::size_type loadAttribs(const string& name, const string& tmp, string::size_type start) throw(SimpleXMLException);
-
+	static const int maxNesting = 200;
 };
 
 /**

@@ -261,7 +261,8 @@ void UploadPage::addDirectory(const tstring& aPath){
 		LineDlg virt;
 		virt.title = TSTRING(VIRTUAL_NAME);
 		virt.description = TSTRING(VIRTUAL_NAME_LONG);
-		virt.line = Util::getLastDir(path);
+		virt.line = Text::toT(ShareManager::getInstance()->validateVirtual(
+			Util::getLastDir(Text::fromT(path))));
 		if(virt.DoModal(m_hWnd) == IDOK) {
 			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(virt.line));
 			ShareManager::getInstance()->setIncoming(Text::fromT(path), false);

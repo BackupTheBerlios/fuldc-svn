@@ -300,9 +300,9 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	}
 
 	try { 
-		uc = getConnection();
+		uc = getConnection(false);
 		uc->setFlag(UserConnection::FLAG_INCOMING);
-		uc->setState(UserConnection::STATE_NICK);
+		uc->setState(UserConnection::STATE_SUPNICK);
 		uc->setLastActivity(GET_TICK());
 		uc->accept(socket);
 	} catch(const SocketException& e) {
@@ -318,7 +318,7 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 
 	UserConnection* uc = NULL;
 	try {
-		uc = getConnection();
+		uc = getConnection(true);
 		uc->setNick(aNick);
 		uc->setState(UserConnection::STATE_CONNECT);
 		uc->connect(aServer, aPort);
@@ -328,11 +328,88 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 	}
 }
 
+void ConnectionManager::connect(const string& aServer, short aPort, const CID& aCID, u_int32_t aToken) {
+	if(shuttingDown)
+		return;
+
+	UserConnection* uc = NULL;
+	try {
+		uc = getConnection(false);
+		uc->setCID(aCID);
+		uc->setToken(aToken);
+		uc->setState(UserConnection::STATE_CONNECT);
+		uc->connect(aServer, aPort);
+	} catch(const SocketException&) {
+		if(uc)
+			putConnection(uc);
+	}
+}
+
+void ConnectionManager::on(Command::SUP, UserConnection* aSource, const Command&) {
+	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
+		// Already got this once, ignore...
+		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
+		return;
+	}
+
+	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
+		aSource->sup();
+		aSource->inf(false);
+	} else {
+		aSource->inf(true);
+	}
+	aSource->setState(UserConnection::STATE_INF);
+}
+
+void ConnectionManager::on(Command::INF, UserConnection* aSource, const Command& cmd) throw() {
+	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
+		// Already got this once, ignore...
+		aSource->sta(Command::SEV_FATAL, Command::ERROR_PROTOCOL_GENERIC, "Expecting INF");
+		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
+		return;
+	}
+	
+	string cid;
+
+	if(!cmd.getParam("CI", 0, cid)) {
+		dcdebug("CM::onINF: No CI");
+		aSource->sta(Command::SEV_FATAL, Command::ERROR_INF_MISSING, "CI missing from INF");
+		putConnection(aSource);
+		return;
+	}
+
+	aSource->setUser(ClientManager::getInstance()->getUser(CID(cid), false));
+
+	if(!aSource->getUser()) {
+		dcdebug("CM::onINF: User not found");
+		aSource->sta(Command::SEV_FATAL, Command::ERROR_INF_MISSING, "User not found");
+		putConnection(aSource);
+		return;
+	}
+
+	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
+		// This one is ready to be passed to the download manager...
+
+	}
+}
+
+void ConnectionManager::on(Command::NTD, UserConnection* aSource, const Command&) throw() {
+	
+}
+
+void ConnectionManager::on(Command::STA, UserConnection*, const Command&) throw() {
+
+}
+
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
-	aSource->myNick(aSource->getNick());
-	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-	aSource->setState(UserConnection::STATE_NICK);
+	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
+		aSource->myNick(aSource->getNick());
+		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+	} else {
+		aSource->sup();
+	}
+	aSource->setState(UserConnection::STATE_SUPNICK);
 }
 
 /**
@@ -340,7 +417,7 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
  */
 void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSource, const string& aNick) throw() {
 
-	if(aSource->getState() != UserConnection::STATE_NICK) {
+	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
 		return;

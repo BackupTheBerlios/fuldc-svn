@@ -830,12 +830,6 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				readdItems++;
 			}
 
-			if(ii->getTTH() == NULL) {
-				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
-			} else {
-				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
-			}
-			
 			singleMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		} else {
 			multiMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);

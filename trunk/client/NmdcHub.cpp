@@ -570,7 +570,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			updateCounts(false);
 			// Special...to avoid op's complaining that their count is not correctly
 			// updated when they log in (they'll be counted as registered first...)
-			myInfo(true);
+			myInfo(false);
 		}
 	} else if(cmd == "$To:") {
 		string::size_type i = param.find("From:");

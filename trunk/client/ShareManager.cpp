@@ -44,7 +44,7 @@
 #include <limits>
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
-	xmlDirty(false), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
+	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
 	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20),
 	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false)
 { 
@@ -231,7 +231,7 @@ string ShareManager::validateVirtual(const string& aVirt) {
 	string tmp = aVirt;
 	string::size_type idx;
 
-	while( (idx = tmp.find_first_of("$|")) != string::npos) {
+	while( (idx = tmp.find_first_of("$|:\\/")) != string::npos) {
 		tmp[idx] = '_';
 	}
 	return tmp;
@@ -296,6 +296,8 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 	if(d[d.length() - 1] != PATH_SEPARATOR)
 		d += PATH_SEPARATOR;
 
+	string vName = validateVirtual(aName);
+
 	Directory* dp = NULL;
 	{
 		RLock l(cs);
@@ -313,14 +315,14 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 	}
 	
 	dp = buildTree(d, NULL);
-	dp->setName(aName);
+	dp->setName(vName);
 
 	{
 		WLock l(cs);
 		addTree(d, dp);
 
 		directories[d] = dp;
-		virtualMap.push_back(make_pair(validateVirtual(aName), d));
+		virtualMap.push_back(make_pair(vName, d));
 		setDirty();
 	}
 }
