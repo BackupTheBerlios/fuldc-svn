@@ -259,7 +259,6 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 string Util::getAwayMessage() { 
 	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
 }
-
 string Util::formatBytes(int64_t aBytes) {
 	char buf[64];
 	if(aBytes < 1024) {
@@ -722,6 +721,26 @@ string Util::getIpCountry (string IP) {
 	}
 
 	return Util::emptyString; //if doesn't returned anything already, something is wrong...
+}
+
+string Util::getShortTimeString() {
+	size_t bufSize = SETTING(TIME_STAMPS_FORMAT).length() * 2;
+	AutoArray<char> buf(bufSize);
+
+	time_t _tt = time(NULL);
+	tm* _tm = localtime(&_tt);
+	if(_tm == NULL) {
+		if(bufSize < 9)
+			buf.resize(9);
+		strcpy(buf, "xx:xx:xx");
+	} else {
+		while(0 == strftime(buf, bufSize, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm) ){
+			bufSize *= 2;
+			buf.resize(bufSize);
+		}
+
+	}
+	return buf;
 }
 /**
  * @file

@@ -100,6 +100,7 @@ public:
 	~AutoArray() { delete[] p; };
 	operator TPtr() { return p; };
 	AutoArray& operator=(TPtr t) { delete[] p; p = t; return *this; };
+	void resize(size_t size) { delete[] p; p = new T[size]; };
 private:
 	AutoArray(const AutoArray&);
 	AutoArray& operator=(const AutoArray&);
@@ -241,17 +242,7 @@ public:
 		return formatBytes(toInt64(aString));
 	}
 
-	static string getShortTimeString() {
-		char buf[12];
-		time_t _tt = time(NULL);
-		tm* _tm = localtime(&_tt);
-		if(_tm == NULL) {
-			strcpy(buf, "xx:xx:xx");
-		} else {
-			strftime(buf, 12, "%H:%M:%S", _tm);
-		}
-		return buf;
-	}
+	static string getShortTimeString();
 
 	static string getTimeString() {
 		char buf[64];

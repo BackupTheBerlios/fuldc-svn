@@ -61,6 +61,7 @@
 #define IDC_COPY                        150
 #define IDC_REFRESH_MENU                151
 #define IDC_SETTINGS_LOG_STATUS_MESSAGES 152
+#define IDC_SETTINGS_ONLY_HASHED        153
 #define IDD_SETTINGS                    201
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209
@@ -397,6 +398,8 @@
 #define IDC_ST_DISPLAYTIME              1276
 #define IDC_ST_MESSAGE_LENGTH           1277
 #define IDC_SB_MINISLOTS                1278
+#define IDC_SB_TIMESTAMPS               1278
+#define IDC_SB_TIME_STAMPS              1278
 #define IDC_ST_MINISLOTS_EXT            1279
 #define IDC_ST_MINISLOTS_SIZE           1280
 #define IDC_SB_PATHS                    1281
@@ -406,6 +409,8 @@
 #define IDC_SB_HIGHLIGHT                1285
 #define IDC_SB_SETTINGS                 1286
 #define IDC_ST_MATCH_TYPE               1287
+#define IDC_EDIT_TIME_STAMPS            1288
+#define IDC_BTN_TIME_STAMP_HELP         1289
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -453,7 +458,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32818
-#define _APS_NEXT_CONTROL_VALUE         1288
+#define _APS_NEXT_CONTROL_VALUE         1290
 #define _APS_NEXT_SYMED_VALUE           133
 #endif
 #endif

@@ -304,7 +304,7 @@
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
-		<String Name="SettingsExampleText">Donate $$$:s! (well, ï¿½ï¿½ï¿½ preferably =) (see help menu)</String>
+		<String Name="SettingsExampleText">Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
@@ -329,6 +329,7 @@
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
+		<String Name="SettingsOnlyHashed">Note; New files are added to the share only once they've been hashed!</String>
 		<String Name="SettingsOpenFavoriteHubs">Open the favorite hubs window at startup</String>
 		<String Name="SettingsOpenFinishedDownloads">Open the finished downloads window at startup</String>
 		<String Name="SettingsOpenPublic">Open the public hubs window at startup</String>
@@ -370,11 +371,11 @@
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
 		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
-		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory (empty = download directly to target)</String>
+		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
-		<String Name="SettingsUrlHandler">Install URL handler on startup (to handle dchub:// links)</String>
+		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// URL links</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>
@@ -557,5 +558,9 @@
 		<String Name="Results">Results: </String>
 		<String Name="Filtered">Filtered: </String>
 		<String Name="NotifyMe">Notify Me</String>
+		<String Name="TimeStampsHelp">%a - Abbreviated weekday name\n%A - Full weekday name\n%b - Abbreviated month name\n%B - Full month name\n%c - Date and time representation appropriate for locale\n%d - Day of month as decimal number (01 – 31)\n%H - Hour in 24-hour format (00 – 23)\n%I - Hour in 12-hour format (01 – 12)\n%j - Day of year as decimal number (001 – 366)\n%m - Month as decimal number (01 – 12)\n%M - Minute as decimal number (00 – 59)\n%p - Current locale's A.M./P.M. indicator for 12-hour clock\n%S - Second as decimal number (00 – 59)\n%U - Week of year as decimal number, with Sunday as first day of week (00 – 53)\n%w - Weekday as decimal number (0 – 6; Sunday is 0)\n%W - Week of year as decimal number, with Monday as first day of week (00 – 53)\n%x - Date representation for current locale\n%X - Time representation for current locale\n%y - Year without century, as decimal number (00 – 99)\n%Y - Year with century, as decimal number\n%z, %Z - Either the time-zone name or time zone abbreviation, depending on registry settings; no characters if time zone is unknown\n%% - Percent sign</String>
+		<String Name="TimeStampsHelpCaption">Time Format</String>
+		<String Name="SettingsTimeStampHelp">Help</String>
+		<String Name="SettingsSbTimeStamps">Time Format</String>
 	</Strings>
 </Language>

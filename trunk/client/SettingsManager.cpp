@@ -36,7 +36,7 @@ const string SettingsManager::settingTags[] =
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
-	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
+	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID",
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"DownloadToPaths", "HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
@@ -146,6 +146,7 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_PROGRESS_BARS, true);
 	setDefault(SFV_CHECK, false);
 	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. I might answer later if you're lucky.");
+	setDefault(TIME_STAMPS_FORMAT, "%H:%M:%S");
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
