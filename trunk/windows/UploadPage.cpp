@@ -191,8 +191,9 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	StringPairList directories = ShareManager::getInstance()->getDirectories();
 	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->second));
-		ctrlDirectories.SetItemText(i, 1, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->first));
+		ctrlDirectories.SetItemText(i, 1, Text::toT(j->second).c_str() );
+		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
 	}
 
 	// Display the new total share size

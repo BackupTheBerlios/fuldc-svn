@@ -36,14 +36,14 @@ string SearchResult::toSR() const {
 	string tmp;
 	tmp.reserve(128);
 	tmp.append("$SR ", 4);
-	tmp.append(user->getNick());
+	tmp.append( Text::utf8ToAcp( user->getNick() ) );
 	tmp.append(1, ' ');
 	if(type == TYPE_FILE) {
-		tmp.append(file);
+		tmp.append( Text::utf8ToAcp( file ) );
 		tmp.append(1, '\x05');
 		tmp.append(Util::toString(size));
 	} else {
-		tmp.append(file, 0, file.length() - 1);
+		tmp.append( Text::utf8ToAcp( file ), 0, file.length() - 1);
 	}
 	tmp.append(1, ' ');
 	tmp.append(Util::toString(freeSlots));
@@ -174,7 +174,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		if( (j = x.find(' ', i)) == string::npos) {
 			return;
 		}
-		string nick = x.substr(i, j-i);
+		string nick = Text::acpToUtf8( x.substr(i, j-i) );
 		i = j + 1;
 
 		// A file has 2 0x05, a directory only one
@@ -199,12 +199,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 			if(j < i + 1) {
 				return;
 			}
-			file = x.substr(i, j-i) + '\\';
+			file = Text::acpToUtf8( x.substr(i, j-i) + '\\' );
 		} else if(cnt == 2) {
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
 			}
-			file = x.substr(i, j-i);
+			file = Text::acpToUtf8( x.substr(i, j-i) );
 			i = j + 1;
 			if( (j = x.find(' ', i)) == string::npos) {
 				return;
@@ -226,7 +226,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		if( (j = x.rfind(" (")) == string::npos) {
 			return;
 		}
-		string hubName = x.substr(i, j-i);
+		string hubName = Text::acpToUtf8( x.substr(i, j-i) );
 		i = j + 2;
 		if( (j = x.rfind(')')) == string::npos) {
 			return;

@@ -119,11 +119,14 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 				Util::decodeUrl(aSeeker, ip, port, file);
 				ip = Socket::resolve(ip);
 				if(port == 0) port = 412;
+				string res;
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					s.writeTo(ip, port, sr->toSR());
+					res += sr->toSR();
 					sr->decRef();
 				}
+				s.writeTo(ip, port, res);
+
 			} catch(const SocketException& /* e */) {
 				dcdebug("Search caught error\n");
 			}
