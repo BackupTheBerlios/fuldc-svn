@@ -67,14 +67,19 @@ public:
 			delete tthRoot;
 		}
 
+		void setAdls(bool _adls) {
+			adls = _adls;
+		}
+
 		bool getAdls() {
-			return getParent()->getAdls();
+			return adls || getParent()->getAdls();
 		}
 
 		GETSET(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
 		GETSET(TTHValue*, tthRoot, TTH);
+		bool adls;
 	};
 
 	class Directory : public FastAlloc<Directory> {

@@ -121,7 +121,14 @@ public:
 
 	static void initialize();
 
+	/**
+	 * Get the path to the application executable. 
+	 * This is mainly intended for use on Windows.
+	 *
+	 * @return Path to executable file.
+	 */
 	static string getAppPath() { return appPath; }
+
 	static string getAppName() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH+1];
@@ -140,6 +147,18 @@ public:
 #endif // _WIN32
 	}	
 
+	/**
+	 * Get the path to where the applications settings.
+	 * 
+	 * @return Path to settings directory.
+	 */
+	static string getConfigPath();
+
+	/**
+	 * Get the directory for temporary files.
+	 *
+	 * @return Path to temp directory.
+	 */
 	static string getTempPath() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
@@ -150,13 +169,21 @@ public:
 #endif
 	}
 
+	/**
+	 * Get the directory to the application resources.
+	 *
+	 * @todo On non Windows system this still returns the path to the
+	 * configuration directory. Later this will be completed with a patch for
+	 * Mac OS X. And the Linux(?) implementation is also wrong right now.
+	 * @return Path to resource directory.
+	 */
 	static string getDataPath() {
 #ifdef _WIN32
 		return getAppPath();
 #else
 		char* home = getenv("HOME");
 		if (home) {
-			return string(home) + "/dc++/";
+			return string(home) + "/.dc++/";
 		}
 		return emptyString;
 #endif

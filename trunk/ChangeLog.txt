@@ -1,5 +1,5 @@
--- 0.4035 --
-* Fixed copy nick to clipboard (thanks trem) [bug 173]
+-- 0.666 2004-11-03 --
+* [bug 173] Fixed copy nick to clipboard (thanks trem)
 * Removed some old code (thanks garg)
 * Added tth to log codes (thanks garg)
 * Added # of locally filtered results to search frame (thanks garg)
@@ -41,7 +41,11 @@
 * Some fixes for compiling on osx (thanks jonathan jansson)
 * Removed Makedefs in favour of a python script
 * FastAlloc disabled in debug builds
-* Fixed a crash with offline users and user commands (thanks torgny nyblom)
+* Fixed a crash with offline users and user commands (thanks naga) [bug 266]
+* Fixed a case insensitivity issue (thanks farcry)
+* Added favorite download directories (thanks naga)
+* Fixed MyINFO spam when hashing
+
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)
@@ -70,7 +74,7 @@ international filenames in it - they will not be correctly converted.
 * Files that can't be moved to the target drive from the temp folder
   are now renamed to their real name
 * Text with unix and mac line end encodings should now be correctly displayed
-* TTH Values are used for right click download menus when available [bug 35]
+* [bug 35] TTH Values are used for right click download menus when available
 * Upgraded to WTL 7.5.4196
 * Updated license to allow others to release legal binaries compiled against WTL
 * Moved the core structures to UTF-8 to allow correct internationalisation (major change)
@@ -83,7 +87,7 @@ international filenames in it - they will not be correctly converted.
 * Removed autosearch string, it's not used any more
 * Fixed a tth hash speed bug (hashing should be much faster now)
 * File listings are now generated on the fly when someone needs them
-* Added UPnP support (thanks mark gillespie) [bug 127]
+* [bug 127] Added UPnP support (thanks mark gillespie)
 * Ctrl-L now opens file lists (thanks garg)
 * Various ADC patches (thanks sedulus)
 * Slightly changed temporary download name
@@ -99,15 +103,16 @@ international filenames in it - they will not be correctly converted.
 * Files scheduled for viewing are always set to highest prio
 * Added rudimentary automake and autoconf support for the client part, perhaps this will encourage someone
   to finish a nice linux port
-* Fixed dupe usercommands on reconnect (thanks sed) [bug 162]
+* [bug 162] Fixed dupe usercommands on reconnect (thanks sed)
 * Links now clickable in PM's and notepad as well (thanks torgny nyblom)
+* Links now clickable in PM's and notepad as well (thanks naga)
 * Files are no longer hashed if the shared directory is removed while hashing
 * Added hash progress dialog, hashing is run at a higher priority when dialog is shown
 * Fixed a crash issue with invalid DcLst:s (thanks garg)
 * Better strategy for removing old filelists on exit (thanks garg)
 * Added Geo-IP license and fixes (thanks garg)
 * Added Help file - make sure you read it (thanks garg)
-* Fixed a memory leak with rollback buffers under certain conditions [bug 169]
+* [bug 169] Fixed a memory leak with rollback buffers under certain conditions
 * ADC INF updates only send the necessary info (thanks sed)
 
  -- 0.4032 2004-08-08 --
@@ -211,11 +216,11 @@ international filenames in it - they will not be correctly converted.
   by exact filename for those that don't.
 * Dropped support for bzip2 file lists
 * Show joins parts for fav users only option added (thanks psf8500)
-* Added possibility to log hub status messages (thanks torgny nyblom)
+* Added possibility to log hub status messages (thanks naga)
 * Removed full-row-select option (blame garg)
 * Added possibility to drag-drop tabs (thanks trem)
 * Added toggles for transferview showing (thanks trem)
-* HTTPS added as chat click link (thanks torgny)
+* HTTPS added as chat click link (thanks naga)
 * Autoconnect postponed if no nick has been set (thanks sed)
 * Various unix compile fixes (thanks christer palm)
 * Fixes for IEC in settings pages (thanks slowmo)
@@ -245,8 +250,8 @@ international filenames in it - they will not be correctly converted.
 * Probably fixed search frame hang
 * Exact size in queue frame (thanks cologic)
 * Ip in search frame (thanks cologic)
-* Small fix to transfer view sorting (thanks torgny nyblom)
-* User commands in transfer view (thanks torgny nyblom)
+* Small fix to transfer view sorting (thanks naga)
+* User commands in transfer view (thanks naga)
 * Extra logging in main status bar (thanks garg)
 * Option not to bold queue tab (thanks garg)
 * Option not to send unknown /-commands (thanks garg)
@@ -283,8 +288,8 @@ international filenames in it - they will not be correctly converted.
 * XML File lists that contain hashes if available, and support full utf-8 names (correct viewing is not guaranteed,
   but download should work)
 * Upgraded to zlib 1.2.1 (thanks garg)
-* Extra column for hub in transfer list (thanks torgny nyblom)
-* Copy nick to clipboard in transfer list (thanks torgny nyblom)
+* Extra column for hub in transfer list (thanks naga)
+* Copy nick to clipboard in transfer list (thanks naga)
 * Files starting with a '.' are no longer shared if hidden files are not shared (...unix...)
 * Fixed a minor memory leak when an invalid search result is returned (exploitable minor security issue)
 * Slight speedup of file list loading
@@ -372,7 +377,7 @@ international filenames in it - they will not be correctly converted.
 * Fixed missing string (thanks gargoyle)
 * Fixed invalid date added formatting
 * Fixed trimming of spaces for http downloads (hub list...)
-* Fixed a bug in autosearch when using auto search strings (thanks ilkka sepp?l?)
+* Fixed a bug in autosearch when using auto search strings (thanks ilkka seppälä)
 * Fixed typo in user commands help
 * Fixed missing sort arrows
 * Added time last seen online to fav users (thanks gargoyle)

@@ -231,7 +231,8 @@ private:
 	bool reconnect;
 	u_int32_t lastUpdate;
 	string lastMyInfo;
-	
+	int64_t lastSize;
+
 	typedef list<pair<string, u_int32_t> > FloodMap;
 	typedef FloodMap::iterator FloodIter;
 	FloodMap seekers;

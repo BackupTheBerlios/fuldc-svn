@@ -36,7 +36,7 @@
 NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),  
 	adapter(this), state(STATE_CONNECT),
 	lastActivity(GET_TICK()), 
-	reconnect(true), lastUpdate(0)
+	reconnect(true), lastUpdate(0),lastSize(0)
 {
 	TimerManager::getInstance()->addListener(this);
 
@@ -56,6 +56,8 @@ void NmdcHub::connect() {
 	reconnect = true;
 	supportFlags = 0;
 	lastMyInfo.clear();
+	lastSize = 0;
+	lastUpdate = 0;
 
 	if(socket->isConnected()) {
 		disconnect();
@@ -643,8 +645,15 @@ void NmdcHub::myInfo() {
 		toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|";
 	if(minf != lastMyInfo) {
+		int64_t ssize = ShareManager::getInstance()->getShareSize();
+
+		if(lastSize != ssize && lastUpdate + 15*60*1000 > GET_TICK()) {
+			return;
+		}
 		send(minf);
 		lastMyInfo = minf;
+		lastSize = ssize;
+		lastUpdate = GET_TICK();
 	}
 }
 

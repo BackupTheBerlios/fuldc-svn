@@ -134,6 +134,17 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
 
+	for(int j=0; j<COLUMN_LAST; j++) {
+		ctrlFilterSel.AddString(CTSTRING_I(columnNames[j]));
+	}
+	ctrlFilterSel.SetCurSel(0);
+	
+
+	WinUtil::SetIcon(m_hWnd, _T("hub.ico"));
+
+	bHandled = FALSE;
+	client->connect();
+
 	tstring nick = Text::toT(client->getNick());
 	if(stripIsp) {
 		tstring::size_type pos = nick.find(_T("["));
@@ -149,17 +160,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.SetNick(nick);
 	if(stripIsp)
 		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
-
-	for(int j=0; j<COLUMN_LAST; j++) {
-		ctrlFilterSel.AddString(CTSTRING_I(columnNames[j]));
-	}
-	ctrlFilterSel.SetCurSel(0);
-	
-
-	WinUtil::SetIcon(m_hWnd, _T("hub.ico"));
-
-	bHandled = FALSE;
-	client->connect();
 	
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 	if(fhe != NULL){
@@ -408,6 +408,7 @@ void HubFrame::addAsFavorite() {
 	aEntry.setShowJoins(showJoins);
 	aEntry.setShowUserlist(showUserList);
 	aEntry.setStripIsp(stripIsp);
+	aEntry.setLogMainChat(logMainChat);
 
 	HubManager::getInstance()->addFavorite(aEntry);
 	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
