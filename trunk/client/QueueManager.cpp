@@ -340,7 +340,6 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	int64_t sz = 0;
 	bool online = false;
 
-	TTHValue root;
 	bool hasTTH = false;
 
 	{
@@ -364,8 +363,8 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 			QueueItem* qi = fileQueue.findAutoSearch(recent);
 			if(qi != NULL) {
 				if(qi->getTTH()) {
-					root = *qi->getTTH();
 					hasTTH = true;
+					searchString = "TTH:" + qi->getTTH()->toBase32();
 				} else {
 					fn = qi->getTargetFileName();
 					sz = qi->getSize() - 1;
@@ -382,7 +381,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	}
 
 	if(hasTTH) {
-		SearchManager::getInstance()->search("TTH:" + root.toBase32(), 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
+		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
 	} else if(!fn.empty()) {
 		SearchManager::getInstance()->search(searchString, sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
 		nextSearch = aTick + (online ? 2000 : 5000);
@@ -1239,6 +1238,9 @@ void QueueLoader::endTag(const string& name, const string&) {
 
 // SearchManagerListener
 void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
+	bool added = false;
+	int users = 0;
+
 	if(BOOLSETTING(AUTO_SEARCH)) {
 		Lock l(cs);
 		QueueItem::List matches;
@@ -1260,8 +1262,9 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 
 			if(found) {
 				try {
-					if(addSource(qi, sr->getFile(), sr->getUser(), false, false) && sr->getUser()->isOnline())
-						ConnectionManager::getInstance()->getDownloadConnection(sr->getUser());
+					addSource(qi, sr->getFile(), sr->getUser(), false, false);
+					added = true;
+					users = qi->countOnlineUsers();
 
 					regex::match_results result;
 					regexp.match(sr->getFile(), result, sr->getFile().length()-4);
@@ -1269,16 +1272,15 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 						addAlternates(sr->getFile(), sr->getUser());
 					}
 
-					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH)) {
-						if((int)qi->countOnlineUsers() < SETTING(MAX_AUTO_MATCH_SOURCES))
-							addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
-					}
 				} catch(const Exception&) {
 					// ...
 				}
 				break;
 			}
 		}
+	}
+	if(added && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (users < SETTING(MAX_AUTO_MATCH_SOURCES))) {
+		addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 	}
 }
 

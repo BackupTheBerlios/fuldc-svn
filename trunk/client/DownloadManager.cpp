@@ -280,7 +280,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			aConn->getZBlock(d->getSource(), d->getPos(), d->getBytesLeft(), d->isSet(Download::FLAG_UTF8));
 		} else if(d->isSet(Download::FLAG_UTF8)) {
 			aConn->getBlock(d->getSource(), d->getPos(), d->getBytesLeft(), true);
-		} else{
+		} else {
 			aConn->get(d->getSource(), d->getPos());
 		}
 	}
@@ -291,7 +291,7 @@ void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSourc
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
 		return;
 	}
-	
+
 	if(prepareFile(aSource, (aBytes == -1) ? -1 : aSource->getDownload()->getPos() + aBytes)) {
 		aSource->setDataMode();
 	}
@@ -305,7 +305,7 @@ void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSo
 	}
 
 	if(prepareFile(aSource, aFileLength)) {
-		aSource->setDataMode();
+		aSource->setDataMode(aFileLength);
 		aSource->startSend();
 	}
 }
@@ -788,7 +788,7 @@ void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource
 	aSource->setDownload(NULL);
 	removeDownload(d, true);
 	
-	if(aError.find("File Not Available") != string::npos) {
+	if(aError.find("File Not Available") != string::npos || aError.find(" no more exists") != string::npos) { //solved DCTC
 		QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 	}
 

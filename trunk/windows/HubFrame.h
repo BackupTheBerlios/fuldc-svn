@@ -202,8 +202,6 @@ public:
 		return 0;
 	}
 
-	bool closing;
-
 private:
 	class UserInfo;
 public:
@@ -293,7 +291,7 @@ private:
 	};
 
 	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
-	waitingForPW(false), extraSort(false), server(aServer), closed(false), closing(false), 
+	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
 		updateUsers(true), curCommandPosition(0), 
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
@@ -417,7 +415,7 @@ private:
 	CHARFORMAT2 selFormat;
 
 	bool closed;
-	
+	static bool closing;
 
 	StringMap ucParams;
 	StringMap tabParams;

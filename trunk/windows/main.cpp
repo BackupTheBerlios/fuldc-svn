@@ -385,6 +385,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	_Module.Term();
 	::CoUninitialize();
 	::FreeLibrary(mod);
+	::WSACleanup();
 #ifdef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
 #endif

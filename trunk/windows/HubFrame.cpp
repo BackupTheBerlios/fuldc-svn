@@ -35,6 +35,7 @@
 #include "../client/LogManager.h"
 
 HubFrame::FrameMap HubFrame::frames;
+bool HubFrame::closing = false;
 
 int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 75, 100};
 int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_ISP, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL };
@@ -1244,9 +1245,7 @@ void HubFrame::closeDisconnected() {
 };
 
 void HubFrame::setClosing() {
-	for(FrameIter i=frames.begin(); i!= frames.end(); ++i) {
-		i->second->closing = true;
-	}
+	closing = true;
 }
 
 void HubFrame::on(TimerManagerListener::Second, DWORD /*aTick*/) throw() {

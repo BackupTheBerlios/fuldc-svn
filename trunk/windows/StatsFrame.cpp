@@ -43,6 +43,9 @@ LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(timerId != 0)
 		KillTimer(timerId);
 	checkButton(false);	
+	
+	m_hMenu = NULL;
+	MDIDestroy(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 }

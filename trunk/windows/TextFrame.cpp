@@ -89,6 +89,14 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 1;
 }
 
+LRESULT TextFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	m_hMenu = NULL;
+	MDIDestroy(m_hWnd);
+	bHandled = FALSE;
+	return 0;
+}
+
 void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 {
 	CRect rc;
