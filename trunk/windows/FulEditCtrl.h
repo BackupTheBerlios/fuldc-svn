@@ -19,7 +19,8 @@ public:
 
 	bool	AddLine(const string & line, bool timeStamps = false);
 	void	SetTextColor( COLORREF color );
-	void	ScrollEnd();
+	void	ScrollToEnd();
+	void	ScrollToBeginning();
 	int		TextUnderCursor(POINT p, string& x);
 	void	Find();
 	bool	LastSeen(string & nick);

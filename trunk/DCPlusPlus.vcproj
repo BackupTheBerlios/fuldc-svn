@@ -115,7 +115,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib Winmm.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib Winmm.lib pdh.lib"
 				OutputFile="./App/DCPlusPlus.exe"
 				Version=""
 				LinkIncremental="1"

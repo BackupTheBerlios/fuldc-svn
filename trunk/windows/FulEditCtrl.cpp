@@ -399,7 +399,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 }
 
 LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
-	ScrollEnd();
+	ScrollToEnd();
 			
 	bHandled = FALSE;
 	return 1;
@@ -500,7 +500,7 @@ LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 }
 
 
-void CFulEditCtrl::ScrollEnd() {
+void CFulEditCtrl::ScrollToEnd() {
 	SetRedraw(FALSE);
 	SetSel(0, 0);
 	ScrollCaret();
@@ -509,6 +509,15 @@ void CFulEditCtrl::ScrollEnd() {
 	SendMessage(EM_SCROLLCARET, 0, 0);
 	SetRedraw(TRUE);
 	Invalidate();
+}
+
+void CFulEditCtrl::ScrollToBeginning() {
+	SetRedraw(FALSE);
+	SetSel(0, 0);
+	SendMessage(EM_SCROLLCARET, 0, 0);
+	SetRedraw(TRUE);
+	Invalidate();
+	UpdateWindow();
 }
 
 void CFulEditCtrl::Find() {

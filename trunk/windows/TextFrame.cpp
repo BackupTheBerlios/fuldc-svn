@@ -37,19 +37,20 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 	
 	ctrlPad.LimitText(0);
-	ctrlPad.SetFont(WinUtil::monoFont);
-	ctrlPad.SetBackgroundColor(WinUtil::bgColor);
-	ctrlPad.SetTextColor(WinUtil::textColor);
+	
 	string tmp;
 
 	m_hMenu = WinUtil::mainMenu;
 
 	WinUtil::SetIcon(m_hWnd, "notepad.ico");
+	bHandled = FALSE;
 
 	if(!isFile){
 		SetWindowText("Lastlog");
+		ctrlPad.SetFont(WinUtil::font);
+		ctrlPad.SetBackgroundColor(WinUtil::bgColor);
+		ctrlPad.SetTextColor(WinUtil::textColor);
 		ctrlPad.AddLine(file);
-		bHandled = FALSE;
 		return 1;
 	}
 
@@ -63,16 +64,18 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			}
 			i++;
 		}
+		
+		ctrlPad.SetFont(WinUtil::monoFont);
+		ctrlPad.SetBackgroundColor(WinUtil::bgColor);
+		ctrlPad.SetTextColor(WinUtil::textColor);
 		ctrlPad.SetWindowText(tmp.c_str());
 		ctrlPad.EmptyUndoBuffer();
+		ctrlPad.ScrollToBeginning();
 		SetWindowText(Util::getFileName(file).c_str());
 	} catch(const FileException& e) {
 		SetWindowText((Util::getFileName(file) + ": " + e.getError()).c_str());
 	}
 
-	m_hMenu = WinUtil::mainMenu;
-
-	bHandled = FALSE;
 	return 1;
 }
 
