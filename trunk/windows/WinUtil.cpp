@@ -502,7 +502,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		try {
 			ShareManager::getInstance()->setDirty();
 			if(!param.empty()) {
-			//	if(!ShareManager::getInstance()->refresh(param))
+				if( !ShareManager::getInstance()->refresh( Text::fromT(param) ) )
 					status = TSTRING(DIRECTORY_NOT_FOUND);
 			} else {
 				ShareManager::getInstance()->refresh(true);
@@ -519,7 +519,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	} else if(Util::stricmp(cmd.c_str(), _T("share")) == 0){
 		if(!param.empty()){
 			try{
-				//ShareManager::getInstance()->addDirectory(param);
+				string path = Text::fromT( param );
+				ShareManager::getInstance()->addDirectory( path, Util::getLastDir( path ) );
 				status = TSTRING(ADDED) + L" " + param;
 			}catch(ShareException &se){
 				status = Text::toT(se.getError());
@@ -527,7 +528,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}	
 	} else if(Util::stricmp(cmd.c_str(), _T("unshare")) == 0) {
 		if(!param.empty()){
-			//ShareManager::getInstance()->removeDirectory(param);
+			ShareManager::getInstance()->removeDirectory( Text::fromT(param) );
 			status = TSTRING(REMOVED) + _T(" ") + param;
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
@@ -1091,6 +1092,27 @@ tstring WinUtil::Uptime() {
 		PdhCloseQuery   ( hQuery );
 
 	return ret;
+}
+
+//returns 1 if it's a supposed to activate the switch
+//returns 0 if it's supposed to disable the switch
+//returns -1 if it's not a correct param
+int WinUtil::checkParam( const tstring& param ){
+	if( Util::stricmp(param, _T("on")) == 0 ||
+		Util::stricmp(param, _T("1")) == 0 ||
+		Util::stricmp(param, _T("true")) == 0 ||
+		Util::stricmp(param, _T("yes")) == 0 ) {
+			return 1;
+	}
+
+	if( Util::stricmp(param, _T("off")) == 0 ||
+		Util::stricmp(param, _T("0")) == 0 ||
+		Util::stricmp(param, _T("false")) == 0 ||
+		Util::stricmp(param, _T("no")) == 0 ) {
+			return 0;
+	}
+
+	return -1;
 }
 /**
  * @file

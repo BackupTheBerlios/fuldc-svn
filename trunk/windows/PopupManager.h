@@ -71,6 +71,14 @@ public:
 		minimized = mini;
 	}
 
+	bool isMuted() {
+		return !activated;
+	}
+
+	bool isMinimised() {
+		return minimized;
+	}
+
 private:
 		
 	typedef deque< PopupWnd* > PopupList;

@@ -239,10 +239,12 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
 				ctrlClient.SetWindowText(_T(""));
 			} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
-				timeStamps = !timeStamps;
-				if(timeStamps) {
+				int res = WinUtil::checkParam( param );
+				if( 1 == res || (param.empty() && !timeStamps) ) {
+					timeStamps = true;
 					addClientLine(TSTRING(TIMESTAMPS_ENABLED));
-				} else {
+				} else if( 0 == res || (param.empty() && timeStamps) ) {
+					timeStamps = false;
 					addClientLine(TSTRING(TIMESTAMPS_DISABLED));
 				}
 			} else if( (Util::stricmp(cmd.c_str(), _T("password")) == 0) && waitingForPW ) {
@@ -250,23 +252,32 @@ void HubFrame::onEnter() {
 				client->password(Text::fromT(param));
 				waitingForPW = false;
 			} else if( Util::stricmp(cmd.c_str(), _T("showjoins")) == 0 ) {
-				showJoins = !showJoins;
-				if(showJoins) {
+				int res = WinUtil::checkParam( param );
+				if( 1 == res || (param.empty() && !showJoins) ) {
+					showJoins = true;
 					addClientLine(TSTRING(JOIN_SHOWING_ON));
-				} else {
+				} else if( 0 == res || (param.empty() && showJoins) ) {
+					showJoins = false;
 					addClientLine(TSTRING(JOIN_SHOWING_OFF));
 				}
 			} else if( Util::stricmp(cmd.c_str(), _T("favshowjoins")) == 0 ) {
-				favShowJoins = !favShowJoins;
-				if(favShowJoins) {
+				int res = WinUtil::checkParam( param );
+				if( 1 == res || (param.empty() && !favShowJoins) ) {
+					favShowJoins = true;
 					addClientLine(TSTRING(FAV_JOIN_SHOWING_ON));
-				} else {
+				} else if( 0 == res || (param.empty() && favShowJoins) ) {
+					favShowJoins = false;
 					addClientLine(TSTRING(FAV_JOIN_SHOWING_OFF));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
 				PostMessage(WM_CLOSE);
 			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
-				ctrlShowUsers.SetCheck(showUserList ? BST_UNCHECKED : BST_CHECKED);
+				int res = WinUtil::checkParam( param );
+				if( 1 == res || (param.empty() && !showUserList) ) {
+					ctrlShowUsers.SetCheck(BST_CHECKED);	
+				} else if( 0 == res || (param.empty() && showUserList) ) {
+					ctrlShowUsers.SetCheck(BST_CHECKED);
+				}
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
 				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
@@ -318,10 +329,11 @@ void HubFrame::onEnter() {
 			}else if(Util::stricmp(cmd.c_str(), _T("ctopic")) == 0) {
 				openLinksInTopic();
 			} else if(Util::stricmp(cmd.c_str(), _T("popups")) == 0) {
-				if(Util::stricmp(param.c_str(), _T("on")) == 0) {
+				int res = WinUtil::checkParam( param );
+				if( 1 == res || (param.empty() && PopupManager::getInstance()->isMuted()) ) {
 					PopupManager::getInstance()->Mute(false);
 					addClientLine(TSTRING(POPUPS_ACTIVATED), BOOLSETTING(STATUS_IN_CHAT));
-				} else if(Util::stricmp(param.c_str(), _T("off")) == 0) {
+				} else if( 0 == res || (param.empty() && !PopupManager::getInstance()->isMuted()) ) {
 					PopupManager::getInstance()->Mute(true);
 					addClientLine(TSTRING(POPUPS_DEACTIVATED), BOOLSETTING(STATUS_IN_CHAT));
 				}

@@ -83,6 +83,7 @@ public:
 	static DWORD comCtlVersion;
 
 	static void SearchSite(WebShortcut* ws, tstring strSearchString);
+	static int checkParam( const tstring& param );
 
 
 	static void init(HWND hWnd);

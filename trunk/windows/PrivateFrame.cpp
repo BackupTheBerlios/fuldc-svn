@@ -320,16 +320,23 @@ void PrivateFrame::onEnter()
 			} else if(Util::stricmp(s.c_str(), _T("me")) == 0) {
 				sendMessage(_T("/") + s + _T(" ") + param);
 			} else if(Util::stricmp(s.c_str(), _T("mute")) == 0) {
-				muted = true;
-				addClientLine(TSTRING(MUTED));
+				int res = WinUtil::checkParam(param);
+				if(param.empty() || 1 == res ){
+					muted = true;
+					addClientLine(TSTRING(MUTED));
+				} else if( 0 == res ){
+					muted = false;
+					addClientLine(TSTRING(UNMUTED));
+				}
 			} else if(Util::stricmp(s.c_str(), _T("unmute")) == 0){
 				muted = false;
 				addClientLine(TSTRING(UNMUTED));
 			} else if(Util::stricmp(s.c_str(), _T("pop")) == 0) {
-				if( Util::stricmp(param, _T("on")) == 0){
+				int res = WinUtil::checkParam(param);
+				if( 1 == res || (param.empty() && !doPopups) ){
 					doPopups = true;
 					addClientLine(TSTRING(POPUPS_ACTIVATED));
-				}else if( Util::stricmp(param, _T("off")) == 0){
+				}else if( 0 == res || (param.empty() && doPopups) ){
 					doPopups = false;
 					addClientLine(TSTRING(POPUPS_DEACTIVATED));
 				}
