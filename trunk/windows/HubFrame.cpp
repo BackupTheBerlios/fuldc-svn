@@ -170,6 +170,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
 	if(fhe != NULL){
+		showJoins = fhe->getShowJoins();
+		showUserList = fhe->getShowUserlist();
+		UpdateLayout(FALSE);
+
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
 		
@@ -682,6 +686,9 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			fhe->setTop(rc.top > 0 ? rc.top : 0);
 			fhe->setLeft(rc.left > 0 ? rc.left : 0);
 			fhe->setRight(rc.right > 0 ? rc.right : 0);
+
+			fhe->setShowJoins(showJoins);
+			fhe->setShowUserlist(showUserList);
 			HubManager::getInstance()->save();
 		}
 
@@ -937,7 +944,7 @@ void HubFrame::onTab() {
 		//if text is more than just / find the last command
 		if(text.size() > 1){
 			for(i = tabList.begin(); i != tabList.end(); ++i) {
-				if(Util::strnicmp(*i, text, text.length()) == 0){
+				if(Util::findSubString(*i, text) == 0){
 					if(up){
 						if(i == tabList.begin()){
 							i = tabList.end();
@@ -965,7 +972,7 @@ void HubFrame::onTab() {
 				i = tabList.begin();
 			}
 						
-			if(i->find(complete) == 0 ){
+			if(Util::findSubString(*i, complete) == 0 ){
 				ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
 				ctrlMessage.ReplaceSel((*i).c_str());
 				return;
@@ -995,7 +1002,7 @@ void HubFrame::onTab() {
 		if(curUser == usermap.end())
 			curUser = usermap.begin();
 		
-		if( curUser->first.find(complete) == 0 ){
+		if( Util::findSubString(curUser->first, complete) == 0 ){
 				found = true;
 				break;
 		}
@@ -1038,8 +1045,10 @@ void HubFrame::onTab() {
 }
 
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN && !(GetKeyState(VK_SHIFT) & 0x8000))
+	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN && !(GetKeyState(VK_SHIFT) & 0x8000)){
 		complete.clear();
+		curUser = usermap.begin();
+	}
 
 	if (uMsg != WM_KEYDOWN) {
 	switch(wParam) {
@@ -1140,22 +1149,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
-	/*if((wParam == BST_CHECKED) && !client->getUserInfo()) {
-		User::NickMap& lst = client->lockUserList();
-		ctrlUsers.SetRedraw(FALSE);
-		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
-			updateUser(i->second);
-		}
-		client->unlockUserList();
-		ctrlUsers.SetRedraw(TRUE);
-		ctrlUsers.resort();
 
-		client->setUserInfo(true);
-		client->refreshUserList(true);		
-	} else {
-		client->setUserInfo(false);
-		clearUserList();
-	}*/
 	if(wParam == BST_CHECKED && !showUserList)
 		showUserList = true;
 	else

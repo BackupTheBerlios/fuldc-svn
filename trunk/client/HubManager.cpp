@@ -93,6 +93,8 @@ void HubManager::save() {
 			xml.addChildAttrib("Server", (*i)->getServer());
 			xml.addChildAttrib("UserDescription", (*i)->getUserDescription());
 			xml.addChildAttrib("StripIsp", (*i)->getStripIsp());
+			xml.addChildAttrib("ShowJoins", (*i)->getShowJoins());
+			xml.addChildAttrib("ShowUserlist", (*i)->getShowUserlist());
 			xml.addChildAttrib("Bottom", Util::toString((*i)->getBottom()));
 			xml.addChildAttrib("Top", Util::toString((*i)->getTop()));
 			xml.addChildAttrib("Right", Util::toString((*i)->getRight()));
@@ -221,6 +223,8 @@ void HubManager::load(SimpleXML* aXml) {
 			e->setServer(aXml->getChildAttrib("Server"));
 			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
 			e->setStripIsp(aXml->getBoolChildAttrib("StripIsp"));
+			e->setShowJoins(aXml->getBoolChildAttrib("ShowJoins"));
+			e->setShowUserlist(aXml->getBoolChildAttrib("ShowUserlist"));
 			e->setBottom(aXml->getIntChildAttrib("Bottom") );
 			e->setTop(aXml->getIntChildAttrib("Top"));
 			e->setRight(aXml->getIntChildAttrib("Right"));

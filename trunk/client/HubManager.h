@@ -55,10 +55,14 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0) { };
-	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0) { };
+	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0), showUserlist(true), showJoins(false) { };
+	
+	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0), showUserlist(true), showJoins(false) { };
+	
 	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), 
-		password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()) { };
+		password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), showUserlist(rhs.getShowUserlist()),
+		showJoins(rhs.getShowJoins()) { };
+
 	~FavoriteHubEntry() throw() { }	
 	
 	const string& getNick(bool useDefault = true) const { 
@@ -74,11 +78,14 @@ public:
 	GETSETREF(string, password, Password);
 	GETSET(bool, connect, Connect);
 	GETSET(bool, stripIsp, StripIsp);
+	GETSET(bool, showJoins, ShowJoins);
+	GETSET(bool, showUserlist, ShowUserlist);
 
 	GETSET(u_int16_t, bottom, Bottom);
 	GETSET(u_int16_t, top, Top);
 	GETSET(u_int16_t, left, Left);
 	GETSET(u_int16_t, right, Right);
+
 
 private:
 	string nick;
