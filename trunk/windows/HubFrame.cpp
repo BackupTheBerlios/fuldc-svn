@@ -1037,7 +1037,14 @@ void HubFrame::onTab() {
 
 	Lock l(updateCS);
 
-	UserMap::iterator curUser = usermap.find(curNick);
+	UserMap::iterator curUser = usermap.begin();
+	for(UserMap::iterator i = usermap.begin(); i != usermap.end(); ++i){
+		if(Util::stricmp(curNick, i->second->user->getNick()) == 0){
+			curUser = i;
+			break;
+		}
+	}
+	
 	if(!up && curUser == usermap.end())
 		curUser = usermap.begin();
 
@@ -1071,7 +1078,7 @@ void HubFrame::onTab() {
 		ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
 		string tmp = u->user->getShortNick();;
 		ctrlMessage.ReplaceSel(tmp.c_str());
-		curNick = Util::toLower(tmp);
+		curNick = u->user->getNick();
 		return;
 	}
 	
