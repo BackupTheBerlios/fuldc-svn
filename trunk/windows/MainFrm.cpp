@@ -209,6 +209,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	WinUtil::SetIcon(m_hWnd, "DCPlusPlus.ico", true);
 	// We want to pass this one on to the splitter...hope it get's there...
+	EmoticonManager::newInstance();
+	EmoticonManager::getInstance()->load(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 }

@@ -2,6 +2,7 @@
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 #include "../client/highlightmanager.h"
+#include "../client/LogManager.h"
 
 
 #include "../greta/regexpr2.h"
@@ -22,7 +23,7 @@ static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb,
 	{
 		*pcb = pstr->length();
 		memcpy(pbBuff, pstr->c_str(), *pcb );
-		delete pstr;
+		//delete pstr;
 	}
 	else
 	{
@@ -228,10 +229,10 @@ void CFulEditCtrl::AddInternalLine(string & aLine) {
 	//StringMapIter i = EmoticonManager::getInstance()->getEmoticons()->begin();
 	//string tmp = i->second;
 	//InsertText(GetTextLengthEx(GTL_NUMCHARS), tmp.c_str());
-	//AppendText(tmp.c_str());
+	//InsertText(GetTextLengthEx(GTL_NUMCHARS), i->second.c_str());
+	//LogManager::getInstance()->log("richedittest", i->second);
 	//SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 
-	//EDITSTREAM es = {(DWORD)new string("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1053{\\fonttbl{\\f0\\fnil\\fcharset0 Microsoft Sans Serif;}}{\\colortbl ;\\red255\\green0\\blue0;}\\viewkind4\\uc1\\pard\\cf1\\f0\\fs17 hej\\par}"), 0, EditStreamCallBack };
 	//EDITSTREAM es = {(DWORD)new string(i->second), 0, EditStreamCallBack};
 	//StreamIn(SF_RTF | SFF_SELECTION, es);
 	//ScrollEnd();

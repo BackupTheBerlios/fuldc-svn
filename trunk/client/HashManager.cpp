@@ -37,9 +37,9 @@ TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t 
 	return root;
 }
 
-bool HashManager::getTree(const string& aFileName, TigerTree& tmp) {
+bool HashManager::getTree(const string& aFileName, TigerTree& tt) {
 	Lock l(cs);
-	return store.getTree(aFileName, tmp);
+	return store.getTree(aFileName, tt);
 }
 TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize) {
 	Lock l(cs);

@@ -121,7 +121,7 @@ public:
 
 	void validateNick(const string& aNick) { send("$ValidateNick " + aNick + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); };	
-	void version(const string& aVersion) { send("$Version " + aVersion + "|"); };
+	void version() { send("$Version 1,0091|"); };
 	void getNickList() { checkstate(); send("$GetNickList|"); };
 	void password(const string& aPass) { send("$MyPass " + aPass + "|"); };
 	void getInfo(User::Ptr aUser) { checkstate(); send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };

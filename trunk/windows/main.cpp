@@ -326,9 +326,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	}
 #endif
 
-	EmoticonManager::newInstance();
-	EmoticonManager::getInstance()->load(NULL);
-	
 	HRESULT hRes = ::CoInitialize(NULL);
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );

@@ -450,7 +450,9 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				} else if (S_ISREG(s.st_mode)) {
 					dir->addSearchType(getMask(name));
 					dir->addType(getType(name));
-					lastFileIter = dir->files.insert(lastFileIter, make_pair(name, s.st_size));
+					int64_t size = s.st_size;
+					TTHValue* root = HashManager::getInstance()->getTTH(aName + PATH_SEPARATOR + name, size, 0);
+					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, root));
 					dir->size += s.st_size;
 					bloom.add(Util::toLower(name));
 				}

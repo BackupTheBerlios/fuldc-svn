@@ -46,6 +46,7 @@ NmdcHub::~NmdcHub() throw() {
 	TimerManager::getInstance()->removeListener(this);
 	Speaker<NmdcHubListener>::removeListeners();
 
+	Lock l(cs);
 	clearUsers();
 };
 
@@ -349,7 +350,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$HubName") {
 		name = param;
 		int i = 0;
-		if( (i = param.find(" - ")) != string::npos)
+		if( (i = param.rfind(" - ")) != string::npos)
 			shortName = param.substr(0, i);
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::HubName(), this);
 	} else if(cmd == "$Supports") {
@@ -451,7 +452,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				state = STATE_CONNECTED;
 				updateCounts(false);
 
-				version(SETTING(CLIENTVERSION));
+				version();
 				getNickList();
 				myInfo();
 			}

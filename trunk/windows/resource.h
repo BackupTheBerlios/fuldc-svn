@@ -116,7 +116,6 @@
 #define IDC_GETLIST                     1022
 #define IDC_ROLLBACK                    1022
 #define IDC_KICK                        1023
-#define IDC_CLVERSION                   1023
 #define IDC_REDIRECT                    1024
 #define IDC_AUTOFOLLOW                  1024
 #define IDC_REMOVESOURCE                1025

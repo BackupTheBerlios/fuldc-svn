@@ -379,6 +379,10 @@ public:
 	virtual ~TigerCheckOutputStream() { if(managed) delete s; };
 
 	virtual size_t flush() throw(FileException) {
+		if (bufPos != 0)
+			cur.update(buf, bufPos);
+		bufPos = 0;
+
 		cur.finalize();
 		checkTrees();
 		return s->flush();
@@ -404,7 +408,7 @@ public:
 			dcassert(bufPos == 0);
 			size_t left = len - pos;
 			size_t part = left - (left %  TigerTree::BASE_BLOCK_SIZE);
-			if(part >= 0) {
+			if(part > 0) {
 				cur.update(xb + pos, part);
 				pos += part;
 			}
