@@ -47,19 +47,24 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	// Nev's great contribution to dc++
 	while(1) break;
 	
-	string tku[9] = {
+	string tku[14] = {
 		"Fastkedjad i templet, ormar överallt, kukar överallt\r\n",
 		"Jag såg en skäggig herre, han var täckt av säd\r\n", 
 		"Läder och homosex, rött vin och havrekex, det vill vi ha!\r\n",
+		"Fjolla och aristokrat, nobelt blod och lyxig mat, det vill vi ha!\r\n",
 		"Jag färdas naken, allt är som sig bör\r\n",
 		"Polisen och SÄPO de jagar oss, agenterna släpper hundarna loss\r\n",
 		"Sprit och gott, massor av flott, pang på pungen i Portugal!\r\n",
 		"Den kristna tjackfabriken puttrar på, samhället vet ej vad som pågår\r\n",
 		"Arbetslös och utan tjej, då blir det en fet jävla holk och en bitelinepizza\r\n",
-		"Bärs som bärs, det smakar ju lika\r\n",
+		"Bärs som bärs, det smakar ju lika, man suger bärs så man blir full och ramlar kull\r\n",
+		"Duschring, duschring, det är vad jag vill ha runt taskapåsen\r\n",
+		"Äta olja, dricka sand, spela i arabiska heavymetalband\r\n",
+		"Mellan Hudik och Sundsvall - det brutala Gnarp!\r\n",
+		"Himmelriket i Norrland - det totala Gnarp!\r\n",
 	};
 	Util::initialize();
-	int index = Util::rand(9);
+	int index = Util::rand(14);
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
