@@ -145,7 +145,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 			itemI = ctrlTransfers.getItemData(i);
 			bCustomMenu = true;
 
-			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, WinUtil::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
+			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
 			transferMenu.AppendMenu(MF_SEPARATOR);
 		}
 
@@ -356,17 +356,17 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		columns[COLUMN_USER] = WinUtil::toT(user->getNick());
+		columns[COLUMN_USER] = Text::toT(user->getNick());
 	}
 	if(colMask & MASK_HUB) {
-		columns[COLUMN_HUB] = WinUtil::toT(user->getClientName());
+		columns[COLUMN_HUB] = Text::toT(user->getClientName());
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;
 	}
 	if(colMask & MASK_TIMELEFT) {
 		if (status == STATUS_RUNNING) {
-			columns[COLUMN_TIMELEFT] = WinUtil::toT(Util::formatSeconds(timeLeft));
+			columns[COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(timeLeft));
 		} else {
 			columns[COLUMN_TIMELEFT] = Util::emptyStringT;
 		}
@@ -379,7 +379,7 @@ void TransferView::ItemInfo::update() {
 	}
 	if(colMask & MASK_SPEED) {
 		if (status == STATUS_RUNNING) {
-			columns[COLUMN_SPEED] = Util::formatBytesW(speed) + _T("/s");
+			columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(speed) + "/s");
 		} else {
 			columns[COLUMN_SPEED] = Util::emptyStringT;
 		}
@@ -388,7 +388,7 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_FILE] = file;
 	}
 	if(colMask & MASK_SIZE) {
-		columns[COLUMN_SIZE] = WinUtil::toT(Util::formatBytes(size));
+		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(size));
 	}
 	if(colMask & MASK_PATH) {
 		columns[COLUMN_PATH] = path;
@@ -400,7 +400,7 @@ void TransferView::ItemInfo::update() {
 			columns[COLUMN_IP] = country + _T(" (") + IP + _T(")");
 	}
 	if(colMask & MASK_RATIO) {
-		columns[COLUMN_RATIO] = WinUtil::toT(Util::toString(getRatio()));
+		columns[COLUMN_RATIO] = Text::toT(Util::toString(getRatio()));
 	}
 }
 
@@ -449,7 +449,7 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) != transferItems.end());
 		i = transferItems[aCqi];		
-		i->statusString = WinUtil::toT(aReason);
+		i->statusString = Text::toT(aReason);
 		i->updateMask |= ItemInfo::MASK_STATUS;
 	}
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
@@ -467,11 +467,11 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 		i->start = aDownload->getPos();
 		i->actual = i->start;
 		i->size = aDownload->getSize();
-		i->file = WinUtil::toT(Util::getFileName(aDownload->getTarget()));
-		i->path = WinUtil::toT(Util::getFilePath(aDownload->getTarget()));
+		i->file = Text::toT(Util::getFileName(aDownload->getTarget()));
+		i->path = Text::toT(Util::getFilePath(aDownload->getTarget()));
 		i->statusString = TSTRING(DOWNLOAD_STARTING);
-		i->IP = WinUtil::toT(aDownload->getUserConnection()->getRemoteIp());
-		i->country = WinUtil::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
+		i->IP = Text::toT(aDownload->getUserConnection()->getRemoteIp());
+		i->country = Text::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
 			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
 	}
@@ -490,8 +490,8 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
 			Download* d = *j;
 
-			_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), WinUtil::toT(Util::formatBytes(d->getPos())).c_str(), 
-				(double)d->getPos()*100.0/(double)d->getSize(), WinUtil::toT(Util::formatSeconds((GET_TICK() - d->getStart())/1000)).c_str());
+			_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(d->getPos())).c_str(), 
+				(double)d->getPos()*100.0/(double)d->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - d->getStart())/1000)).c_str());
 
 			ConnectionQueueItem* aCqi = d->getUserConnection()->getCQI();
 			ItemInfo* i = transferItems[aCqi];
@@ -526,10 +526,10 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 		i->status = ItemInfo::STATUS_WAITING;
 		i->pos = 0;
 
-		i->statusString = WinUtil::toT(aReason);
+		i->statusString = Text::toT(aReason);
 		i->size = aDownload->getSize();
-		i->file = WinUtil::toT(Util::getFileName(aDownload->getTarget()));
-		i->path = WinUtil::toT(Util::getFilePath(aDownload->getTarget()));
+		i->file = Text::toT(Util::getFileName(aDownload->getTarget()));
+		i->path = Text::toT(Util::getFilePath(aDownload->getTarget()));
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_SIZE | ItemInfo::MASK_FILE |
 		ItemInfo::MASK_PATH;
 	}
@@ -551,11 +551,11 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 		i->speed = 0;
 		i->timeLeft = 0;
 
-		i->file = WinUtil::toT(Util::getFileName(aUpload->getFileName()));
-		i->path = WinUtil::toT(Util::getFilePath(aUpload->getFileName()));
+		i->file = Text::toT(Util::getFileName(aUpload->getFileName()));
+		i->path = Text::toT(Util::getFilePath(aUpload->getFileName()));
 		i->statusString = TSTRING(UPLOAD_STARTING);
-		i->IP = WinUtil::toT(aUpload->getUserConnection()->getRemoteIp());
-		i->country = WinUtil::toT(Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp()));
+		i->IP = Text::toT(aUpload->getUserConnection()->getRemoteIp());
+		i->country = Text::toT(Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp()));
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
 			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
 	}
@@ -581,8 +581,8 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			i->timeLeft = u->getSecondsLeft();
 			i->speed = u->getRunningAverage();
 
-			_stprintf(buf, CTSTRING(UPLOADED_BYTES), WinUtil::toT(Util::formatBytes(u->getPos())).c_str(), 
-				(double)u->getPos()*100.0/(double)u->getSize(), WinUtil::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
+			_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
+				(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
 
 			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
 				i->statusString = _T("* ") + tstring(buf);
@@ -669,7 +669,7 @@ LRESULT TransferView::onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		return 0;
 
 	resolveBuffer = new char[MAXGETHOSTSTRUCT];
-	unsigned long l = inet_addr(WinUtil::fromT(ctrlTransfers.getItemData(i)->getText(COLUMN_IP)).c_str());
+	unsigned long l = inet_addr(Text::fromT(ctrlTransfers.getItemData(i)->getText(COLUMN_IP)).c_str());
 
 	if( 0 == WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT)) {
 		delete[] resolveBuffer;

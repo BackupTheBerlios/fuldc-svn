@@ -197,7 +197,7 @@ static DWORD checkCommonControls() {
 }
 
 void callBack(void* x, const string& a, const string& b) {
-	::SetWindowText((HWND)x, WinUtil::toT(a + STRING(LOADING) + "(" + b + ")").c_str());
+	::SetWindowText((HWND)x, Text::toT(a + STRING(LOADING) + "(" + b + ")").c_str());
 	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
 }
 
@@ -305,9 +305,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 				::ShowWindow(hOther, SW_RESTORE);
 			}
 			sendCmdLine(hOther, lpstrCmdLine);
+			return FALSE;
 		}
-
-		return FALSE;
 	}
 
 #endif
@@ -343,7 +342,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		}
 		tth.finalize();
 		strcpy(::tth, tth.getRoot().toBase32().c_str());
-		WinUtil::tth = WinUtil::toT(::tth);
+		WinUtil::tth = Text::toT(::tth);
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}

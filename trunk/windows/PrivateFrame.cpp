@@ -128,7 +128,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 						MessageBeep(MB_OK);
 				}
 				if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
-					PopupManager::getInstance()->ShowPm(WinUtil::toT(aUser->getNick()), aMessage);
+					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage);
 				}
 				break;
 			}
@@ -140,7 +140,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
 				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->getConnection().empty()))
-					p->sendMessage(Util::getAwayMessage());
+					p->sendMessage(Text::toT(Util::getAwayMessage()));
 			}
 
 			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
@@ -151,7 +151,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 			}
 
 			if (BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
-				PopupManager::getInstance()->ShowPm(WinUtil::toT(aUser->getNick()), aMessage);
+				PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage);
 			}
 		}
 	} else {
@@ -162,7 +162,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				MessageBeep(MB_OK);
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
-			PopupManager::getInstance()->ShowPm(WinUtil::toT(aUser->getNick()), aMessage);
+			PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage);
 		}
 		i->second->addLine(aMessage);
 
@@ -389,7 +389,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
 		StringMap params;
-		params["message"] = WinUtil::fromT(aLine);
+		params["message"] = Text::fromT(aLine);
 		LOG(user->getNick(), Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params));
 	}
 
@@ -404,7 +404,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, WinUtil::toT(user->getClientAddressPort()), user->isClientOp());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -434,7 +434,7 @@ LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
 	} catch(const Exception& e) {
-		addClientLine(WinUtil::toT(e.getError()));
+		addClientLine(Text::toT(e.getError()));
 	}
 	return 0;
 }
@@ -443,7 +443,7 @@ LRESULT PrivateFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
 	} catch(const Exception& e) {
-		addClientLine(WinUtil::toT(e.getError()));
+		addClientLine(Text::toT(e.getError()));
 	}
 	return 0;
 }
@@ -587,13 +587,13 @@ LRESULT PrivateFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	WinUtil::setClipboard(WinUtil::toT(user->getNick()));
+	WinUtil::setClipboard(Text::toT(user->getNick()));
 
 	return 0;
 }
 
 LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	tstring path = WinUtil::toT(SETTING(LOG_DIRECTORY) + user->getNick() + ".log");
+	tstring path = Text::toT(SETTING(LOG_DIRECTORY) + user->getNick() + ".log");
 	ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return 0;
 }

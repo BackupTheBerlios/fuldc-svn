@@ -251,7 +251,7 @@ public:
 	}
 	
 	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		WinUtil::openFile(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)));
+		WinUtil::openFile(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
 		return 0;
 	}
 
@@ -354,7 +354,7 @@ private:
 	MainFrame(const MainFrame&) { dcassert(0); };
 
 	// LogManagerListener
-	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new tstring(WinUtil::toT(m))); };
+	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new tstring(Text::toT(m))); };
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second type, u_int32_t aTick) throw();

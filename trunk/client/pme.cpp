@@ -15,7 +15,7 @@
 #include "DCPlusPlus.h"
 
 #include "pme.h"
-#include "Util.h"
+#include "Text.h"
 	
 unsigned int PME::DeterminePcreOptions ( const std::string & opts ///< perl style character modifiers -- i.e. "gi" is global, case-insensitive
  )
@@ -125,7 +125,7 @@ PME::PME(const std::wstring & s ///< string to copmile into regular expression
 	reset ( );
 	m_isglobal = 0;
 	_opts = opts;
-	compile(Util::wideToUtf8(s));
+	compile(Text::wideToUtf8(s));
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -151,8 +151,8 @@ PME::PME ( const std::wstring & s, ///< string to compile into regular expressio
 {
 	reset ( );
 	m_isglobal = 0;
-	_opts = DeterminePcreOptions ( Util::wideToUtf8(opts) );
-	compile ( Util::wideToUtf8(s) );
+	_opts = DeterminePcreOptions ( Text::wideToUtf8(opts) );
+	compile ( Text::wideToUtf8(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -181,7 +181,7 @@ PME::PME(const wchar_t * s, ///< string to compile into regular expression
 	reset ( );
 	m_isglobal = 0;
 	_opts = opts;
-	compile( Util::wideToUtf8(s) );
+	compile( Text::wideToUtf8(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -208,8 +208,8 @@ PME::PME ( const wchar_t * s, ///< string to compile into regular expression
 {
 	reset ( );
 	m_isglobal = 0;
-	_opts = DeterminePcreOptions ( Util::wideToUtf8(opts) );
-	compile ( Util::wideToUtf8(s) );
+	_opts = DeterminePcreOptions ( Text::wideToUtf8(opts) );
+	compile ( Text::wideToUtf8(s) );
 	extra = NULL;
 	lastglobalposition = 0;
 	nMatches = 0;
@@ -304,7 +304,7 @@ PME::match(const std::wstring & s, ///< s String to match against
 		   unsigned offset ///< offset Offset at which to start matching
 		   )
 {
-	return match( Util::wideToUtf8(s), offset );
+	return match( Text::wideToUtf8(s), offset );
 }
 
 std::string
@@ -445,7 +445,7 @@ PME::split(const std::string & s, unsigned maxfields)
 int
 PME::split(const std::wstring & s, unsigned maxfields)
 {
-	return split( Util::wideToUtf8( s ), maxfields );
+	return split( Text::wideToUtf8( s ), maxfields );
 }
 
 
@@ -544,7 +544,7 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 std::wstring PME::sub ( const std::wstring & s, const std::wstring & r,
 					  int dodollarsubstitution )
 {
-	return Util::utf8ToWide( sub( Util::wideToUtf8( s ), Util::wideToUtf8( r ), dodollarsubstitution ) );
+	return Text::utf8ToWide( sub( Text::wideToUtf8( s ), Text::wideToUtf8( r ), dodollarsubstitution ) );
 }
 
 
@@ -573,7 +573,7 @@ WStringVector PME::GetStringVectorW ( )
 		  nCurrentMatch < nMatches;
 		  nCurrentMatch++ ) {
 
-			  oStringVector.insert( oStringVector.end ( ), Util::utf8ToWide( (*this)[nCurrentMatch] ) );
+			  oStringVector.insert( oStringVector.end ( ), Text::utf8ToWide( (*this)[nCurrentMatch] ) );
 		  }
 
 	return oStringVector;
@@ -608,7 +608,7 @@ void PME::Init(const std::string & s, unsigned opts )
 
 void PME::Init(const std::wstring & s, unsigned opts )
 {
-	Init( Util::wideToUtf8( s ), opts );
+	Init( Text::wideToUtf8( s ), opts );
 }
 
 void PME::Init(const std::string & s, const std::string & opts )
@@ -624,5 +624,5 @@ void PME::Init(const std::string & s, const std::string & opts )
 
 void PME::Init(const std::wstring & s, const std::wstring & opts )
 {
-	Init( Util::wideToUtf8( s ), Util::wideToUtf8(opts) );
+	Init( Text::wideToUtf8( s ), Text::wideToUtf8(opts) );
 }

@@ -269,8 +269,8 @@ void WinUtil::init(HWND hWnd) {
 
 	LOGFONT lf, lf2;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, WinUtil::fromT(encodeFont(lf)));
-	decodeFont(WinUtil::toT(SETTING(TEXT_FONT)), lf);
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
+	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
 	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
 	
 	lf2.lfHeight = lf.lfHeight;
@@ -318,17 +318,17 @@ void WinUtil::uninit() {
 void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	StringTokenizer<tstring> st(setting, _T(','));
 	TStringList &sl = st.getTokens();
-
+	
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(dest), &dest);
 	tstring face;
 	if(sl.size() == 4)
 	{
 		face = sl[0];
-		dest.lfHeight = Util::toInt(WinUtil::fromT(sl[1]));
-		dest.lfWeight = Util::toInt(WinUtil::fromT(sl[2]));
-		dest.lfItalic = (BYTE)Util::toInt(WinUtil::fromT(sl[3]));
+		dest.lfHeight = Util::toInt(Text::fromT(sl[1]));
+		dest.lfWeight = Util::toInt(Text::fromT(sl[2]));
+		dest.lfItalic = (BYTE)Util::toInt(Text::fromT(sl[3]));
 	}
-
+	
 	if(!face.empty()) {
 		::ZeroMemory(dest.lfFaceName, LF_FACESIZE);
 		_tcscpy(dest.lfFaceName, face.c_str());
@@ -346,7 +346,7 @@ int CALLBACK WinUtil::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LP
 
 bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	BROWSEINFOW bi;
+	BROWSEINFO bi;
 	LPMALLOC ma;
 	
 	ZeroMemory(&bi, sizeof(bi));
@@ -357,9 +357,9 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
-	LPITEMIDLIST pidl = SHBrowseForFolderW(&bi);
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 	if(pidl != NULL) {
-		SHGetPathFromIDListW(pidl, buf);
+		SHGetPathFromIDList(pidl, buf);
 		target = buf;
 		
 		if(target.size() > 0 && target[target.size()-1] != L'\\')
@@ -376,8 +376,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	OPENFILENAMEW ofn;       // common dialog box structure
-	target = Util::utf8ToWide(Util::validateFileName(Util::wideToUtf8(target)));
+	OPENFILENAME ofn;       // common dialog box structure
+	target = Text::toT(Util::validateFileName(Text::fromT(target)));
 	_tcscpy(buf, target.c_str());
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -395,7 +395,7 @@ bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* 
 	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
 	
 	// Display the Open dialog box. 
-	if ( (save ? GetSaveFileNameW(&ofn) : GetOpenFileNameW(&ofn) ) ==TRUE) {
+	if ( (save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn) ) ==TRUE) {
 		target = ofn.lpstrFile;
 		return true;
 	}
@@ -410,15 +410,15 @@ void WinUtil::setClipboard(const tstring& str) {
 	EmptyClipboard();
 
 	// Allocate a global memory object for the text. 
-	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1)); 
+	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1) * sizeof(TCHAR)); 
 	if (hglbCopy == NULL) { 
 		CloseClipboard(); 
 		return; 
 	} 
 
 	// Lock the handle and copy the text to the buffer. 
-	char* lptstrCopy = (char*)GlobalLock(hglbCopy); 
-	memcpy(lptstrCopy, str.c_str(), str.length() + 1);
+	TCHAR* lptstrCopy = (TCHAR*)GlobalLock(hglbCopy); 
+	_tcscpy(lptstrCopy, str.c_str());
 	GlobalUnlock(hglbCopy); 
 
 	// Place the handle on the clipboard. 
@@ -451,12 +451,12 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 		string name = uc.getCommand().substr(i, j-i);
 		if(done.find(name) == done.end()) {
 			LineDlg dlg;
-			dlg.title = WinUtil::toT(uc.getName());
-			dlg.description = WinUtil::toT(name);
-			dlg.line = WinUtil::toT(sm["line:" + name]);
+			dlg.title = Text::toT(uc.getName());
+			dlg.description = Text::toT(name);
+			dlg.line = Text::toT(sm["line:" + name]);
 			if(dlg.DoModal(parent) == IDOK) {
-				sm["line:" + name] = WinUtil::fromT(dlg.line);
-				done[name] = WinUtil::fromT(dlg.line);
+				sm["line:" + name] = Text::fromT(dlg.line);
+				done[name] = Text::fromT(dlg.line);
 			} else {
 				return false;
 			}
@@ -508,14 +508,14 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			//	ShareManager::getInstance()->refresh(true);
 			}
 		} catch(const ShareException& e) {
-			status = WinUtil::toT(e.getError());
+			status = Text::toT(e.getError());
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("refreshi")) == 0) {
 		try {
 			//ShareManager::getInstance()->setDirty();
 			//ShareManager::getInstance()->refresh(false, true, false, true);
 		} catch( const ShareException& e) {
-			status = WinUtil::toT(e.getError());
+			status = Text::toT(e.getError());
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("share")) == 0){
 		if(!param.empty()){
@@ -523,7 +523,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 				//ShareManager::getInstance()->addDirectory(param);
 				status = TSTRING(ADDED) + L" " + param;
 			}catch(ShareException &se){
-				status = WinUtil::toT(se.getError());
+				status = Text::toT(se.getError());
 			}
 		}	
 	} else if(Util::stricmp(cmd.c_str(), _T("unshare")) == 0) {
@@ -559,8 +559,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			status = TSTRING(AWAY_MODE_OFF);
 		} else {
 			Util::setAway(true);
-			Util::setAwayMessage(param);
-			status = TSTRING(AWAY_MODE_ON) + Util::getAwayMessage();
+			Util::setAwayMessage(Text::fromT(param));
+			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("back")) == 0) {
 		Util::setAway(false);
@@ -598,14 +598,14 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 
  void WinUtil::searchHash(TTHValue* aHash) {
 	 if(aHash != NULL) {
-		 SearchFrame::openWindow(WinUtil::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+		 SearchFrame::openWindow(Text::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
 	 }
  }
 
  void WinUtil::registerDchubHandler() {
 	HKEY hk;
 	TCHAR Buf[512];
-	tstring app = _T("\"") + WinUtil::toT(Util::getAppName()) + _T("\" %1");
+	tstring app = _T("\"") + Text::toT(Util::getAppName()) + _T("\" %1");
 	Buf[0] = 0;
 
 	if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
@@ -627,7 +627,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		::RegCloseKey(hk);
 
 		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), &hk);
-		app = WinUtil::toT(Util::getAppName());
+		app = Text::toT(Util::getAppName());
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
 	}
@@ -698,9 +698,9 @@ void WinUtil::openLink(const tstring& url) {
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
 	short port = 411;
-	Util::decodeUrl(WinUtil::fromT(aUrl), server, port, file);
+	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
-		HubFrame::openWindow(WinUtil::toT(server + ":" + Util::toString(port)));
+		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
 	}
 	if(!file.empty()) {
 		try {
@@ -737,13 +737,13 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 int WinUtil::getIconIndex(const tstring& aFileName) {
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
-		string x = Util::toLower(Util::getFileExt(WinUtil::fromT(aFileName)));
+		string x = Util::toLower(Util::getFileExt(Text::fromT(aFileName)));
 		if(!x.empty()) {
 			ImageIter j = fileIndexes.find(x);
 			if(j != fileIndexes.end())
 				return j->second;
 		}
-		tstring fn = WinUtil::toT(Util::toLower(Util::getFileName(WinUtil::fromT(aFileName))));
+		tstring fn = Text::toT(Util::toLower(Util::getFileName(Text::fromT(aFileName))));
 		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
 		::DestroyIcon(fi.hIcon);
@@ -905,11 +905,11 @@ void WinUtil::SetIcon(HWND hWnd, tstring file, bool big) {
 tstring WinUtil::encodeFont(LOGFONT const& font){
 	tstring res(font.lfFaceName);
 	res += L',';
-	res += Util::utf8ToWide(Util::toString(font.lfHeight));
+	res += Text::utf8ToWide(Util::toString(font.lfHeight));
 	res += L',';
-	res += Util::utf8ToWide(Util::toString(font.lfWeight));
+	res += Text::utf8ToWide(Util::toString(font.lfWeight));
 	res += L',';
-	res += Util::utf8ToWide(Util::toString(font.lfItalic));
+	res += Text::utf8ToWide(Util::toString(font.lfItalic));
 	return res;
 }
 
@@ -1005,7 +1005,7 @@ tstring WinUtil::DiskSpaceInfo() {
 }
 
 tstring WinUtil::Help(const tstring& cmd) {
-	string command = WinUtil::fromT(cmd);
+	string command = Text::fromT(cmd);
 	string xmlString;
 	const size_t BUF_SIZE = 64*1024;
 	char *buf = new char[BUF_SIZE];
@@ -1026,7 +1026,7 @@ tstring WinUtil::Help(const tstring& cmd) {
 		delete[] buf;
 	}catch (Exception& e) { 
 		delete[] buf;
-		return WinUtil::toT(e.getError());
+		return Text::toT(e.getError());
 	}
 
 	tstring ret = Util::emptyStringT;
@@ -1042,9 +1042,9 @@ tstring WinUtil::Help(const tstring& cmd) {
 			found = xml.findChild(Util::toLower(command));
 
 		if(found)
-			ret = WinUtil::toT(xml.getChildData());
+			ret = Text::toT(xml.getChildData());
 	} catch(const SimpleXMLException &e) {
-		return WinUtil::toT(e.getError());
+		return Text::toT(e.getError());
 	}
 
 	return ret;
@@ -1079,7 +1079,7 @@ tstring WinUtil::Uptime() {
 
 					if ( PdhCollectQueryData( hQuery ) == ERROR_SUCCESS )	{
 						if ( PdhGetFormattedCounterValue( hCounter, PDH_FMT_LARGE, NULL, &pdhCounterValue ) == ERROR_SUCCESS )
-							ret = WinUtil::toT(Util::formatTime(pdhCounterValue.largeValue, false));
+							ret = Text::toT(Util::formatTime(pdhCounterValue.largeValue, false));
 					}
 				}
 			}

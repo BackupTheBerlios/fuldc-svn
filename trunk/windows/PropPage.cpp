@@ -38,7 +38,7 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 		{
 		case T_STR:
 			::SetDlgItemText(page, i->itemID,
-			WinUtil::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
+			Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
 			break;
 		case T_INT:
 			if(settings->isDefault(i->setting) && i->setting == SettingsManager::IN_PORT)
@@ -92,14 +92,14 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 		case T_STR:
 			{
 				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::StrSetting)i->setting, WinUtil::fromT(buf));
+				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(buf));
 
 				break;
 			}
 		case T_INT:
 			{
 				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::IntSetting)i->setting, WinUtil::fromT(buf));
+				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(buf));
 				break;
 			}
 		case T_BOOL:

@@ -82,7 +82,7 @@ LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
-	WinUtil::decodeFont(WinUtil::toT(SETTING(TEXT_FONT)), font);
+	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
 
 	// Do specialized reading here
 	fg = SETTING(TEXT_COLOR);
@@ -104,7 +104,7 @@ void AppearancePage::write()
 	settings->set(SettingsManager::DOWNLOAD_BAR_COLOR, (int)downBar);
 
 	tstring f = WinUtil::encodeFont(font);
-	settings->set(SettingsManager::TEXT_FONT, WinUtil::fromT(f));
+	settings->set(SettingsManager::TEXT_FONT, Text::fromT(f));
 }
 
 LRESULT AppearancePage::onClickedBackground(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -160,7 +160,7 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	GetDlgItemText(IDC_LANGUAGE, buf, MAX_PATH);
 	tstring x = buf;
 
-	if(WinUtil::browseFile(x, m_hWnd, false, WinUtil::toT(Util::getAppPath()), types) == IDOK) {
+	if(WinUtil::browseFile(x, m_hWnd, false, Text::toT(Util::getAppPath()), types) == IDOK) {
 		SetDlgItemText(IDC_LANGUAGE, x.c_str());
 	}
 	return 0;

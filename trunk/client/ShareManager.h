@@ -54,8 +54,8 @@ public:
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
 	void removeDirectory(const string& aName);	
-	string translateFileName(const string& aFile, bool adc, bool utf8) throw(ShareException);
-	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
+	string translateFileName(const string& aFile, bool adc) throw(ShareException);
+	void refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false) throw(ShareException);
 	void setDirty() { xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
@@ -89,8 +89,7 @@ public:
 	void generateXmlList();
 
 	bool isIncoming(const string& aDir);
-	void addIncoming(const string& aDir);
-	void removeIncoming(const string& aDir);
+	void setIncoming(const string& aDir, bool incoming = true);
 
 private:
 	struct AdcSearch;
@@ -225,6 +224,7 @@ private:
 	bool nmdcDirty;
 	bool refreshDirs;
 	bool update;
+	bool refreshIncoming;
 	
 	int listN;
 
@@ -234,6 +234,7 @@ private:
 	u_int32_t lastXmlUpdate;
 	u_int32_t lastNmdcUpdate;
 	u_int32_t lastFullUpdate;
+	u_int32_t lastIncomingUpdate;
 
 	/** Words that are commonly searched for. */	 
 	StringList words;

@@ -106,10 +106,10 @@ LRESULT FulAppearancePage::onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT FulAppearancePage::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	LOGFONT font;  
-	WinUtil::decodeFont(WinUtil::toT(SETTING(POPUP_FONT)), font);
+	WinUtil::decodeFont(Text::toT(SETTING(POPUP_FONT)), font);
 	CFontDialog dlg(&font, CF_EFFECTS | CF_SCREENFONTS);
 	if(dlg.DoModal() == IDOK){
-		settings->set(SettingsManager::POPUP_FONT, WinUtil::fromT(WinUtil::encodeFont(font)));
+		settings->set(SettingsManager::POPUP_FONT, Text::fromT(WinUtil::encodeFont(font)));
 	}
 	return 0;
 }

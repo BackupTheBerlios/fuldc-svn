@@ -107,9 +107,9 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	PropPage::translate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
-	ctrlConnection.AddString(WinUtil::toT(SETTING(CONNECTION)).c_str());
+	ctrlConnection.AddString(Text::toT(SETTING(CONNECTION)).c_str());
 	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
-		ctrlConnection.AddString(WinUtil::toT(SettingsManager::connectionSpeeds[i]).c_str());
+		ctrlConnection.AddString(Text::toT(SettingsManager::connectionSpeeds[i]).c_str());
 
 	int const connType = settings->get(SettingsManager::CONNECTION_TYPE);
 	if(connType == SettingsManager::CONNECTION_ACTIVE)
@@ -123,7 +123,7 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	fixControls();
 
-	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, WinUtil::toT(SETTING(CONNECTION)).c_str()));
+	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, Text::toT(SETTING(CONNECTION)).c_str()));
 
 	nick.Attach(GetDlgItem(IDC_NICK));
 	nick.LimitText(35);

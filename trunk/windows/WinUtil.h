@@ -89,6 +89,7 @@ public:
 	static void uninit();
 
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
+	static tstring encodeFont(LOGFONT const& font);
 	
 	static void SetIcon(HWND hWnd, tstring file, bool big = false);
 	static void setClipboard(const tstring & str);
@@ -119,26 +120,7 @@ public:
 	static int getTextSpacing(HWND wnd, HFONT fnt); 
 
 	static void addLastDir(const tstring& dir);
-#ifdef UNICODE
-	static wstring toT(const string& str) {
-		return Util::utf8ToWide(str);
-	}
-	static string fromT(const wstring& str) {
-		return Util::wideToUtf8(str);
-	}
-#else
-	static string toT(const string& str) {
-		string tmp;
-		return Util::toAcp(str, tmp);
-	}
-	static string fromT(const string& str) {
-		string tmp;
-		return Util::toUtf8(str, tmp);
-	}
-#endif
 
-	static tstring encodeFont(LOGFONT const& font);
-	
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
 

@@ -86,7 +86,7 @@ LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 	if(item->iItem != -1) {
 		FinishedItem* entry = (FinishedItem*)ctrlList.GetItemData(item->iItem);
-		WinUtil::openFile(WinUtil::toT(entry->getTarget()));
+		WinUtil::openFile(Text::toT(entry->getTarget()));
 	}
 	return 0;
 }
@@ -96,7 +96,7 @@ LRESULT FinishedFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		TextFrame::openWindow(WinUtil::toT(entry->getTarget()));
+		TextFrame::openWindow(Text::toT(entry->getTarget()));
 	}
 	return 0;
 }
@@ -106,7 +106,7 @@ LRESULT FinishedFrame::onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		WinUtil::openFile(WinUtil::toT(entry->getTarget()));
+		WinUtil::openFile(Text::toT(entry->getTarget()));
 	}
 	return 0;
 }
@@ -116,7 +116,7 @@ LRESULT FinishedFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		::ShellExecute(NULL, NULL, WinUtil::toT(Util::getFilePath(entry->getTarget())).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		::ShellExecute(NULL, NULL, Text::toT(Util::getFilePath(entry->getTarget())).c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 	return 0;
 }
@@ -176,18 +176,18 @@ LRESULT FinishedFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 
 void FinishedFrame::addEntry(FinishedItem* entry) {
 	TStringList l;
-	l.push_back(WinUtil::toT(Util::getFileName(entry->getTarget())));
-	l.push_back(WinUtil::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime())));
-	l.push_back(WinUtil::toT(Util::getFilePath(entry->getTarget())));
-	l.push_back(WinUtil::toT(entry->getUser()));
-	l.push_back(WinUtil::toT(entry->getHub()));
-	l.push_back(WinUtil::toT(Util::formatBytes(entry->getSize())));
-	l.push_back(WinUtil::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s"));
+	l.push_back(Text::toT(Util::getFileName(entry->getTarget())));
+	l.push_back(Text::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime())));
+	l.push_back(Text::toT(Util::getFilePath(entry->getTarget())));
+	l.push_back(Text::toT(entry->getUser()));
+	l.push_back(Text::toT(entry->getHub()));
+	l.push_back(Text::toT(Util::formatBytes(entry->getSize())));
+	l.push_back(Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s"));
 	l.push_back(entry->getCrc32Checked() ? TSTRING(YES) : TSTRING(NO));
 	totalBytes += entry->getChunkSize();
 	totalTime += entry->getMilliSeconds();
 
-	int image = WinUtil::getIconIndex(WinUtil::toT(entry->getTarget()));
+	int image = WinUtil::getIconIndex(Text::toT(entry->getTarget()));
 	int loc = ctrlList.insert(l, image, (LPARAM)entry);
 	ctrlList.EnsureVisible(loc, FALSE);
 }

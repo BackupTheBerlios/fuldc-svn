@@ -153,7 +153,7 @@ public:
 		if(client->isConnected()) {
 		
 			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				tstring path =	WinUtil::toT(SETTING(LOG_DIRECTORY) + ctrlUsers.getItemData(i)->user->getNick() + ".log");
+				tstring path =	Text::toT(SETTING(LOG_DIRECTORY) + ctrlUsers.getItemData(i)->user->getNick() + ".log");
 				ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOW);
 			}
 		}
@@ -252,12 +252,12 @@ private:
 		}
 
 		void update() { 
-			columns[COLUMN_NICK] = WinUtil::toT(user->getNick());
-			columns[COLUMN_SHARED] = WinUtil::toT(Util::formatBytes(user->getBytesShared()));
-			columns[COLUMN_DESCRIPTION] = WinUtil::toT(Util::formatBytes(user->getUserDescription()));
-			columns[COLUMN_TAG] = WinUtil::toT(Util::formatBytes(user->getTag()));
-			columns[COLUMN_CONNECTION] = WinUtil::toT(user->getConnection());
-			columns[COLUMN_EMAIL] = WinUtil::toT(user->getEmail());
+			columns[COLUMN_NICK] = Text::toT(user->getNick());
+			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(user->getBytesShared()));
+			columns[COLUMN_DESCRIPTION] = Text::toT(user->getDescription());
+			columns[COLUMN_TAG] = Text::toT(user->getTag());
+			columns[COLUMN_CONNECTION] = Text::toT(user->getConnection());
+			columns[COLUMN_EMAIL] = Text::toT(user->getEmail());
 			op = user->isSet(User::OP); 
 		
 		}
@@ -269,7 +269,7 @@ private:
 
 	class PMInfo {
 	public:
-		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(WinUtil::toT(m)) { };
+		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(Text::toT(m)) { };
 		User::Ptr user;
 		tstring msg;
 	};
@@ -283,7 +283,7 @@ private:
 		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
 		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
 	{
-		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(WinUtil::fromT(aServer));
+		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(aServer));
 		if(fhe != NULL) {
 			stripIsp     = fhe->getStripIsp();
 			showJoins    = fhe->getShowJoins();
@@ -293,11 +293,11 @@ private:
 			showJoins    = BOOLSETTING(SHOW_JOINS);
 			showUserList = true;
 		}
-		client = ClientManager::getInstance()->getClient(WinUtil::fromT(aServer));
-		client->setNick(aNick.empty() ? SETTING(NICK) : WinUtil::fromT(aNick));
+		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
+		client->setNick(aNick.empty() ? SETTING(NICK) : Text::fromT(aNick));
         if (!aDescription.empty())
-			client->setDescription(WinUtil::fromT(aDescription));
-		client->setPassword(WinUtil::fromT(aPassword));
+			client->setDescription(Text::fromT(aDescription));
+		client->setPassword(Text::fromT(aPassword));
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
@@ -477,7 +477,7 @@ private:
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
-	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(WinUtil::toT(msg))); };
+	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); };
 	void speak(Speakers s, const User::Ptr& u) { 
 		Lock l(updateCS);
 		updateList.push_back(make_pair(u, s));

@@ -170,7 +170,7 @@ private:
 	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
 
 	void speak(int x, const string& l) {
-		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(WinUtil::toT(l)));
+		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(Text::toT(l)));
 	}
 	
 	void updateStatus();

@@ -291,14 +291,14 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		callStack.AddrStack.Mode   = AddrModeFlat;
 		callStack.AddrFrame.Mode   = AddrModeFlat;
 
-		f.write(WinUtil::fromT(lpszMessage));
+		f.write(Text::fromT(lpszMessage));
 
 		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-		f.write(WinUtil::fromT(srcInfo));
+		f.write(Text::fromT(srcInfo));
 		f.write(LIT(": "));
-		f.write(WinUtil::fromT(symInfo));
+		f.write(Text::fromT(symInfo));
 		f.write(LIT("\r\n"));
 
 		// Max 100 stack lines...
@@ -324,9 +324,9 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 			GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 			GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-			f.write(WinUtil::fromT(srcInfo));
+			f.write(Text::fromT(srcInfo));
 			f.write(LIT(": "));
-			f.write(WinUtil::fromT(symInfo));
+			f.write(Text::fromT(symInfo));
 			f.write(LIT("\r\n"));
 
 		}

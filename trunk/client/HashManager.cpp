@@ -61,7 +61,6 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 	
 	if(root != NULL && speed > -1) {
 		fire(HashManagerListener::TTHDone(), aFileName, root);
-		
 	}
 
 	string fn = aFileName;
@@ -330,13 +329,13 @@ void HashManager::HashStore::createDataFile(const string& name) {
 bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size) {
 	HANDLE h = INVALID_HANDLE_VALUE;
 	DWORD x, y;
-	if(!GetDiskFreeSpace(Util::utf8ToWide(Util::getFilePath(fname)).c_str(), &y, &x, &y, &y)) {
+	if(!GetDiskFreeSpace(Text::toT(Util::getFilePath(fname)).c_str(), &y, &x, &y, &y)) {
 		return false;
 	} else {
 		if((BUF_SIZE % x) != 0) {
 			return false;
 		} else {
-			h = ::CreateFile(Util::utf8ToWide(fname).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED, NULL);
+			h = ::CreateFile(Text::toT(fname).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED, NULL);
 			if(h == INVALID_HANDLE_VALUE)
 				return false;
 		}
@@ -455,7 +454,6 @@ int HashManager::Hasher::run() {
 		s.wait();
 		if(stop)
 			break;
-
 		{
 			Lock l(cs);
 			if(!w.empty()) {

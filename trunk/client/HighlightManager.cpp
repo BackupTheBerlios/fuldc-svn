@@ -26,7 +26,7 @@ void HighlightManager::load(SimpleXML *aXml){
 		while(aXml->findChild("Highlight")) {
 			ColorSettings *cs = new ColorSettings;
 #ifdef UNICODE
-			cs->setMatch( Util::utf8ToWide( aXml->getChildAttrib("Match") ) );
+			cs->setMatch( Text::utf8ToWide( aXml->getChildAttrib("Match") ) );
 #else
 			cs->setMatch( aXml->getChildAttrib("Match") );
 #endif
@@ -48,7 +48,7 @@ void HighlightManager::load(SimpleXML *aXml){
 			cs->setBgColor( (int)aXml->getLongLongChildAttrib("BgColor") );
 			cs->setFgColor( (int)aXml->getLongLongChildAttrib("FgColor") );
 #ifdef UNICODE
-			cs->setSoundFile( Util::utf8ToWide( aXml->getChildAttrib("SoundFile") ) );
+			cs->setSoundFile( Text::utf8ToWide( aXml->getChildAttrib("SoundFile") ) );
 #else
 			cs->setSoundFile( aXml->getChildAttrib("SoundFile") );
 #endif
@@ -69,7 +69,7 @@ void HighlightManager::save(SimpleXML *aXml){
 	for(;iter != colorSettings.end(); ++iter) {
 		aXml->addTag("Highlight");
 #ifdef UNICODE
-		aXml->addChildAttrib("Match", Util::wideToUtf8((*iter)->getMatch()));
+		aXml->addChildAttrib("Match", Text::wideToUtf8((*iter)->getMatch()));
 #else
 		aXml->addChildAttrib("Match", (*iter)->getMatch());
 #endif
@@ -91,7 +91,7 @@ void HighlightManager::save(SimpleXML *aXml){
 		aXml->addChildAttrib("FgColor", Util::toString((*iter)->getFgColor()));
 		aXml->addChildAttrib("BgColor", Util::toString((*iter)->getBgColor()));
 #ifdef UNICODE
-		aXml->addChildAttrib("SoundFile", Util::wideToUtf8((*iter)->getSoundFile()));
+		aXml->addChildAttrib("SoundFile", Text::wideToUtf8((*iter)->getSoundFile()));
 #else
 		aXml->addChildAttrib("SoundFile", (*iter)->getSoundFile());
 #endif

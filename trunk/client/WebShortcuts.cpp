@@ -44,9 +44,9 @@ void WebShortcuts::load(SimpleXML* xml) {
 		while(xml->findChild("WebShortcut")){
 			tmp = new WebShortcut();
 #ifdef UNICODE
-			tmp->name  = Util::utf8ToWide(xml->getChildAttrib("Name"));
-			tmp->key   = Util::utf8ToWide(xml->getChildAttrib("Key"));
-			tmp->url   = Util::utf8ToWide(OXMLLib::decode(xml->getChildAttrib("URL"), false));
+			tmp->name  = Text::utf8ToWide(xml->getChildAttrib("Name"));
+			tmp->key   = Text::utf8ToWide(xml->getChildAttrib("Key"));
+			tmp->url   = Text::utf8ToWide(OXMLLib::decode(xml->getChildAttrib("URL"), false));
 #else
 			tmp->name  = xml->getChildAttrib("Name");
 			tmp->key   = xml->getChildAttrib("Key");
@@ -62,7 +62,7 @@ void WebShortcuts::load(SimpleXML* xml) {
 	}
 	
 #ifdef UNICODE
-	tstring s = Util::utf8ToWide(OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false));
+	tstring s = Text::utf8ToWide(OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false));
 #else
 	tstring s = OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false);
 #endif
@@ -72,7 +72,7 @@ void WebShortcuts::load(SimpleXML* xml) {
 		xml->stepIn();
 		if(xml->findChild("WebShortcuts")){
 #ifdef UNICODE
-			s = Util::utf8ToWide(OXMLLib::decode( xml->getChildData(), false));
+			s = Text::utf8ToWide(OXMLLib::decode( xml->getChildData(), false));
 #else
 			s = OXMLLib::decode( xml->getChildData(), false);
 #endif
@@ -94,9 +94,9 @@ void WebShortcuts::save(SimpleXML* xml) {
 	for(WebShortcut::Iter i = list.begin(); i != list.end(); ++i){
 		xml->addTag("WebShortcut");
 #ifdef UNICODE
-		xml->addChildAttrib("Name", Util::wideToUtf8((*i)->name));
-		xml->addChildAttrib("Key", Util::wideToUtf8((*i)->key));
-		xml->addChildAttrib("URL", Util::wideToUtf8((*i)->url));
+		xml->addChildAttrib("Name", Text::wideToUtf8((*i)->name));
+		xml->addChildAttrib("Key", Text::wideToUtf8((*i)->key));
+		xml->addChildAttrib("URL", Text::wideToUtf8((*i)->url));
 #else
 		xml->addChildAttrib("Name", (*i)->name);
 		xml->addChildAttrib("Key", (*i)->key);

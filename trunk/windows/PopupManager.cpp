@@ -73,7 +73,7 @@ void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t /*tick*/ 
 void PopupManager::on(QueueManagerListener::ReleaseDone, string msg) {
 	//we can't create the window in this thread, then the client will crash
 	//so post a message and let the main window thread create it
-	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, MainFrame::DOWNLOAD_COMPLETE, (LPARAM)new tstring(WinUtil::toT(msg)));
+	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, MainFrame::DOWNLOAD_COMPLETE, (LPARAM)new tstring(Text::toT(msg)));
 }
 
 void PopupManager::AutoRemove(){

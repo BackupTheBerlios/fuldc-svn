@@ -161,7 +161,7 @@ void ADLSearchManager::Save()
 		// Save string to file			
 		try {
 			File fout(Util::getAppPath() + ADLS_STORE_FILENAME, File::WRITE, File::CREATE | File::TRUNCATE);
-			fout.write(SimpleXML::w1252Header);
+			fout.write(SimpleXML::utf8Header);
 			fout.write(xml.toXML());
 			fout.close();
 		} catch(const FileException&) {

@@ -64,7 +64,7 @@ protected:
 	ExListViewCtrl ctrlDirectories;
 	CStatic ctrlTotal;
 
-	void addDirectory(tstring path);
+	void addDirectory(const tstring& aPath);
 };
 
 #endif //UPLOADPAGE_H

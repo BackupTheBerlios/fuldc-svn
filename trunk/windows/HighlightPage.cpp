@@ -71,7 +71,7 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlMatchType.Attach(GetDlgItem(IDC_MATCHTYPE));
 
 	//add alternatives
-	StringTokenizer<tstring> s(WinUtil::toT(STRING(HIGHLIGHT_MATCH_TYPES)), _T(","));
+	StringTokenizer<tstring> s(Text::toT(STRING(HIGHLIGHT_MATCH_TYPES)), _T(","));
 	TStringList l = s.getTokens();
 	for(TStringIter i = l.begin(); i != l.end(); ++i)
 		ctrlMatchType.AddString((*i).c_str());

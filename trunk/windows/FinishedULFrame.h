@@ -196,8 +196,8 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	
 	void updateStatus() {
-		ctrlStatus.SetText(1, WinUtil::toT(Util::formatBytes(totalBytes)).c_str());
-		ctrlStatus.SetText(2, WinUtil::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
+		ctrlStatus.SetText(1, Text::toT(Util::formatBytes(totalBytes)).c_str());
+		ctrlStatus.SetText(2, Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
 	}
 
 	void updateList(const FinishedItem::List& fl) {

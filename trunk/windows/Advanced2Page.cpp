@@ -100,7 +100,7 @@ void Advanced2Page::write()
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
 		SettingsManager::getInstance()->set(SettingsManager::LOG_DIRECTORY, s + '\\');
 	}
-	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
+	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	// Do specialized writing here
 	// settings->set(XX, YY);
 }

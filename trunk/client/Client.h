@@ -101,6 +101,8 @@ public:
 	virtual User::NickMap& lockUserList() = 0;
 	virtual void unlockUserList() = 0;
 
+	virtual string checkNick(const string& nick) = 0;
+
 	const string& getAddress() const { return address; }
 	const string& getAddressPort() const { return addressPort; }
 	short getPort() const { return port; }

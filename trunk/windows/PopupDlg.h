@@ -37,7 +37,7 @@ public:
 		else
 			Create(NULL, rc, NULL, WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_TOOLWINDOW );
 
-		WinUtil::decodeFont(WinUtil::toT(SETTING(POPUP_FONT)), logFont);
+		WinUtil::decodeFont(Text::toT(SETTING(POPUP_FONT)), logFont);
 		font = ::CreateFontIndirect(&logFont);
 
 	}

@@ -52,7 +52,7 @@ UploadManager::~UploadManager() throw() {
 	}
 }
 
-bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes, bool adc, bool utf8) {
+bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes, bool adc) {
 	if(aSource->getState() != UserConnection::STATE_GET) {
 		dcdebug("UM:prepFile Wrong state, ignoring\n");
 		return false;
@@ -69,7 +69,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 
 	string file;
 	try {
-		file = ShareManager::getInstance()->translateFileName(aFile, adc, utf8);
+		file = ShareManager::getInstance()->translateFileName(aFile, adc);
 	} catch(const ShareException&) {
 		aSource->fileNotAvail();
 		return false;
@@ -162,7 +162,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	u->setFile(is);
 	u->setSize(size);
 	u->setStartPos(aStartPos);
-	u->setFileName(aFile);
+	u->setFileName(file);
 	u->setLocalFileName(file);
 
 	if(userlist)
@@ -194,7 +194,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 }
 
 void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, const string& aFile, int64_t aResume) throw() {
-	if(prepareFile(aSource, "file", aFile, aResume, -1, false, false)) {
+	if(prepareFile(aSource, "file", aFile, aResume, -1, false)) {
 		aSource->setState(UserConnection::STATE_SEND);
 		aSource->fileLength(Util::toString(aSource->getUpload()->getSize()));
 	}
@@ -202,7 +202,7 @@ void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, con
 
 void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int64_t aStartPos, int64_t aBytes, bool z) {
 	if(!z || BOOLSETTING(COMPRESS_TRANSFERS)) {
-		if(prepareFile(aSource, "file", aFile, aStartPos, aBytes, false, false)) {
+		if(prepareFile(aSource, "file", aFile, aStartPos, aBytes, false)) {
 			Upload* u = aSource->getUpload();
 			dcassert(u != NULL);
 			if(aBytes == -1)
@@ -269,9 +269,9 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 	aSource->setUpload(NULL);
 	aSource->setState(UserConnection::STATE_GET);
 
-	if(BOOLSETTING(LOG_UPLOADS)  && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
+	if(BOOLSETTING(LOG_UPLOADS) && !u->isSet(Upload::FLAG_TTH_LEAVES) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
 		StringMap params;
-		params["source"] = u->getLocalFileName();
+		params["source"] = u->getFileName();
 		params["user"] = aSource->getUser()->getNick();
 		params["hub"] = aSource->getUser()->getLastHubName();
 		params["hubip"] = aSource->getUser()->getLastHubAddress();
@@ -286,9 +286,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
 	}
 
-	if(!u->isSet(Upload::FLAG_TTH_LEAVES))
-		fire(UploadManagerListener::Complete(), u);
-
+	fire(UploadManagerListener::Complete(), u);
 	removeUpload(u);
 }
 
@@ -332,7 +330,7 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 	const string& type = c.getParam(0);
 	string tmp;
 
-	if(prepareFile(aSource, type, fname, aStartPos, aBytes, true, true)) {
+	if(prepareFile(aSource, type, fname, aStartPos, aBytes, true)) {
 		Upload* u = aSource->getUpload();
 		dcassert(u != NULL);
 		if(aBytes == -1)

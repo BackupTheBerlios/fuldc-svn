@@ -75,7 +75,7 @@ public:
 
 		SetDlgItemText(IDC_TTH, WinUtil::tth.c_str());
 		SetDlgItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
-		SetDlgItemText(IDC_TOTALS, WinUtil::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
+		SetDlgItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
 			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
 
 		if(SETTING(TOTAL_DOWNLOAD) > 0) {
@@ -121,7 +121,7 @@ private:
 			if(xml.findChild("DCUpdate")) {
 				xml.stepIn();
 				if(xml.findChild("Version")) {
-					tstring* x = new tstring(WinUtil::toT(xml.getChildData()));
+					tstring* x = new tstring(Text::toT(xml.getChildData()));
 					PostMessage(WM_VERSIONDATA, (WPARAM) x);
 				}
 			}
@@ -130,7 +130,7 @@ private:
 	}
 
 	virtual void on(HttpConnectionListener::Failed, HttpConnection* conn, const string& aLine) throw() {
-		tstring* x = new tstring(WinUtil::toT(aLine));
+		tstring* x = new tstring(Text::toT(aLine));
 		PostMessage(WM_VERSIONDATA, (WPARAM) x);
 		conn->removeListener(this);
 	}
