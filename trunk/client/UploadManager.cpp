@@ -283,6 +283,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		StringMap params;
 		params["source"] = u->getFileName();
 		params["user"] = aSource->getUser()->getNick();
+		params["userip"] = aSource->getRemoteIp();
 		params["hub"] = aSource->getUser()->getLastHubName();
 		params["hubip"] = aSource->getUser()->getLastHubAddress();
 		params["size"] = Util::toString(u->getSize());
@@ -297,8 +298,6 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		if(u->getTTH() != NULL) {
 			params["tth"] = u->getTTH()->toBase32();
 		}
-		params["ip"] = aSource->getRemoteIp();
-
 		LOG(LogManager::UPLOAD, params);
 	}
 
@@ -394,7 +393,7 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 }
 
-void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) throw() {
+void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
 	if( (!aUser->isOnline()) && 
 		(aUser->isSet(User::QUIT_HUB)) && 
 		(BOOLSETTING(AUTO_KICK)) ){

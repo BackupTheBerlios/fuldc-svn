@@ -290,7 +290,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
-			d->setFlag(Download::FLAG_UTF8);
+			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
+				d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 
@@ -304,8 +305,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			aConn->getZBlock(d->getSource(), d->getPos(), d->getBytesLeft(), d->isSet(Download::FLAG_UTF8));
-		} else if(d->isSet(Download::FLAG_UTF8)) {
-			aConn->getBlock(d->getSource(), d->getPos(), d->getBytesLeft(), true);
+		} else if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST) && d->isSet(Download::FLAG_UTF8)) {
+			aConn->uGetBlock(d->getSource(), d->getPos(), d->getBytesLeft());
 		} else {
 			aConn->get(d->getSource(), d->getPos());
 		}
@@ -838,6 +839,7 @@ noCRC:
 		StringMap params;
 		params["target"] = d->getTarget();
 		params["user"] = aSource->getUser()->getNick();
+		params["userip"] = aSource->getRemoteIp();
 		params["hub"] = aSource->getUser()->getLastHubName();
 		params["hubip"] = aSource->getUser()->getLastHubAddress();
 		params["size"] = Util::toString(d->getSize());

@@ -363,11 +363,17 @@ void HubFrame::onEnter() {
 				} else {
 					addClientLine(TSTRING(UNKNOWN_COMMAND) + cmd);
 				}
-			} 
+			}
+			ctrlMessage.SetWindowText(_T(""));
+		} else if(waitingForPW) {
+			addClientLine(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
+			ctrlMessage.SetWindowText(_T("/password "));
+			ctrlMessage.SetFocus();
+			ctrlMessage.SetSel(10, 10);
 		} else {
 			client->hubMessage(Text::fromT(s));
+			ctrlMessage.SetWindowText(_T(""));
 		}
-		ctrlMessage.SetWindowText(_T(""));
 	} else {
 		MessageBeep(MB_ICONEXCLAMATION);
 	}
