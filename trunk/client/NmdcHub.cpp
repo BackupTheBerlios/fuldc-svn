@@ -186,11 +186,6 @@ void NmdcHub::onLine(const string& aLine) throw() {
 					count++;
 
 				if(count > 7) {
-					if(seeker.compare(0, 4, "Hub:") == 0)
-						Speaker<NmdcHubListener>::fire(NmdcHubListener::SearchFlood(), this, seeker.substr(4));
-					else
-						Speaker<NmdcHubListener>::fire(NmdcHubListener::SearchFlood(), this, seeker + STRING(NICK_UNKNOWN));
-
 					flooders.push_back(make_pair(seeker, tick));
 					return;
 				}

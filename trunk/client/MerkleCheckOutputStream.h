@@ -95,7 +95,9 @@ private:
 			if(cur.getLeaves().size() > real.getLeaves().size() ||
 				!(cur.getLeaves()[verified] == real.getLeaves()[verified])) 
 			{
-				throw FileException(STRING(TTH_INCONSISTENCY));
+				if(!(BOOLSETTING(IGNORE_TTH_INCONSISTENCY) && !BOOLSETTING(ADD_FINISHED_INSTANTLY))) {
+					throw FileException(STRING(TTH_INCONSISTENCY));
+				}
 			}
 			verified++;
 		}

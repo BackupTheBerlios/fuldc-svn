@@ -469,12 +469,8 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			if(q->getTTH() != NULL && root == NULL)
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
 
-			if(root != NULL) {
-				if(q->getTTH() == NULL) {
-					q->setTTH(new TTHValue(*root));
-				} else if(!(*root == *q->getTTH())) {
-					throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
-				}
+			if(root != NULL && (!(*root == *q->getTTH()))) {
+				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
 			}
 			q->setFlag(aFlags);
 			
