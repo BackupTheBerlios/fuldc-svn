@@ -198,6 +198,7 @@ void DirectoryListingFrame::updateStatus() {
 		int cnt = ctrlList.GetSelectedCount();
 		int64_t total = 0;
 		if(cnt == 0) {
+			cnt = ctrlList.GetItemCount ();
 			total = ctrlList.forEachT(ItemInfo::TotalSize()).total;
 				} else {
 			total = ctrlList.forEachSelectedT(ItemInfo::TotalSize()).total;

@@ -382,7 +382,7 @@ string& Util::toAcp(string& str) {
 			wtmp += c;
 		}
 	}
-#ifdef WIN32
+#ifdef _WIN32
 	int x = WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), wtmp.length(), NULL, 0, NULL, NULL);
 	if(x == 0) {
 		str.clear();

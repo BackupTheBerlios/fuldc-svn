@@ -224,7 +224,7 @@ private:
 		};
 		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
 			columns[COLUMN_FILENAME] = d->getName();
-			if(utf8)
+			if(utf8 && Util::needsAcp(columns[COLUMN_FILENAME]))
 				Util::toAcp(columns[COLUMN_FILENAME]);
 			columns[COLUMN_SIZE] = Util::formatBytes(d->getTotalSize());
 		};
