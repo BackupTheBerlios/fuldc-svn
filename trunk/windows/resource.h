@@ -174,6 +174,8 @@
 #define IDC_LATEST                      1071
 #define IDC_PRIVATE_MESSAGE_BEEP        1072
 #define IDC_USE_SYSTEM_ICONS            1072
+#define IDC_LATEST2                     1072
+#define IDC_UPTIME                      1072
 #define IDC_PRIVATE_MESSAGE_BEEP_OPEN   1073
 #define IDC_POPUP_PMS                   1073
 #define IDC_USE_OEM_MONOFONT            1073
@@ -362,7 +364,6 @@
 #define IDC_MOVEDOWN                    1251
 #define IDC_HAS_FG_COLOR                1252
 #define IDC_PATHS                       1253
-#define IDC_EDIT1                       1254
 #define IDC_TAB_SIZE                    1254
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500

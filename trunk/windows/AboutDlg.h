@@ -69,6 +69,10 @@ public:
 			sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
 			SetDlgItemText(IDC_RATIO, buf);
 		}
+
+		string time = Util::formatSeconds(GET_TIME() - WinUtil::startTime);
+		SetDlgItemText(IDC_UPTIME, time.c_str());
+
 		CenterWindow(GetParent());
 		c.addListener(this);
 		c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");

@@ -75,6 +75,7 @@ public:
 	static string commands;
 	static HHOOK hook;
 	static HWND findDialog;
+	static const u_int32_t startTime;
 
 	static void SearchSite(WebShortcut* ws, string strSearchString);
 

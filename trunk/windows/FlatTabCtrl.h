@@ -418,11 +418,12 @@ public:
 			if(drawActive) {
 				dcassert(active);
 				drawTab(dc, active, active->xpos, active->row, true);
-				HPEN grayPen = ::CreatePen(PS_SOLID, 2, GetSysColor(COLOR_BTNFACE));
-				dc.SelectPen(grayPen);
+				HPEN pen = dc.SelectPen(::CreatePen(PS_SOLID, 2, GetSysColor(COLOR_BTNFACE)));
 				int y = (rows - active->row -1) * getTabHeight();
 				dc.MoveTo(active->xpos, y);
 				dc.LineTo(active->xpos + active->getWidth(), y);
+				DeleteObject(dc.SelectPen(pen));
+				
 			}
 			dc.SelectPen(oldpen);
 			dc.SelectFont(oldfont);

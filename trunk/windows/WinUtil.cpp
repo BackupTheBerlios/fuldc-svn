@@ -58,6 +58,7 @@ HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
 HWND WinUtil::findDialog = NULL;
+const u_int32_t WinUtil::startTime = GET_TIME();
 
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {

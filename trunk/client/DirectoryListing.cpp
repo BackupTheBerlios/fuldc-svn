@@ -82,6 +82,7 @@ void DirectoryListing::load(const string& in) {
 	pADLSearch->setBreakOnFirst(BOOLSETTING(ADLS_BREAK_ON_FIRST));
 
 	Directory* cur = root;
+	Directory* tmp = NULL;
 	string fullPath;
 	
 	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) 
@@ -121,8 +122,9 @@ void DirectoryListing::load(const string& in) {
 			if(di != cur->directories.end()) {
 				cur = *di;
 			} else {
-				cur = new Directory(cur, name);
-				cur->directories.push_back(cur);
+				tmp = new Directory(cur, name);
+				cur->directories.push_back(tmp);
+				cur = tmp;
 				pADLSearch->MatchesDirectory(destDirs, cur, fullPath);
 			}
 			indent++;

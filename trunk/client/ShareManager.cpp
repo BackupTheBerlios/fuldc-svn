@@ -163,19 +163,22 @@ void ShareManager::load(SimpleXML* aXml) {
 
 bool ShareManager::loadXmlList(){
 	string* xmlString = new string;
-	char *buf = new char[65536];
+	const size_t BUF_SIZE = 64*1024;
+	char *buf = new char[BUF_SIZE];
 	u_int32_t pos = 0;
 	
 	//try to read the xml from the file
 	try{
 		::File f(Util::getAppPath() + "Share.xml.bz2", File::READ, File::OPEN);
-		FilteredInputStream<UnBZFilter, false> *xmlFile = new FilteredInputStream<UnBZFilter, false>(&f);
-		size_t BUF_SIZE = 64*1024;
-		while((pos = xmlFile->read(buf, BUF_SIZE)) > 0) {
+		FilteredInputStream<UnBZFilter, false> xmlFile(&f);
+		for(;;) {
+			size_t tmp = BUF_SIZE;
+			pos = xmlFile.read(buf, tmp);
 			xmlString->append(buf, pos);
+			if(pos < BUF_SIZE)
+				break;
 		}
 		f.close();
-		delete xmlFile;
 	}catch (Exception&) { 
 		//if we for some reason failed, return false to indicate that a refresh is needed
 		return false;
@@ -205,7 +208,9 @@ bool ShareManager::loadXmlList(){
 	while (xml->findChild("Directory")) {
 		string name = xml->getChildAttrib("Name");
 		string path = xml->getChildAttrib("Path");
-		
+		Util::toAcp(name);
+		Util::toAcp(path);
+				
 		directories[path] = addDirectoryFromXml(xml, NULL, name);; 
 		dirs[name] = path;
 	}
@@ -310,6 +315,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	Directory::File::Iter lastFileIter = dir->files.begin();
 	while (xml->findChild("File")) {
 		string name = xml->getChildAttrib("Name");
+		Util::toAcp(name);
 		u_int64_t size = xml->getIntChildAttrib("Size");
 		TTHValue *tth = HashManager::getInstance()->getTTH(name, size);
 
@@ -328,6 +334,8 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	while (xml->findChild("Directory")) {
 		string name = xml->getChildAttrib("Name");
 		string path = xml->getChildAttrib("Path");
+		Util::toAcp(name);
+		Util::toAcp(path);
 		dir->directories[path] = addDirectoryFromXml(xml, dir, name);
 		dir->addSearchType(dir->directories[path]->getSearchTypes());
 	}
@@ -731,11 +739,9 @@ void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, c
     
 	xmlFile->write(indent);
 	xmlFile->write(LITERAL("<Directory Name=\""));
-	tmp = name;
-	xmlFile->write(SimpleXML::escape(tmp, false, false));
+	xmlFile->write(escaper(name, tmp));
 	xmlFile->write(LITERAL("\" Path=\""));
-	tmp = path;
-	xmlFile->write(SimpleXML::escape(tmp, false, false));
+	xmlFile->write(escaper(path, tmp));
 	xmlFile->write(LITERAL("\">\r\n"));
 
 	indent += '\t';
@@ -747,8 +753,7 @@ void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, c
 	while(j != files.end()) {
 		xmlFile->write(indent);
 		xmlFile->write(LITERAL("<File Name=\""));
-		tmp = j->getName();
-		xmlFile->write(SimpleXML::escape(tmp,false, false));
+		xmlFile->write(escaper(j->getName(), tmp));
 		xmlFile->write(LITERAL("\" Size=\""));
 		xmlFile->write(Util::toString(j->getSize()));
 		xmlFile->write(LITERAL("\"/>\r\n"));
