@@ -54,13 +54,13 @@ public:
 		ERROR_TRANSFER_GENERIC = 50,
 		ERROR_FILE_NOT_AVAILABLE = 51,
 		ERROR_FILE_PART_NOT_AVAILABLE = 52,
-		ERROR_SLOTS_FULL = 53,
+		ERROR_SLOTS_FULL = 53
 	};
 
 	enum Severity {
 		SEV_SUCCESS = 0,
 		SEV_RECOVERABLE = 1,
-		SEV_FATAL = 2,
+		SEV_FATAL = 2
 	};
 
 	static const char TYPE_ACTIVE = 'A';
@@ -72,7 +72,7 @@ public:
 	static const char TYPE_PASSIVE = 'P';
 	static const char TYPE_UDP = 'U';
 
-#define CMD(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n;
+#define CMD(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
 	CMD(SUP, 'S','U','P');
 	CMD(STA, 'S','T','A');
 	CMD(INF, 'I','N','F');
@@ -167,32 +167,32 @@ class CommandHandler {
 public:
 	void dispatch(const string& aLine, bool nmdc = false) {
 		try {
-		AdcCommand c(aLine, nmdc);
+			AdcCommand c(aLine, nmdc);
 
 #define CMD(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
-		switch(c.getCommand()) {
-			CMD(SUP);
-			CMD(STA);
-			CMD(INF);
-			CMD(MSG);
-			CMD(SCH);
-			CMD(RES);
-			CMD(CTM);
-			CMD(RCM);
-			CMD(GPA);
-			CMD(PAS);
-			CMD(QUI);
-			CMD(DSC);
-			CMD(GET);
-			CMD(GFI);
-			CMD(SND);
-			CMD(NTD);
-		default: 
-			dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
-			break;
+			switch(c.getCommand()) {
+				CMD(SUP);
+				CMD(STA);
+				CMD(INF);
+				CMD(MSG);
+				CMD(SCH);
+				CMD(RES);
+				CMD(CTM);
+				CMD(RCM);
+				CMD(GPA);
+				CMD(PAS);
+				CMD(QUI);
+				CMD(DSC);
+				CMD(GET);
+				CMD(GFI);
+				CMD(SND);
+				CMD(NTD);
+			default: 
+				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
+				break;
 #undef CMD
 
-		}
+			}
 		} catch(const ParseException&) {
 			dcdebug("Invalid ADC command: %.50s\n", aLine.c_str());
 			return;

@@ -180,6 +180,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 			userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 		}
 
+		checkAdcItems(transferMenu);
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		if ( bCustomMenu ) {

@@ -87,6 +87,7 @@ LRESULT UsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	if (ctrlUsers.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
 	{ 
 		ctrlUsers.ClientToScreen(&pt);
+		checkAdcItems(usersMenu);
 		usersMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		return TRUE; 

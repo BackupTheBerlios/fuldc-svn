@@ -55,8 +55,8 @@ template<typename T> struct TypeTraits {
 
 #define GETSET(type, name, name2) \
 private: type name; \
-public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
-	void set##name2(TypeTraits<type>::ParameterType a##name2) { name = a##name2; };
+public: TypeTraits<type>::ParameterType get##name2() const { return name; } \
+	void set##name2(TypeTraits<type>::ParameterType a##name2) { name = a##name2; }
 
 #define LIT(x) x, (sizeof(x)-1)
 
@@ -520,7 +520,7 @@ public:
 		return buf;
 	}
 	static char fromHexEscape(const string aString) {
-		int res = 0;
+		unsigned int res = 0;
 		sscanf(aString.c_str(), "%X", &res);
 		return static_cast<char>(res);
 	}

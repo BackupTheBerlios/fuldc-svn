@@ -105,6 +105,23 @@ public:
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::showLog);
 		return 0;
 	}
+	struct NmdcOnly {
+		NmdcOnly() : nmdcOnly(true) { }
+		void operator()(UserInfoBase* ui) { if(!ui->getUser()->getCID().isZero()) nmdcOnly = false; }
+
+		bool nmdcOnly;
+	};
+	void checkAdcItems(CMenu& menu) {
+
+		MENUITEMINFO mii = { 0 };
+		mii.cbSize = sizeof(mii);
+		mii.fMask = MIIM_STATE;
+		if(((T*)this)->getUserList().forEachSelectedT(NmdcOnly()).nmdcOnly) {
+			menu.EnableMenuItem(IDC_BROWSELIST, MFS_DISABLED);
+		} else {
+			menu.EnableMenuItem(IDC_BROWSELIST, MFS_ENABLED);
+		}
+	}
 
 	void appendUserItems(CMenu& menu) {
 		menu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));

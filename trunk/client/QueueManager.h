@@ -268,7 +268,7 @@ private:
 	/** Add a source to an existing queue item */
 	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, Flags::MaskType addBad, bool utf8) throw(QueueException, FileException);
 
-	int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
+	int matchFiles(DirectoryListing::Directory* dir) throw();
 	void processList(const string& name, User::Ptr& user, int flags);
 
 	void load(SimpleXML* aXml);

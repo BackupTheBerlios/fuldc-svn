@@ -125,7 +125,7 @@ public:
 	enum SizeModes {
 		SIZE_DONTCARE = 0x00,
 		SIZE_ATLEAST = 0x01,
-		SIZE_ATMOST = 0x02,
+		SIZE_ATMOST = 0x02
 	};
 
 	enum TypeModes {

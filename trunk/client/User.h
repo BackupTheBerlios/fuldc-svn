@@ -56,7 +56,7 @@ public:
 		QUIT_HUB = 1<<QUIT_HUB_BIT,
 		HIDDEN = 1<<HIDDEN_BIT,
 		HUB = 1<<HUB_BIT,
-		BOT = 1<<BOT_BIT,
+		BOT = 1<<BOT_BIT
 	};
 
 	typedef Pointer<User> Ptr;

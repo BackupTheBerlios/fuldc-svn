@@ -533,6 +533,14 @@ void SearchFrame::SearchInfo::getList() {
 	}
 }
 
+void SearchFrame::SearchInfo::browseList() {
+	try {
+		QueueManager::getInstance()->addPfs(sr->getUser(), Text::fromT(getPath()));
+	} catch(const Exception&) {
+		// Ignore for now...
+	}
+}
+
 void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	if(!si->getTTH().empty()) {
 		if(firstTTH) {
@@ -1059,6 +1067,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		}
 		
 		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);
+		checkAdcItems(resultsMenu);
 		resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(resultsMenu);
 		return TRUE; 
@@ -1134,6 +1143,11 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 
 LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ctrlResults.forEachSelected(&SearchInfo::getList);
+	return 0;
+}
+
+LRESULT SearchFrame::onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ctrlResults.forEachSelected(&SearchInfo::browseList);
 	return 0;
 }
 

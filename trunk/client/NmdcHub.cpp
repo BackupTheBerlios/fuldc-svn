@@ -40,7 +40,7 @@ NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),
 {
 	TimerManager::getInstance()->addListener(this);
 
-};
+}
 
 NmdcHub::~NmdcHub() throw() {
 	TimerManager::getInstance()->removeListener(this);
@@ -48,7 +48,7 @@ NmdcHub::~NmdcHub() throw() {
 
 	Lock l(cs);
 	clearUsers();
-};
+}
 
 void NmdcHub::connect() {
 	setRegistered(false);

@@ -32,7 +32,7 @@ const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), state(STATE_PROTOCOL) {
 }
 
-AdcHub::~AdcHub() {
+AdcHub::~AdcHub() throw() {
 	Lock l(cs);
 	clearUsers();
 }
@@ -108,7 +108,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 			}
 		} else if(i->compare(0, 2, "U4") == 0) {
 			u->setUDPPort((short)Util::toInt(i->substr(2)));
-		}
+		} 
 	}
 
 	if(!ve.empty()) {
@@ -142,14 +142,17 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		return;
 
 	User::Ptr p = cidMap[c.getFrom()];
-	if(!p || p == getMe())
+	if(!p)
 		return;
 	string pmFrom;
 	if(c.getParam("PM", 1, pmFrom)) { // add PM<group-cid> as well
 		User::Ptr pm = cidMap[CID(pmFrom)];
 		if(!pm)
-				return;
+			return;
 
+		if(pm == getMe()) {
+			return;
+		}
 		string msg = '<' + p->getNick() + "> " + c.getParam(0);
 		fire(ClientListener::PrivateMessage(), this, pm, msg);
 	} else {
@@ -311,8 +314,8 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		c.setType(AdcCommand::TYPE_PASSIVE);
-	send(c);
-}
+		send(c);
+	}
 }
 
 void AdcHub::password(const string& pwd) { 

@@ -107,7 +107,7 @@ public:
 	enum SupportFlags {
 		SUPPORTS_USERCOMMAND = 0x01,
 		SUPPORTS_NOGETINFO = 0x02,
-		SUPPORTS_USERIP2 = 0x04,
+		SUPPORTS_USERIP2 = 0x04
 	};
 
 #define checkstate() if(state != STATE_CONNECTED) return

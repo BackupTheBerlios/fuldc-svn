@@ -136,12 +136,12 @@ public:
 		TYPE_UDP
 	};
 
-	Socket::Socket() throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { }
-	Socket::Socket(const string& aIp, const string& aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
-	Socket::Socket(const string& aIp, short aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
+	Socket() throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { }
+	Socket(const string& aIp, const string& aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); }
+	Socket(const string& aIp, short aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); }
 	virtual ~Socket() throw() { Socket::disconnect(); };
 
-	virtual void create(int aType = TYPE_TCP) throw(SocketException);
+	virtual void create(int aType = TYPE_TCP, bool server = false) throw(SocketException);
 	virtual void bind(short aPort) throw(SocketException);
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);
 	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); };

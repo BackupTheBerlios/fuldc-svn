@@ -327,7 +327,7 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queu
 
 	regexp.Init("[Rr0-9][Aa0-9][Rr0-9]");
 	File::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
-};
+}
 
 QueueManager::~QueueManager() throw() { 
 	SearchManager::getInstance()->removeListener(this);
@@ -374,7 +374,7 @@ QueueManager::~QueueManager() throw() {
 		}		
 #endif
 	}
-};
+}
 
 void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	string fn;
@@ -1375,7 +1375,6 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			// ...
 		}
 	}
-
 	if(added && sr->getUser()->isOnline() && wantConnection)
 		ConnectionManager::getInstance()->getDownloadConnection(sr->getUser());
 

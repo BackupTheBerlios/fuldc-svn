@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ADVANCEDPAGE_H
-#define ADVANCEDPAGE_H
+#ifndef WINDOWSPAGE_H
+#define WINDOWSPAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -26,18 +26,18 @@
 #include <atlcrack.h>
 #include "PropPage.h"
 
-class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
+class WindowsPage : public CPropertyPage<IDD_WINDOWSPAGE>, public PropPage
 {
 public:
-	AdvancedPage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CTSTRING(SETTINGS_ADVANCED));
+	WindowsPage(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CTSTRING(SETTINGS_WINDOWS));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
 
-	virtual ~AdvancedPage() { 
+	virtual ~WindowsPage() { 
 	};
 
-	BEGIN_MSG_MAP(AdvancedPage)
+	BEGIN_MSG_MAP(WindowsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
@@ -55,12 +55,13 @@ protected:
 
 	static Item items[];
 	static ListItem listItems[];
+	static ListItem optionItems[];
 };
 
 #endif //ADVANCEDPAGE_H
 
 /**
  * @file
- * $Id: AdvancedPage.h,v 1.1 2003/12/15 16:51:56 trem Exp $
+ * $Id: WindowsPage.h,v 1.2 2005/03/19 13:38:12 arnetheduck Exp $
  */
 

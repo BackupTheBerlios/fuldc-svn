@@ -131,7 +131,11 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	void runUserCommand(UserCommand& uc);
 	void loadFile(const tstring& name);
 	void loadXML(const string& txt);
-	void refreshTree();
+	void refreshTree(const tstring& root);
+
+	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
+	void selectItem(const tstring& name);
+
 	void copy(UINT wID);
 	
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
@@ -216,7 +220,6 @@ private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
-	void GoToDirectory(HTREEITEM hItem, TStringList::iterator& iPath, const TStringList::iterator& iPathEnd);
 
 	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
@@ -324,8 +327,6 @@ private:
 	string findStr;
 	tstring error;
 	string size;
-
-	tstring start;
 
 	int skipHits;
 

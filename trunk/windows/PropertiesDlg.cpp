@@ -32,6 +32,7 @@
 #include "Appearance2Page.h"
 #include "Advanced3Page.h"
 #include "NetworkPage.h"
+#include "WindowsPage.h"
 #include "FulHighlightPage.h"
 #include "FulSharePage.h"
 #include "FulDownloadPage.h"
@@ -44,24 +45,26 @@
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : 
 TreePropertySheet(_T("icons\\settings_tree.bmp"), CTSTRING(SETTINGS))
 {
-	pages[0]  = new GeneralPage(s);
-	pages[1]  = new NetworkPage(s);
-	pages[2]  = new DownloadPage(s);
-	pages[3]  = new UploadPage(s);
-	pages[4]  = new AppearancePage(s);
-	pages[5]  = new Appearance2Page(s);
-	pages[6]  = new LogPage(s);
-	pages[7]  = new AdvancedPage(s);
-	pages[8]  = new Advanced3Page(s);
-	pages[9]  = new UCPage(s);
-	pages[10] = new FulAdvancedPage(s);
-	pages[11] = new FulDownloadPage(s);
-	pages[12] = new FulSharePage(s);
-	pages[13] = new FulIgnorePage(s);
-	pages[14] = new FulAppearancePage(s);
-	pages[15] = new FulHighlightPage(s);
-	pages[16] = new FulPopupsPage(s);
-	pages[17] = new FulTabsPage(s);
+	int n = 0;
+	pages[n++]  = new GeneralPage(s);
+	pages[n++]  = new NetworkPage(s);
+	pages[n++]  = new DownloadPage(s);
+	pages[n++]  = new UploadPage(s);
+	pages[n++]  = new AppearancePage(s);
+	pages[n++]  = new Appearance2Page(s);
+	pages[n++]  = new WindowsPage(s);
+	pages[n++]  = new LogPage(s);
+	pages[n++]  = new AdvancedPage(s);
+	pages[n++]  = new Advanced3Page(s);
+	pages[n++]  = new UCPage(s);
+	pages[n++] = new FulAdvancedPage(s);
+	pages[n++] = new FulDownloadPage(s);
+	pages[n++] = new FulSharePage(s);
+	pages[n++] = new FulIgnorePage(s);
+	pages[n++] = new FulAppearancePage(s);
+	pages[n++] = new FulHighlightPage(s);
+	pages[n++] = new FulPopupsPage(s);
+	pages[n++] = new FulTabsPage(s);
 	
 
 	for(int i=0; i<numPages; i++) {

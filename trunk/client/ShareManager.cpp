@@ -53,7 +53,7 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	HashManager::getInstance()->addListener(this);
-};
+}
 
 ShareManager::~ShareManager() {
 	SettingsManager::getInstance()->removeListener(this);

@@ -18,6 +18,7 @@
 
 #include "Client.h"
 #include "AdcCommand.h"
+#include "User.h"
 
 class ClientManager;
 
@@ -91,7 +92,7 @@ private:
 	 
 	virtual string checkNick(const string& nick);
 	virtual string getHubURL();
-
+	
 	void clearUsers();
 
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }

@@ -134,7 +134,7 @@ void User::setClient(Client* aClient) {
 		setFlag(ONLINE);
 		unsetFlag(QUIT_HUB);
 	}
-};
+}
 
 void User::getParams(StringMap& ucParams) {
 	ucParams["nick"] = getNick();

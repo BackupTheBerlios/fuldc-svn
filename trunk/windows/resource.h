@@ -548,6 +548,13 @@
 #define IDC_ONLY_REFRESH_INCOMING_TIME2 1320
 #define IDC_ONLY_REFRESH_SHARE_TIME1    1321
 #define IDC_ONLY_REFRESH_SHARE_TIME2    1322
+#define IDC_BIND_ADDRESS                1323
+#define IDC_SETTINGS_BIND_ADDRESS       1324
+#define IDC_WINDOWS_STARTUP             1325
+#define IDC_SETTINGS_AUTO_OPEN          1326
+#define IDC_SETTINGS_WINDOWS_OPTIONS    1327
+#define IDC_WINDOWS_OPTIONS             1328
+#define IDD_WINDOWSPAGE                 1329
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

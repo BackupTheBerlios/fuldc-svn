@@ -71,6 +71,8 @@ void DirectoryListing::load(const string& in) {
 	StringList& tokens = t.getTokens();
 	string::size_type indent = 0;
 
+	root->setComplete(true);
+
 	Directory* cur = root;
 	string fullPath;
 	
@@ -107,7 +109,7 @@ void DirectoryListing::load(const string& in) {
 			if(di != cur->directories.end()) {
 				cur = *di;
 			} else {
-				Directory* d = new Directory(cur, name);
+				Directory* d = new Directory(cur, name, false, true);
 				cur->directories.push_back(d);
 				cur = d;
 			}
@@ -118,26 +120,30 @@ void DirectoryListing::load(const string& in) {
 
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
-	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), inListing(false), updating(aUpdating) { 
+	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) { 
 	};
 
 	virtual ~ListLoader() { }
 
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
+
+	const string& getBase() const { return base; }
 private:
 	DirectoryListing::Directory* cur;
 
 	StringMap params;
+	string base;
 	bool inListing;
 	bool updating;
 };
 
-void DirectoryListing::loadXML(const string& xml, bool updating) {
+string DirectoryListing::loadXML(const string& xml, bool updating) {
 	setUtf8(true);
 
 	ListLoader ll(getRoot(), updating);
 	SimpleXMLReader(&ll).fromXML(xml);
+	return ll.getBase();
 }
 
 static const string sFileListing = "FileListing";
@@ -172,14 +178,15 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 				for(DirectoryListing::Directory::Iter i  = cur->directories.begin(); i != cur->directories.end(); ++i) {
 					if((*i)->getName() == n) {
 						d = *i;
-						d->setComplete(!incomp);
+						if(!d->getComplete())
+							d->setComplete(!incomp);
 						break;
 					}
 				}
 			}
 			if(d == NULL) {
 				d = new DirectoryListing::Directory(cur, n, false, !incomp);
-			cur->directories.push_back(d);
+				cur->directories.push_back(d);
 			}
 			cur = d;
 
@@ -189,8 +196,9 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			}
 		}
 	} else if(name == sFileListing) {
-		const string& base = getAttrib(attribs, sBase, 2);
-		if(base.size() > 1 && base[0] == '/' && base[base.size()-1] == '/') {
+		const string& b = getAttrib(attribs, sBase, 2);
+		if(b.size() >= 1 && b[0] == '/' && b[b.size()-1] == '/') {
+			base = b;
 			StringList sl = StringTokenizer<string>(base.substr(1), '/').getTokens();
 			for(StringIter i = sl.begin(); i != sl.end(); ++i) {
 				DirectoryListing::Directory* d = NULL;
@@ -202,7 +210,7 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 				}
 				if(d == NULL) {
 					d = new DirectoryListing::Directory(cur, *i, false, false);
-				cur->directories.push_back(d);
+					cur->directories.push_back(d);
 				}
 				cur = d;
 			}
@@ -229,6 +237,9 @@ void ListLoader::endTag(const string& name, const string&) {
 }
 
 string DirectoryListing::getPath(Directory* d) {
+	if(d == root)
+		return "";
+
 	string dir;
 	dir.reserve(128);
 	dir.append(d->getName());

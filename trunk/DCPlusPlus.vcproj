@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="DCPlusPlus"
+	RootNamespace="DCPlusPlus"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -421,6 +422,10 @@
 				RelativePath=".\windows\UsersFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\WindowsPage.cpp">
+			</File>
+			<File
+
 				RelativePath=".\windows\WebShortcutsProperties.cpp">
 			</File>
 			<File
@@ -615,6 +620,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\UPnP.h">
+			</File>
+			<File
+				RelativePath=".\windows\WindowsPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\UserInfoBase.h">

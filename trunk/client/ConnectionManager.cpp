@@ -42,7 +42,7 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 	features.push_back(UserConnection::FEATURE_TTHF);
 
 	adcFeatures.push_back("+BASE");
-};
+}
 
 /**
  * Request a connection for downloading.
@@ -60,10 +60,10 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		} else {
 			ConnectionQueueItem* cqi = *i;
 			if(cqi->getState() == ConnectionQueueItem::IDLE) {
-			if(find(pendingAdd.begin(), pendingAdd.end(), aUser) == pendingAdd.end())
-				pendingAdd.push_back(aUser);
-			return;
-		}
+				if(find(pendingAdd.begin(), pendingAdd.end(), aUser) == pendingAdd.end())
+					pendingAdd.push_back(aUser);
+				return;
+			}
 		}
 	}
 }
@@ -77,10 +77,10 @@ ConnectionQueueItem* ConnectionManager::getCQI(const User::Ptr& aUser, bool down
 	} else {
 		dcassert(find(uploads.begin(), uploads.end(), aUser) == uploads.end());
 		uploads.push_back(cqi);
-		}
+	}
 
-		fire(ConnectionManagerListener::Added(), cqi);
-
+	fire(ConnectionManagerListener::Added(), cqi);
+	
 	return cqi;
 }
 
@@ -119,12 +119,12 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 			cqi->setConnection(NULL);
 			if(hasDown) {
 				cqi->setLastAttempt(GET_TICK());
-			cqi->setState(ConnectionQueueItem::WAITING);
+				cqi->setState(ConnectionQueueItem::WAITING);
 			} else {
 				putCQI(cqi);
 			}
 		}
-			
+
 		if(ntd) {
 			aSource->unsetFlag(UserConnection::FLAG_DOWNLOAD);
 			addUploadConnection(aSource);
@@ -180,14 +180,17 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	User::List passiveUsers;
 	ConnectionQueueItem::List removed;
+	UserConnection::List added;
+	UserConnection::List penDel;
+
+	bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
+	bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
+
 	{
 		Lock l(cs);
 
-		bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
-		bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
-		
 		int attempts = 0;
-		
+
 		for(ConnectionQueueItem::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 			ConnectionQueueItem* cqi = *i;
 
@@ -200,13 +203,13 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					dcassert(cqi->getConnection()->getCQI() == cqi);
 					cqi->setState(ConnectionQueueItem::ACTIVE);
 					cqi->getConnection()->removeListener(this);
-					DownloadManager::getInstance()->addConnection(cqi->getConnection());
+					added.push_back(cqi->getConnection());
 
 					pendingAdd.erase(it);
 				}
 			} else {
-
-			if(!cqi->getUser()->isOnline()) {
+				
+				if(!cqi->getUser()->isOnline()) {
 					// Not online anymore...remove it from the pending...
 					removed.push_back(cqi);
 					continue;
@@ -214,75 +217,79 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 				
 				if(cqi->getUser()->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)) {
 					passiveUsers.push_back(cqi->getUser());
-				removed.push_back(cqi);
-				continue;
-			}
-
-			if( ((cqi->getLastAttempt() + 60*1000) < aTick) && (attempts < 2) ) {
-				cqi->setLastAttempt(aTick);
-
-				if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
 					removed.push_back(cqi);
 					continue;
 				}
 
+				if( ((cqi->getLastAttempt() + 60*1000) < aTick) && (attempts < 2) ) {
+					cqi->setLastAttempt(aTick);
 
-				// Always start high-priority downloads unless we have 3 more than maxdownslots already...
+					if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
+						removed.push_back(cqi);
+						continue;
+					}
+
+					// Always start high-priority downloads unless we have 3 more than maxdownslots already...
 					bool startDown = !tooMany && !tooFast;
 
-				if(!startDown) {
-					bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (DownloadManager::getInstance()->getDownloadCount() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
-					startDown = !extraFull && QueueManager::getInstance()->hasDownload(cqi->getUser(), QueueItem::HIGHEST);
-				}
-
-				if(cqi->getState() == ConnectionQueueItem::WAITING) {
-					if(startDown) {
-						cqi->setState(ConnectionQueueItem::CONNECTING);
-						cqi->getUser()->connect();
-						fire(ConnectionManagerListener::StatusChanged(), cqi);
-						attempts++;
-					} else {
-						cqi->setState(ConnectionQueueItem::NO_DOWNLOAD_SLOTS);
-						fire(ConnectionManagerListener::Failed(), cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
+					if(!startDown) {
+						bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (DownloadManager::getInstance()->getDownloadCount() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
+						startDown = !extraFull && QueueManager::getInstance()->hasDownload(cqi->getUser(), QueueItem::HIGHEST);
 					}
-				} else if(cqi->getState() == ConnectionQueueItem::NO_DOWNLOAD_SLOTS && startDown) {
+
+					if(cqi->getState() == ConnectionQueueItem::WAITING) {
+						if(startDown) {
+							cqi->setState(ConnectionQueueItem::CONNECTING);
+							cqi->getUser()->connect();
+							fire(ConnectionManagerListener::StatusChanged(), cqi);
+							attempts++;
+						} else {
+							cqi->setState(ConnectionQueueItem::NO_DOWNLOAD_SLOTS);
+							fire(ConnectionManagerListener::Failed(), cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
+						}
+					} else if(cqi->getState() == ConnectionQueueItem::NO_DOWNLOAD_SLOTS && startDown) {
+						cqi->setState(ConnectionQueueItem::WAITING);
+					}
+				} else if(((cqi->getLastAttempt() + 50*1000) < aTick) && (cqi->getState() == ConnectionQueueItem::CONNECTING)) {
+					fire(ConnectionManagerListener::Failed(), cqi, STRING(CONNECTION_TIMEOUT));
 					cqi->setState(ConnectionQueueItem::WAITING);
 				}
-			} else if(((cqi->getLastAttempt() + 50*1000) < aTick) && (cqi->getState() == ConnectionQueueItem::CONNECTING)) {
-				fire(ConnectionManagerListener::Failed(), cqi, STRING(CONNECTION_TIMEOUT));
-				cqi->setState(ConnectionQueueItem::WAITING);
 			}
 		}
-	}
 
 		pendingAdd.clear();
 
 		for(ConnectionQueueItem::Iter m = removed.begin(); m != removed.end(); ++m) {
 			putCQI(*m);
-	}
+		}
 
-		for_each(pendingDelete.begin(), pendingDelete.end(), DeleteFunction<UserConnection*>());
+		penDel = pendingDelete;
 		pendingDelete.clear();
 
 	}
 
+	for_each(penDel.begin(), penDel.end(), DeleteFunction<UserConnection*>());
+
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);
+	}
+
+	for(UserConnection::Iter i = added.begin(); i != added.end(); ++i) {
+		DownloadManager::getInstance()->addConnection(*i);
 	}
 }
 
 void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {	
 	Lock l(cs);
-	{
-		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-			if(((*j)->getLastActivity() + 180*1000) < aTick) {
-				(*j)->disconnect();
-			}
+
+	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+		if(((*j)->getLastActivity() + 180*1000) < aTick) {
+			(*j)->disconnect();
 		}
 	}
 }
 
-static const u_int32_t FLOOD_TRIGGER = 10000;
+static const u_int32_t FLOOD_TRIGGER = 20000;
 static const u_int32_t FLOOD_ADD = 2000;
 
 /**
@@ -524,6 +531,7 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 
 	uc->removeListener(this);
 
+	bool addConn = false;
 	{
 		Lock l(cs);
 
@@ -541,14 +549,14 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 				fire(ConnectionManagerListener::Connected(), cqi);
 				
 				dcdebug("ConnectionManager::addDownloadConnection, leaving to downloadmanager\n");
-				DownloadManager::getInstance()->addConnection(uc);
-
-				return;
+				addConn = true;
 			}
 		}
 	}
 
-	if(sendNTD) {
+	if(addConn) {
+		DownloadManager::getInstance()->addConnection(uc);
+	} else if(sendNTD) {
 		uc->ntd();
 		uc->unsetFlag(UserConnection::FLAG_DOWNLOAD);
 		uc->setFlag(UserConnection::FLAG_UPLOAD);
@@ -556,7 +564,6 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 	} else {
 		putConnection(uc);
 	}
-
 }
 
 void ConnectionManager::addUploadConnection(UserConnection* uc) {
@@ -564,13 +571,14 @@ void ConnectionManager::addUploadConnection(UserConnection* uc) {
 
 	uc->removeListener(this);
 
+	bool addConn = false;
 	{
 		Lock l(cs);
 
 		ConnectionQueueItem::Iter i = find(uploads.begin(), uploads.end(), uc->getUser());
 		if(i == uploads.end()) {
 			ConnectionQueueItem* cqi = getCQI(uc->getUser(), false);
-		
+
 			uc->setCQI(cqi);
 			cqi->setConnection(uc);
 			cqi->setState(ConnectionQueueItem::ACTIVE);
@@ -578,13 +586,15 @@ void ConnectionManager::addUploadConnection(UserConnection* uc) {
 			fire(ConnectionManagerListener::Connected(), cqi);
 
 			dcdebug("ConnectionManager::addUploadConnection, leaving to uploadmanager\n");
-			UploadManager::getInstance()->addConnection(uc);
-
-				return;
-			}
+			addConn = true;
 		}
+	}
 
-	putConnection(uc);
+	if(addConn) {
+		UploadManager::getInstance()->addConnection(uc);
+	} else {
+		putConnection(uc);
+	}
 }
 
 void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource, const string&/* aKey*/) throw() {
@@ -594,10 +604,10 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 	}
 
 	dcassert(aSource->getUser());
-		
-		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+
+	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
 		addDownloadConnection(aSource, false);
-		} else {
+	} else {
 		addUploadConnection(aSource);
 	}
 }
@@ -620,7 +630,7 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 	}
 
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
-			aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
+		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
 		addDownloadConnection(aSource, true);
 	} else {
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
@@ -632,7 +642,7 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD) && aSource->getCQI()) {
 		{
 			Lock l(cs);
-			
+
 			ConnectionQueueItem* cqi = aSource->getCQI();
 			dcassert(cqi->getState() == ConnectionQueueItem::IDLE);
 			cqi->setState(ConnectionQueueItem::WAITING);

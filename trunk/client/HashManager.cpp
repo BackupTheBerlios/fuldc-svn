@@ -426,7 +426,7 @@ dataFile(Util::getAppPath() + "HashData.dat"), dirty(false)
 			// ?
 		}
 	}
-};
+}
 
 /**
  * Creates the data files for storing hash values.
