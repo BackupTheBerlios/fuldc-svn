@@ -110,16 +110,25 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
 	m_nProportionalPos = 2500;
 	
-	if(dl != NULL)
+	if(dl != NULL){
 		treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, Text::toT(dl->getUser()->getNick()).c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
 
-	updateTree(dl->getRoot(), treeRoot);
-	files = dl->getTotalFileCount();
-	size = Util::formatBytes(dl->getTotalSize());
+		updateTree(dl->getRoot(), treeRoot);
+		files = dl->getTotalFileCount();
+		size = Util::formatBytes(dl->getTotalSize());
+
+		if(!start.empty()) {
+			StringTokenizer<tstring> tok(start, _T('\\'));
+			TStringIter i = tok.getTokens().begin();
+			GoToDirectory(treeRoot, i, tok.getTokens().end());
+		} else {
+			ctrlTree.SelectItem(treeRoot);
+		}
+	}
 
 	memset(statusSizes, 0, sizeof(statusSizes));
-	tstring tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true)));
-	tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true)));
+	tstring tmp1 = Text::toT(STRING(FILES) + ": " + ( dl != NULL ? Util::toString(dl->getTotalFileCount(true)) : Util::emptyString ) );
+	tstring tmp2 = Text::toT(STRING(SIZE) + ": " + ( dl != NULL ? Util::formatBytes(dl->getTotalSize(true)) : Util::emptyString ) );
 	statusSizes[2] = WinUtil::getTextWidth(tmp1, m_hWnd);
 	statusSizes[3] = WinUtil::getTextWidth(tmp2, m_hWnd);
 	statusSizes[4] = WinUtil::getTextWidth(TSTRING(MATCH_QUEUE), m_hWnd) + 8;
@@ -130,14 +139,6 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlStatus.SetText(3, tmp1.c_str());
 	ctrlStatus.SetText(4, tmp2.c_str());
 
-	if(!start.empty()) {
-		StringTokenizer<tstring> tok(start, _T('\\'));
-		TStringIter i = tok.getTokens().begin();
-		GoToDirectory(treeRoot, i, tok.getTokens().end());
-	} else {
-		ctrlTree.SelectItem(treeRoot);
-	}
-	
 	fileMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
 	directoryMenu.CreatePopupMenu();
