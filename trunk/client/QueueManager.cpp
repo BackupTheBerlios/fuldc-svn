@@ -1455,7 +1455,7 @@ void QueueManager::onTimerSearch() {
 
 		if(qi->getTTH()) {
 			hasTTH = true;
-			searchString = "TTH:" + qi->getTTH()->toBase32();
+			searchString = qi->getTTH()->toBase32();
 		} else {
 			sz = qi->getSize() - 1;
 			searchString = qi->getSearchString();
