@@ -60,11 +60,11 @@ public:
 	void	SetNick(const tstring& aNick) { nick = aNick; }
 
 private:
-	void	AddInternalLine(tstring &aLine);
-	void	Colorize(int begin);
-	int		FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, tstring &line, int pos, int &lineIndex);
-	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, tstring &line, int &lineIndex);
-	void	AddLogLine(tstring & line);
+	void	AddInternalLine(const tstring &aLine);
+	void	Colorize(const tstring &aLine, int begin);
+	int		FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int pos, int &lineIndex);
+	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int &lineIndex);
+	void	AddLogLine(const tstring &aLine);
 
 	bool		matchedSound;
 	bool		matchedPopup;
