@@ -66,7 +66,7 @@ public:
 	typedef X<24> Search;
 	typedef X<25> Unknown;
 	typedef X<26> ValidateDenied;
-	typedef X<26> Quit;
+	typedef X<27> Quit;
 
 	virtual void on(Connecting, NmdcHub*) throw() { }
 	virtual void on(Connected, NmdcHub*) throw() { }

@@ -87,6 +87,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST, onCopy)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
+		COMMAND_ID_HANDLER(IDC_PURGE, onPurge)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_COMMANDS(ucBase)
@@ -103,6 +104,7 @@ public:
 	SearchFrame() : 
 	searchBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		searchContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
+		purgeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
 		sizeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
 		modeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		sizeModeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
@@ -140,7 +142,8 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -416,6 +419,7 @@ private:
 	CComboBox ctrlSizeMode;
 	CComboBox ctrlFiletype;
 	CButton ctrlDoSearch;
+	CButton ctrlPurge;
 	
 	CContainedWindow searchContainer;
 	CContainedWindow searchBoxContainer;
@@ -429,6 +433,7 @@ private:
 	CContainedWindow resultsContainer;
 	CContainedWindow hubsContainer;
 	CContainedWindow tthContainer;
+	CContainedWindow purgeContainer;
 	CContainedWindow filterContainer;
 	CContainedWindow filterBoxContainer;
 

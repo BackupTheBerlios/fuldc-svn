@@ -109,6 +109,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 		} else if(aType == "tthl") {
 			// TTH Leaves...
 			MemoryInputStream* mis = ShareManager::getInstance()->getTree(aFile);
+			file = ShareManager::getInstance()->translateFileName(aFile);
 			if(mis == NULL) {
 				aSource->fileNotAvail();
 				return false;

@@ -1,4 +1,4 @@
--- 0.669 2005-01-20 --
+-- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
 * Fixed a minor crash log output address issue
 * Split off color and sound to a new page (thanks ullner)
@@ -63,6 +63,9 @@
 * Some UPnP fixes (thanks nils maier)
 * ADL Search byte prefix fixes, might screw up your adl search settings on first load (thanks ullner)
 * Linux download path fix (thanks jens oknelid)
+* Added purge button for search history (thanks sulan)
+* Added column reorder to file listing (thanks ullner)
+* Fixed alt source download starts (thanks paka)
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

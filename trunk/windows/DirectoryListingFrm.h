@@ -150,6 +150,9 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		
 		frames.erase(m_hWnd);
 
+		ctrlList.saveHeaderOrder(SettingsManager::DIRECTORYLISTINGFRAME_ORDER, 
+			SettingsManager::DIRECTORYLISTINGFRAME_WIDTHS,
+			SettingsManager::DIRECTORYLISTINGFRAME_VISIBLE);
 		bHandled = FALSE;
 		return 0;
 	}
@@ -334,6 +337,9 @@ private:
 	int statusSizes[8];
 	
 	DirectoryListing* dl;
+
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
 
 	typedef map< HWND , DirectoryListingFrame* > FrameMap;
 	typedef pair< HWND , DirectoryListingFrame* > FramePair;

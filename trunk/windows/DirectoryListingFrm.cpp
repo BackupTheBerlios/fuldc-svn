@@ -33,6 +33,11 @@
 #include "../client/MerkleTree.h"
 
 DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
+int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
+int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
+
+static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::EXACT_SIZE, ResourceManager::SIZE, ResourceManager::TTH_ROOT };
+
 void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
 	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
 	if(BOOLSETTING(POPUNDER_FILELIST))
@@ -80,7 +85,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
-	ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
+	ctrlList.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 	
 	ctrlList.SetBkColor(WinUtil::bgColor);
 	ctrlList.SetTextBkColor(WinUtil::bgColor);
@@ -89,13 +94,17 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlTree.SetBkColor(WinUtil::bgColor);
 	ctrlTree.SetTextColor(WinUtil::textColor);
 	
-	ctrlList.insertColumn(COLUMN_FILENAME, CTSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
-	ctrlList.insertColumn(COLUMN_TYPE, CTSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
-	ctrlList.insertColumn(COLUMN_EXACTSIZE, CTSTRING(EXACT_SIZE), LVCFMT_RIGHT, 100, COLUMN_EXACTSIZE);
-	ctrlList.insertColumn(COLUMN_SIZE, CTSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
-	ctrlList.insertColumn(COLUMN_TTH, CTSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
+	WinUtil::splitTokens(columnIndexes, SETTING(DIRECTORYLISTINGFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(DIRECTORYLISTINGFRAME_WIDTHS), COLUMN_LAST);
+	for(int j = 0; j < COLUMN_LAST; j++) 
+	{
+		int fmt = (j == COLUMN_SIZE) || (j == COLUMN_EXACTSIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlList.insertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+	}
+	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 
 	ctrlList.setSortColumn(COLUMN_FILENAME);
+	ctrlList.setVisible(SETTING(DIRECTORYLISTINGFRAME_VISIBLE));
 	
 	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
 	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
@@ -481,10 +490,16 @@ void DirectoryListingFrame::GoToDirectory(
 }
 
 LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+	RECT rc;											                  // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
 	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
+
+	ctrlList.GetHeader().GetWindowRect(&rc);
+	if(PtInRect(&rc, pt)){
+		ctrlList.showMenu(pt);
+		return TRUE;
+	}
 
 	// Get the bounding rectangle of the client area. 
 	ctrlList.GetClientRect(&rc);

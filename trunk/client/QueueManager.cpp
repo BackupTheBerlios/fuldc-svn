@@ -25,9 +25,10 @@
 #include "SearchManager.h"
 #include "ClientManager.h"
 #include "DownloadManager.h"
-#include "CryptoManager.h"
 #include "ShareManager.h"
 #include "LogManager.h"
+#include "ResourceManager.h"
+#include "version.h"
 
 #include "UserConnection.h"
 #include "SimpleXML.h"
@@ -1331,8 +1332,9 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 		}
 	}
 
-	if(added && wantConnection && sr->getUser()->isOnline())
+	if(added && sr->getUser()->isOnline() && wantConnection)
 		ConnectionManager::getInstance()->getDownloadConnection(sr->getUser());
+
 }
 
 // ClientManagerListener

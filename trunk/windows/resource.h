@@ -205,6 +205,7 @@
 #define IDC_REMOVESOURCE                1025
 #define IDC_EDIT                        1026
 #define IDC_NOTEPAD                     1027
+#define IDC_PURGE                       1028
 #define IDC_SEARCH_ALTERNATES           1029
 #define IDC_SELWINCOLOR                 1031
 #define IDC_SELTEXTCOLOR                1032
@@ -529,6 +530,9 @@
 #define IDC_UNIGNORE                    1310
 #define IDC_PATTERNS                    1311
 #define IDC_REMOVE_FILE                 1312
+#define IDC_SEARCH_HISTORY              1313
+#define IDC_SETTINGS_SEARCH_HISTORY     1314
+#define IDC_SEARCH_HISTORY_SPIN         1315
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -578,7 +582,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1313
+#define _APS_NEXT_CONTROL_VALUE         1315
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif
