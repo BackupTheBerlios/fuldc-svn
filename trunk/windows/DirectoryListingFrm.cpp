@@ -69,6 +69,9 @@ DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Pt
 	} catch(const Exception& e) {
 		error = aUser->getFullNick() + ": " + e.getError();
 	}
+
+	StringTokenizer token(SETTING(DOWNLOAD_TO_PATHS), "|");
+	downloadPaths = token.getTokens();
 }
 
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -522,7 +525,15 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
-
+		
+		if(downloadPaths.size() > 0) {
+			for(StringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+				++n;
+			}
+			targetMenu.AppendMenu(MF_SEPARATOR);
+		}
+		
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
 			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
 			targets.clear();
@@ -573,11 +584,19 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 				targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
 			}
 
+			int n = 0;
+			if(downloadPaths.size() > 0) {
+				for(StringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
+					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + n, i->c_str());
+					++n;
+				}
+				targetDirMenu.AppendMenu(MF_SEPARATOR);
+			}
+
 			targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CSTRING(BROWSE));
 
 			if(WinUtil::lastDirs.size() > 0) {
 				targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-				int n = 0;
 				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (n++), i->c_str());
 				}
@@ -601,20 +620,26 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		if(ii->type == ItemInfo::FILE) {
-			dcassert(newId < (int)targets.size());
-
+			
 			try {
-				dl->download(ii->file, targets[newId]);
+				if(newId < downloadPaths.size())
+					dl->download(ii->file, downloadPaths[newId]);
+				else
+					dl->download(ii->file, targets[newId - downloadPaths.size()]);
 			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			} 
 		} else {
-			dcassert(newId < (int)WinUtil::lastDirs.size());
-			downloadList(WinUtil::lastDirs[newId]);
+			if(newId < downloadPaths.size())
+				downloadList(downloadPaths[newId]);
+			else
+				downloadList(WinUtil::lastDirs[newId - downloadPaths.size()]);
 		}
 	} else if(ctrlList.GetSelectedCount() > 1) {
-		dcassert(newId < (int)WinUtil::lastDirs.size());
-		downloadList(WinUtil::lastDirs[newId]);
+		if(newId < downloadPaths.size())
+			downloadList(downloadPaths[newId]);
+		else
+			downloadList(WinUtil::lastDirs[newId - downloadPaths.size()]);
 	}
 	return 0;
 }
@@ -628,8 +653,11 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
-			dcassert(newId < (int)WinUtil::lastDirs.size());
-			dl->download(dir, WinUtil::lastDirs[newId]);
+			if(newId < downloadPaths.size())
+				dl->download(dir, downloadPaths[newId]);
+			else
+				dl->download(dir, WinUtil::lastDirs[newId - downloadPaths.size()]);
+
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}

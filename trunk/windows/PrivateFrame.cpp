@@ -33,6 +33,8 @@
 #include "../client/HubManager.h"
 #include "../client/QueueManager.h"
 
+#include <MMSystem.h>
+
 CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
 
@@ -68,6 +70,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
+	userMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CSTRING(SHOW_LOG));
 
 	searchMenu.CreatePopupMenu();
 	
@@ -75,7 +78,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	mcMenu.AppendMenu(MF_STRING, IDC_COPY, CSTRING(COPY));
 	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH, CSTRING(SEARCH));
 	mcMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CSTRING(SEARCH_SITES));
-
+	
 	PostMessage(WM_SPEAKER, USER_UPDATED);
 	created = true;
 
@@ -108,8 +111,11 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 				frames[aUser] = p;
 				p->setUser(aUser);
 				p->addLine(aMessage);
-				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
-					MessageBeep(MB_OK);
+				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !p->muted) {
+					if(BOOLSETTING(CUSTOM_SOUND))
+						PlaySound("PM.wav", NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+					else
+						MessageBeep(MB_OK);
 				}
 				if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM)) {
 					PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage, p->m_hWnd);
@@ -128,7 +134,10 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 			}
 
 			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-				MessageBeep(MB_OK);
+				if(BOOLSETTING(CUSTOM_SOUND))
+					PlaySound("newPM.wav", NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+				else
+					MessageBeep(MB_OK);
 			}
 
 			if (BOOLSETTING(POPUP_ON_PM)) {
@@ -136,8 +145,11 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 			}
 		}
 	} else {
-		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
-			MessageBeep(MB_OK);
+		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !i->second->muted) {
+			if(BOOLSETTING(CUSTOM_SOUND))
+				PlaySound("PM.wav", NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+			else
+				MessageBeep(MB_OK);
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM)) {
 			PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage, i->second->m_hWnd);
@@ -306,6 +318,12 @@ void PrivateFrame::onEnter()
 				addLine("*** " + WinUtil::commands + ", /getlist, /clear, /grant, /close, /favorite");
 			} else if(Util::stricmp(s.c_str(), "me") == 0) {
 				sendMessage("/" + s + " " + param);
+			} else if(Util::stricmp(s.c_str(), "mute") == 0) {
+				muted = true;
+				addClientLine(STRING(MUTED));
+			} else if(Util::stricmp(s.c_str(), "unmute") == 0){
+				muted = false;
+				addClientLine(STRING(UNMUTED));
 			} else {
 				if(user->isOnline()) {
 					sendMessage(s);
@@ -559,6 +577,11 @@ LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
+LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	string path = SETTING(LOG_DIRECTORY) + userNick + ".log";
+	ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	return 0;
+}
 LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;

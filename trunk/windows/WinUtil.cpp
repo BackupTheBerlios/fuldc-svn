@@ -511,7 +511,6 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 			if( nr >= 0 ){
 				SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_SLOTS, nr);
 				status = "Download slots set";
-				ClientManager::getInstance()->infoUpdated();
 			} else {
 				status = "Invalid number of slots";
 			}

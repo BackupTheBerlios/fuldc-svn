@@ -74,6 +74,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
 		COMMAND_ID_HANDLER(IDC_COPY, onCopy)
+		COMMAND_ID_HANDLER(IDC_SHOWLOG, onViewLog)
 		COMMAND_ID_HANDLER(IDC_FIND, onFind)
 		COMMAND_RANGE_HANDLER(IDC_SEARCH, IDC_SEARCH + 15, onSearch)
 		CHAIN_COMMANDS(ucBase)
@@ -97,6 +98,7 @@ public:
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	void addLine(const string& aLine);
@@ -163,9 +165,11 @@ public:
 	}
 	
 	User::Ptr& getUser() { return user; };
+
+	bool muted;
 private:
 	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
-		created(false), closed(false),
+		created(false), closed(false), muted(false),
 		ctrlMessageContainer("edit", this, PM_MESSAGE_MAP),
 		ctrlClientContainer("edit", this, PM_MESSAGE_MAP) {
 	}
@@ -190,6 +194,7 @@ private:
 	CContainedWindow ctrlMessageContainer;
 
 	bool closed;
+	
 	
 
 	//needed to receive WM_CONTEXTMENU

@@ -56,6 +56,7 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::POPUNDER_PM, ResourceManager::POPUNDER_PM },
 	{ SettingsManager::POPUNDER_DIRLIST, ResourceManager::POPUNDER_DIRLIST }, 
 	{ SettingsManager::TAB_SHOW_ICONS, ResourceManager::TAB_SHOW_ICONS },
+	{ SettingsManager::CUSTOM_SOUND, ResourceManager::CUSTOM_SOUND },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

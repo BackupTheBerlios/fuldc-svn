@@ -471,6 +471,9 @@ string ResourceManager::strings[] = {
 "fulDC Homepage", 
 "Close all PM windows", 
 "Close all file lists", 
+"Play custom sound on PM's", 
+"Muted", 
+"Unmuted", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -942,4 +945,7 @@ string ResourceManager::names[] = {
 "MenuFulpage", 
 "MenuCloseAllPm", 
 "MenuCloseAllDirList", 
+"CustomSound", 
+"Muted", 
+"Unmuted", 
 };

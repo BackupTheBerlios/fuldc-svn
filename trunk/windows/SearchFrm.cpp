@@ -448,18 +448,25 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	dcassert(wID > IDC_DOWNLOAD_TARGET);
 	size_t newId = (size_t)wID - IDC_DOWNLOAD_TARGET;
 
-	if(newId < WinUtil::lastDirs.size()) {
-		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId]));
+	if(newId < downloadPaths.size()){
+		ctrlResults.forEachSelectedT(SearchInfo::Download(downloadPaths[newId]));
+	}else if(newId < WinUtil::lastDirs.size()) {
+		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId - downloadPaths.size()]));
 	} else {
 		dcassert((newId - WinUtil::lastDirs.size()) < targets.size());
-		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(targets[newId - WinUtil::lastDirs.size()]));
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(targets[newId - WinUtil::lastDirs.size() - downloadPaths.size()]));
 	}
 	return 0;
 }
 
 LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	dcassert((wID-IDC_DOWNLOAD_WHOLE_TARGET) < (int)WinUtil::lastDirs.size());
-	ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(WinUtil::lastDirs[wID-IDC_DOWNLOAD_WHOLE_TARGET]));
+	int newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
+	if(newId < downloadPaths.size()){
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(downloadPaths[newId]));
+	}else {
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(WinUtil::lastDirs[newId - downloadPaths.size()]));
+	}
 	return 0;
 }
 
@@ -762,6 +769,13 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 		int n = 0;
 		
+		if(downloadPaths.size() > 0){
+			for(StringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+				++n;
+			}
+			targetMenu.AppendMenu(MF_SEPARATOR);
+		}
 		targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
 		if(WinUtil::lastDirs.size() > 0) {
 			targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -770,6 +784,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 				n++;
 			}
 		}
+		
 
 		SearchInfo::CheckSize cs = ctrlResults.forEachSelectedT(SearchInfo::CheckSize());
 
@@ -786,6 +801,13 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		}
 
 		n = 0;
+		if(downloadPaths.size() > 0){
+			for(StringIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_TARGET + n, i->c_str());
+				++n;
+			}
+			targetDirMenu.AppendMenu(MF_SEPARATOR);
+		}
 		targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CSTRING(BROWSE));
 		if(WinUtil::lastDirs.size() > 0) {
 			targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);

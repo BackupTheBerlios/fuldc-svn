@@ -470,5 +470,8 @@
 		<String Name="MenuFulpage">fulDC Homepage</String>
 		<String Name="MenuCloseAllPm">Close all PM windows</String>
 		<String Name="MenuCloseAllDirList">Close all file lists</String>
+		<String Name="CustomSound">Play custom sound on PM's</String>
+		<String Name="Muted">Muted</String>
+		<String Name="Unmuted">Unmuted</String>
 	</Strings>
 </Language>

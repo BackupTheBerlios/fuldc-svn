@@ -38,6 +38,7 @@ const string SettingsManager::settingTags[] =
 	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder",
 	"DownloadSkiplist", "ShareSkiplist", "WebShortcuts", "PopupFont", "FreeSlotsExtentions",
+	"DownloadToPaths", 
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
@@ -60,6 +61,7 @@ const string SettingsManager::settingTags[] =
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"PopupTextColor", "FreeSlotsSize", "ShowStatusbar", "ShowToolbar", "ShowTransferView",
+	"CustomSound", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -195,6 +197,8 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_TOOLBAR, true);
 	setDefault(SHOW_TRANSFERVIEW, true);
 	setDefault(TAB_SHOW_ICONS, true);
+	setDefault(DOWNLOAD_TO_PATHS, "");
+	setDefault(CUSTOM_SOUND, false);
 	
 	
 	

@@ -534,10 +534,16 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete x;
 	} else if(wParam == STATS) {
 		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
-		if(client->getUserInfo())
+		if(client->getUserInfo()){
 			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
-		else
+			if(client->getUserCount() > 0)
+				ctrlStatus.SetText(3, (Util::formatBytes(client->getAvailable() / client->getUserCount()) + "/" + CSTRING(USER)).c_str());
+			else
+				ctrlStatus.SetText(3, "");
+		} else {
 			ctrlStatus.SetText(2, "");
+			ctrlStatus.SetText(3, "");
+		}
 	} else if(wParam == GET_PASSWORD) {
 		if(client->getPassword().size() > 0) {
 			client->password(client->getPassword());
@@ -579,23 +585,24 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[4];
+		int w[5];
 		ctrlStatus.GetClientRect(sr);
 
 		int tmp = (sr.Width()) > 332 ? 232 : ((sr.Width() > 132) ? sr.Width()-100 : 32);
 		
-		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-32)/2;
-		w[2] = w[0] + (tmp-32);
-		w[3] = w[2] + 16;
+		w[0] = sr.right - tmp -40;
+		w[1] = w[0] + (tmp-100)/2;
+		w[2] = w[0] + (tmp-100);
+		w[3] = w[2] + 96;
+		w[4] = w[3] + 16;
 		
-		ctrlStatus.SetParts(4, w);
+		ctrlStatus.SetParts(5, w);
 
 		ctrlLastLines.SetMaxTipWidth(w[0]);
 		ctrlLastLines.SetWindowPos(HWND_TOPMOST, sr.left, sr.top, sr.Width(), sr.Height(), SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
 		// Strange, can't get the correct width of the last field...
-		ctrlStatus.GetRect(2, sr);
+		ctrlStatus.GetRect(3, sr);
 		sr.left = sr.right + 2;
 		sr.right = sr.left + 16;
 		ctrlShowUsers.MoveWindow(sr);
@@ -982,6 +989,7 @@ void HubFrame::onTab() {
 		}
 	}
 
+	Lock l(updateCS);
 
 	int y = ctrlUsers.GetItemCount();
 
@@ -992,6 +1000,13 @@ void HubFrame::onTab() {
 	bool found = false;
 
 	for(int i = 0; i < end; ++i){
+		if(up){
+			if(curUser == usermap.begin())
+				curUser = usermap.end();
+			--curUser;
+		} else
+			++curUser;
+
 		if(curUser == usermap.end())
 			curUser = usermap.begin();
 		
@@ -999,13 +1014,6 @@ void HubFrame::onTab() {
 				found = true;
 				break;
 		}
-		
-		if(up){
-			if(curUser == usermap.begin())
-				curUser = usermap.end();
-			--curUser;
-		} else
-			++curUser;
 	}
 
 	if(found) {
@@ -1025,20 +1033,13 @@ void HubFrame::onTab() {
 			tmp = tmp.substr(pos+1);
 		}
 		ctrlMessage.ReplaceSel(tmp.c_str());
-
-		if(up){
-			if(curUser == usermap.begin())
-				curUser = usermap.end();
-			--curUser;
-		} else
-			++curUser;
 		return;
 	}
 	
 }
 
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN){
+	if(!complete.empty() && (wParam != VK_TAB && wParam != VK_SHIFT) && uMsg == WM_KEYDOWN){
 		complete.clear();
 		curUser = usermap.begin();
 	}
@@ -1448,6 +1449,8 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 }
 
 void HubFrame::updateUserList() {
+	Lock l(updateCS);
+
 	ctrlUsers.DeleteAllItems();
 
 	if(filter.empty()) {

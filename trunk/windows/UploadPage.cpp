@@ -109,8 +109,7 @@ void UploadPage::write()
 
 	// Do specialized writing here
 
-	//hmms this seems to avoid the deadlocks, can't figure out why
-	ShareManager::getInstance()->refresh(true, true);
+	ShareManager::getInstance()->refresh();
 }
 
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)

@@ -74,8 +74,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST, onCopy)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uicBase)
@@ -104,6 +104,8 @@ public:
 		showUI(true), onlyFree(false), closed(false)
 	{	
 		SearchManager::getInstance()->addListener(this);
+		StringTokenizer token(SETTING(DOWNLOAD_TO_PATHS), "|");
+		downloadPaths = token.getTokens();
 	}
 
 	virtual ~SearchFrame() {
@@ -373,6 +375,7 @@ private:
 	StringList search;
 	StringList targets;
 	StringList wholeTargets;
+	StringList downloadPaths;
 
 	/** Parameter map for user commands */
 	StringMap ucParams;

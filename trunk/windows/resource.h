@@ -359,8 +359,9 @@
 #define IDC_CHECK2                      1250
 #define IDC_HAS_BG_COLOR                1250
 #define IDC_MOVEDOWN                    1251
-#define IDC_HAS_FG_COLOR2               1252
 #define IDC_HAS_FG_COLOR                1252
+#define IDC_EDIT1                       1252
+#define IDC_PATHS                       1253
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -408,7 +409,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
-#define _APS_NEXT_CONTROL_VALUE         1252
+#define _APS_NEXT_CONTROL_VALUE         1254
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif

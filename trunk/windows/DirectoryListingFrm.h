@@ -84,8 +84,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_COPY_FILENAME, onCopyFilename)
 		COMMAND_ID_HANDLER(IDC_COPY_PATH, onCopyPath)
 		COMMAND_ID_HANDLER(IDC_COPY_SIZE, onCopySize)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadTargetDir)
 		COMMAND_RANGE_HANDLER(IDC_SEARCH, IDC_SEARCH + 15, onSearch)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
@@ -246,6 +246,7 @@ private:
 	CContainedWindow statusContainer;
 		
 	StringList targets;
+	StringList downloadPaths;
 	
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;

@@ -474,5 +474,8 @@ enum Strings { // @DontAdd
 	MENU_FULPAGE, // "fulDC Homepage"
 	MENU_CLOSE_ALL_PM, // "Close all PM windows"
 	MENU_CLOSE_ALL_DIR_LIST, // "Close all file lists"
+	CUSTOM_SOUND, // "Play custom sound on PM's"
+	MUTED, // "Muted"
+	UNMUTED, // "Unmuted"
 	LAST // @DontAdd
 };

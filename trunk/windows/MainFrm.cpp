@@ -528,7 +528,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort) {
 			startSocket();
 		}
-		ClientManager::getInstance()->infoUpdated();
+		//ClientManager::getInstance()->infoUpdated();
 	}
 	return 0;
 }
