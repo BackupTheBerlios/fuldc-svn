@@ -42,7 +42,7 @@ class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, C
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:
-	TypedListViewCtrl() : sortColumn(-1), sortAscending(true) { };
+	TypedListViewCtrl() : sortColumn(-1), sortAscending(true), ownerDraw(false) { };
 	~TypedListViewCtrl() {
 		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i){
 			delete (*i);
@@ -56,9 +56,8 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onHeaderMenu)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
-		//MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
-		//MESSAGE_HANDLER(WM_PAINT, onPaint)
-		//MESSAGE_HANDLER(WM_DRAWITEM, onDrawItem)
+		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
+		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -295,12 +294,21 @@ public:
 	//this is a beginning of an owner drawn flicker free list control
 	//doesn't work yet, i'll see if it's worth finishing one day
 	/////////////////////////////////////////////////////////////////
-	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if(!ownerDraw) {
+			bHandled = FALSE;
+			return 1;
+		}
+		
 		return 0;
 	}
 	
-	
-	LRESULT onPaint(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	LRESULT onPaint(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if(!ownerDraw) {
+			bHandled = FALSE;
+			return 1;
+		}
+		
 		CRect rc;
 		CRect crc;
 		GetClientRect(&crc);
@@ -318,35 +326,15 @@ public:
 			dd.hwndItem = m_hWnd;
 			dd.hDC = memDC.m_hDC;
 			
-			// select objects as && if you like 
-
 			int nVertPos = GetScrollPos(SB_VERT);
 
-			dcdebug("scrollpos=%d\n", nVertPos);
-
-
 			for (int v=0; v<crc.Height()/16; v++) {
-
 				dd.itemID = v+nVertPos;    
 				DrawItem(&dd);
-
-
 			}
+
+			memDC.Paint();
 		}
-
-		return 0;
-	}
-
-	LRESULT onDrawItem(UINT /*msg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPDRAWITEMSTRUCT ld = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
-		HDC tmp = ld->hDC;
-		CRect rc(&ld->rcItem);
-		CMemDC dc(ld->hDC, &rc);
-		ld->hDC = dc.m_hDC;
-
-		DrawItem(ld);
-
-		ld->hDC = tmp;
 
 		return 0;
 	}
@@ -361,43 +349,82 @@ public:
 		if(!item)
 			return;
 
+		//////////////////////////
+		//stuff for NM_CUSTOMDRAW
+		/////////////////////////
+		NMLVCUSTOMDRAW customDraw;
+		customDraw
+
+		LVITEM lvItem;
+		lvItem.iItem = ld->itemID;
+		lvItem.iSubItem = 0;
+		lvItem.mask = LVIF_IMAGE | LVIF_STATE;
+		lvItem.stateMask = LVIS_SELECTED;
+		GetItem(&lvItem);
+
+		COLORREF oldTextColor = 0;
+		
+		if(lvItem.state & LVIS_SELECTED) {
+			CRect tmp;
+			CRect itemRect;
+
+			GetItemRect(ld->itemID, &itemRect, LVIR_BOUNDS);
+			GetItemRect(ld->itemID, &tmp, LVIR_ICON);
+
+			//this is sort of ugly but it will have to do for now
+			//just want to get it working =)
+			if(tmp.left < 10) {
+				itemRect.left = tmp.right;
+
+				::FillRect(ld->hDC, &itemRect, ::GetSysColorBrush(COLOR_HIGHLIGHT));
+			} else {
+				CRect bgRect = itemRect;
+				bgRect.right = tmp.left;
+				::FillRect(ld->hDC, &bgRect, ::GetSysColorBrush(COLOR_HIGHLIGHT));
+				bgRect.left = tmp.right;
+				bgRect.right = itemRect.right;
+				::FillRect(ld->hDC, &bgRect, ::GetSysColorBrush(COLOR_HIGHLIGHT));
+			}
+			
+			oldTextColor = ::SetTextColor(ld->hDC, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
+		}
+
 		for (int nIndex=0; nIndex<nCols; nIndex++) 
 		{
+			//find the correct column, the col id might not
+			//map to the correct column if some of them are hidden
 			int col = findColumn(nIndex);
-
-			LVITEM lvItem;
 
 			LVCOLUMN lvColumn;
 			lvColumn.mask = LVCF_ORDER | LVCF_FMT;
 			GetColumn(nIndex, &lvColumn);
 
 			//hmm the docs says that the index is one based
-			//but the rect gets fucked up if i use it, maybe i'm
+			//but the rect gets messed up if i use it, maybe i'm
 			//doing something wrong
-			GetSubItemRect(ld->itemID, nIndex,LVIR_BOUNDS , rc);
-
-			if(lvColumn.iOrder == 0){
-				lvItem.iItem = ld->itemID;
-				lvItem.iSubItem = 0;
-				lvItem.mask = LVIF_IMAGE;
-				GetItem(&lvItem);
-				
+			GetSubItemRect(ld->itemID, nIndex, LVIR_LABEL , rc);
+			
+			if(nIndex == 0){
 				if(imageList.m_hImageList) {
 					HICON icon = imageList.GetIcon(lvItem.iImage);
 					if(icon) {
-						dcassert(::DrawIconEx(ld->hDC, rc.left, rc.top, icon, 16, 16, 0, NULL, DI_NORMAL | DI_COMPAT));
-						rc.left += 16;
+						CRect tmp;
+						GetSubItemRect(ld->itemID, nIndex, LVIR_ICON, tmp);
+						
+						::DrawIconEx(ld->hDC, tmp.left, tmp.top, icon, 16, 16, 0, NULL, DI_NORMAL | DI_COMPAT);
+						
+						//rc.left = tmp.right;
 						DestroyIcon(icon);
 					}
 				}
 			}
 
-			//lvItem.iItem = ld->itemID;
-			//lvItem.iSubItem = nIndex + 1;
-			//lvItem.mask = 
-			
-			rc.DeflateRect(2, 2);
+			//rc.DeflateRect(2, 2);
 			::ExtTextOut(ld->hDC, rc.left, rc.top, ETO_CLIPPED, rc, item->getText(col).c_str(), item->getText(col).length(), NULL);
+		}
+
+		if(lvItem.state & LVIS_SELECTED) {
+			::SetTextColor(ld->hDC, oldTextColor);
 		}
 	}
 
@@ -539,10 +566,19 @@ public:
 		return result;
 	}					
 
+	setOwnerDraw(bool handleDrawing) { ownerDraw = handleDrawing; }
+
+	setStatusbarColumn(int col = -1) { drawStatusbarColumn = col; }
 
 private:
 	CMenu headerMenu;
 	CImageList imageList;
+
+	//should we handle the drawing?
+	bool ownerDraw;
+
+	//this is to keep track on custom draw operations
+	int state;
 
 	int sortColumn;
 	bool sortAscending;

@@ -39,8 +39,6 @@
 #undef ff
 #endif
 
-static const string DOWNLOAD_AREA = "Downloads";
-
 Download::Download() throw() : file(NULL),
 crcCalc(NULL), treeValid(false), oldDownload(false), tth(NULL) { 
 }

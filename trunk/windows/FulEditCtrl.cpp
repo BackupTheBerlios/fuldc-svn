@@ -92,7 +92,7 @@ bool CFulEditCtrl::AddLine(const tstring & line, bool timeStamps) {
 		if( end != tstring::npos ) {
 			tstring::size_type pos = aLine.rfind(_T("]"), end);
 			if( end > 0 && (end-1) == pos )
-				pos = aLine.rfind(_T("]"), pos);
+				pos = aLine.rfind(_T("]"), pos-1);
 			
 			if(pos != string::npos) 
 				aLine = _T("<") + aLine.substr(pos+1);
@@ -274,7 +274,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 		return tstring::npos;
 
 
-	//do we want to highlight the timestamps
+	//do we want to highlight the timestamps?
 	if( cs->getTimestamps() ) {
 		if( line[0] != _T('[') )
 			return tstring::npos;
