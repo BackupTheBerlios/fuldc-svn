@@ -605,7 +605,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	size_t newId = (size_t)wID - IDC_DOWNLOAD_TARGET;
 
 	if(newId < downloadPaths.size()){
-		StringMapIter j = downloadPaths.begin();
+		StringPairIter j = downloadPaths.begin();
 		for(size_t i = 0; i < newId; ++i, ++j);
 		ctrlResults.forEachSelectedT( SearchInfo::Download( Text::toT(j->second) ) );
 	}else if((newId - downloadPaths.size()) < WinUtil::lastDirs.size()) {
@@ -622,7 +622,7 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 	dcassert((wID-IDC_DOWNLOAD_WHOLE_TARGET) < (int)WinUtil::lastDirs.size());
 	size_t newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
 	if(newId < downloadPaths.size()){
-		StringMapIter j = downloadPaths.begin();
+		StringPairIter j = downloadPaths.begin();
 		for(size_t i = 0; i < newId; ++i, ++j);
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole( Text::toT(j->second) ));
 	}else {
@@ -984,7 +984,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		int n = 0;
 		
 		if(downloadPaths.size() > 0){
-			for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
+			for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, Text::toT(i->first).c_str() );
 				++n;
 			}
@@ -1020,7 +1020,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 		n = 0;
 		if(downloadPaths.size() > 0){
-			for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
+			for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
 				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_TARGET + n, Text::toT(i->first).c_str() );
 				++n;
 			}

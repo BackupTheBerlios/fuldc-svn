@@ -447,7 +447,7 @@ private:
 	TStringList search;
 	StringList targets;
 	StringList wholeTargets;
-	StringMap downloadPaths;
+	StringPairList downloadPaths;
 	TStringList filterList;
 
 	PME filterRegExp;

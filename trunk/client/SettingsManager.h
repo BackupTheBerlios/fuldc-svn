@@ -188,14 +188,15 @@ public:
 	void load(const string& aFileName);
 	void save(const string& aFileName);
 
-	StringMap getDownloadPaths() const {
+	StringPairList& getDownloadPaths() {
 		Lock l(cs);
 		return downloadPaths;
 	}
 
-	void setDownloadPaths( const StringMap& dl ) {
+	void setDownloadPaths( const StringPairList& dl ) {
 		Lock l(cs);
 		downloadPaths = dl;
+		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
 	}
 
 private:
@@ -214,7 +215,7 @@ private:
 	bool isSet[SETTINGS_LAST];
 
 	mutable CriticalSection cs;
-	StringMap downloadPaths;
+	StringPairList downloadPaths;
 };
 
 // Shorthand accessor macros

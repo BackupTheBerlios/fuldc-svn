@@ -42,7 +42,7 @@ LRESULT FulDownloadPage::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 	ctrlDownload.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
 	TStringList t;
-	for(StringMapIter i = download.begin(); i != download.end(); ++i){
+	for(StringPairIter i = download.begin(); i != download.end(); ++i){
 		t.push_back( Text::toT(i->first) );
 		t.push_back( Text::toT(i->second) );
 		ctrlDownload.insert( t );
@@ -68,11 +68,10 @@ LRESULT FulDownloadPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 			dlg.description = TSTRING(DISPLAY_NAME);
 			dlg.title = TSTRING(SETTINGS_NAME);
 			if( dlg.DoModal() == IDOK ){
-				if( download.find( Text::fromT(dlg.line) ) != download.end() ){
+				if( find_if(download.begin(), download.end(), CompareFirst<string, string>(Text::fromT(dlg.line)) ) != download.end() ){
 					MessageBox(CTSTRING(NAME_EXISTS), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_OK);
 				} else {
-					//download[ Text::fromT(dlg.line) ] = Text::fromT(path);
-					download.insert( StringPair( Text::fromT(dlg.line), Text::fromT(path) ) );
+					download.push_back(StringPair( Text::fromT(dlg.line), Text::fromT(path)));
 					TStringList l;
 					l.push_back( dlg.line );
 					l.push_back( path );
@@ -95,7 +94,7 @@ LRESULT FulDownloadPage::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	ctrlDownload.GetItemText(sel, 0, buf, 1000);
 	string name = Text::fromT(buf);
 
-	StringMapIter i = download.find ( name );
+	StringPairIter i = find_if(download.begin(), download.end(), CompareFirst<string, string>(name));
 	if( i != download.end() )
 		download.erase( i );
 

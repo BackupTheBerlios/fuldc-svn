@@ -335,7 +335,7 @@ void SettingsManager::load(string const& aFileName)
 			while(xml.findChild("DownloadPath")){
 				string name = xml.getChildAttrib("Name");
 				string path = xml.getChildData();
-				downloadPaths[ name ] = path;
+				downloadPaths.push_back(StringPair(name, path));
 			}
 			xml.stepOut();
 		} else {
@@ -346,12 +346,12 @@ void SettingsManager::load(string const& aFileName)
 				StringTokenizer<string> t(paths, '|');
 				StringList s = t.getTokens();
 				for(StringIter i = s.begin(); i != s.end(); ++i){
-					downloadPaths[ Util::getLastDir(*i) ] = *i;
+					downloadPaths.push_back(StringPair(Util::getLastDir(*i), *i));
 				}
 			}
 		}
 		
-
+		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
 
 		fire(SettingsManagerListener::Load(), &xml);
 
@@ -409,7 +409,7 @@ void SettingsManager::save(string const& aFileName) {
 
 	{
 		Lock l(cs);
-		for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i ) {
+		for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i ) {
 			xml.addTag( "DownloadPath", i->second );
 			xml.addChildAttrib( "Name", i->first );
 		}

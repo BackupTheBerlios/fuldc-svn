@@ -43,7 +43,7 @@ protected:
 	static TextItem texts[];
 
 	//just save the copy here to avoid searching the list
-	StringMap download;
+	StringPairList download;
 
 	ExListViewCtrl ctrlDownload;
 };

@@ -503,7 +503,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 		
 		if(downloadPaths.size() > 0) {
-			for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
+			for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), Text::toT(i->first).c_str() );
 			}
 			targetMenu.AppendMenu(MF_SEPARATOR);
@@ -572,7 +572,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 			int n = 0;
 			if(downloadPaths.size() > 0) {
-				for(StringMapIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
+				for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i) {
 					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + n, Text::toT(i->first).c_str() );
 					++n;
 				}
@@ -609,7 +609,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 			
 			try {
 				if(newId < downloadPaths.size()){
-					StringMapIter j = downloadPaths.begin();
+					StringPairIter j = downloadPaths.begin();
 					for(size_t i = 0; i < newId; ++i, ++j);
 					dl->download(ii->file, j->second + ii->file->getName(), false, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 				} else if( (newId - downloadPaths.size()) < WinUtil::lastDirs.size() )
@@ -622,7 +622,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 			} 
 		} else {
 			if(newId < downloadPaths.size()) {
-				StringMapIter j = downloadPaths.begin();
+				StringPairIter j = downloadPaths.begin();
 				for(size_t i = 0; i < newId; ++i, ++j);
 				downloadList( Text::toT(j->second) );
 			} else
@@ -630,7 +630,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		}
 	} else if(ctrlList.GetSelectedCount() > 1) {
 		if(newId < downloadPaths.size()) {
-			StringMapIter j = downloadPaths.begin();
+			StringPairIter j = downloadPaths.begin();
 			for(size_t i = 0; i < newId; ++i, ++j);
 			downloadList( Text::toT(j->second) );
 		} else
@@ -649,7 +649,7 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
 			if(newId < downloadPaths.size()){
-				StringMapIter j = downloadPaths.begin();
+				StringPairIter j = downloadPaths.begin();
 				for(size_t i = 0; i < newId; ++i, ++j);
 				dl->download(dir, j->second, (GetKeyState(VK_SHIFT) & 0x8000) > 0);
 			} else
