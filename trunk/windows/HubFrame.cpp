@@ -408,7 +408,7 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
 		// Sort order of the other columns changes too late when the user's updated
 		UserInfo* ui = i->second;
-		//dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
+		dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
 		return ctrlUsers.getSortPos(ui);
 	}
 	return ctrlUsers.findItem(i->second);
@@ -455,6 +455,7 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 
 bool HubFrame::updateUser(const User::Ptr& u) {
+	//int i = findUser(u);
 	int i = -1;
 	string nick;
 	if(stripIsp)
@@ -465,11 +466,15 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 	while( ( i = ctrlUsers.findItem(nick, i) ) != -1 ) {
 		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
 		if( Util::stricmp(u->getNick(), ui->user->getNick()) == 0) {
+			bool resort = (ui->getOp() != u->isSet(User::OP));
 			ctrlUsers.getItemData(i)->update();
 			ctrlUsers.updateItem(i);
 			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
+			if(resort)
+				ctrlUsers.resort();
 			return false;
 		}
+	
 	}
 
 	UserMap::iterator j = usermap.begin();
