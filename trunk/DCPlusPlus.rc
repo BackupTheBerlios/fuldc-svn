@@ -540,6 +540,8 @@ BEGIN
     GROUPBOX        "Size of string to display in tabs",IDC_STATIC,14,115,
                     110,32
     EDITTEXT        IDC_TAB_SIZE,23,127,93,14,ES_AUTOHSCROLL
+    GROUPBOX        "Max sources for match queue",IDC_STATIC,147,115,109,32
+    EDITTEXT        IDC_MAX_SOURCES,156,127,93,14,ES_AUTOHSCROLL
 END
 
 

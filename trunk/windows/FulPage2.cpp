@@ -18,6 +18,7 @@ PropPage::Item FulPage2::items[] = {
 	{ IDC_FREE_SLOTS_SIZE, SettingsManager::FREE_SLOTS_SIZE, PropPage::T_INT }, 
 	{ IDC_PATHS, SettingsManager::DOWNLOAD_TO_PATHS, PropPage::T_STR },
 	{ IDC_TAB_SIZE, SettingsManager::TAB_SIZE, PropPage::T_INT }, 
+	{ IDC_MAX_SOURCES, SettingsManager::MAX_AUTO_MATCH_SOURCES, PropPage::T_INT }, 
 	{ 0, 0, PropPage::T_END }
 };
 

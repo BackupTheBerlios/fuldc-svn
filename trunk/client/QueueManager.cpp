@@ -1316,7 +1316,7 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 					// Only download list for exact matches
 					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (Util::stricmp(target, fileName) == 0)){
 						QueueItem *qi = fileQueue.find(sr->getFile());
-						if(qi != NULL && qi->getSources().size() < 4)
+						if(qi != NULL && qi->getSources().size() < BOOLSETTING(MAX_AUTO_MATCH_SOURCES))
 							addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 					}
 				} catch(const Exception&) {

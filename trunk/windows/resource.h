@@ -367,6 +367,8 @@
 #define IDC_PATHS                       1253
 #define IDC_TAB_SIZE                    1254
 #define IDC_SETTINGS_FORMAT1            1255
+#define IDC_TAB_SIZE2                   1255
+#define IDC_MAX_SOURCES                 1255
 #define IDC_SETTINGS_FORMAT2            1256
 #define IDC_SETTINGS_FORMAT3            1257
 #define IDC_SETTINGS_FORMAT4            1258
