@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "File.h"
+#include "Streams.h"
 
 template<class Filter, bool managed>
 class CalcOutputStream : public OutputStream {

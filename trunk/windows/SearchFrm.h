@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2005 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_TIMER, onTimer)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadWhole)
@@ -114,9 +115,9 @@ public:
 		filterBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		filterContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
 		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
-		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
+		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
 		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
-		onlyTTH(false)
+		onlyTTH(false), timerID(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
 		downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
@@ -139,6 +140,7 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -333,10 +335,10 @@ private:
 		void update() { 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
 				if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-					fileName = Text::toT(sr->getFile());
+					fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 				} else {
-					fileName = Text::toT(Util::getFileName(sr->getFile()));
-					path = Text::toT(Util::getFilePath(sr->getFile()));
+					fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+					path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
 				}
 
 				type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
@@ -345,8 +347,8 @@ private:
 				size = Text::toT(Util::formatBytes(sr->getSize()));
 				exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
 			} else {
-				fileName = Text::toT(sr->getFileName());
-				path = Text::toT(sr->getFile());
+				fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
+				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 				type = TSTRING(DIRECTORY);
 			}
 			nick = Text::toT(sr->getUser()->getNick());
@@ -471,6 +473,9 @@ private:
 
 	static int columnIndexes[];
 	static int columnSizes[];
+
+	// Timer ID, needed to turn off timer
+	UINT timerID;
 
 	typedef map<HWND, SearchFrame*> FrameMap;
 	typedef FrameMap::iterator FrameIter;

@@ -81,11 +81,17 @@ AdcCommand SearchResult::toRES(char type) const {
 }
 
 void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
-	ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
+	if(okToSearch()) {
+		ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
+		lastSearch = GET_TICK();
+	}
 }
 
 void SearchManager::search(StringList& who, const string& aName, int64_t aSize /* = 0 */, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
-	ClientManager::getInstance()->search(who, aSizeMode, aSize, aTypeMode, aName);
+	if(okToSearch()) {
+		ClientManager::getInstance()->search(who, aSizeMode, aSize, aTypeMode, aName);
+		lastSearch = GET_TICK();
+	}
 }
 
 string SearchResult::getFileName() const { 
@@ -195,12 +201,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 			if(j < i + 1) {
 				return;
 			}
-			file = Text::acpToUtf8(x.substr(i, j-i) + '\\');
+			file = x.substr(i, j-i) + '\\';
 		} else if(cnt == 2) {
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
 			}
-			file = Text::acpToUtf8(x.substr(i, j-i));
+			file = x.substr(i, j-i);
 			i = j + 1;
 			if( (j = x.find(' ', i)) == string::npos) {
 				return;

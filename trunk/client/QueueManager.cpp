@@ -778,18 +778,15 @@ Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw(
 	if(d->getSize() != -1 && d->getTTH()) {
 		if(HashManager::getInstance()->getTree(*d->getTTH(), d->getTigerTree())) {
 			d->setTreeValid(true);
-		} else if(!q->getCurrent()->isSet(QueueItem::Source::FLAG_NO_TREE) && !q->getCurrent()->isSet(QueueItem::Source::FLAG_BAD_TREE) && supportsTrees) {
+		} else if(supportsTrees && !q->getCurrent()->isSet(QueueItem::Source::FLAG_NO_TREE) && d->getSize() > HashManager::MIN_BLOCK_SIZE) {
+			// Get the tree unless the file is small (for small files, we'd probably only get the root anyway)
 			d->setFlag(Download::FLAG_TREE_DOWNLOAD);
 			d->getTigerTree().setFileSize(d->getSize());
 			d->setPos(0);
 			d->unsetFlag(Download::FLAG_RESUME);
-		} else if(d->getSize() < (int64_t)(int64_t)numeric_limits<size_t>::max()) {
+		} else {
 			// Use the root as tree to get some sort of validation at least...
-			d->getTigerTree().setFileSize(d->getSize());
-			d->getTigerTree().setBlockSize((size_t)d->getSize());
-
-			d->getTigerTree().getLeaves().push_back(*d->getTTH());
-			d->getTigerTree().calcRoot();
+			d->getTigerTree() = TigerTree(d->getSize(), d->getSize(), *d->getTTH());
 			d->setTreeValid(true);
 		}
 	}

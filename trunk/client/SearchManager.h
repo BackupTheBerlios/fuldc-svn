@@ -83,9 +83,6 @@ public:
 	int getFreeSlots() const { return freeSlots; }
 	const string& getIP() const { return IP; }
 	TTHValue* getTTH() const { return tth; }
-	
-	//will be false if it's a nmdc result
-	//true if it's an ADC result
 	bool getUtf8() const { return utf8; }
 
 	void incRef() { Thread::safeInc(ref); }
@@ -113,8 +110,6 @@ private:
 	string IP;
 	TTHValue* tth;
 	
-	//will be false if it's a nmdc result
-	//true if it's an ADC result
 	bool utf8;
 	volatile long ref;
 
@@ -166,14 +161,23 @@ public:
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
 	
+	int32_t timeToSearch() {
+		return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);
+	}
+
+	bool okToSearch() {
+		return timeToSearch() <= 0;
+	}
+
 private:
 	
 	Socket* socket;
 	short port;
 	bool stop;
+	u_int32_t lastSearch;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL), port(0), stop(false) {  };
+	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  };
 
 	virtual int run();
 

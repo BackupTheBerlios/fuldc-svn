@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2005 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -257,7 +257,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 void SearchFrame::onEnter() {
 	StringList clients;
 	
-	if(!(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 3*1000 < TimerManager::getInstance()->getTick()))
+	if(!(ctrlSearch.GetWindowTextLength() > 0))
 		return;
 
 	int n = ctrlHubs.GetItemCount();
@@ -294,7 +294,7 @@ void SearchFrame::onEnter() {
 		}
 	}
 	
-	tstring size(ctrlSize.GetWindowTextLength() + 1, '\0');
+	tstring size(ctrlSize.GetWindowTextLength() + 1, _T('\0'));
 	ctrlSize.GetWindowText(&size[0], size.size());
 	size.resize(size.size()-1);
 
@@ -362,10 +362,25 @@ void SearchFrame::onEnter() {
 
 	SetWindowText((TSTRING(SEARCH) + _T(" - ") + s).c_str());
 
-	SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
-		(SearchManager::TypeModes)ftype, mode);
+	if(SearchManager::getInstance()->okToSearch()) {
+		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
+			(SearchManager::TypeModes)ftype, mode);
+		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
+			ctrlSearch.SetWindowText(_T(""));
+	} else {
+		int32_t waitFor = SearchManager::getInstance()->timeToSearch();
+		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
+		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
 
-	results = filtered = 0;
+		ctrlStatus.SetText(1, buf);
+		results = filtered = 0;
+		PostMessage(WM_SPEAKER, STATS);
+
+		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
+		// Start the countdown timer
+		timerID = SetTimer(1, 1000);
+	}
+	
 
 }
 
@@ -384,8 +399,12 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 			if(Util::stricmp(Text::toT(aResult->getTTH()->toBase32()), search[0]) != 0)
 				return;
 		} else {
+			// match all here
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
-				if(Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1) {
+				if((*j->begin() != _T('-') && Util::findSubString(aResult->getUtf8() ? aResult->getFile() : Text::acpToUtf8(aResult->getFile()), Text::fromT(*j)) == -1) ||
+					(*j->begin() == _T('-') && j->size() != 1 && Util::findSubString(aResult->getUtf8() ? aResult->getFile() : Text::acpToUtf8(aResult->getFile()), Text::fromT(j->substr(1))) != -1)
+					) 
+				{
 					return;
 				}
 			}
@@ -424,6 +443,26 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	PostMessage(WM_SPEAKER, ADD_RESULT, (LPARAM)i);	
 }
 
+LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	int32_t waitFor = SearchManager::getInstance()->timeToSearch();
+	if(waitFor > 0) {
+		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
+		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
+
+		ctrlStatus.SetText(1, buf);
+
+		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
+	} else {
+		if(timerID != 0) {
+			KillTimer(timerID);
+			timerID = 0;
+		}
+		ctrlStatus.SetText(1, (TSTRING(SEARCHING_READY)).c_str());
+
+		SetWindowText((TSTRING(SEARCH) + _T(" - ") + TSTRING(SEARCHING_READY)).c_str());
+	}
+	return 0;
+}
 void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
@@ -465,7 +504,7 @@ void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(),	si->sr->getSize(), si->sr->getUser(), 
+			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
 				Text::fromT(tgt), si->sr->getTTH(), QueueItem::FLAG_RESUME | (si->sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0),
 				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		} else {

@@ -263,9 +263,15 @@ private:
 	
 	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false, bool ntd = false);
-	void removeDownload(Download* aDown, bool finished);
+	void removeDownload(Download* aDown);
 	void fileNotAvailable(UserConnection* aSource);
 	void noSlots(UserConnection* aSource);
+
+	void moveFile(const string& source, const string&target);
+	void logDownload(UserConnection* aSource, Download* d);
+	u_int32_t calcCrc32(const string& file) throw(FileException);
+	bool checkSfv(UserConnection* aSource, Download* d, u_int32_t crc);
+	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
 
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 

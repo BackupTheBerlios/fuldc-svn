@@ -65,6 +65,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY, ResourceManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY },
 	{ SettingsManager::SETTINGS_OPEN_NEW_WINDOW, ResourceManager::SETTINGS_OPEN_NEW_WINDOW },
 	{ SettingsManager::SEARCH_ONLY_TTH, ResourceManager::SETTINGS_ONLY_TTH },
+	{ SettingsManager::ADVANCED_RESUME, ResourceManager::SETTINGS_ADVANCED_RESUME },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

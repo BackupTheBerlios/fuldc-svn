@@ -66,6 +66,7 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
+	"AdvancedResume",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -200,6 +201,7 @@ SettingsManager::SettingsManager()
 	setDefault(SEARCH_ONLY_TTH, false);
 	setDefault(SHOW_LAST_LINES_LOG, 0);
 	setDefault(CONFIRM_ITEM_REMOVAL, 0);
+	setDefault(ADVANCED_RESUME, true);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -265,23 +267,10 @@ SettingsManager::SettingsManager()
 
 void SettingsManager::load(string const& aFileName)
 {
-	string xmltext;
-	try {
-		File f(aFileName, File::READ, File::OPEN);
-		xmltext = f.read();		
-	} catch(const FileException&) {
-		// ...
-		return;
-	}
-
-	if(xmltext.empty()) {
-		// Nothing to load...
-		return;
-	}
-
 	try {
 		SimpleXML xml;
-		xml.fromXML(xmltext);
+		
+		xml.fromXML(File(aFileName, File::READ, File::OPEN).read());
 		
 		xml.resetCurrentChild();
 		
@@ -368,7 +357,8 @@ void SettingsManager::load(string const& aFileName)
 		xml.stepOut();
 
 	} catch(const Exception&) {
-		// Oops, bad...
+		if(CID(SETTING(CLIENT_ID)).isZero())
+			set(CLIENT_ID, CID::generate().toBase32());
 	}
 }
 

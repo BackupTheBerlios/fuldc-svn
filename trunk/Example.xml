@@ -314,6 +314,8 @@
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search String</String>
 		<String Name="SearchingFor">Searching for </String>
+		<String Name="SearchingReady">Ready to search...</String>
+		<String Name="SearchingWait">Searching too soon, next search in %i seconds</String>
 		<String Name="SeekBeyondEnd">Request to seek beyond the end of data</String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Separator">Separator</String>
@@ -325,6 +327,7 @@
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAdvanced">DC++\\Advanced</String>
 		<String Name="SettingsAdvanced3">DC++\\Advanced\\Experts only</String>
+		<String Name="SettingsAdvancedResume">Advanced resume using TTH</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">DC++\\Appearance</String>
