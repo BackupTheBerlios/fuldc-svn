@@ -651,5 +651,6 @@ enum Strings { // @DontAdd
 	FILE_LEFT, // "file left"
 	CHANGED_PRIORITY, // "Changed priority for"
 	PASTE, // "Paste"
+	TOGGLE_ACTIVE_WINDOW, // "Toggle window when selecting an active tab"
 	LAST // @DontAdd
 };

@@ -648,6 +648,7 @@ string ResourceManager::strings[] = {
 "file left", 
 "Changed priority for", 
 "Paste", 
+"Toggle window when selecting an active tab", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1296,4 +1297,5 @@ string ResourceManager::names[] = {
 "FileLeft", 
 "ChangedPriority", 
 "Paste", 
+"ToggleActiveWindow", 
 };

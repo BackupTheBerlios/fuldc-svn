@@ -287,6 +287,8 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		if(hash != NULL) {
 			params["tth"] = hash->toBase32();
 		}
+		params["ip"] = aSource->getRemoteIp();
+
 		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
 	}
 

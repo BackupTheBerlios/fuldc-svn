@@ -647,5 +647,6 @@
 		<String Name="FileLeft">file left</String>
 		<String Name="ChangedPriority">Changed priority for</String>
 		<String Name="Paste">Paste</String>
+		<String Name="ToggleActiveWindow">Toggle window when selecting an active tab</String>
 	</Strings>
 </Language>

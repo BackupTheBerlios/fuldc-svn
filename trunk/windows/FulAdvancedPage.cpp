@@ -49,6 +49,7 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::FAVORITES_REMOVE_CONFIRMATION,	ResourceManager::FAVORITES_REMOVE_CONFIRMATION },
 	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND },
 	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC }, 
+	{ SettingsManager::TOGGLE_ACTIVE_WINDOW,			ResourceManager::TOGGLE_ACTIVE_WINDOW },
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

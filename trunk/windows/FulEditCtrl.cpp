@@ -450,10 +450,11 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 	return tstring::npos;
 }
 
-LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
-	if(isSet(HANDLE_SCROLL))
-		ScrollToEnd();
-			
+LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
+	if(isSet(HANDLE_SCROLL)) {
+		if(wParam != SIZE_MINIMIZED && HIWORD(lParam) > 0)
+			ScrollToEnd();
+	}		
 	bHandled = FALSE;
 	return 0;
 }

@@ -67,7 +67,7 @@ const string SettingsManager::settingTags[] =
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
-	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs",
+	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "ToggleActiveWindow",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -219,6 +219,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_MSG_LENGTH, 90);
 	setDefault(POPUP_MINIMIZED, false);
 	setDefault(BLEND_TABS, false);
+	setDefault(TOGGLE_ACTIVE_WINDOW, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

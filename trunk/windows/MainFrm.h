@@ -231,17 +231,25 @@ public:
 
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		HWND hWnd = (HWND)wParam;
-		if(MDIGetActive() != hWnd) {
+		
+		if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
+			if(MDIGetActive() != hWnd) {
+				if(::IsIconic(hWnd))
+					::ShowWindow(hWnd, SW_RESTORE);
+				MDIActivate(hWnd);
+			} else {
+				::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+				MDINext(hWnd);
+				hWnd = MDIGetActive();
+				if(::IsIconic(hWnd))
+					::ShowWindow(hWnd, SW_RESTORE);
+			}
+		} else {
 			if(::IsIconic(hWnd))
 				::ShowWindow(hWnd, SW_RESTORE);
 			MDIActivate(hWnd);
-		} else {
-			::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
-			MDINext(hWnd);
-			hWnd = MDIGetActive();
-			if(::IsIconic(hWnd))
-				::ShowWindow(hWnd, SW_RESTORE);
 		}
+
 		return 0;
 	}
 	
