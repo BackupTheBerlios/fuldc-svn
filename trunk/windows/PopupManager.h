@@ -11,7 +11,6 @@
 #include "../client/TimerManager.h"
 #include "../client/QueueManagerListener.h"
 #include "../client/QueueManager.h"
-#include "../client/CriticalSection.h"
 
 #include "PopupDlg.h"
 #include "WinUtil.h"
@@ -20,7 +19,7 @@ class PopupManager : public Singleton< PopupManager >, private TimerManagerListe
 	private QueueManagerListener
 {
 public:
-	PopupManager() : height(90), width(200), offset(0), activated(true), minimized(false) {
+	PopupManager() : height(90), width(200), offset(0), activated(true), minimized(false), id(0) {
 		TimerManager::getInstance()->addListener(this);
 		QueueManager::getInstance()->addListener(this);
 
@@ -81,7 +80,8 @@ public:
 
 private:
 		
-	typedef deque< PopupWnd* > PopupList;
+	typedef list< PopupWnd* > PopupList;
+	typedef PopupList::iterator PopupIter;
 	PopupList popups;
 	
 	//size of the popup window
@@ -92,9 +92,6 @@ private:
 	//keep track of where the new one will be displayed
 	u_int16_t offset;
 	
-	//used for thread safety
-	CriticalSection cs;
-
 	//turn on/off popups completely
 	bool activated;
 
@@ -103,6 +100,9 @@ private:
 
 	//this is the background of the popup window
 	HBITMAP hBitmap;
+
+	//id of the popup to keep track of them
+	u_int32_t id;
     	
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t tick) throw();

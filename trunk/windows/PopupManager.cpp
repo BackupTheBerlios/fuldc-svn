@@ -33,8 +33,6 @@ void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	int screenHeight = rcDesktop.bottom;
 	int screenWidth = rcDesktop.right;
 
-	Lock l(cs);
-
 	//if we have popups all the way up to the top of the screen do not create a new one
 	if( (offset + height) > screenHeight)
 		return;
@@ -43,7 +41,7 @@ void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	CRect rc(screenWidth - width , screenHeight - height - offset, screenWidth, screenHeight - offset);
 	
 	//Create a new popup
-	PopupWnd *p = new PopupWnd(aMsg, rc, hBitmap);
+	PopupWnd *p = new PopupWnd(aMsg, rc, hBitmap, id++);
 	p->owner = owner;
 			
 	//move the window to the top of the z-order and display it
@@ -71,20 +69,18 @@ void PopupManager::on(QueueManagerListener::ReleaseDone, string msg) {
 }
 
 void PopupManager::AutoRemove(){
-	Lock l(cs);
-
 	//we got nothing to do here
 	if(popups.empty()) {
 		return;
 	}
 
 	//check all popups and see if we need to remove anyone
-	PopupList::iterator i = popups.begin();
+	PopupIter i = popups.begin();
 	for(; i != popups.end(); ++i) {
 
 		if((*i)->visible + SETTING(POPUP_TIMEOUT) * 1000 < GET_TICK()) {
 			//okay remove the first popup
-			Remove(0);
+			Remove((*i)->id);
 
 			//if list is empty there is nothing more to do
 			if(popups.empty())
@@ -97,23 +93,17 @@ void PopupManager::AutoRemove(){
 }
 
 void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
-	Lock l(cs);
-
-	CRect rcDesktop;
-
-	//get desktop rect so we know where to place the popup
-	::SystemParametersInfo(SPI_GETWORKAREA,0,&rcDesktop,0);
-	if(pos == 0)
-		pos = rcDesktop.bottom;
-
 	//find the correct window
-	int end = (rcDesktop.bottom - pos) / height;
-	PopupList::iterator i = popups.begin();
-	for(int j = 0; j < end; ++j, ++i);
+	for(PopupIter i = popups.begin(); i != popups.end(); ++i) {
+		if((*i)->id == pos)
+			break;
+	}
+
+	dcassert(i != popups.end());
 
 	//remove the window from the list
 	PopupWnd *p = (*i);
-	popups.erase(i);
+	i = popups.erase(i);
 
 	if(p == NULL){
 		return;
@@ -123,7 +113,6 @@ void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
 	HWND w = p->owner;
 	p->SendMessage(WM_CLOSE, 0, 0);
 	delete p;
-	p = NULL;
 
 	if( clicked && BOOLSETTING(POPUP_ACTIVATE_ON_CLICK) ) {
 		SetForegroundWindow(WinUtil::mainWnd);
@@ -144,13 +133,11 @@ void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
 	CRect rc;
 
 	//move down all windows
-	for(i = popups.begin(); i != popups.end(); ++i) {
+	for(; i != popups.end(); ++i) {
 		(*i)->GetWindowRect(rc);
-		if(rc.bottom <= pos){
-			rc.top += height;
-			rc.bottom += height;
-			(*i)->MoveWindow(rc);
-		}
+		rc.top += height;
+		rc.bottom += height;
+		(*i)->MoveWindow(rc);
 	}
 }
 

@@ -56,7 +56,7 @@ leave it up to the compiler, but some sites want to force a particular value.
 On Unix systems, "configure" can be used to override this default. */
 
 #ifndef NEWLINE
-#define NEWLINE '\n'
+#define NEWLINE '\r'
 #endif
 
 /* The value of LINK_SIZE determines the number of bytes used to store

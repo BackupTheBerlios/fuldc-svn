@@ -23,7 +23,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 	END_MSG_MAP()
 
-	PopupWnd(const tstring& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
+	PopupWnd(const tstring& aMsg, CRect rc, HBITMAP hBmp, u_int32_t aId): visible(GET_TICK()), id(aId) {
 		if(int(aMsg.length()) > SETTING(MAX_MSG_LENGTH)){
 			msg = aMsg.substr(0, SETTING(MAX_MSG_LENGTH)-3);
 			msg += _T("...");
@@ -48,9 +48,7 @@ public:
 	}
 
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
-		CRect rc;
-		GetWindowRect(rc);
-		::PostMessage(WinUtil::mainWnd, WM_SPEAKER, WM_CLOSE, (LPARAM)rc.bottom);
+		::PostMessage(WinUtil::mainWnd, WM_SPEAKER, WM_CLOSE, (LPARAM)id);
 		bHandled = TRUE;
 		return 0;
 	}
@@ -134,6 +132,7 @@ public:
 
 	}
 
+	u_int32_t id;
 	u_int32_t visible;
 	HWND owner;
 
