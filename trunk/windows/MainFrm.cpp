@@ -183,7 +183,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS))
 		PostMessage(WM_COMMAND, IDC_FINISHED);
-	
+
 	if(!BOOLSETTING(SHOW_STATUSBAR))
 		PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
 	if(!BOOLSETTING(SHOW_TOOLBAR))
@@ -540,9 +540,9 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 				if(xml.findChild("Title")) {
 					const string& title = xml.getChildData();
 					xml.resetCurrentChild();
-				if(xml.findChild("Message")) {
+					if(xml.findChild("Message")) {
 						if(url.empty()) {
-					const string& msg = xml.getChildData();
+							const string& msg = xml.getChildData();
 							MessageBox(msg.c_str(), title.c_str(), MB_OK);
 						} else {
 							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
@@ -920,6 +920,32 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
 	UpdateLayout();
 	SettingsManager::getInstance()->set(SettingsManager::SHOW_TOOLBAR, bVisible);
+	return 0;
+}
+
+LRESULT MainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	BOOL bVisible = !::IsWindowVisible(m_hWndStatusBar);
+	::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
+	UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
+	UpdateLayout();
+	SettingsManager::getInstance()->set(SettingsManager::SHOW_STATUSBAR, bVisible);
+	return 0;
+}
+
+LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	BOOL bVisible = !transferView.IsWindowVisible();
+	if(!bVisible) {	
+		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_TOP);
+	} else { 
+		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_NONE);
+	}
+	UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
+	UpdateLayout();
+	SettingsManager::getInstance()->set(SettingsManager::SHOW_TRANSFERVIEW, bVisible);
 	return 0;
 }
 

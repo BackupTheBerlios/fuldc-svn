@@ -48,7 +48,7 @@ public:
 
 	enum { FT_EXTRA_SPACE = 30 };
 
-	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), inTab(false) { 
+	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), moving(NULL), inTab(false) { 
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
 	};
 	~FlatTabCtrlImpl() { }
@@ -81,8 +81,6 @@ public:
 		TabInfo* ti = *i;
 		if(active == ti)
 			active = NULL;
-		if(moving == ti)
-			moving = NULL;
 		delete ti;
 		tabs.erase(i);
 		dcassert(find(viewOrder.begin(), viewOrder.end(), aWnd) != viewOrder.end());
@@ -217,8 +215,10 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					if(wParam & MK_SHIFT) ::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
-					else moving = t;
+					if(wParam & MK_SHIFT) 
+						::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
+					else 
+						moving = t;
 				}
 				break;
 			}
@@ -248,7 +248,7 @@ public:
 				break;
 			}
 		}
-		
+
 		return 0;
 	}
 
@@ -279,7 +279,7 @@ public:
 
 	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(::IsWindow(closing))
-		::SendMessage(closing, WM_CLOSE, 0, 0);
+			::SendMessage(closing, WM_CLOSE, 0, 0);
 		return 0;
 	}
 
@@ -376,7 +376,7 @@ public:
 		dc.SelectFont(oldfont);
 		::ReleaseDC(m_hWnd, dc);
 
-		WinUtil::SetIcon(m_hWnd, "Queue.ico");
+		//WinUtil::SetIcon(m_hWnd, "Queue.ico");
 	
 		//Set the background brusH, easier than processing WM_ERASEBKGND =)
 		::SetClassLongPtr(m_hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)::CreateSolidBrush(SETTING(TAB_INACTIVE_BG)));
@@ -396,7 +396,7 @@ public:
 		bool drawActive = false;
 		RECT crc;
 		GetClientRect(&crc);
-		
+
 		if(GetUpdateRect(&rc, FALSE)) {
 			CPaintDC dc(m_hWnd);
 			HFONT oldfont = dc.SelectFont(WinUtil::font);
@@ -427,12 +427,10 @@ public:
 				dc.MoveTo(active->xpos, y);
 				dc.LineTo(active->xpos + active->getWidth(), y);
 				DeleteObject(dc.SelectPen(pen));
-				
 			}
 			dc.SelectPen(oldpen);
 			dc.SelectFont(oldfont);
 		}
-
 		return 0;
 	}
 
@@ -504,8 +502,6 @@ private:
 			memset(&size, 0, sizeof(size));
 			memset(&boldSize, 0, sizeof(boldSize));
 			update();
-
-			
 		};
 
 		const int MAX_LENGTH;
@@ -597,8 +593,8 @@ private:
 	int height;
 
 	TabInfo* active;
-	TabInfo::List tabs;
 	TabInfo* moving;
+	TabInfo::List tabs;
 	CPen black;
 
 	typedef list<HWND> WindowList;
@@ -751,13 +747,13 @@ public:
 		MESSAGE_HANDLER(WM_REALLY_CLOSE, onReallyClose)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
-		
+	
 	HWND Create(HWND hWndParent, ATL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 	DWORD dwStyle = 0, DWORD dwExStyle = 0,
 	UINT nMenuID = 0, LPVOID lpCreateParam = NULL)
 	{
 		ATOM atom = T::GetWndClassInfo().Register(&m_pfnSuperWindowProc);
-		
+
 		if(nMenuID != 0)
 #if (_ATL_VER >= 0x0700)
 			m_hMenu = ::LoadMenu(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(nMenuID));
@@ -782,12 +778,12 @@ public:
 
 		if(MDIGetActive(&bMaximized) == NULL)
 			bMaximized = BOOLSETTING(MDI_MAXIMIZED);
-		
+
 		if(bMaximized)
 			wndParent.SetRedraw(FALSE);
-		
+
 		HWND hWnd = CFrameWindowImplBase<TBase, TWinTraits >::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (UINT)0U, atom, lpCreateParam);
-		
+
 		if(bMaximized)
 		{
 			// Maximize and redraw everything
@@ -836,7 +832,7 @@ public:
 		created = true;
 		return 0;
 	}
-
+	
 	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM /*wParam */, LPARAM lParam, BOOL& bHandled) {
 		dcassert(getTab());
 		if((m_hWnd == (HWND)lParam))
@@ -908,6 +904,7 @@ public:
 		dcassert(getTab());
 		getTab()->setNotify(m_hWnd);
 	}
+
 private:
 	bool created;
 };

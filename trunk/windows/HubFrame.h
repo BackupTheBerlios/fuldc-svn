@@ -329,6 +329,7 @@ private:
 		tabList.push_back("/df");
 		tabList.push_back("/dslots");
 		tabList.push_back("/favorite");
+		tabList.push_back("/favshowjoins");
 		tabList.push_back("/fuldc");
 		tabList.push_back("/fuptime");
 		tabList.push_back("/getlist");
@@ -363,6 +364,7 @@ private:
 	string redirect;
 	bool timeStamps;
 	bool showJoins;
+	bool favShowJoins;
 	string complete;
 
 	string lastKick;

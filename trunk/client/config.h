@@ -29,6 +29,7 @@
 #pragma warning(disable: 4512) // can't generate assignment operator
 #pragma warning(disable: 4710) // function not inlined
 #pragma warning(disable: 4127) // conditional expression is constant
+#pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
 
 #ifndef CDECL
 #define CDECL _cdecl

@@ -34,11 +34,7 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlSearches.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, WS_EX_CLIENTEDGE, IDC_RESULTS);
-
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlSearches.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	}
-
+	ctrlSearches.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	ctrlSearches.SetBkColor(WinUtil::bgColor);
 	ctrlSearches.SetTextBkColor(WinUtil::bgColor);
 	ctrlSearches.SetTextColor(WinUtil::textColor);

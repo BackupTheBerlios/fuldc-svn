@@ -62,6 +62,7 @@
 #define IDC_UPDATE                      149
 #define IDC_COPY                        150
 #define IDC_REFRESH_MENU                151
+#define IDC_SETTINGS_LOG_STATUS_MESSAGES 152
 #define IDD_SETTINGS                    201
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209

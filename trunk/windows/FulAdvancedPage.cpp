@@ -82,8 +82,7 @@ LRESULT FulAdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	ctrlWebShortcuts.InsertColumn(0, CSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width() / 5, 0);
 	ctrlWebShortcuts.InsertColumn(1, CSTRING(KEY), LVCFMT_LEFT, rc.Width() / 5, 1);
 	ctrlWebShortcuts.InsertColumn(2, CSTRING(URL), LVCFMT_LEFT, rc.Width() * 3 / 5, 2);
-	if(BOOLSETTING(FULL_ROW_SELECT))
-		ctrlWebShortcuts.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	ctrlWebShortcuts.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
 	for (WebShortcut::Iter i = wsList.begin(); i != wsList.end(); ++i) {
 		WebShortcut* ws = *i;

@@ -170,7 +170,9 @@ public:
 	LRESULT onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -245,37 +247,10 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		BOOL bVisible = !::IsWindowVisible(m_hWndStatusBar);
-		::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
-		UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
-		UpdateLayout();
-		SettingsManager::getInstance()->set(SettingsManager::SHOW_STATUSBAR, bVisible);
-		return 0;
-	}
-
 	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		WinUtil::openFile(SETTING(DOWNLOAD_DIRECTORY));
 		return 0;
 	}
-
-	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		BOOL bVisible = !transferView.IsWindowVisible();
-		if(!bVisible) {	
-			if(GetSinglePaneMode() == SPLIT_PANE_NONE)
-				SetSinglePaneMode(SPLIT_PANE_TOP);
-		} else { 
-			if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-				SetSinglePaneMode(SPLIT_PANE_NONE);
-		}
-		UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
-		UpdateLayout();
-		SettingsManager::getInstance()->set(SettingsManager::SHOW_TRANSFERVIEW, bVisible);
-		return 0;
-	}
-
 
 	LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		MDICascade();

@@ -43,7 +43,7 @@ const string SettingsManager::settingTags[] =
 	"QueueFrameVisible", 
 	"SENTRY", 
 	// Ints
-	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
+	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "AutoAutoSearchString", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
@@ -56,15 +56,16 @@ const string SettingsManager::settingTags[] =
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
-	"GetUserCountry",
+	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
+	"ShowToolbar", "ShowTransferview",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"RotateLogs", "PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation", "QueueRemoveConfirmation", "PopunderPm", "PopunderDirlist",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
-	"PopupTextColor", "FreeSlotsSize", "ShowStatusbar", "ShowToolbar", "ShowTransferView",
-	"CustomSound", "TabSize", "RemovePopups", "ShowTopic", "MaxAutoMatchSource", "MaxMsgLength",
+	"PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
+	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -95,7 +96,6 @@ SettingsManager::SettingsManager()
 	setDefault(ROLLBACK, 4096);
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
-	setDefault(FULL_ROW_SELECT, true);
 	setDefault(SHARE_HIDDEN, false);
 	setDefault(FILTER_MESSAGES, true);
 	setDefault(MINIMIZE_TRAY, false);
@@ -163,6 +163,12 @@ SettingsManager::SettingsManager()
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
 	setDefault(MAX_HASH_SPEED, 0);
 	setDefault(GET_USER_COUNTRY, true);
+	setDefault(FAV_SHOW_JOINS, false);
+	setDefault(LOG_STATUS_MESSAGES, false);
+	setDefault(SHOW_TRANSFERVIEW, true);
+	setDefault(SHOW_STATUSBAR, true);
+	setDefault(SHOW_TOOLBAR, true);
+
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
 	setDefault(CHATBUFFERSIZE, 25000);
@@ -197,9 +203,6 @@ SettingsManager::SettingsManager()
 	setDefault(FREE_SLOTS_SIZE, 32);
 	setDefault(SKIPLIST_SHARE, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
 	setDefault(SKIPLIST_DOWNLOAD, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
-	setDefault(SHOW_STATUSBAR, true);
-	setDefault(SHOW_TOOLBAR, true);
-	setDefault(SHOW_TRANSFERVIEW, true);
 	setDefault(TAB_SHOW_ICONS, true);
 	setDefault(DOWNLOAD_TO_PATHS, "");
 	setDefault(CUSTOM_SOUND, false);
