@@ -38,7 +38,7 @@ const string SettingsManager::settingTags[] =
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID",
-	"DownloadSkiplist", "ShareSkiplist", "WebShortcuts", "PopupFont", "FreeSlotsExtentions",
+	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"DownloadToPaths", "HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
 	"QueueFrameVisible", 
 	"SENTRY", 
@@ -188,7 +188,6 @@ SettingsManager::SettingsManager()
 	setDefault(QUEUE_REMOVE_CONFIRMATION, false);
 	setDefault(POPUNDER_PM, false);
 	setDefault(POPUNDER_DIRLIST, false);
-	setDefault(WEB_SHORTCUTS, "As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s");
 	setDefault(TAB_ACTIVE_BG, RGB(232, 232, 232));
 	setDefault(TAB_ACTIVE_TEXT, RGB(0, 0, 0));
 	setDefault(TAB_ACTIVE_BORDER, RGB(0, 0, 0));

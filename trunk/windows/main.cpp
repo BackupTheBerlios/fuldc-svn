@@ -275,9 +275,10 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
 	splash.SetFocus();
 	splash.RedrawWindow();
-
+	
+	
 	startup(callBack, (void*)splash.m_hWnd);
-
+	
 	splash.DestroyWindow();
 	dummy.DestroyWindow();
 
@@ -287,7 +288,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	if(BOOLSETTING(URL_HANDLER)) {
 		installUrlHandler();
 	}
-
+	
 	rc = wndMain.rcDefault;
 
 	if( (SETTING(MAIN_WINDOW_POS_X) != CW_USEDEFAULT) &&

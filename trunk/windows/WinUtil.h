@@ -26,10 +26,10 @@
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
 #include "../client/User.h"
-#include "../client/WebShortcuts.h"
 
 #include "StaticFrm.h"
 #include "UserInfoBase.h"
+#include "WebShortcuts.h"
 
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus

@@ -22,7 +22,7 @@
 #include "Resource.h"
 
 #include "WebShortcutsProperties.h"
-#include "../client/WebShortcuts.h"
+#include "WebShortcuts.h"
 
 const string WebShortcutsProperties::badkeys = " refresh slots search odc odc++ nmdc dc++ away back zeros shutdown lastlog me join clear ts password showjoins close userlist connection favorite help pm ";
 

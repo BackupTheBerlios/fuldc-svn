@@ -376,6 +376,9 @@
 				RelativePath=".\windows\UsersFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\WebShortcuts.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\WebShortcutsProperties.cpp">
 			</File>
 			<File
@@ -543,6 +546,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\UsersFrame.h">
+			</File>
+			<File
+				RelativePath=".\windows\WebShortcuts.h">
 			</File>
 			<File
 				RelativePath=".\windows\WebShortcutsProperties.h">

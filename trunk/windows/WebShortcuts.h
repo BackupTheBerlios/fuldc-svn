@@ -19,8 +19,13 @@
 #ifndef _WEBSHORTCUTS_H
 #define _WEBSHORTCUTS_H
 
+#if _MSC_VER >= 1000
+#pragma once
+#endif // _MSC_VER >= 1000
 
-#include "Singleton.h"
+
+#include "../client/Singleton.h"
+#include "../client/SettingsManager.h"
 
 class WebShortcut {
 public:
@@ -28,19 +33,20 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	WebShortcut(const string& _name, const string& _key, const string& _url) :
-	name(_name), key(_key), url(_url) { }
+	WebShortcut(const string& _name, const string& _key, const string& _url, bool _clean = false) :
+	name(_name), key(_key), url(_url), clean(_clean) { }
 	WebShortcut() {}
 
 	string name;
 	string key;
 	string url;
+	bool clean;
 };
 
-class WebShortcuts : public Singleton<WebShortcuts> {
+class WebShortcuts : public Singleton<WebShortcuts>, private SettingsManagerListener {
 public:
-	void load();
-	void save();
+	WebShortcuts();
+	~WebShortcuts();
 
 	WebShortcut* getShortcutByName(const string& name);
 	WebShortcut* getShortcutByKey(const string& key);
@@ -53,6 +59,12 @@ public:
 	WebShortcut::List list;
 private:
 	void clear();
+
+	void load(SimpleXML* xml);
+	void save(SimpleXML* xml);
+
+	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw();
+	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw();
 };
 
 #endif // _WEBSHORTCUTS_H

@@ -229,7 +229,7 @@ int CFulEditCtrl::TextUnderCursor(POINT p, string& x) {
 	char* buf = new char[len];
 	GetLine(line, buf, len);
 	x = string(buf, len-1);
-	delete buf;
+	delete[] buf;
 
 	string::size_type start = x.find_last_of(" <\t\r\n", c);
 	if(start == string::npos)

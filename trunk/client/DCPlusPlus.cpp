@@ -33,9 +33,11 @@
 #include "SettingsManager.h"
 #include "FinishedManager.h"
 #include "ADLSearch.h"
-#include "Webshortcuts.h"
 #include "HighlightManager.h"
-#include "..\windows\PopupManager.h"
+
+//ugly, but i have no intention on moving the code to *nix so it works =)
+#include "../windows/PopupManager.h"
+#include "../windows/WebShortcuts.h"
 
 #include "StringTokenizer.h"
 
@@ -81,10 +83,8 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	ADLSearchManager::newInstance();
 	PopupManager::newInstance();
 	WebShortcuts::newInstance();
-
+	
 	SettingsManager::getInstance()->load();
-
-	WebShortcuts::getInstance()->load();
 
 	if(!SETTING(LANGUAGE_FILE).empty()) {
 		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
@@ -147,12 +147,13 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 void shutdown() {
 	ConnectionManager::getInstance()->shutdown();
 
-	WebShortcuts::getInstance()->save();
 	HashManager::getInstance()->shutdown();
 
 	TimerManager::getInstance()->removeListeners();
 	SettingsManager::getInstance()->save();
 	
+	WebShortcuts::deleteInstance();
+	PopupManager::deleteInstance();
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
 	HighlightManager::deleteInstance();

@@ -16,17 +16,54 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdinc.h"
-#include "DCPlusPlus.h"
+#include "stdafx.h"
+#include "../client/DCPlusPlus.h"
+
+#include "../client/SettingsManager.h"
+#include "../client/StringTokenizer.h"
+#include "../client/oxmllib.h"
+#include "../client/SimpleXML.h"
 
 #include "WebShortcuts.h"
-#include "SettingsManager.h"
-#include "StringTokenizer.h"
-#include "oxmllib.h"
 
-void WebShortcuts::load() {
+WebShortcuts::WebShortcuts() {
+	SettingsManager::getInstance()->addListener(this);
+}
+
+WebShortcuts::~WebShortcuts() {
+	SettingsManager::getInstance()->removeListener(this);
+}
+
+void WebShortcuts::load(SimpleXML* xml) {
 	clear();
-	string s = OXMLLib::decode(SETTING(WEB_SHORTCUTS), false);
+
+	if(xml->findChild("WebShortcuts")){
+		xml->stepIn();
+		WebShortcut* tmp = NULL;
+		while(xml->findChild("WebShortcut")){
+			tmp = new WebShortcut();
+			tmp->name  = xml->getChildAttrib("Name");
+			tmp->key   = xml->getChildAttrib("Key");
+			tmp->url   = OXMLLib::decode(xml->getChildAttrib("URL"), false);
+			tmp->clean = xml->getBoolChildAttrib("Clean");
+			list.push_back(tmp);
+		}
+		
+		xml->stepOut();
+		return;
+	}
+	
+	string s = OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false);
+	
+	xml->resetCurrentChild();
+	if(xml->findChild("Settings")){
+		xml->stepIn();
+		if(xml->findChild("WebShortcuts")){
+			s = OXMLLib::decode( xml->getChildData(), false);
+		}
+		xml->stepOut();
+	}
+	
 	StringTokenizer st(s, '\x02');
 	for (StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
 		StringTokenizer st_i(*i, '\x01');
@@ -35,16 +72,17 @@ void WebShortcuts::load() {
 	}
 }
 
-void WebShortcuts::save() {
-	string s;
-	for (WebShortcut::Iter i = list.begin(); i != list.end(); ++i) {
-		s += (*i)->name + '\x01';
-		s += (*i)->key + '\x01';
-		s += (*i)->url;
-		if ( (i+1) != list.end() )
-			s += '\x02';
+void WebShortcuts::save(SimpleXML* xml) {
+	xml->addTag("WebShortcuts");
+	xml->stepIn();
+	for(WebShortcut::Iter i = list.begin(); i != list.end(); ++i){
+		xml->addTag("WebShortcut");
+		xml->addChildAttrib("Name", (*i)->name);
+		xml->addChildAttrib("Key", (*i)->key);
+		xml->addChildAttrib("URL", OXMLLib::encode((*i)->url, false));
+		xml->addChildAttrib("Clean", (*i)->clean);
 	}
-	SettingsManager::getInstance()->set(SettingsManager::WEB_SHORTCUTS, OXMLLib::encode(s, false));
+	xml->stepOut();
 }
 
 WebShortcut* WebShortcuts::getShortcutByName(const string& name) {
@@ -89,4 +127,11 @@ void WebShortcuts::clear() {
 	for (WebShortcut::Iter i = list.begin(); i != list.end(); ++i)
 		delete *i;
 	list.clear();
+}
+
+void WebShortcuts::on(SettingsManagerListener::Save, SimpleXML* xml) {
+	save(xml);
+}
+void WebShortcuts::on(SettingsManagerListener::Load, SimpleXML* xml) {
+	load(xml);
 }

@@ -24,6 +24,7 @@
 #include "PrivateFrame.h"
 #include "SearchFrm.h"
 #include "LineDlg.h"
+#include "WebShortcuts.h"
 
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
@@ -34,7 +35,6 @@
 #include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
-#include "../client/WebShortcuts.h"
 #include "../client/HashManager.h"
 #include "../client/SimpleXML.h"
 
