@@ -52,6 +52,8 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::FLASH_WINDOW_ON_PM,				ResourceManager::FLASH_WINDOW_ON_PM			},
 	{ SettingsManager::FLASH_WINDOW_ON_NEW_PM,			ResourceManager::FLASH_WINDOW_ON_NEW_PM		},
 	{ SettingsManager::IGNORE_TTH_INCONSISTENCY,		ResourceManager::IGNORE_TTH_INCONSISTENCY	},
+	{ SettingsManager::ADD_FINISHED_DOWNLOADS,			ResourceManager::ADD_FINISHED_DOWNLOADS		},
+	{ SettingsManager::ADD_FINISHED_UPLOADS,			ResourceManager::ADD_FINISHED_UPLOADS		},
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 

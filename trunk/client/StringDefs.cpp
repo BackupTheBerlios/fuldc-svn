@@ -695,6 +695,8 @@ string ResourceManager::strings[] = {
 "Flash window on PM", 
 "Flash window on PM only if it's from a new user", 
 "Ignore TTH inconsistency on downloads", 
+"Add finished downloads to finished downloads window", 
+"Add finished uploads to finished uploads window", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1390,4 +1392,6 @@ string ResourceManager::names[] = {
 "FlashWindowOnPm", 
 "FlashWindowOnNewPm", 
 "IgnoreTthInconsistency", 
+"AddFinishedDownloads", 
+"AddFinishedUploads", 
 };

@@ -76,7 +76,7 @@ const string SettingsManager::settingTags[] =
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "ToggleActiveWindow", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
-	"IgnoreTTHInconsistency", 
+	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -252,6 +252,8 @@ SettingsManager::SettingsManager()
 	setDefault(FLASH_WINDOW_ON_PM, false);
 	setDefault(FLASH_WINDOW_ON_NEW_PM, false);
 	setDefault(IGNORE_TTH_INCONSISTENCY, false);
+	setDefault(ADD_FINISHED_DOWNLOADS, true);
+	setDefault(ADD_FINISHED_UPLOADS, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

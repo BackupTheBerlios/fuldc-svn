@@ -698,5 +698,7 @@ enum Strings { // @DontAdd
 	FLASH_WINDOW_ON_PM, // "Flash window on PM"
 	FLASH_WINDOW_ON_NEW_PM, // "Flash window on PM only if it's from a new user"
 	IGNORE_TTH_INCONSISTENCY, // "Ignore TTH inconsistency on downloads"
+	ADD_FINISHED_DOWNLOADS, // "Add finished downloads to finished downloads window"
+	ADD_FINISHED_UPLOADS, // "Add finished uploads to finished uploads window"
 	LAST // @DontAdd
 };

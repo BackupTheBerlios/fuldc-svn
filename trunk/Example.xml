@@ -694,5 +694,7 @@
 		<String Name="FlashWindowOnPm">Flash window on PM</String>
 		<String Name="FlashWindowOnNewPm">Flash window on PM only if it's from a new user</String>
 		<String Name="IgnoreTthInconsistency">Ignore TTH inconsistency on downloads</String>
+		<String Name="AddFinishedDownloads">Add finished downloads to finished downloads window</String>
+		<String Name="AddFinishedUploads">Add finished uploads to finished uploads window</String>
 	</Strings>
 </Language>
