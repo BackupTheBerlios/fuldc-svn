@@ -377,8 +377,17 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 			if(Util::stricmp(Text::toT(aResult->getTTH()->toBase32()), search[0]) != 0)
 				return;
 		} else {
+			//for(TStringIter j = search.begin(); j != search.end(); ++j) {
+			//	if(Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1) {
+			//		return;
+			//	}
+			//}
+
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
-				if(Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1) {
+				if(Util::findSubString(
+					aResult->getUtf8() ? aResult->getFile() : Text::acpToUtf8(aResult->getFile()),
+					Text::fromT(*j)) == -1)
+				{
 					return;
 				}
 			}
@@ -427,7 +436,9 @@ void SearchFrame::SearchInfo::view() {
 void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
+			QueueManager::getInstance()->add(
+				si->sr->getUtf8() ? si->sr->getFile() : Text::acpToUtf8(si->sr->getFile()),
+				si->sr->getSize(), si->sr->getUser(), 
 				Text::fromT(tgt + si->fileName), si->sr->getTTH(), QueueItem::FLAG_RESUME | (si->sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0),
 				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		} else {
@@ -454,7 +465,9 @@ void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
+			QueueManager::getInstance()->add(
+				si->sr->getUtf8() ? si->sr->getFile() : Text::acpToUtf8(si->sr->getFile()),
+				si->sr->getSize(), si->sr->getUser(), 
 				Text::fromT(tgt), si->sr->getTTH(), QueueItem::FLAG_RESUME | (si->sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0),
 				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		} else {

@@ -286,7 +286,7 @@ public:
 
 	User::Ptr& getUser() { return user; };
 
-	string getRemoteIp() const { return socket->getRemoteIp(); }
+	string getRemoteIp() const { return socket->getIp(); }
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; };
 	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; };
 	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; };

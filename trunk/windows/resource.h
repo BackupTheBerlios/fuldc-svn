@@ -149,6 +149,7 @@
 #define IDC_OPEN_OWN_LIST               287
 #define IDC_SETTINGS_UDP_PORT           289
 #define IDC_UDP_PORT                    290
+#define IDD_APPEARANCE2PAGE             291
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002

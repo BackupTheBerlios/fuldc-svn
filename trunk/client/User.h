@@ -149,7 +149,7 @@ public:
 	GETSET(CID, cid, CID);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
-	mutable RWLock cs;
+	mutable RWLock<> cs;
 
 	User(const User&);
 	User& operator=(const User&);

@@ -28,7 +28,7 @@ private:
 	//store all highlights
 	ColorList colorSettings;
 
-	RWLock lock;
+	RWLock<> lock;
 
 	void load(SimpleXML *aXml);
 	void save(SimpleXML *aXml);

@@ -320,6 +320,7 @@
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">DC++\\Appearance</String>
+		<String Name="SettingsAppearance2">DC++\\Colors and sounds</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>

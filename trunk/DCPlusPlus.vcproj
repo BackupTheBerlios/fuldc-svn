@@ -265,6 +265,9 @@
 				RelativePath=".\windows\AdvancedPage.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\Appearance2Page.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\AppearancePage.cpp">
 			</File>
 			<File
@@ -429,6 +432,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\AdvancedPage.h">
+			</File>
+			<File
+				RelativePath=".\windows\Appearance2Page.h">
 			</File>
 			<File
 				RelativePath=".\windows\AppearancePage.h">

@@ -262,6 +262,11 @@ void AdcHub::password(const string& pwd) {
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, SALT_SIZE);
 		send(Command(Command::PAS(), Command::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
+		//u_int64_t* test = (u_int64_t*)th.getResult();
+		//dcdebug("res[0]=%I64X res[1]=%I64X res[2]=%I64X\n", test[0], test[1], test[2]);
+		//dcdebug("res[0]=%s\n", Encoder::toBase32((u_int8_t*)&test[0], 8));
+		//dcdebug("res[1]=%s\n", Encoder::toBase32((u_int8_t*)&test[1], 8));
+		//dcdebug("res[2]=%s\n", Encoder::toBase32((u_int8_t*)&test[2], 8));
 		salt.clear();
 	}
 }
