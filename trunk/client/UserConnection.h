@@ -92,7 +92,7 @@ class Transfer {
 public:
 	Transfer() : userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
 		last(0), actual(0), pos(0), startPos(0), size(-1) { };
-	virtual ~Transfer() { dcassert(userConnection == NULL); };
+	virtual ~Transfer() { };
 	
 	int64_t getPos() { return pos; };
 	void setPos(int64_t aPos) { pos = aPos; };
@@ -160,7 +160,6 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	static const string FEATURE_BZLIST;
 	static const string FEATURE_GET_ZBLOCK;
 	static const string FEATURE_MINISLOTS;
 	static const string FEATURE_XML_BZLIST;
@@ -180,8 +179,7 @@ public:
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
 		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1,
 		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1,
-		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1,
-		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1,
+		FLAG_SUPPORTS_GETZBLOCK = FLAG_INVALIDKEY << 1,
 		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1,
 		FLAG_SUPPORTS_XML_BZLIST = FLAG_SUPPORTS_MINISLOTS << 1,
 		FLAG_SUPPORTS_ADCGET = FLAG_SUPPORTS_XML_BZLIST << 1,

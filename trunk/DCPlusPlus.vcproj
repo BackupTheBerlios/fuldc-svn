@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib Winmm.lib Pdh.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib Winmm.lib Pdh.lib gdi32.lib gdiplus.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -408,6 +408,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\DownloadPage.h">
+			</File>
+			<File
+				RelativePath=".\windows\EmoticonManager.h">
 			</File>
 			<File
 				RelativePath=".\windows\ExListViewCtrl.h">

@@ -55,7 +55,7 @@ const string SettingsManager::settingTags[] =
 	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
-	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands", "MaxHashSpeed",
+	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
 	"GetUserCountry",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
@@ -158,9 +158,8 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_FAVORITE_HUBS, false);
 	setDefault(OPEN_FINISHED_DOWNLOADS, false);
 	setDefault(HUB_USER_COMMANDS, true);
-	setDefault(AUTO_SEARCH_AUTO_MATCH, false);
+	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
-	setDefault(AUTO_SEARCH_EXACT, true);
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
 	setDefault(MAX_HASH_SPEED, 0);

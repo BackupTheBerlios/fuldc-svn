@@ -24,7 +24,6 @@
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
 
-const string UserConnection::FEATURE_BZLIST = "BZList";
 const string UserConnection::FEATURE_GET_ZBLOCK = "GetZBlock";
 const string UserConnection::FEATURE_MINISLOTS = "MiniSlots";
 const string UserConnection::FEATURE_XML_BZLIST = "XmlBZList";

@@ -76,7 +76,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	}
 
 	if(aType == "file") {
-		userlist = (Util::stricmp(aFile.c_str(), "MyList.bz2") == 0) || (Util::stricmp(aFile.c_str(), "files.xml.bz2") == 0);
+		userlist = (Util::stricmp(aFile.c_str(), "files.xml.bz2") == 0);
 
 		try {
 			File* f = new File(file, File::READ, File::OPEN);
