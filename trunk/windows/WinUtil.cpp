@@ -1199,9 +1199,9 @@ tstring WinUtil::Uptime() {
 		
 	if ( PdhOpenQuery( NULL, 0, &hQuery ) == ERROR_SUCCESS ) {
 		//create some variables to fetch and store the counter path	
-		TCHAR path[PDH_MAX_COUNTER_PATH];
-		TCHAR tmp[PDH_MAX_COUNTER_PATH];
-		DWORD maxPath = PDH_MAX_COUNTER_PATH;
+		TCHAR path[MAX_COUNTER_PATH];
+		TCHAR tmp[MAX_COUNTER_PATH];
+		DWORD maxPath = MAX_COUNTER_PATH;
 
 		//fetch the first part of the counter path, the object name.
 		if(PdhLookupPerfNameByIndex(NULL, 2, tmp, &maxPath) == ERROR_SUCCESS){
@@ -1209,7 +1209,7 @@ tstring WinUtil::Uptime() {
 			_tcscpy(path, _T("\\"));
 			_tcscat(path, tmp);
 			//restore maxPath to it's max length
-			maxPath = PDH_MAX_COUNTER_PATH;
+			maxPath = MAX_COUNTER_PATH;
 
 			//get the counter part of the path.
 			if(PdhLookupPerfNameByIndex(NULL, 674, tmp, &maxPath) == ERROR_SUCCESS){

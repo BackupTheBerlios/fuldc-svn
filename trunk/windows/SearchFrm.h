@@ -26,6 +26,7 @@
 #include "FlatTabCtrl.h"
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
+#include "FulComboBox.h"
 
 #include "../client/pme.h"
 
@@ -73,6 +74,10 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_TIMER, onTimer)
+		//crap seems like the first message is sent to the parent
+		//so lets direct it where it should
+		MESSAGE_HANDLER(WM_DRAWITEM, ctrlFiletype.onDrawItem)
+		MESSAGE_HANDLER(WM_MEASUREITEM, ctrlFiletype.onMeasureItem)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadWhole)
@@ -417,7 +422,7 @@ private:
 	CEdit ctrlSize;
 	CComboBox ctrlMode;
 	CComboBox ctrlSizeMode;
-	CComboBox ctrlFiletype;
+	CFulComboBox ctrlFiletype;
 	CButton ctrlDoSearch;
 	CButton ctrlPurge;
 	

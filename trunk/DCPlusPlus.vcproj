@@ -304,6 +304,9 @@
 				RelativePath=".\windows\FulAppearance.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\FulComboBox.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\FulDownloadPage.cpp">
 			</File>
 			<File
@@ -483,6 +486,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\FulAppearance.h">
+			</File>
+			<File
+				RelativePath=".\windows\FulComboBox.h">
 			</File>
 			<File
 				RelativePath=".\windows\FulDownloadPage.h">

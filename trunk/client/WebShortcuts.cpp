@@ -30,10 +30,11 @@ WebShortcuts::WebShortcuts() {
 	tstring s = _T("As URL\x01u\x01%s\x02Google\x01g\x01http://www.google.com/search?q=%s\x02IMDB\x01i\x01http://www.imdb.com/Find?select=All&for=%s\x02TV Tome\x01t\x01http://www.tvtome.com/tvtome/servlet/Search?searchType=all&searchString=%s");
 
 	StringTokenizer<tstring> st(s, _T('\x02'));
-	for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+	int j = 0;
+	for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i, ++j) {
 		StringTokenizer<tstring> st_i(*i, _T('\x01'));
 		dcassert(st_i.getTokens().size() == 3);
-		list.push_back(new WebShortcut(st_i.getTokens()[0], st_i.getTokens()[1], st_i.getTokens()[2]));
+		list.push_back(new WebShortcut(st_i.getTokens()[0], st_i.getTokens()[1], st_i.getTokens()[2], j > 1 ? true: false));
 	}
 }
 
