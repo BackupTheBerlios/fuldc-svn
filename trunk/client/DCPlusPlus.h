@@ -95,7 +95,7 @@ typedef StringBoolMap::iterator StringBoolMapIter;
 
 #include "version.h"
 
-extern void startup(void (*f)(void*, const string&), void* p);
+extern void startup(void (*f)(void*, const string&, const string&), void* p);
 extern void shutdown();
 
 #define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };

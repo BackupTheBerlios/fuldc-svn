@@ -178,8 +178,8 @@ static void checkCommonControls() {
 	}
 }
 
-void callBack(void* x, const string& a) {
-	::SetWindowText((HWND)x, (STRING(LOADING) + "(" + a + ")").c_str());
+void callBack(void* x, const string& a, const string& b) {
+	::SetWindowText((HWND)x, (a + STRING(LOADING) + "(" + b + ")").c_str());
 	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
 }
 
@@ -213,16 +213,16 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	rc.top = (rc.bottom / 2) - 20;
 
 	rc.right = GetSystemMetrics(SM_CXFULLSCREEN);
-	rc.left = rc.right / 2 - 150;
-	rc.right = rc.left + 300;
+	rc.left = rc.right / 2 - 200;
+	rc.right = rc.left + 400;
 
 	dummy.Create(NULL, rc, APPNAME " " VERSIONSTRING, WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
 	splash.Create(NULL, rc, APPNAME " " VERSIONSTRING, WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
+		ES_CENTER | ES_READONLY | ES_MULTILINE, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	
-	rc.bottom = rc.top + WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
+	rc.bottom = rc.top + 2*WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
 	splash.HideCaret();
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
 	splash.SetFocus();
@@ -275,7 +275,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	dcdebug("String: %d\n", sizeof(string));
 #ifndef _DEBUG
-/*	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
+	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
 
 	if(dcapp.IsAnotherInstanceRunning()) {
 		HWND hOther = NULL;
@@ -294,7 +294,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
-*/
+
 #endif
 	
 	HRESULT hRes = ::CoInitialize(NULL);

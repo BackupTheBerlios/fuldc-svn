@@ -39,12 +39,24 @@
 
 #include "StringTokenizer.h"
 
-void startup(void (*f)(void*, const string&), void* p) {
+void startup(void (*f)(void*, const string&, const string&), void* p) {
 	// "Dedicated to the near-memory of Nev. Let's start remembering people while they're still alive."
 	// Nev's great contribution to dc++
 	while(1) break;
-
+	
+	string tku[9] = {
+		"Fastkedjad i templet, ormar överallt, kukar överallt\r\n",
+		"Jag såg en skäggig herre, han var täckt av säd\r\n", 
+		"Läder och homosex, rött vin och havrekex, det vill vi ha!\r\n",
+		"Jag färdas naken, allt är som sig bör\r\n",
+		"Polisen och SÄPO de jagar oss, agenterna släpper hundarna loss\r\n",
+		"Sprit och gott, massor av flott, pang på pungen i Portugal!\r\n",
+		"Den kristna tjackfabriken puttrar på, samhället vet ej vad som pågår\r\n",
+		"Arbetslös och utan tjej, då blir det en fet jävla holk och en bitelinepizza\r\n",
+		"Bärs som bärs, det smakar ju lika\r\n",
+	};
 	Util::initialize();
+	int index = Util::rand(9);
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
@@ -112,10 +124,10 @@ void startup(void (*f)(void*, const string&), void* p) {
 	}
 
 	if(f != NULL)
-		(*f)(p, STRING(HASH_DATABASE));
+		(*f)(p, tku[index], STRING(HASH_DATABASE));
 	HashManager::getInstance()->startup();
 	if(f != NULL)
-		(*f)(p, STRING(SHARED_FILES));
+		(*f)(p, tku[index], STRING(SHARED_FILES));
 
 	if(ShareManager::getInstance()->loadXmlList()){
 		ShareManager::getInstance()->refresh(false, true, true, false, false, false);
@@ -124,7 +136,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	}
 
 	if(f != NULL)
-		(*f)(p, STRING(DOWNLOAD_QUEUE));
+		(*f)(p, tku[index], STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
 
 }
