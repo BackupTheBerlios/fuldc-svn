@@ -22,9 +22,9 @@
 
 #define FULDC "fulDC"
 #ifdef _DEBUG
-#define FULVERSIONSTRING "6.59 beta 1 svn$WCREV$"
+#define FULVERSIONSTRING "6.59 beta 2 svn$WCREV$"
 #else
-#define FULVERSIONSTRING "6.59 beta 1"
+#define FULVERSIONSTRING "6.59 beta 2"
 #endif
 
 /* Update the .rc file as well... */
