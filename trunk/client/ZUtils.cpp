@@ -28,7 +28,7 @@ const double ZFilter::MIN_COMPRESSION_LEVEL = 0.9;
 ZFilter::ZFilter() : totalIn(0), totalOut(0), compressing(true) {
 	memset(&zs, 0, sizeof(zs));
 
-	if(deflateInit(&zs, Z_DEFAULT_COMPRESSION) != Z_OK) {
+	if(deflateInit(&zs, 3) != Z_OK) {
 		throw Exception(STRING(COMPRESSION_ERROR));
 	}
 }

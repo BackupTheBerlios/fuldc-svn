@@ -35,11 +35,11 @@ _T("The following people have contributed code to ")
 _T("DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n")
 _T("geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, ")
 _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, ")
-_T("sedulus, sandos, henrik engstr�m, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
-_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka sepp�l�, johnny, ciber, ")
+_T("sedulus, sandos, henrik engstr?m, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
+_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
-_T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka. ")
+_T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid. ")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 

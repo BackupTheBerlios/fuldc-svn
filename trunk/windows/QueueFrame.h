@@ -129,10 +129,6 @@ public:
 	}
 
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
-			if(IDNO == MessageBox(CTSTRING(CONFIRM_REMOVE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION) ) 
-				return 0;
-		}
 		usingDirMenu ? removeSelectedDir() : removeSelected();
 		return 0;
 	}
@@ -145,10 +141,6 @@ public:
 	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
-			if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
-				if(IDNO == MessageBox(CTSTRING(CONFIRM_REMOVE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION) ) 
-					return 0;
-			}
 			removeSelectedDir();
 		} else if(kd->wVKey == VK_TAB) {
 			onTab();
@@ -422,11 +414,14 @@ private:
 	}
 
 	void removeSelected() {
-		//if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T("Really remove?"), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			ctrlQueue.forEachSelected(&QueueItemInfo::remove);
 	}
 	
-	void removeSelectedDir() { removeDir(ctrlDirs.GetSelectedItem()); };
+	void removeSelectedDir() { 
+		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)	
+			removeDir(ctrlDirs.GetSelectedItem()); 
+	};
 	
 	const tstring& getSelectedDir() { 
 		HTREEITEM ht = ctrlDirs.GetSelectedItem();

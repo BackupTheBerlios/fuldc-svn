@@ -58,7 +58,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
 	{ SettingsManager::GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
 	{ SettingsManager::CONFIRM_HUB_REMOVAL, ResourceManager::SETTINGS_CONFIRM_HUB_REMOVAL },
-//	{ SettingsManager::CONFIRM_ITEM_REMOVAL, ResourceManager::SETTINGS_CONFIRM_ITEM_REMOVAL },
+	{ SettingsManager::CONFIRM_ITEM_REMOVAL, ResourceManager::SETTINGS_CONFIRM_ITEM_REMOVAL },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

@@ -66,15 +66,15 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug",
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
-	"HubFrameConfirmation", "QueueRemoveConfirmation",
+	"HubFrameConfirmation",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
-	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "ToggleActiveWindow", "PopupActivateOnClick",
+	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
 	"SENTRY",
@@ -199,10 +199,11 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
 	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
 	setDefault(SEARCH_ONLY_TTH, false);
-	setDefault(SHOW_LAST_LINES_LOG, 5);
+	setDefault(SHOW_LAST_LINES_LOG, 0);
 	setDefault(CONFIRM_ITEM_REMOVAL, 0);
 	setDefault(ADVANCED_RESUME, true);
 	setDefault(ADC_DEBUG, false);
+	setDefault(TOGGLE_ACTIVE_WINDOW, false);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -219,7 +220,6 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_ON_NEW_PM, false);
 	setDefault(POPUP_ON_HUBSTATUS, false);
 	setDefault(HUBFRAME_CONFIRMATION, false);
-	setDefault(QUEUE_REMOVE_CONFIRMATION, false);
 	setDefault(TAB_ACTIVE_BG, RGB(232, 232, 232));
 	setDefault(TAB_ACTIVE_TEXT, RGB(0, 0, 0));
 	setDefault(TAB_ACTIVE_BORDER, RGB(0, 0, 0));
@@ -244,7 +244,6 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_MSG_LENGTH, 90);
 	setDefault(POPUP_MINIMIZED, false);
 	setDefault(BLEND_TABS, true);
-	setDefault(TOGGLE_ACTIVE_WINDOW, false);
 	setDefault(POPUP_ACTIVATE_ON_CLICK, false);
 	setDefault(POPUP_DONT_SHOW_ON_ACTIVE, false);
 	setDefault(DUPE_COLOR, RGB(255, 128, 255));

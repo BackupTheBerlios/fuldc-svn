@@ -18,7 +18,7 @@
 
 /*
 * Automatic Directory Listing Search
-* Henrik Engström, henrikengstrom at home se
+* Henrik Engstrï¿½m, henrikengstrom at home se
 */
 
 #include "stdinc.h"
@@ -207,7 +207,7 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 			destDirVector[is->ddIndex].fileAdded = true;
 
 			if(is->isAutoQueue){
-				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), Util::getTempPath() + currentFile->getName(), currentFile->getTTH());
+				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), SETTING(DOWNLOAD_DIRECTORY) + currentFile->getName(), currentFile->getTTH());
 			}
 
 			if(breakOnFirst) {

@@ -50,11 +50,11 @@ LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
 		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeBytes).c_str());
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeKiloBytes).c_str());
+		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeKibiBytes).c_str());
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeMegaBytes).c_str());
+		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeMebiBytes).c_str());
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeGigaBytes).c_str());
+		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeGibiBytes).c_str());
 
 	// Load search data
 	SetDlgItemText(IDC_SEARCH_STRING, Text::toT(search->searchString).c_str());

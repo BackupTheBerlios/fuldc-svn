@@ -78,7 +78,16 @@ namespace {
 const string& QueueItem::getTempTarget() {
 	if(!isSet(QueueItem::FLAG_USER_LIST) && tempTarget.empty()) {
 		if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(getTarget()) == -1)) {
+#ifdef _WIN32
+			::StringMap sm;
+			if(target.length() >= 3 && target[1] == ':' && target[2] == '\\')
+				sm["targetdrive"] = target.substr(0, 3);
+			else
+				sm["targetdrive"] = Util::getAppPath().substr(0, 3);
+			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
+#else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
+#endif //_WIN32
 		}
 	}
 	return tempTarget;
@@ -367,33 +376,40 @@ QueueManager::~QueueManager() throw() {
 };
 
 void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
-	Lock l(cs);
-	QueueItem::UserMap& um = userQueue.getRunning();
+	string fn;
+	string searchString;
+	bool online = false;
 
-	for(QueueItem::UserIter j = um.begin(); j != um.end(); ++j) {
-		QueueItem* q = j->second;
-		dcassert(q->getCurrentDownload() != NULL);
-		q->setDownloadedBytes(q->getCurrentDownload()->getPos());
-	}
-	if(!um.empty())
-		setDirty();
+	{
+		Lock l(cs);
+		QueueItem::UserMap& um = userQueue.getRunning();
 
-	if(BOOLSETTING(AUTO_SEARCH) && (aTick >= nextSearch) && (fileQueue.getSize() > 0)) {
-		// We keep 30 recent searches to avoid duplicate searches
-		while((recent.size() > fileQueue.getSize()) || (recent.size() > 30)) {
-			recent.erase(recent.begin());
+		for(QueueItem::UserIter j = um.begin(); j != um.end(); ++j) {
+			QueueItem* q = j->second;
+			dcassert(q->getCurrentDownload() != NULL);
+			q->setDownloadedBytes(q->getCurrentDownload()->getPos());
 		}
+		if(!um.empty())
+			setDirty();
 
-		QueueItem* qi = fileQueue.findAutoSearch(recent);
-		if(qi != NULL) {
-			dcassert(qi->getTTH());
-			string searchString = qi->getTTH()->toBase32();
-			bool online = qi->hasOnlineUsers();
-			recent.push_back(qi->getTarget());
-			nextSearch = aTick + (online ? 120000 : 300000);
-			SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
+		if(BOOLSETTING(AUTO_SEARCH) && (aTick >= nextSearch) && (fileQueue.getSize() > 0)) {
+			// We keep 30 recent searches to avoid duplicate searches
+			while((recent.size() > fileQueue.getSize()) || (recent.size() > 30)) {
+				recent.erase(recent.begin());
+			}
+
+			QueueItem* qi = fileQueue.findAutoSearch(recent);
+			if(qi != NULL) {
+				dcassert(qi->getTTH());
+				searchString = qi->getTTH()->toBase32();
+				online = qi->hasOnlineUsers();
+				recent.push_back(qi->getTarget());
+				nextSearch = aTick + (online ? 120000 : 300000);
+			}
 		}
 	}
+	if(!searchString.empty())
+		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 }
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 

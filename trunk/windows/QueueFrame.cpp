@@ -345,10 +345,6 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 	if(kd->wVKey == VK_DELETE) {
-		if(BOOLSETTING(QUEUE_REMOVE_CONFIRMATION)) {
-			if(IDNO == MessageBox(CTSTRING(CONFIRM_REMOVE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION) ) 
-				return 0;
-		}
 		removeSelected();
 	} else if(kd->wVKey == VK_ADD){
 		// Increase Item priority

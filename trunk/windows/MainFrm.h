@@ -234,7 +234,7 @@ public:
 
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		HWND hWnd = (HWND)wParam;
-		
+
 		if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
 			if(MDIGetActive() != hWnd) {
 				MDIActivate(hWnd);
@@ -244,13 +244,12 @@ public:
 				hWnd = MDIGetActive();
 			}
 			if(::IsIconic(hWnd))
-			::ShowWindow(hWnd, SW_RESTORE);
+				::ShowWindow(hWnd, SW_RESTORE);
 		} else {
 			if(::IsIconic(hWnd))
 				::ShowWindow(hWnd, SW_RESTORE);
 			MDIActivate(hWnd);
 		}
-
 		return 0;
 	}
 	

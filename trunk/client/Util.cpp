@@ -370,13 +370,13 @@ string Util::formatBytes(int64_t aBytes) {
 	if(aBytes < 1024) {
 		sprintf(buf, "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
 	} else if(aBytes < 1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KB));
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KiB));
 	} else if(aBytes < 1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MB));
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MiB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GB));
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GiB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TB));
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TiB));
 	} else {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
 	}
@@ -389,13 +389,13 @@ wstring Util::formatBytesW(int64_t aBytes) {
 	if(aBytes < 1024) {
 		swprintf(buf, L"%d %s", (int)(aBytes&0xffffffff), CWSTRING(B));
 	} else if(aBytes < 1024*1024) {
-		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0), CWSTRING(KB));
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0), CWSTRING(KiB));
 	} else if(aBytes < 1024*1024*1024) {
-		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0), CWSTRING(MB));
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0), CWSTRING(MiB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CWSTRING(GB));
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CWSTRING(GiB));
 	} else {
-		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CWSTRING(TB));
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CWSTRING(TiB));
 	}
 
 	return buf;
