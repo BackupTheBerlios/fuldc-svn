@@ -473,6 +473,9 @@
 				RelativePath=".\windows\MDITabChildWindowImpl.h">
 			</File>
 			<File
+				RelativePath=".\windows\memdc.h">
+			</File>
+			<File
 				RelativePath=".\windows\NotepadFrame.h">
 			</File>
 			<File

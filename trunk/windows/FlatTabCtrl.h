@@ -27,6 +27,7 @@
 #include "../client/ResourceManager.h"
 
 #include "WinUtil.h"
+#include "memdc.h"
 
 enum {
 	FT_FIRST = WM_APP + 700,
@@ -196,6 +197,7 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
+		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, onLButtonUp)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
@@ -392,7 +394,11 @@ public:
 		chevron.MoveWindow(sz.cx-14, 1, 14, getHeight());
 		return 0;
 	}
-		
+	
+	LRESULT onEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return FALSE;
+	}
+
 	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		RECT rc;
 		bool drawActive = false;
@@ -401,7 +407,9 @@ public:
 
 		if(GetUpdateRect(&rc, FALSE)) {
 			CPaintDC dc(m_hWnd);
-			HFONT oldfont = dc.SelectFont(WinUtil::font);
+			CMemDC memDC(&dc);
+
+			HFONT oldfont = memDC.SelectFont(WinUtil::font);
 
 			//ATLTRACE("%d, %d\n", rc.left, rc.right);
 			for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
@@ -409,29 +417,29 @@ public:
 				
 				if(t->row != -1 && t->xpos < rc.right && t->xpos + t->getWidth()  >= rc.left ) {
 					if(t != active) {
-						drawTab(dc, t, t->xpos, t->row);
+						drawTab(memDC, t, t->xpos, t->row);
 					} else {
 						drawActive = true;
 					}
 				}
 			}
-			HPEN oldpen = dc.SelectPen(black);
+			HPEN oldpen = memDC.SelectPen(black);
 			for(int r = 0; r < rows; r++) {
-				dc.MoveTo(rc.left, r*getTabHeight());
-				dc.LineTo(rc.right, r*getTabHeight());
+				memDC.MoveTo(rc.left, r*getTabHeight());
+				memDC.LineTo(rc.right, r*getTabHeight());
 			}
 
 			if(drawActive) {
 				dcassert(active);
-				drawTab(dc, active, active->xpos, active->row, true);
-				HPEN pen = dc.SelectPen(::CreatePen(PS_SOLID, 2, GetSysColor(COLOR_BTNFACE)));
+				drawTab(memDC, active, active->xpos, active->row, true);
+				HPEN pen = memDC.SelectPen(::CreatePen(PS_SOLID, 2, GetSysColor(COLOR_BTNFACE)));
 				int y = (rows - active->row -1) * getTabHeight();
-				dc.MoveTo(active->xpos, y);
-				dc.LineTo(active->xpos + active->getWidth(), y);
-				DeleteObject(dc.SelectPen(pen));
+				memDC.MoveTo(active->xpos, y);
+				memDC.LineTo(active->xpos + active->getWidth(), y);
+				DeleteObject(memDC.SelectPen(pen));
 			}
-			dc.SelectPen(oldpen);
-			dc.SelectFont(oldfont);
+			memDC.SelectPen(oldpen);
+			memDC.SelectFont(oldfont);
 		}
 		return 0;
 	}
