@@ -470,39 +470,41 @@ BEGIN
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
                     WS_BORDER | WS_TABSTOP,14,22,190,76
     CONTROL         "Bold",IDC_BOLD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,
-                    115,29,10
+                    121,29,10
     CONTROL         "Italic",IDC_ITALIC,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,127,31,10
+                    WS_TABSTOP,22,133,31,10
     CONTROL         "Underline",IDC_UNDERLINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,139,46,10
+                    WS_TABSTOP,22,145,46,10
     CONTROL         "Strikeout",IDC_STRIKEOUT,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,151,45,10
-    CONTROL         "Include Nick",IDC_INCLUDENICK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,82,115,54,10
-    CONTROL         "Whole Line",IDC_WHOLELINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,82,127,51,10
-    CONTROL         "Case Sensitive",IDC_CASESENSITIVE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,82,139,63,10
-    COMBOBOX        IDC_MATCHTYPE,156,125,66,30,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Background Color",IDC_BGCOLOR,156,142,66,14
-    PUSHBUTTON      "Text Color",IDC_FGCOLOR,156,160,66,14
-    EDITTEXT        IDC_STRING,21,197,201,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Add",IDC_ADD,215,24,50,14
-    PUSHBUTTON      "Delete",IDC_DELETE,215,58,50,14
-    GROUPBOX        "Settings",IDC_STATIC,14,103,215,114
-    GROUPBOX        "Highlight Settings",IDC_STATIC,7,7,264,219
-    LTEXT           "Match Type",IDC_STATIC,158,112,58,8
-    PUSHBUTTON      "Update",IDC_UPDATE,215,41,50,14
-    CONTROL         "Entire word",IDC_WHOLEWORD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,82,151,53,10
+                    WS_TABSTOP,22,157,45,10
     CONTROL         "Display Popup",IDC_POPUP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,163,61,10
-    CONTROL         "Change Tabcolor",IDC_TABCOLOR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,82,163,70,10
+                    WS_TABSTOP,22,169,61,10
     CONTROL         "Play Sound",IDC_SOUND,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,22,175,51,10
-    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,156,178,66,14
+                    WS_TABSTOP,22,181,51,10
+    CONTROL         "Include Nick",IDC_INCLUDENICK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,86,121,54,10
+    CONTROL         "Whole Line",IDC_WHOLELINE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,86,133,51,10
+    CONTROL         "Case Sensitive",IDC_CASESENSITIVE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,86,145,63,10
+    CONTROL         "Entire word",IDC_WHOLEWORD,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,86,157,53,10
+    CONTROL         "Change Tabcolor",IDC_TABCOLOR,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,86,169,70,10
+    LTEXT           "Match Type",IDC_STATIC,164,114,58,8
+    COMBOBOX        IDC_MATCHTYPE,162,125,66,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Background Color",IDC_BGCOLOR,162,142,66,14
+    PUSHBUTTON      "Text Color",IDC_FGCOLOR,162,160,66,14
+    PUSHBUTTON      "Select Sound File",IDC_SELECT_SOUND,162,178,66,14
+    EDITTEXT        IDC_STRING,21,197,207,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Add",IDC_ADD,215,17,50,14
+    PUSHBUTTON      "Update",IDC_UPDATE,215,35,50,14
+    PUSHBUTTON      "Delete",IDC_DELETE,215,53,50,14
+    PUSHBUTTON      "Move Up",IDC_MOVEUP,215,71,50,14
+    PUSHBUTTON      "Move Down",IDC_MOVEDOWN,215,89,50,14
+    GROUPBOX        "Settings",IDC_STATIC,14,108,224,109
+    GROUPBOX        "Highlight Settings",IDC_STATIC,7,7,264,219
 END
 
 IDD_FULPAGE2 DIALOGEX 0, 0, 275, 225
@@ -675,6 +677,7 @@ BEGIN
 
     IDD_HIGHLIGHTPAGE, DIALOG
     BEGIN
+        VERTGUIDE, 228
         HORZGUIDE, 116
     END
 

@@ -172,6 +172,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	if(fhe != NULL){
 		showJoins = fhe->getShowJoins();
 		showUserList = fhe->getShowUserlist();
+		ctrlShowUsers.SetCheck(showUserList);
 		UpdateLayout(FALSE);
 
 		//retrieve window position

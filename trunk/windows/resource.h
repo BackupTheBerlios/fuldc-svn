@@ -314,6 +314,7 @@
 #define IDC_BUTTON2                     1209
 #define IDC_WEB_SHORTCUTS_REMOVE        1209
 #define IDC_TEXTCOLOR                   1209
+#define IDC_MOVEUP                      1209
 #define IDC_REFRESH_FILE_LIST           1210
 #define IDC_WEB_SHORTCUTS_PROPERTIES    1210
 #define IDC_ONCE_PER_NICK               1211
@@ -356,6 +357,8 @@
 #define IDC_FREE_SLOTS_EXTENSIONS       1247
 #define IDC_FREE_SLOTS_SIZE             1249
 #define IDC_CHECK2                      1250
+#define IDC_BUTTON3                     1251
+#define IDC_MOVEDOWN                    1251
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -403,7 +406,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
-#define _APS_NEXT_CONTROL_VALUE         1251
+#define _APS_NEXT_CONTROL_VALUE         1252
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif

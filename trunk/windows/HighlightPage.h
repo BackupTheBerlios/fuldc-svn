@@ -21,16 +21,21 @@ class HighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_DELETE, onDelete)
-		COMMAND_ID_HANDLER(IDC_UPDATE, onAdd)
+		COMMAND_ID_HANDLER(IDC_UPDATE, onUpdate)
+		COMMAND_ID_HANDLER(IDC_MOVEUP, onMove)
+		COMMAND_ID_HANDLER(IDC_MOVEDOWN, onMove)
 		COMMAND_ID_HANDLER(IDC_BGCOLOR, onBgColor)
 		COMMAND_ID_HANDLER(IDC_FGCOLOR, onFgColor)
 		COMMAND_ID_HANDLER(IDC_SELECT_SOUND, onSelSound)
+		
 		NOTIFY_HANDLER(IDC_ITEMS, LVN_ITEMCHANGED, onItemChanged)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 	
 	LRESULT onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onMove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -42,8 +47,7 @@ class HighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	virtual void write();
 	//virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 
-	void getValues(ColorSettings &cs);
-	
+	void getValues(ColorSettings* );
 private:
 	CComboBox ctrlMatchType;
 	ExListViewCtrl ctrlStrings;
@@ -55,7 +59,7 @@ private:
 
 	//reset all controls except listview
 	void clear();
-
+	
 };
 
 #endif //HIGHLIGHTPAGE_H

@@ -92,6 +92,8 @@ bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
 }
 
 void CFulEditCtrl::Colorize(int begin) {
+	CHARFORMAT2 cf;
+	cf.cbSize = sizeof(CHARFORMAT2);
 	colorVector::iterator i = SettingsManager::getInstance()->colorSettings.begin();
 
 	int end = GetTextLengthEx(GTL_NUMCHARS);
@@ -108,13 +110,14 @@ void CFulEditCtrl::Colorize(int begin) {
 	delete buf;
 
 	logged = false;
-	
+
 	//compare the last line against all strings in the vector
 	for(; i != SettingsManager::getInstance()->colorSettings.end(); ++i) {
+		ColorSettings* cs = *i;
 		int pos;
 		
 		//set start position for find
-		if( i->getIncludeNick() ) {
+		if( cs->getIncludeNick() ) {
 			pos = 0;
 		} else {
 			pos = line.find(">");
@@ -122,8 +125,24 @@ void CFulEditCtrl::Colorize(int begin) {
 				pos = line.find("**") + nick.length();
 		}
 
+		//prepare the charformat
+		cf.dwMask = CFM_BOLD | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_ITALIC;
+		cf.dwEffects = 0;
+		if(cs->getBold())		cf.dwEffects |= CFE_BOLD;
+		if(cs->getItalic())		cf.dwEffects |= CFE_ITALIC;
+		if(cs->getUnderline())	cf.dwEffects |= CFE_UNDERLINE;
+		if(cs->getStrikeout())	cf.dwEffects |= CFE_STRIKEOUT;
+		
+		if(cs->getHasBgColor()){
+			cf.dwMask |= CFM_BACKCOLOR;
+			cf.crBackColor = cs->getBgColor();
+		}
+		if(cs->getHasFgColor()){
+			cf.dwMask |= CFM_COLOR;
+			cf.crTextColor = cs->getFgColor();
+		}
 
-		while( ( pos = Highlight(i, line, pos, begin) ) != string::npos );
+		while( ( pos = Highlight(cs, cf, line, pos, begin) ) != string::npos );
 
 		matchedPopup = false;
 		matchedSound = false;
@@ -133,12 +152,12 @@ void CFulEditCtrl::Colorize(int begin) {
 	HideSelection(false, false);
 }//end Colorize
 
-int CFulEditCtrl::Highlight(colorVector::iterator i, string &line, int pos, int &lineIndex) {
+int CFulEditCtrl::Highlight(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex) {
 	int ret;
-	if(i->getMatch().find("$Re:") != string::npos ) {
-		ret = RegExpMatch(i, line, pos, lineIndex);
+	if(cs->getMatch().find("$Re:") != string::npos ) {
+		ret = RegExpMatch(cs, cf, line, pos, lineIndex);
 	} else {
-		ret = FullTextMatch(i, line, pos, lineIndex);
+		ret = FullTextMatch(cs, cf, line, pos, lineIndex);
 	}
 
 	return ret;
@@ -190,14 +209,14 @@ void CFulEditCtrl::AddInternalLine(string & aLine) {
 	ScrollCaret();
 }
 
-int CFulEditCtrl::FullTextMatch(colorVector::iterator i, string &line, int pos, int &lineIndex) {
+int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex) {
 	int index = string::npos;
 	string searchString;
 
-	if( i->getMyNick() )
+	if( cs->getMyNick() )
 		searchString = nick;
 	else
-		searchString = i->getMatch();
+		searchString = cs->getMatch();
 	
 	//we don't have any nick to search for
 	//happens in pm's have to find a solution for this
@@ -206,14 +225,14 @@ int CFulEditCtrl::FullTextMatch(colorVector::iterator i, string &line, int pos, 
 
 
 	//do we want to highlight the timestamps
-	if( i->getTimestamps() ) {
+	if( cs->getTimestamps() ) {
 		index = line.find("[");
 		if( index != 0 )
 			return string::npos;
-	} else if( i->getUsers() ) {
+	} else if( cs->getUsers() ) {
 		index = line.find("<");
 	}else{
-		if( i->getCaseSensitive() ) {
+		if( cs->getCaseSensitive() ) {
 			index = Util::findSubStringCaseSensitive(line, searchString, pos);
 		}else {
 			index = Util::findSubString(line, searchString, pos);	
@@ -230,10 +249,10 @@ int CFulEditCtrl::FullTextMatch(colorVector::iterator i, string &line, int pos, 
 	//the way the user specified
 	int length;
 		
-	if( !i->getUsers() && !i->getTimestamps() ) {
+	if( !cs->getUsers() && !cs->getTimestamps() ) {
 		length = searchString.length();
 			
-		switch(i->getMatchType()){
+		switch(cs->getMatchType()){
 			case 0:
 				if(line[index-1] != ' ' && line[index-1] != '\r' )
 					return string::npos;
@@ -257,15 +276,15 @@ int CFulEditCtrl::FullTextMatch(colorVector::iterator i, string &line, int pos, 
 
 	begin = lineIndex;
 		
-	if( i->getTimestamps() ) {
+	if( cs->getTimestamps() ) {
 		begin += index +1;
 		end = begin + 8;
-	} else if( i->getUsers() ) {
+	} else if( cs->getUsers() ) {
 		end = begin + line.find(">");
 		begin += index +1;
-	} else if( i->getWholeLine() ) {
+	} else if( cs->getWholeLine() ) {
 		end = begin + line.length();
-	} else if( i->getWholeWord() ) {
+	} else if( cs->getWholeWord() ) {
 		int tmp;
 
 		tmp = line.find_last_of(" \t\r\n", index);
@@ -282,46 +301,36 @@ int CFulEditCtrl::FullTextMatch(colorVector::iterator i, string &line, int pos, 
 	}
 
 	SetSel(begin, end);
-	CHARFORMAT2 cf, cf2;
-	cf = i->getSettings();
-	GetSelectionCharFormat(cf2);
-	if(cf2.dwEffects & CFE_LINK){
-		cf.dwMask |= CFM_LINK;
-		cf.dwEffects |= CFE_LINK;
-	}
-	if(cf2.dwReserved & CFE_PROTECTED){
-		cf.dwMask |= CFM_PROTECTED;
-		cf.dwEffects |= CFE_PROTECTED;
-	}
+		
 	SetSelectionCharFormat(cf);
 
 	SetSel(GetTextLength()-1, GetTextLength()-1);
 	SetSelectionCharFormat(selFormat);
 
-	if(i->getPopup() && !matchedPopup) {
+	if(cs->getPopup() && !matchedPopup) {
 		matchedPopup = true;
 		PopupManager::getInstance()->ShowMC(line, m_hWnd);
 	}
-	if(i->getTab())
+	if(cs->getTab())
 		matchedTab = true;
 
-	if(!i->getTimestamps() && !i->getUsers() && ! i->getMyNick() && !logged){
+	if(!cs->getTimestamps() && !cs->getUsers() && ! cs->getMyNick() && !logged){
 		logged = true;
 		AddLogLine(line);
 	}
 
-	if(i->getPlaySound() && !matchedSound){
+	if(cs->getPlaySound() && !matchedSound){
 		matchedSound = true;
-		PlaySound(i->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 	}
 					
-	if( !i->getTimestamps() && !i->getUsers() )
+	if( !cs->getTimestamps() && !cs->getUsers() )
 		return pos;	
 	else
 		return string::npos;
 }
 
-int CFulEditCtrl::RegExpMatch(colorVector::iterator i, string &line, int pos, int &lineIndex) {
+int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex) {
 	int begin = 0, end = 0;
 	
 	if(pos == string::npos || pos >= line.length())
@@ -329,7 +338,7 @@ int CFulEditCtrl::RegExpMatch(colorVector::iterator i, string &line, int pos, in
 
 	try{
 	
-		regex::rpattern regexp(i->getMatch().substr(4), regex::GLOBAL | regex::NOCASE | regex::SINGLELINE | regex::MULTILINE | regex::ALLBACKREFS);
+		regex::rpattern regexp(cs->getMatch().substr(4), regex::GLOBAL | regex::NOCASE | regex::SINGLELINE | regex::MULTILINE | regex::ALLBACKREFS);
 		regex::rpattern::backref_type br;
 		regex::match_results result;
 		
@@ -343,14 +352,14 @@ int CFulEditCtrl::RegExpMatch(colorVector::iterator i, string &line, int pos, in
 			end = begin + result.rlength();
 
 			SetSel(begin, end);
-			SetSelectionCharFormat(i->getSettings());
+			SetSelectionCharFormat(cf);
 		} else {
 			for(int j = 1; j < result.cbackrefs(); ++j) {
 				begin = pos + lineIndex + result.rstart(j);
 				end = begin + result.rlength(j);
 				
 				SetSel(begin, end);
-				SetSelectionCharFormat(i->getSettings());
+				SetSelectionCharFormat(cf);
 
 				SetSel(GetTextLength()-1, GetTextLength()-1);
 				SetSelectionCharFormat(selFormat);
@@ -361,22 +370,22 @@ int CFulEditCtrl::RegExpMatch(colorVector::iterator i, string &line, int pos, in
 		SetSel(GetTextLength()-1, GetTextLength()-1);
 		SetSelectionCharFormat(selFormat);
 
-		if(i->getPopup() && !matchedPopup) {
+		if(cs->getPopup() && !matchedPopup) {
 			matchedPopup = true;
 			PopupManager::getInstance()->ShowMC(line, m_hWnd);
 		}
 
-		if(i->getTab())
+		if(cs->getTab())
 			matchedTab = true;
 
-		if(!i->getTimestamps() && !i->getUsers() && i->getMyNick() && !logged){
+		if(!cs->getTimestamps() && !cs->getUsers() && cs->getMyNick() && !logged){
 			logged = true;
 			AddLogLine(line);
 		}
 
-		if(i->getPlaySound() && !matchedSound){
+		if(cs->getPlaySound() && !matchedSound){
 			matchedSound = true;
-			PlaySound(i->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+			PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 		}
 	
 	} catch (bad_alloc) {

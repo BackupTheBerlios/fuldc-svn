@@ -3,6 +3,7 @@
 #include "Resource.h"
 
 #include "../client/SettingsManager.h"
+#include "../client/ColorSettings.h"
 
 #include "../greta/regexpr2.h"
 
@@ -10,7 +11,7 @@
 #include "HighlightPage.h"
 
 #ifdef _DEBUG
-#define new DEBUG_NEW
+//#define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
@@ -25,16 +26,11 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	colorVector::iterator j = SettingsManager::getInstance()->colorSettings.end();
 	colorVector::iterator i = SettingsManager::getInstance()->colorSettings.begin();
-	StringList cols;
-	
+		
 	//populate listview with current strings
 	for(;i != j; ++i)
-	{
-		cols.push_back(i->getMatch());
-		ctrlStrings.insert( cols );
-		cols.clear();
-	}
-	
+		ctrlStrings.insert( ctrlStrings.GetItemCount(), (*i)->getMatch(), 0, (LPARAM)(*i) );
+		
 	
 	//initalize colors
 	bgColor = WinUtil::bgColor;
@@ -56,69 +52,84 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 }
 
 void HighlightPage::write(){
-	//ctrlStrings.Detach();
-	//ctrlMatchType.Detach();
+	int i = 0;
+	int end = ctrlStrings.GetItemCount();
+	ColorSettings *cs;
+	settings->colorSettings.clear();
+	for(; i < end; ++i){
+		cs = (ColorSettings*)ctrlStrings.GetItemData(i);
+		settings->colorSettings.push_back(cs);
+	}
 }
 
 LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-	ColorSettings cs;
-
+	ColorSettings *cs = new ColorSettings();
 	getValues(cs);
 
-	if(cs.getMatch().empty()){
+	if(cs->getMatch().empty()){
 		MessageBox(CSTRING(ADD_EMPTY), "", MB_OK | MB_ICONEXCLAMATION);
 		return TRUE;
 	}
 
-	if(cs.getMatch().find("$Re:") == 0) {
+	if(cs->getMatch().find("$Re:") == 0) {
 		try{
-			regex::rpattern reg(cs.getMatch().substr(4));
+			regex::rpattern reg(cs->getMatch().substr(4));
 		}catch(regex::bad_regexpr){
 			MessageBox(CSTRING(BAD_REGEXP), "", MB_OK | MB_ICONEXCLAMATION);
 			return TRUE;
 		}
 	}
 
-	colorVector::iterator i = SettingsManager::getInstance()->colorSettings.begin();
-	colorVector::iterator j = SettingsManager::getInstance()->colorSettings.end();
-	bool update = false;
-	for(;i != j; ++i) {
-		if(i->getMatch().compare(cs.getMatch()) == 0){
-			SettingsManager::getInstance()->colorSettings.erase(i);
-			update = true;
-			break;
-		}
-	}
-
-	if(!update) {
-		//add the string to the listview
-		StringList cols;
-		cols.push_back(cs.getMatch());
-		ctrlStrings.insert(cols);
-		clear();
-	}
+	//add the string to the listview
+	ctrlStrings.insert( ctrlStrings.GetItemCount(), cs->getMatch(), 0, (LPARAM)cs );
+	ctrlStrings.SelectItem(ctrlStrings.GetItemCount()-1);
 	
-	//add highlight settings to the vector
-	SettingsManager::getInstance()->colorSettings.push_back(cs);
-
+	
 	return TRUE;
+}
+
+LRESULT HighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int sel = ctrlStrings.GetSelectedIndex();
+	if(sel == -1)
+		return true;
+
+	ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
+	string old = cs->getMatch();
+	getValues(cs);
+	
+	if(old.compare(cs->getMatch()) != 0){
+		ctrlStrings.DeleteItem(sel);
+		ctrlStrings.insert(sel, cs->getMatch(), 0, (LPARAM)cs);
+		ctrlStrings.SelectItem(sel);
+		
+	}
+	return true;
+}
+
+LRESULT HighlightPage::onMove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int sel = ctrlStrings.GetSelectedIndex();
+	if(wID == IDC_MOVEUP && sel > 0){
+		ctrlStrings.moveItem(sel, sel-1);
+		ctrlStrings.SelectItem(sel-1);
+	} else if(wID == IDC_MOVEDOWN && sel < ctrlStrings.GetItemCount()-1){
+		//hmm odd, moveItem handles the move but the list doesn't get updated
+		//so well this works instead =)
+		ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
+		ctrlStrings.DeleteItem(sel);
+		ctrlStrings.insert(sel+1, cs->getMatch(), 0, (LPARAM)cs);
+		ctrlStrings.SelectItem(sel+1);
+	}
+
+	return 0;
 }
 
 LRESULT HighlightPage::onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	if(ctrlStrings.GetSelectedCount() == 1) {
 		int sel = ctrlStrings.GetSelectedIndex();
-		char buf[100];
-		ctrlStrings.GetItemText(sel, 0, buf, 100);
-		ctrlStrings.deleteItem(buf);
-
-		colorVector::iterator i = SettingsManager::getInstance()->colorSettings.begin();
-		colorVector::iterator j = SettingsManager::getInstance()->colorSettings.end();
-
-		for(; i != j; ++i) {
-			if( i->getMatch().compare(buf) == 0 ) {
-				SettingsManager::getInstance()->colorSettings.erase(i);
-			}
-		}
+		ColorSettings* cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
+		ctrlStrings.DeleteItem(sel);
+		delete cs;
+		cs = NULL;
 	}
 	
 	return TRUE;
@@ -154,17 +165,17 @@ void HighlightPage::clear() {
 
 	SetDlgItemText(IDC_STRING, "");
 
-	CheckDlgButton(IDC_BOLD, BST_UNCHECKED);
-	CheckDlgButton(IDC_ITALIC, BST_UNCHECKED);
-	CheckDlgButton(IDC_UNDERLINE, BST_UNCHECKED);
-	CheckDlgButton(IDC_STRIKEOUT, BST_UNCHECKED);
-	
-	CheckDlgButton(IDC_INCLUDENICK, BST_UNCHECKED);
-	CheckDlgButton(IDC_WHOLELINE, BST_UNCHECKED);
-	CheckDlgButton(IDC_CASESENSITIVE, BST_UNCHECKED);
-	CheckDlgButton(IDC_WHOLEWORD, BST_UNCHECKED);
-	CheckDlgButton(IDC_POPUP, BST_UNCHECKED);
-	CheckDlgButton(IDC_TABCOLOR, BST_UNCHECKED);
+	CheckDlgButton(IDC_BOLD,			BST_UNCHECKED);
+	CheckDlgButton(IDC_ITALIC,			BST_UNCHECKED);
+	CheckDlgButton(IDC_UNDERLINE,		BST_UNCHECKED);
+	CheckDlgButton(IDC_STRIKEOUT,		BST_UNCHECKED);
+	CheckDlgButton(IDC_INCLUDENICK,		BST_UNCHECKED);
+	CheckDlgButton(IDC_WHOLELINE,		BST_UNCHECKED);
+	CheckDlgButton(IDC_CASESENSITIVE,	BST_UNCHECKED);
+	CheckDlgButton(IDC_WHOLEWORD,		BST_UNCHECKED);
+	CheckDlgButton(IDC_POPUP,			BST_UNCHECKED);
+	CheckDlgButton(IDC_TABCOLOR,		BST_UNCHECKED);
+	CheckDlgButton(IDC_SOUND,			BST_UNCHECKED);
 
 	ctrlMatchType.SetCurSel(1);
 
@@ -178,70 +189,64 @@ HighlightPage::~HighlightPage() {
 	ctrlStrings.Detach();
 	ctrlMatchType.Detach();
 }
-
-LRESULT HighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
-	if(ctrlStrings.GetSelectedCount() == 1) {
-		int sel = ctrlStrings.GetSelectedIndex();
-		char buf[100];
-		ctrlStrings.GetItemText(sel, 0, buf, 100);
-		
-		colorVector::iterator i = SettingsManager::getInstance()->colorSettings.begin();
-		colorVector::iterator j = SettingsManager::getInstance()->colorSettings.end();
-
-		for(; i != j; ++i) {
-			if( i->getMatch().compare(buf) == 0 ) {
-				break;
-			}
-		}
-
-		if(i != j) {
-			SetDlgItemText(IDC_STRING, i->getMatch().c_str());
-			ctrlMatchType.SetCurSel(i->getMatchType());
-
-			CheckDlgButton(IDC_BOLD, i->getBold() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_ITALIC, i->getItalic() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_UNDERLINE, i->getUnderline() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_STRIKEOUT, i->getStrikeout() ? BST_CHECKED : BST_UNCHECKED);
-			
-			CheckDlgButton(IDC_INCLUDENICK, i->getIncludeNick() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_WHOLELINE, i->getWholeLine() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_CASESENSITIVE, i->getCaseSensitive() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_WHOLEWORD, i->getWholeWord() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_POPUP, i->getPopup() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_TABCOLOR, i->getTab() ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(IDC_SOUND, i->getPlaySound() ? BST_CHECKED : BST_UNCHECKED);
-
-			bgColor = i->getBgColor();
-			fgColor = i->getFgColor();
-
-			soundFile = i->getSoundFile();
-		}
-	}
-	
-	return TRUE;
-}
-
-void HighlightPage::getValues(ColorSettings &cs) {
+void HighlightPage::getValues(ColorSettings* cs){
 	char buf[1000];
 	GetDlgItemText(IDC_STRING, buf, 1000);
-	cs.setMatch(buf);
+	cs->setMatch(buf);
 
-	cs.setBold( IsDlgButtonChecked(IDC_BOLD) );
-	cs.setItalic( IsDlgButtonChecked(IDC_ITALIC) );
-	cs.setUnderline( IsDlgButtonChecked(IDC_UNDERLINE) );
-	cs.setStrikeout( IsDlgButtonChecked(IDC_STRIKEOUT) );
+	cs->setBold(	  IsDlgButtonChecked(IDC_BOLD)	    );
+	cs->setItalic(	  IsDlgButtonChecked(IDC_ITALIC)    );
+	cs->setUnderline( IsDlgButtonChecked(IDC_UNDERLINE) );
+	cs->setStrikeout( IsDlgButtonChecked(IDC_STRIKEOUT) );
 
-	cs.setCaseSensitive( IsDlgButtonChecked(IDC_CASESENSITIVE) );
-	cs.setIncludeNick( IsDlgButtonChecked(IDC_INCLUDENICK) );
-	cs.setWholeLine( IsDlgButtonChecked(IDC_WHOLELINE) );
-	cs.setWholeWord( IsDlgButtonChecked(IDC_WHOLEWORD) );
-	cs.setPopup( IsDlgButtonChecked(IDC_POPUP) );
-	cs.setTab( IsDlgButtonChecked(IDC_TABCOLOR));
+	cs->setCaseSensitive( IsDlgButtonChecked(IDC_CASESENSITIVE)	 );
+	cs->setIncludeNick(	  IsDlgButtonChecked(IDC_INCLUDENICK)	 );
+	cs->setWholeLine(	  IsDlgButtonChecked(IDC_WHOLELINE)		 );
+	cs->setWholeWord(	  IsDlgButtonChecked(IDC_WHOLEWORD)		 );
+	cs->setPopup(		  IsDlgButtonChecked(IDC_POPUP)			 );
+	cs->setTab(			  IsDlgButtonChecked(IDC_TABCOLOR)		 );
 
-	cs.setBgColor( bgColor, bgColor != WinUtil::bgColor );
-	cs.setFgColor( fgColor, fgColor != WinUtil::textColor );
+	cs->setHasBgColor( bgColor != WinUtil::bgColor );
+	cs->setHasFgColor( fgColor != WinUtil::textColor );
+	cs->setBgColor( bgColor );
+	cs->setFgColor( fgColor );
 
-	cs.setMatchType( ctrlMatchType.GetCurSel() );
+	cs->setMatchType( ctrlMatchType.GetCurSel() );
 
-	cs.setSoundFile( soundFile );
+	cs->setSoundFile( soundFile );
+
+}
+
+
+LRESULT HighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
+	if(ctrlStrings.GetSelectedCount() != 1) {
+		return TRUE;
+	}
+	int sel = ctrlStrings.GetSelectedIndex();
+	ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
+
+	if(cs == NULL)
+		return TRUE;
+
+	SetDlgItemText(IDC_STRING, cs->getMatch().c_str());
+	ctrlMatchType.SetCurSel(cs->getMatchType());
+
+	CheckDlgButton(IDC_BOLD			, cs->getBold()			 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_ITALIC		, cs->getItalic()		 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_UNDERLINE	, cs->getUnderline()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_STRIKEOUT	, cs->getStrikeout()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_INCLUDENICK	, cs->getIncludeNick()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_WHOLELINE	, cs->getWholeLine()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_CASESENSITIVE, cs->getCaseSensitive() ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_WHOLEWORD	, cs->getWholeWord()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_POPUP		, cs->getPopup()		 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_TABCOLOR		, cs->getTab()			 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_SOUND		, cs->getPlaySound()	 ? BST_CHECKED : BST_UNCHECKED);
+
+	bgColor = cs->getBgColor();
+	fgColor = cs->getFgColor();
+
+	soundFile = cs->getSoundFile();
+	
+	return TRUE;
 }

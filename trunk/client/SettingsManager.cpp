@@ -276,24 +276,26 @@ void SettingsManager::load(string const& aFileName)
 		if(xml.findChild("Highlights")) {
 			xml.stepIn();
 			while(xml.findChild("Highlight")) {
-				ColorSettings cs;
+				ColorSettings *cs = new ColorSettings;
 
-				cs.setMatch( xml.getChildAttrib("Match") );
-				cs.setBold(	xml.getBoolChildAttrib("Bold") );
-				cs.setItalic( xml.getBoolChildAttrib("Italic") );
-				cs.setUnderline( xml.getBoolChildAttrib("Underline") );
-				cs.setStrikeout( xml.getBoolChildAttrib("Strikeout") );
-				cs.setIncludeNick( xml.getBoolChildAttrib("IncludeNick") );
-				cs.setCaseSensitive( xml.getBoolChildAttrib("CaseSensitive") );
-				cs.setWholeLine( xml.getBoolChildAttrib("WholeLine") );
-				cs.setWholeWord( xml.getBoolChildAttrib("WholeWord") );
-				cs.setPopup( xml.getBoolChildAttrib("Popup") );
-				cs.setTab( xml.getBoolChildAttrib("Tab") );
-				cs.setPlaySound( xml.getBoolChildAttrib("PlaySound") );
-				cs.setMatchType( xml.getIntChildAttrib("MatchType") );
-				cs.setBgColor( xml.getLongLongChildAttrib("BgColor"), xml.getBoolChildAttrib("HasBgColor") );
-				cs.setFgColor( xml.getLongLongChildAttrib("FgColor"), xml.getBoolChildAttrib("HasFgColor") );
-				cs.setSoundFile( xml.getChildAttrib("SoundFile") );
+				cs->setMatch( xml.getChildAttrib("Match") );
+				cs->setBold(	xml.getBoolChildAttrib("Bold") );
+				cs->setItalic( xml.getBoolChildAttrib("Italic") );
+				cs->setUnderline( xml.getBoolChildAttrib("Underline") );
+				cs->setStrikeout( xml.getBoolChildAttrib("Strikeout") );
+				cs->setIncludeNick( xml.getBoolChildAttrib("IncludeNick") );
+				cs->setCaseSensitive( xml.getBoolChildAttrib("CaseSensitive") );
+				cs->setWholeLine( xml.getBoolChildAttrib("WholeLine") );
+				cs->setWholeWord( xml.getBoolChildAttrib("WholeWord") );
+				cs->setPopup( xml.getBoolChildAttrib("Popup") );
+				cs->setTab( xml.getBoolChildAttrib("Tab") );
+				cs->setPlaySound( xml.getBoolChildAttrib("PlaySound") );
+				cs->setMatchType( xml.getIntChildAttrib("MatchType") );
+				cs->setHasFgColor( xml.getBoolChildAttrib("HasFgColor") );
+				cs->setHasBgColor( xml.getBoolChildAttrib("HasBgColor") );
+				cs->setBgColor( xml.getLongLongChildAttrib("BgColor") );
+				cs->setFgColor( xml.getLongLongChildAttrib("FgColor") );
+				cs->setSoundFile( xml.getChildAttrib("SoundFile") );
 				
 				colorSettings.push_back(cs);
 			}
@@ -359,24 +361,24 @@ void SettingsManager::save(string const& aFileName) {
 	for(;iter != colorSettings.end(); ++iter) {
 		xml.addTag("Highlight");
 			
-		xml.addChildAttrib("Match", iter->getMatch());
-		xml.addChildAttrib("Bold", iter->getBold());
-		xml.addChildAttrib("Italic", iter->getItalic());
-		xml.addChildAttrib("Underline", iter->getUnderline());
-		xml.addChildAttrib("Strikeout", iter->getStrikeout());
-		xml.addChildAttrib("IncludeNick", iter->getIncludeNick());
-		xml.addChildAttrib("CaseSensitive", iter->getCaseSensitive());
-		xml.addChildAttrib("WholeLine", iter->getWholeLine());
-		xml.addChildAttrib("WholeWord", iter->getWholeWord());
-		xml.addChildAttrib("Popup", iter->getPopup());
-		xml.addChildAttrib("Tab", iter->getTab());
-		xml.addChildAttrib("PlaySound", iter->getPlaySound());
-		xml.addChildAttrib("MatchType", iter->getMatchType());
-		xml.addChildAttrib("HasFgColor", iter->hasFgColor());
-		xml.addChildAttrib("HasBgColor", iter->hasBgColor());
-		xml.addChildAttrib("FgColor", Util::toString(iter->getFgColor()));
-		xml.addChildAttrib("BgColor", Util::toString(iter->getBgColor()));
-		xml.addChildAttrib("SoundFile", iter->getSoundFile());
+		xml.addChildAttrib("Match", (*iter)->getMatch());
+		xml.addChildAttrib("Bold", (*iter)->getBold());
+		xml.addChildAttrib("Italic", (*iter)->getItalic());
+		xml.addChildAttrib("Underline", (*iter)->getUnderline());
+		xml.addChildAttrib("Strikeout", (*iter)->getStrikeout());
+		xml.addChildAttrib("IncludeNick", (*iter)->getIncludeNick());
+		xml.addChildAttrib("CaseSensitive", (*iter)->getCaseSensitive());
+		xml.addChildAttrib("WholeLine", (*iter)->getWholeLine());
+		xml.addChildAttrib("WholeWord", (*iter)->getWholeWord());
+		xml.addChildAttrib("Popup", (*iter)->getPopup());
+		xml.addChildAttrib("Tab", (*iter)->getTab());
+		xml.addChildAttrib("PlaySound", (*iter)->getPlaySound());
+		xml.addChildAttrib("MatchType", (*iter)->getMatchType());
+		xml.addChildAttrib("HasFgColor", (*iter)->getHasFgColor());
+		xml.addChildAttrib("HasBgColor", (*iter)->getHasBgColor());
+		xml.addChildAttrib("FgColor", Util::toString((*iter)->getFgColor()));
+		xml.addChildAttrib("BgColor", Util::toString((*iter)->getBgColor()));
+		xml.addChildAttrib("SoundFile", (*iter)->getSoundFile());
 	}//end for
 
 	xml.stepOut();
