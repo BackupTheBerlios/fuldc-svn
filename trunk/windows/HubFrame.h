@@ -153,8 +153,8 @@ public:
 		if(client->isConnected()) {
 		
 			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				string path =	SETTING(LOG_DIRECTORY) + ctrlUsers.getItemData(i)->user->getNick() + ".log";
-				ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOW);
+				tstring path =	WinUtil::toT(SETTING(LOG_DIRECTORY) + ctrlUsers.getItemData(i)->user->getNick() + ".log");
+				ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOW);
 			}
 		}
 		return 0;
@@ -281,9 +281,9 @@ private:
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
-		ctrlFilterSelContainer("COMBOBOX", this, FILTER_MESSAGE_MAP)
+		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
 	{
-		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(aServer);
+		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(WinUtil::fromT(aServer));
 		if(fhe != NULL) {
 			stripIsp     = fhe->getStripIsp();
 			showJoins    = fhe->getShowJoins();
@@ -293,47 +293,47 @@ private:
 			showJoins    = BOOLSETTING(SHOW_JOINS);
 			showUserList = true;
 		}
-		client = ClientManager::getInstance()->getClient(aServer);
-		client->setNick(aNick.empty() ? SETTING(NICK) : aNick);
+		client = ClientManager::getInstance()->getClient(WinUtil::fromT(aServer));
+		client->setNick(aNick.empty() ? SETTING(NICK) : WinUtil::fromT(aNick));
         if (!aDescription.empty())
-			client->setDescription(aDescription);
-		client->setPassword(aPassword);
+			client->setDescription(WinUtil::fromT(aDescription));
+		client->setPassword(WinUtil::fromT(aPassword));
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
 		
-		tabList.push_back("/away");
-		tabList.push_back("/back");
-        tabList.push_back("/clear");
-		tabList.push_back("/close");
-		tabList.push_back("/connection");
-		tabList.push_back("/ctopic");
-		tabList.push_back("/dc++");
-		tabList.push_back("/df");
-		tabList.push_back("/dslots");
-		tabList.push_back("/favorite");
-		tabList.push_back("/favshowjoins");
-		tabList.push_back("/fuldc");
-		tabList.push_back("/fuptime");
-		tabList.push_back("/getlist");
-		tabList.push_back("/grant");
-		tabList.push_back("/help");
-		tabList.push_back("/join");
-		tabList.push_back("/lastlog");
-		tabList.push_back("/lastseen");
-		tabList.push_back("/pm");
-		tabList.push_back("/popups");
-		tabList.push_back("/rebuild");
-		tabList.push_back("/refresh");
-		tabList.push_back("/refreshi");
-		tabList.push_back("/search");
-		tabList.push_back("/share");
-		tabList.push_back("/showjoins");
-		tabList.push_back("/slots");
-		tabList.push_back("/topic");
-		tabList.push_back("/ts");
-		tabList.push_back("/unshare");
-		tabList.push_back("/uptime");
+		tabList.push_back(_T("/away"));
+		tabList.push_back(_T("/back"));
+        tabList.push_back(_T("/clear"));
+		tabList.push_back(_T("/close"));
+		tabList.push_back(_T("/connection"));
+		tabList.push_back(_T("/ctopic"));
+		tabList.push_back(_T("/dc++"));
+		tabList.push_back(_T("/df"));
+		tabList.push_back(_T("/dslots"));
+		tabList.push_back(_T("/favorite"));
+		tabList.push_back(_T("/favshowjoins"));
+		tabList.push_back(_T("/fuldc"));
+		tabList.push_back(_T("/fuptime"));
+		tabList.push_back(_T("/getlist"));
+		tabList.push_back(_T("/grant"));
+		tabList.push_back(_T("/help"));
+		tabList.push_back(_T("/join"));
+		tabList.push_back(_T("/lastlog"));
+		tabList.push_back(_T("/lastseen"));
+		tabList.push_back(_T("/pm"));
+		tabList.push_back(_T("/popups"));
+		tabList.push_back(_T("/rebuild"));
+		tabList.push_back(_T("/refresh"));
+		tabList.push_back(_T("/refreshi"));
+		tabList.push_back(_T("/search"));
+		tabList.push_back(_T("/share"));
+		tabList.push_back(_T("/showjoins"));
+		tabList.push_back(_T("/slots"));
+		tabList.push_back(_T("/topic"));
+		tabList.push_back(_T("/ts"));
+		tabList.push_back(_T("/unshare"));
+		tabList.push_back(_T("/uptime"));
 	}
 
 	~HubFrame() {
@@ -363,7 +363,7 @@ private:
 	tstring currentCommand;
 	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
-	StringList tabList;
+	TStringList tabList;
 
 	Client* client;
 	tstring server;
@@ -379,14 +379,13 @@ private:
 	CMenu searchMenu;
 	CMenu copyMenu;
 
-	string complete;
-	string searchTerm;
-	string filter;
-	typedef multimap< string, UserInfo* > UserMap;
-	typedef pair< string, UserInfo* > UserPair;
+	tstring searchTerm;
+	tstring filter;
+	typedef multimap< tstring, UserInfo* > UserMap;
+	typedef pair< tstring, UserInfo* > UserPair;
 	typedef UserMap::iterator UserIter;
 	UserMap usermap; //save all userinfo items that don't match the filter here
-	string curNick;
+	tstring curNick;
 	
 	CButton ctrlShowUsers;
 	CFulEditCtrl ctrlClient;
@@ -419,7 +418,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	
 	int findUser(const User::Ptr& aUser);
-	UserInfo* findUser(string & nick);
+	UserInfo* findUser(tstring & nick);
 
 	bool updateUser(const User::Ptr& u);
 	void removeUser(const User::Ptr& u);

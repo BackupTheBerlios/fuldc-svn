@@ -44,14 +44,14 @@ LRESULT FulAppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	colorList.Attach(GetDlgItem(IDC_COLOR_COMBO));
 
-	colorList.AddString(CSTRING(TAB_ACTIVE_BG));
-	colorList.AddString(CSTRING(TAB_ACTIVE_TEXT));
-	colorList.AddString(CSTRING(TAB_ACTIVE_BORDER));
-	colorList.AddString(CSTRING(TAB_INACTIVE_BG));
-	colorList.AddString(CSTRING(TAB_INACTIVE_TEXT));
-	colorList.AddString(CSTRING(TAB_INACTIVE_BORDER));
-	colorList.AddString(CSTRING(TAB_INACTIVE_BG_NOTIFY));
-	colorList.AddString(CSTRING(TAB_INACTIVE_BG_DISCONNECTED));
+	colorList.AddString(CTSTRING(TAB_ACTIVE_BG));
+	colorList.AddString(CTSTRING(TAB_ACTIVE_TEXT));
+	colorList.AddString(CTSTRING(TAB_ACTIVE_BORDER));
+	colorList.AddString(CTSTRING(TAB_INACTIVE_BG));
+	colorList.AddString(CTSTRING(TAB_INACTIVE_TEXT));
+	colorList.AddString(CTSTRING(TAB_INACTIVE_BORDER));
+	colorList.AddString(CTSTRING(TAB_INACTIVE_BG_NOTIFY));
+	colorList.AddString(CTSTRING(TAB_INACTIVE_BG_DISCONNECTED));
 	colorList.SetCurSel(0);
 
 	colorList.Detach();
@@ -106,16 +106,16 @@ LRESULT FulAppearancePage::onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT FulAppearancePage::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	LOGFONT font;  
-	WinUtil::decodeFont(SETTING(POPUP_FONT), font);
+	WinUtil::decodeFont(WinUtil::toT(SETTING(POPUP_FONT)), font);
 	CFontDialog dlg(&font, CF_EFFECTS | CF_SCREENFONTS);
 	if(dlg.DoModal() == IDOK){
-		settings->set(SettingsManager::POPUP_FONT, WinUtil::encodeFont(font));
+		settings->set(SettingsManager::POPUP_FONT, WinUtil::fromT(WinUtil::encodeFont(font)));
 	}
 	return 0;
 }
 
 LRESULT FulAppearancePage::onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	MessageBox(CSTRING(HELP_TIME_STAMPS), CSTRING(TIME_STAMPS_HELP_CAPTION), MB_OK | MB_ICONINFORMATION);
+	MessageBox(CTSTRING(HELP_TIME_STAMPS), CTSTRING(TIME_STAMPS_HELP_CAPTION), MB_OK | MB_ICONINFORMATION);
 
 	return 0;
 }

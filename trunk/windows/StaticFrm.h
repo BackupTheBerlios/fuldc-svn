@@ -35,7 +35,7 @@ public:
 	static void openWindow() {
 		if(frame == NULL) {
 			frame = new T();
-			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, ResourceManager::getInstance()->getString(ResourceManager::Strings(title)).c_str());
+			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, CTSTRING_I(ResourceManager::Strings(title)));
 			::SendMessage(WinUtil::mainWnd, WM_USER, ID, true);
 		} else {
 			

@@ -13,7 +13,7 @@ class HighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 {
 	public:
 	HighlightPage(SettingsManager *s) : PropPage(s), bgColor(RGB(255,255,255)), fgColor(RGB(0, 0, 0)) {
-		SetTitle(CSTRING(SETTINGS_FUL_HIGHLIGHT));
+		SetTitle(CTSTRING(SETTINGS_FUL_HIGHLIGHT));
 	};
 	virtual ~HighlightPage();
 
@@ -59,7 +59,7 @@ protected:
 	COLORREF bgColor;
 	COLORREF fgColor;
 
-	string soundFile;
+	tstring soundFile;
 
 	CButton ctrlButton;
 

@@ -11,8 +11,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 	
+#include "stdinc.h"
+#include "DCPlusPlus.h"
+
 #include "pme.h"
-#include "../client/Util.h"
+#include "Util.h"
 	
 unsigned int PME::DeterminePcreOptions ( const std::string & opts ///< perl style character modifiers -- i.e. "gi" is global, case-insensitive
  )
@@ -297,7 +300,7 @@ PME::match(const std::string & s, ///< s String to match against
 }
 
 int
-PME::match(const std::string & s, ///< s String to match against
+PME::match(const std::wstring & s, ///< s String to match against
 		   unsigned offset ///< offset Offset at which to start matching
 		   )
 {
@@ -319,14 +322,6 @@ PME::substr(const std::string & s, const vector<PME::markers> & marks,
 	int end = marks[index].second;
 	return s.substr(begin, end-begin);
 }
-
-std::wstring
-PME::substr(const std::wstring & s, const vector<PME::markers> & marks,
-			unsigned index)
-{
-	return Util::utf8ToWide( substr( Util::wideToUtf8( s ), marks, index) );
-}
-
 
 void PME::reset ( )
 {
@@ -576,7 +571,7 @@ WStringVector PME::GetStringVectorW ( )
 
 	for ( int nCurrentMatch = 0;
 		  nCurrentMatch < nMatches;
-		  nCurrentMatch++; ) {
+		  nCurrentMatch++ ) {
 
 			  oStringVector.insert( oStringVector.end ( ), Util::utf8ToWide( (*this)[nCurrentMatch] ) );
 		  }

@@ -255,6 +255,7 @@ public:
 	static string toDOS(const string& tmp);
 
 	static string getShortTimeString();
+	static wstring getShortTimeStringW();
 
 	static string getTimeString() {
 		char buf[64];
@@ -265,6 +266,19 @@ public:
 			strcpy(buf, "xx:xx:xx");
 		} else {
 			strftime(buf, 64, "%X", _tm);
+		}
+		return buf;
+	}
+
+	static wstring getTimeStringW() {
+		wchar_t buf[64];
+		time_t _tt;
+		time(&_tt);
+		tm* _tm = localtime(&_tt);
+		if(_tm == NULL) {
+			wcscpy(buf, _T("xx:xx:xx"));
+		} else {
+			wcsftime(buf, 64, _T("%X"), _tm);
 		}
 		return buf;
 	}
@@ -295,6 +309,7 @@ public:
 	}
 	
 	static string formatBytes(int64_t aBytes);
+	static wstring formatBytesW(int64_t aBytes);
 
 	static string formatExactSize(int64_t aBytes);
 
@@ -308,7 +323,14 @@ public:
 		return buf;
 	}
 
+	static wstring formatSecondsW(int64_t aSec) {
+		wchar_t buf[64];
+		swprintf(buf, L"%01I64d:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
+		return buf;
+	}
+
 	static string formatParams(const string& msg, StringMap& params);
+	static wstring formatTime(const wstring &msg, const time_t t);
 	static string formatTime(const string &msg, const time_t t);
 	static string formatTime(int64_t aSec, bool shortString = true) {
 		char buf[128];
@@ -318,12 +340,29 @@ public:
 			sprintf(buf, "%01d days %01d hours %01d minutes %01d seconds", (int)(aSec /(60*60*24)), (int)((aSec / (60*60)) % 24), (int)((aSec / 60) % 60), (int)(aSec % 60));
 		return buf;
 	}
+	static wstring formatTimeW(int64_t aSec, bool shortString = true) {
+		wchar_t buf[128];
+		if(shortString)
+			swprintf(buf, L"%01d:%02d:%02d:%02d", (int)(aSec /(60*60*24)), (int)((aSec / (60*60)) % 24), (int)((aSec / 60) % 60), (int)(aSec % 60));
+		else
+			swprintf(buf, L"%01d days %01d hours %01d minutes %01d seconds", (int)(aSec /(60*60*24)), (int)((aSec / (60*60)) % 24), (int)((aSec / 60) % 60), (int)(aSec % 60));
+		return buf;
+	}
 
 	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
 	static string toLower(const char* aString, int len = -1) {
 		string tmp;
 		tmp.resize((len == -1) ? strlen(aString) : len);
 		for(string::size_type i = 0; aString[i]; i++) {
+			tmp[i] = toLower(aString[i]);
+		}
+		return tmp;
+	}
+	static wstring toLower(const wstring& aString) { return toLower(aString.c_str(), aString.length()); };
+	static wstring toLower(const wchar_t* aString, int len = -1) {
+		wstring tmp;
+		tmp.resize( (len == -1) ? _tcslen(aString) : len);
+		for(wstring::size_type i = 0; aString[i]; ++i) {
 			tmp[i] = toLower(aString[i]);
 		}
 		return tmp;
@@ -348,6 +387,10 @@ public:
 	static int toInt(const string& aString) {
 		return atoi(aString.c_str());
 	}
+	static int toInt(const wstring& aString){
+		return _wtoi(aString.c_str());
+	}
+
 	static u_int32_t toUInt32(const char* c) {
 		return (u_int32_t)atoi(c);
 	}
@@ -422,6 +465,7 @@ public:
 		sprintf(buf, "%d", val);
 		return buf;
 	}
+
 	static string toString(long val) {
 		char buf[16];
 		sprintf(buf, "%ld", val);
@@ -430,6 +474,24 @@ public:
 	static string toString(double val) {
 		char buf[16];
 		sprintf(buf, "%0.2f", val);
+		return buf;
+	}
+
+	static wstring toStringW( int val ) {
+		wchar_t buf[16];
+		swprintf(buf, L"%d", val);
+		return buf;
+	}
+
+	static wstring toStringW( long val ) {
+		wchar_t buf[16];
+		swprintf(buf, L"%ld", val);
+		return buf;
+	}
+
+	static wstring toStringW( double val ) {
+		wchar_t buf[16];
+		swprintf(buf, L"%0.2f", val);
 		return buf;
 	}
 	static string toHexEscape(char val) {
@@ -454,6 +516,7 @@ public:
 	 * @return First position found or string::npos
 	 */
 	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) throw();
+	static wstring::size_type findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type start = 0);
 
 	/* Utf-8 versions of strnicmp and stricmp, not very fast at the moment */
 	static int stricmp(const char* a, const char* b) {
@@ -512,16 +575,19 @@ public:
 
 	static string getIpCountry (string IP);
 
+	static int getOsMinor();
+	static int getOsMajor(); 
+
 	static bool getAway() { return away; };
 	static void setAway(bool aAway) {
 		away = aAway;
 		if (away)
 			awayTime = time(NULL);
 	};
-	static string getAwayMessage();
-
-	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
-
+	static tstring getAwayMessage();
+	
+	static void setAwayMessage(const tstring& aMsg) { awayMsg = aMsg; };
+	
 	static u_int32_t rand();
 	static u_int32_t rand(u_int32_t high) { return rand() % high; };
 	static u_int32_t rand(u_int32_t low, u_int32_t high) { return rand(high-low) + low; };
@@ -531,7 +597,7 @@ private:
 	static string appPath;
 	static string dataPath;
 	static bool away;
-	static string awayMsg;
+	static tstring awayMsg;
 	static time_t awayTime;
 	static wchar_t lower[];
 	static int8_t cmp[128][128];

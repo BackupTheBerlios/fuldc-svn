@@ -43,9 +43,16 @@ void WebShortcuts::load(SimpleXML* xml) {
 		WebShortcut* tmp = NULL;
 		while(xml->findChild("WebShortcut")){
 			tmp = new WebShortcut();
+#ifdef UNICODE
+			tmp->name  = Util::utf8ToWide(xml->getChildAttrib("Name"));
+			tmp->key   = Util::utf8ToWide(xml->getChildAttrib("Key"));
+			tmp->url   = Util::utf8ToWide(OXMLLib::decode(xml->getChildAttrib("URL"), false));
+#else
 			tmp->name  = xml->getChildAttrib("Name");
 			tmp->key   = xml->getChildAttrib("Key");
-			tmp->url   = OXMLLib::decode(xml->getChildAttrib("URL"), false);
+			OXMLLib::decode(xml->getChildAttrib("URL"), false);
+#endif
+
 			tmp->clean = xml->getBoolChildAttrib("Clean");
 			list.push_back(tmp);
 		}
@@ -54,20 +61,28 @@ void WebShortcuts::load(SimpleXML* xml) {
 		return;
 	}
 	
-	string s = OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false);
+#ifdef UNICODE
+	tstring s = Util::utf8ToWide(OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false));
+#else
+	tstring s = OXMLLib::decode("As URL&#1;u&#1;%s&#2;Google&#1;g&#1;http://www.google.com/search?q=%s&#2;IMDB&#1;i&#1;http://www.imdb.com/Find?select=All&amp;for=%s&#2;TV Tome&#1;t&#1;http://www.tvtome.com/tvtome/servlet/Search?searchType=all&amp;searchString=%s", false);
+#endif
 	
 	xml->resetCurrentChild();
 	if(xml->findChild("Settings")){
 		xml->stepIn();
 		if(xml->findChild("WebShortcuts")){
+#ifdef UNICODE
+			s = Util::utf8ToWide(OXMLLib::decode( xml->getChildData(), false));
+#else
 			s = OXMLLib::decode( xml->getChildData(), false);
+#endif
 		}
 		xml->stepOut();
 	}
 	
-	StringTokenizer st(s, '\x02');
-	for (StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-		StringTokenizer st_i(*i, '\x01');
+	StringTokenizer<tstring> st(s, _T('\x02'));
+	for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+		StringTokenizer<tstring> st_i(*i, _T('\x01'));
 		dcassert(st_i.getTokens().size() == 3);
 		list.push_back(new WebShortcut(st_i.getTokens()[0], st_i.getTokens()[1], st_i.getTokens()[2]));
 	}
@@ -78,34 +93,40 @@ void WebShortcuts::save(SimpleXML* xml) {
 	xml->stepIn();
 	for(WebShortcut::Iter i = list.begin(); i != list.end(); ++i){
 		xml->addTag("WebShortcut");
+#ifdef UNICODE
+		xml->addChildAttrib("Name", Util::wideToUtf8((*i)->name));
+		xml->addChildAttrib("Key", Util::wideToUtf8((*i)->key));
+		xml->addChildAttrib("URL", Util::wideToUtf8((*i)->url));
+#else
 		xml->addChildAttrib("Name", (*i)->name);
 		xml->addChildAttrib("Key", (*i)->key);
-		xml->addChildAttrib("URL", OXMLLib::encode((*i)->url, false));
+		xml->addChildAttrib("URL", (*i)->url);
+#endif
 		xml->addChildAttrib("Clean", (*i)->clean);
 	}
 	xml->stepOut();
 }
 
-WebShortcut* WebShortcuts::getShortcutByName(const string& name) {
+WebShortcut* WebShortcuts::getShortcutByName(const tstring& name) {
 	for (WebShortcut::Iter i = list.begin(); i != list.end(); ++i)
 		if ( (*i)->name == name )
 			return *i;
 	return NULL;
 }
-WebShortcut* WebShortcuts::getShortcutByKey(const string& key) {
+WebShortcut* WebShortcuts::getShortcutByKey(const tstring& key) {
 	for (WebShortcut::Iter i = list.begin(); i != list.end(); ++i)
 		if ( (*i)->key == key )
 			return *i;
 	return NULL;
 }
 
-WebShortcut* WebShortcuts::getShortcutByName(WebShortcut::List& _list, const string& name) {
+WebShortcut* WebShortcuts::getShortcutByName(WebShortcut::List& _list, const tstring& name) {
 	for (WebShortcut::Iter i = _list.begin(); i != _list.end(); ++i)
 		if ( (*i)->name == name )
 			return *i;
 	return NULL;
 }
-WebShortcut* WebShortcuts::getShortcutByKey(WebShortcut::List& _list, const string& key) {
+WebShortcut* WebShortcuts::getShortcutByKey(WebShortcut::List& _list, const tstring& key) {
 	for (WebShortcut::Iter i = _list.begin(); i != _list.end(); ++i)
 		if ( (*i)->key == key )
 			return *i;

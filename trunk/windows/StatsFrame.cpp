@@ -31,7 +31,7 @@ LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	SetFont(WinUtil::font);
 
-	WinUtil::SetIcon(m_hWnd, "netstats.ico");
+	WinUtil::SetIcon(m_hWnd, _T("netstats.ico"));
 
 	bHandled = FALSE;
 	return 1;

@@ -459,7 +459,7 @@ public:
 		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* ti = *i;
 			if(ti->row == -1) {
-				mi.dwTypeData = (LPTSTR)ti->name;
+				mi.dwTypeData = (LPTSTR)ti->name.c_str();
 				mi.dwItemData = (DWORD)ti->hWnd;
 				mi.fState = MFS_ENABLED | (ti->dirty ? MFS_CHECKED : 0);
 				mi.wID = IDC_SELECT_WINDOW + n;
@@ -533,7 +533,7 @@ private:
 		HICON hIcon;
 
 		bool update() {
-			THCAR *name2 = new TCHAR[MAX_LENGTH+2];
+			TCHAR *name2 = new TCHAR[MAX_LENGTH+2];
 			::GetWindowText(hWnd, name2, MAX_LENGTH+1);
 			bool ret = updateText(name2);
 			delete[] name2;
@@ -541,10 +541,10 @@ private:
 		};
 
 		bool updateText(LPCTSTR text) {
-			len = strlen(text);
+			len = _tcslen(text);
 			if(len >= MAX_LENGTH && MAX_LENGTH > 7) {
 				name.assign(text, MAX_LENGTH - 3);
-				name.append("...");
+				name.append(_T("..."));
 			} else if(len >= MAX_LENGTH){
 				name.assign(text, MAX_LENGTH);
 			} else {
@@ -708,7 +708,7 @@ private:
 		int spacing = BOOLSETTING(TAB_SHOW_ICONS) ? 20 : 2;
 		if(tab->wCode != -1){
 			HFONT f = dc.SelectFont(WinUtil::tabFont);
-			dc.TextOut(pos + spacing, ypos +3, Util::toString(tab->wCode).c_str(), 1);
+			dc.TextOut(pos + spacing, ypos +3, Util::toStringW(tab->wCode).c_str(), 1);
 			dc.SelectFont(f);
 
 			spacing += WinUtil::getTextWidth(m_hWnd, WinUtil::tabFont) + 2;

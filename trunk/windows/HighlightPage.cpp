@@ -7,7 +7,7 @@
 #include "../client/HighlightManager.h"
 #include "../client/StringTokenizer.h"
 
-#include "../regex/pme.h"
+#include "../client/pme.h"
 
 #include "HighlightPage.h"
 #include "WinUtil.h"
@@ -53,7 +53,7 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	//Initalize listview
 	ctrlStrings.Attach(GetDlgItem(IDC_ITEMS));
 	ctrlStrings.GetClientRect(rc);
-	ctrlStrings.InsertColumn(0, "string to match", LVCFMT_LEFT, rc.Width(), 0);
+	ctrlStrings.InsertColumn(0, CTSTRING(HIGHLIGHTLIST_HEADER), LVCFMT_LEFT, rc.Width(), 0);
 
 	ColorList* cList = HighlightManager::getInstance()->rLock();
 		
@@ -71,9 +71,9 @@ LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlMatchType.Attach(GetDlgItem(IDC_MATCHTYPE));
 
 	//add alternatives
-	StringTokenizer s(STRING(HIGHLIGHT_MATCH_TYPES), ",");
-	StringList l = s.getTokens();
-	for(StringIter i = l.begin(); i != l.end(); ++i)
+	StringTokenizer<tstring> s(WinUtil::toT(STRING(HIGHLIGHT_MATCH_TYPES)), _T(","));
+	TStringList l = s.getTokens();
+	for(TStringIter i = l.begin(); i != l.end(); ++i)
 		ctrlMatchType.AddString((*i).c_str());
 
 	ctrlMatchType.SetCurSel(1);
@@ -100,14 +100,14 @@ LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	getValues(cs);
 
 	if(cs->getMatch().empty()){
-		MessageBox(CSTRING(ADD_EMPTY), "", MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(CTSTRING(ADD_EMPTY), _T(""), MB_OK | MB_ICONEXCLAMATION);
 		return TRUE;
 	}
 
-	if(cs->getMatch().find("$Re:") == 0) {
+	if(cs->getMatch().find(_T("$Re:")) == 0) {
 		PME reg(cs->getMatch().substr(4));
 		if(! reg.IsValid()){
-			MessageBox(CSTRING(BAD_REGEXP), "", MB_OK | MB_ICONEXCLAMATION);
+			MessageBox(CTSTRING(BAD_REGEXP), _T(""), MB_OK | MB_ICONEXCLAMATION);
 			return TRUE;
 		}
 	}
@@ -125,7 +125,7 @@ LRESULT HighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 		return true;
 
 	ColorSettings *cs = (ColorSettings*)ctrlStrings.GetItemData(sel);
-	string old = cs->getMatch();
+	tstring old = cs->getMatch();
 
 	HighlightManager::getInstance()->wLock();
 	getValues(cs);
@@ -189,7 +189,7 @@ LRESULT HighlightPage::onBgColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 LRESULT HighlightPage::onSelSound(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CFileDialog dlg(TRUE);
-	dlg.m_ofn.lpstrFilter = "Wave Files\0*.wav\0\0";
+	dlg.m_ofn.lpstrFilter = _T("Wave Files\0*.wav\0\0");
 	if(dlg.DoModal() == IDOK){
 		soundFile = dlg.m_ofn.lpstrFile;
 	}
@@ -199,7 +199,7 @@ LRESULT HighlightPage::onSelSound(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 void HighlightPage::clear() {
 
-	SetDlgItemText(IDC_STRING, "");
+	SetDlgItemText(IDC_STRING, _T(""));
 
 	CheckDlgButton(IDC_BOLD,			BST_UNCHECKED);
 	CheckDlgButton(IDC_ITALIC,			BST_UNCHECKED);
@@ -232,7 +232,7 @@ HighlightPage::~HighlightPage() {
 	ctrlMatchType.Detach();
 }
 void HighlightPage::getValues(ColorSettings* cs){
-	char buf[1000];
+	TCHAR buf[1000];
 	GetDlgItemText(IDC_STRING, buf, 1000);
 	cs->setMatch(buf);
 

@@ -21,16 +21,7 @@
 #ifndef PME_H
 #define PME_H
 
-#include <string>
-#include <algorithm>
-#include <vector>
-#include <stdexcept>
-
-#include <stdio.h>
-
-using namespace std;
-
-#include "pcre.h"
+#include "../regex/pcre.h"
 
 
 

@@ -25,20 +25,20 @@
 #include "WebShortcutsProperties.h"
 
 
-const string WebShortcutsProperties::badkeys = " refresh refreshi slots search dc++ away back lastlog me join clear ts password showjoins close userlist connection favorite help pm ";
+const tstring WebShortcutsProperties::badkeys = _T(" refresh refreshi slots search dc++ away back lastlog me join clear ts password showjoins close userlist connection favorite help pm ");
 
 // Initialize dialog
 LRESULT WebShortcutsProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
 
-	SetWindowText(CSTRING(SETTINGS_WS_TITLE));
-	SetDlgItemText(IDOK, CSTRING(DIALOG_OK));
-	SetDlgItemText(IDCANCEL, CSTRING(DIALOG_CANCEL));
-	SetDlgItemText(IDC_WEB_SHORTCUTS_NAME_DESC, CSTRING(SETTINGS_NAME));
-	SetDlgItemText(IDC_WEB_SHORTCUT_KEY_DESC, CSTRING(KEY));
-	SetDlgItemText(IDC_WEB_SHORTCUT_URL_DESC, CSTRING(URL));
-	SetDlgItemText(IDC_WEB_SHORTCUTS_HOWTO, CSTRING(SETTINGS_WS_HOWTO));
-	SetDlgItemText(IDC_WEB_SHORTCUTS_DESC, CSTRING(SETTINGS_WS_DESCR));
-	SetDlgItemText(IDC_WEB_SHORTCUTS_CLEAN, CSTRING(SETTINGS_WS_CLEAN));
+	SetWindowText(CTSTRING(SETTINGS_WS_TITLE));
+	SetDlgItemText(IDOK, CTSTRING(DIALOG_OK));
+	SetDlgItemText(IDCANCEL, CTSTRING(DIALOG_CANCEL));
+	SetDlgItemText(IDC_WEB_SHORTCUTS_NAME_DESC, CTSTRING(SETTINGS_NAME));
+	SetDlgItemText(IDC_WEB_SHORTCUT_KEY_DESC, CTSTRING(KEY));
+	SetDlgItemText(IDC_WEB_SHORTCUT_URL_DESC, CTSTRING(URL));
+	SetDlgItemText(IDC_WEB_SHORTCUTS_HOWTO, CTSTRING(SETTINGS_WS_HOWTO));
+	SetDlgItemText(IDC_WEB_SHORTCUTS_DESC, CTSTRING(SETTINGS_WS_DESCR));
+	SetDlgItemText(IDC_WEB_SHORTCUTS_CLEAN, CTSTRING(SETTINGS_WS_CLEAN));
 
 	SetDlgItemText(IDC_WEB_SHORTCUT_NAME,	ws->name.c_str());
 	SetDlgItemText(IDC_WEB_SHORTCUT_KEY,	ws->key.c_str());
@@ -54,37 +54,37 @@ LRESULT WebShortcutsProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
 LRESULT WebShortcutsProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(wID == IDOK) {
 		// Update search
-		char buf[2048];
+		TCHAR buf[2048];
 
 		GetDlgItemText(IDC_WEB_SHORTCUT_NAME, buf, 2048);
-		string sName = buf;
-		if (sName == "") {
-			MessageBox(CSTRING(NAME_REQUIRED), sName.c_str(), MB_OK | MB_ICONEXCLAMATION);
+		tstring sName = buf;
+		if (sName.empty()) {
+			MessageBox(CTSTRING(NAME_REQUIRED), sName.c_str(), MB_OK | MB_ICONEXCLAMATION);
 			return 0;
 		}
 		WebShortcut* _ws = WebShortcuts::getShortcutByName(wslist, sName);
 		if ( _ws != NULL && _ws != ws ) {
-			MessageBox(CSTRING(NAME_ALREADY_IN_USE), sName.c_str(), MB_OK | MB_ICONEXCLAMATION);
+			MessageBox(CTSTRING(NAME_ALREADY_IN_USE), sName.c_str(), MB_OK | MB_ICONEXCLAMATION);
 			return 0;
 		}
 
 		GetDlgItemText(IDC_WEB_SHORTCUT_KEY, buf, 2048);
-		string sKey = buf;
+		tstring sKey = buf;
 		// Check if key is busy
-		if (sKey != "") {
+		if (!sKey.empty()) {
 			_ws = WebShortcuts::getShortcutByKey(wslist, sKey);
 			if ( _ws != NULL && _ws != ws ) {
-				MessageBox(CSTRING(KEY_ALREADY_IN_USE), (sName + " (" + sKey + ")").c_str(), MB_OK | MB_ICONEXCLAMATION);
+				MessageBox(CTSTRING(KEY_ALREADY_IN_USE), (sName + _T(" (") + sKey + _T(")")).c_str(), MB_OK | MB_ICONEXCLAMATION);
 				return 0;
 			}
-			if (badkeys.find(" " + sKey + " ") != string::npos) {
-				MessageBox(CSTRING(KEY_ALREADY_IN_USE), (sName + " (" + sKey + ")").c_str(), MB_OK | MB_ICONEXCLAMATION);
+			if (badkeys.find(_T(" ") + sKey + _T(" ")) != tstring::npos) {
+				MessageBox(CTSTRING(KEY_ALREADY_IN_USE), (sName + _T(" (") + sKey + _T(")")).c_str(), MB_OK | MB_ICONEXCLAMATION);
 				return 0;
 			}
 		}
 
 		GetDlgItemText(IDC_WEB_SHORTCUT_URL, buf, 2048);
-		string sUrl = buf;
+		tstring sUrl = buf;
 
 		bool bClean = (IsDlgButtonChecked(IDC_WEB_SHORTCUTS_CLEAN) == BST_CHECKED);
 

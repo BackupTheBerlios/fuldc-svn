@@ -44,7 +44,7 @@ public:
 	virtual int64_t getAvailable() const { return 0; };
 	virtual const string& getName() const { return (hub ? hub->getNick() : getAddressPort()); };
 	virtual const string& getNameWithTopic() const { return (hub ? hub->getNick() : getAddressPort()); };
-	virtual bool getOp() const { return false;};
+	virtual bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
 
 	virtual User::NickMap& lockUserList() { return nickMap; };
 	virtual void unlockUserList() { };
@@ -58,6 +58,8 @@ public:
 	void handle(Command::INF, Command& c) throw();
 	void handle(Command::GPA, Command& c) throw();
 	void handle(Command::QUI, Command& c) throw();
+
+	virtual string escape(string const& str) const { return Command::escape(str); };
 
 private:
 	friend class ClientManager;

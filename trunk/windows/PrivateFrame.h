@@ -160,8 +160,8 @@ public:
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const tstring& msg) {
 		if(user && user->isOnline()) {
+			user->privateMessage(WinUtil::fromT(msg));
 			string s = "<" + user->getClientNick() + "> " + WinUtil::fromT(msg);
-			user->privateMessage(s);
 			addLine(WinUtil::toT(s));
 		}
 	}
@@ -173,8 +173,8 @@ public:
 private:
 	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
 		created(false), closed(false), muted(false), doPopups(true), offline(false),
-		ctrlMessageContainer("edit", this, PM_MESSAGE_MAP),
-		ctrlClientContainer("edit", this, PM_MESSAGE_MAP) {
+		ctrlMessageContainer(WC_EDIT, this, PM_MESSAGE_MAP),
+		ctrlClientContainer(WC_EDIT, this, PM_MESSAGE_MAP) {
 	}
 	
 	~PrivateFrame() {
@@ -220,7 +220,7 @@ private:
 			SetWindowText(WinUtil::toT(user->getFullNick()).c_str());
 			setDisconnected(false);
 			if(offline){
-				addLine("*** " + STRING(USER_CAME_ONLINE), false);
+				addLine(_T("*** ") + TSTRING(USER_CAME_ONLINE), false);
 				offline = false;
 			}
 		} else {
@@ -229,7 +229,7 @@ private:
 			} else {
 				SetWindowText((WinUtil::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
 			}
-			addLine("*** " + STRING(USER_WENT_OFFLINE), false);
+			addLine(_T("*** ") + TSTRING(USER_WENT_OFFLINE), false);
             setDisconnected(true);
 			offline = true;
 		}

@@ -495,16 +495,16 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	const Directory::File& f = *i;
 
-	HashFileIter j = tthIndex.find(f.getTTH());
-	if(j == tthIndex.end()) {
+	//HashFileIter j = tthIndex.find(f.getTTH());
+	//if(j == tthIndex.end()) {
 		dir->size+=f.getSize();
-	} else {
-		if(!SETTING(LIST_DUPES)) {
-			LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
-			dir->files.erase(i);
-			return;
-		}
-	}
+	//} else {
+	//	if(!SETTING(LIST_DUPES)) {
+	//		LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
+	//		dir->files.erase(i);
+	//		return;
+	//	}
+	//}
 
 	dir->addSearchType(getMask(f.getName()));
 	dir->addType(getType(f.getName()));

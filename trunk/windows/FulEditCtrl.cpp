@@ -5,7 +5,7 @@
 #include "../client/LogManager.h"
 #include "../client/ResourceManager.h"
 
-#include "../regex/pme.h"
+#include "../client/pme.h"
 
 #include "fuleditctrl.h"
 #include "PopupManager.h"
@@ -16,19 +16,19 @@
 
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
-CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyString), findBufferSize(100),
+CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyStringT), findBufferSize(100),
 								logged(false), matchedSound(false), skipLog(false)
 {
-	findBuffer = new char[findBufferSize];
-	findBuffer[0] = '\0';
+	findBuffer = new TCHAR[findBufferSize];
+	findBuffer[0] = _T('\0');
 
-	urls.push_back("http://");
-	urls.push_back("https://");
-	urls.push_back("www.");
-	urls.push_back("ftp://");
-	urls.push_back("ftps://");
-	urls.push_back("mms://");
-	urls.push_back("dchub://");
+	urls.push_back(_T("http://"));
+	urls.push_back(_T("https://"));
+	urls.push_back(_T("www."));
+	urls.push_back(_T("ftp://"));
+	urls.push_back(_T("ftps://"));
+	urls.push_back(_T("mms://"));
+	urls.push_back(_T("dchub://"));
 
 	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | HANDLE_URLS);
 
@@ -38,35 +38,35 @@ CFulEditCtrl::~CFulEditCtrl(void)
 	delete[] findBuffer;
 }
 
-bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
+bool CFulEditCtrl::AddLine(const tstring & line, bool timeStamps) {
 	bool noScroll = false;
 	matchedTab = false;
-	string aLine = line;
+	tstring aLine = line;
 	if(GetWindowTextLength() > SETTING(CHATBUFFERSIZE)) {
 		SetRedraw(false);
 		SetSel(0, LineIndex(LineFromChar(2000)));
-		ReplaceSel("");
+		ReplaceSel(_T(""));
 		SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 		ScrollCaret();
 		SetRedraw(true);
 	}
-	if(Util::strnicmp("<" + nick + ">", aLine, nick.length() + 2) == 0)
+	if(Util::strnicmp(_T("<") + nick + _T(">"), aLine, nick.length() + 2) == 0)
 		skipLog = true;
 
-	if(isSet(STRIP_ISP) && aLine[0] == '<') {
-		u_int pos = aLine.find("]");
-		if(pos < aLine.find(">") )
-			aLine = "<" + aLine.substr(pos+1);
+	if(isSet(STRIP_ISP) && aLine[0] == _T('<')) {
+		u_int pos = aLine.find(_T("]"));
+		if(pos < aLine.find(_T(">")) )
+			aLine = _T("<") + aLine.substr(pos+1);
 	}
 		
-	string::size_type pos = Util::findSubString(aLine, "> /me ");
-	if( pos != string::npos)
-		aLine = "** " + aLine.substr(1, pos-1) +  aLine.substr(pos+5, aLine.length());
+	tstring::size_type pos = aLine.find(_T("> /me "));
+	if( pos != tstring::npos)
+		aLine = _T("** ") + aLine.substr(1, pos-1) +  aLine.substr(pos+5, aLine.length());
 
 	if(timeStamps) {
-		aLine = "\r\n[" + Util::getShortTimeString() + "] " + aLine;
+		aLine = _T("\r\n[") + Util::getShortTimeStringW() + _T("] ") + aLine;
 	} else {
-		aLine = "\r\n" + aLine;
+		aLine = _T("\r\n") + aLine;
 	}
 	
 	SetRedraw(FALSE);
@@ -107,7 +107,7 @@ void CFulEditCtrl::Colorize(int begin) {
 	ColorList *cList = HighlightManager::getInstance()->rLock();
 
 	int end = GetTextLengthEx(GTL_NUMCHARS);
-	char *buf = new char[end-begin+1];
+	TCHAR *buf = new TCHAR[end-begin+1];
 	HideSelection(true, false);
 	SetSel(begin, end);
 	//otroligt fulhack, måste lagas riktigt nån gång
@@ -116,7 +116,7 @@ void CFulEditCtrl::Colorize(int begin) {
 	GetSelText(buf);
 	SetSel(end, end);
 	
-	string line = buf;
+	tstring line = buf;
 	delete[] buf;
 
 	logged = false;
@@ -130,9 +130,9 @@ void CFulEditCtrl::Colorize(int begin) {
 		if( cs->getIncludeNick() ) {
 			pos = 0;
 		} else {
-			pos = line.find(">");
-			if(pos == string::npos)
-				pos = line.find("**") + nick.length();
+			pos = line.find(_T(">"));
+			if(pos == tstring::npos)
+				pos = line.find(_T("**")) + nick.length();
 		}
 
 		//prepare the charformat
@@ -182,7 +182,7 @@ void CFulEditCtrl::SetTextColor( COLORREF color ) {
 	GetSelectionCharFormat(selFormat);
 }
 
-int CFulEditCtrl::TextUnderCursor(POINT p, string& x) {
+int CFulEditCtrl::TextUnderCursor(POINT p, tstring& x) {
 	
 	int i = CharFromPos(p);
 	int line = LineFromChar(i);
@@ -192,13 +192,13 @@ int CFulEditCtrl::TextUnderCursor(POINT p, string& x) {
 		return 0;
 	}
 
-	char* buf = new char[len];
+	TCHAR* buf = new TCHAR[len];
 	GetLine(line, buf, len);
-	x = string(buf, len-1);
+	x = tstring(buf, len-1);
 	delete[] buf;
 
-	string::size_type start = x.find_last_of(" <\t\r\n", c);
-	if(start == string::npos)
+	tstring::size_type start = x.find_last_of(_T(" <\t\r\n"), c);
+	if(start == tstring::npos)
 		start = 0;
 	else
 		start++;
@@ -206,7 +206,7 @@ int CFulEditCtrl::TextUnderCursor(POINT p, string& x) {
 	return start;
 }
 
-void CFulEditCtrl::AddInternalLine(string & aLine) {
+void CFulEditCtrl::AddInternalLine(tstring & aLine) {
 	int length = GetTextLengthEx(GTL_NUMCHARS)+1;
 	AppendText(aLine.c_str());
 	Colorize(length);
@@ -217,9 +217,9 @@ void CFulEditCtrl::AddInternalLine(string & aLine) {
 	ScrollCaret();
 }
 
-int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex) {
-	int index = string::npos;
-	string searchString;
+int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, tstring &line, int pos, int &lineIndex) {
+	int index = tstring::npos;
+	tstring searchString;
 
 	if( cs->getMyNick() )
 		searchString = nick;
@@ -229,26 +229,27 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 	//we don't have any nick to search for
 	//happens in pm's have to find a solution for this
 	if(searchString.empty())
-		return string::npos;
+		return tstring::npos;
 
 
 	//do we want to highlight the timestamps
 	if( cs->getTimestamps() ) {
-		if( line[0] != '[' )
-			return string::npos;
+		if( line[0] != _T('[') )
+			return tstring::npos;
 		index = 0;
 	} else if( cs->getUsers() ) {
-		index = line.find("<");
+		index = line.find(_T("<"));
 	}else{
 		if( cs->getCaseSensitive() ) {
-			index = Util::findSubStringCaseSensitive(line, searchString, pos);
+			index = line.find(searchString, pos);
 		}else {
-			index = Util::findSubString(line, searchString, pos);	
+			//index = Util::findSubString(line, searchString, pos);	
+			index = Util::toLower(line).find(Util::toLower(searchString), pos);
 		}
 	}
 	//return if no matches where found
-	if( index == string::npos )
-		return string::npos;
+	if( index == tstring::npos )
+		return tstring::npos;
 
 	pos = index + searchString.length();
 	
@@ -261,18 +262,18 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 			
 		switch(cs->getMatchType()){
 			case 0:
-				if(line[index-1] != ' ' && line[index-1] != '\r' )
-					return string::npos;
+				if(line[index-1] != _T(' ') && line[index-1] != _T('\r') )
+					return tstring::npos;
 				break;
 			case 1:
 				break;
 			case 2:
-				if(line[index+length] != ' ' && line[index+length] != '\r')
-					return string::npos;
+				if(line[index+length] != _T(' ') && line[index+length] != _T('\r'))
+					return tstring::npos;
 				break;
 			case 3:
-				if( !( (index == 0 || line[index-1] == ' ') && (line[index+length] == ' ' || line[index+length] == '\r') ) )
-					return string::npos;
+				if( !( (index == 0 || line[index-1] == _T(' ')) && (line[index+length] == _T(' ') || line[index+length] == _T('\r')) ) )
+					return tstring::npos;
 				break;
 		}
 	}
@@ -282,26 +283,26 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 	begin = lineIndex;
 		
 	if( cs->getTimestamps() ) {
-		string::size_type pos = line.find("]");
-		if( pos == string::npos ) 
-			return string::npos;  //hmm no ]? this can't be right, return
+		tstring::size_type pos = line.find(_T("]"));
+		if( pos == tstring::npos ) 
+			return tstring::npos;  //hmm no ]? this can't be right, return
 		
 		begin += index +1;
 		end = begin + pos -1;
 	} else if( cs->getUsers() ) {
-		end = begin + line.find(">");
+		end = begin + line.find(_T(">"));
 		begin += index +1;
 	} else if( cs->getWholeLine() ) {
 		end = begin + line.length();
 	} else if( cs->getWholeWord() ) {
 		int tmp;
 
-		tmp = line.find_last_of(" \t\r\n", index);
-		if(tmp != string::npos )
+		tmp = line.find_last_of(_T(" \t\r\n"), index);
+		if(tmp != tstring::npos )
 			begin += tmp+1;
 		
-		tmp = line.find_first_of(" \t\r\n", index);
-		if(tmp != string::npos )
+		tmp = line.find_first_of(_T(" \t\r\n"), index);
+		if(tmp != tstring::npos )
 			end = lineIndex + tmp;
 		else
 			end = lineIndex + line.length();
@@ -335,16 +336,16 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 	}
 					
 	if( cs->getTimestamps() || cs->getUsers() )
-		return string::npos;
+		return tstring::npos;
 	
 	return pos;
 }
 
-int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int &lineIndex) {
+int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, tstring &line, int &lineIndex) {
 	int begin = 0, end = 0;
 	bool found = false;
 		
-	PME regexp(cs->getMatch().substr(4), "gims");
+	PME regexp(cs->getMatch().substr(4), _T("gims"));
 				
 	while( regexp.match(line) > 0 ){
 		found = true;
@@ -373,7 +374,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 	}
 
 	if(!found)
-		return string::npos;
+		return tstring::npos;
 	
 
 	SetSel(GetTextLength()-1, GetTextLength()-1);
@@ -397,7 +398,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 	}
 	
-	return string::npos;
+	return tstring::npos;
 }
 
 LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
@@ -436,7 +437,7 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	FINDTEXT ft;
 	ft.chrg.cpMin = ch;
 	ft.chrg.cpMax = -1;
-	ft.lpstrText = "\r";
+	ft.lpstrText = _T("\r");
 
 	int begin = (int)SendMessage(EM_FINDTEXT, 0, (LPARAM)&ft) + 1;
 	int rEnd = (int)SendMessage(EM_FINDTEXT, FR_DOWN, (LPARAM)&ft);
@@ -446,23 +447,23 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	if(rEnd == -1)
 		rEnd = GetTextLengthEx(GTL_NUMCHARS);
 		
-	char *buf = new char[rEnd-begin+1];
+	TCHAR *buf = new TCHAR[rEnd-begin+1];
 	
 	GetTextRange(begin, rEnd, buf);
 	
 	
-	string tmp = buf;
+	tstring tmp = buf;
 	delete[] buf;
 	
-	int start = tmp.find_last_of(" \t\r\n", ch-begin) +1;
-	int end = tmp.find_first_of(" \t\r\n", start+1);
-	if(end == string::npos)
+	int start = tmp.find_last_of(_T(" \t\r\n"), ch-begin) +1;
+	int end = tmp.find_first_of(_T(" \t\r\n"), start+1);
+	if(end == tstring::npos)
 		end = tmp.length();
-	string url = tmp.substr(start, end-start);
+	tstring url = tmp.substr(start, end-start);
 	
 	
 	bool found = false;
-	StringIter i = urls.begin();
+	TStringIter i = urls.begin();
 
 	for(; i != urls.end(); ++i) {
 		if(Util::strnicmp(url.c_str(), (*i).c_str(), (*i).length()) == 0){
@@ -500,7 +501,7 @@ LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 		//if we find the end of the document, notify the user and return
 		int result = (int)SendMessage(EM_FINDTEXT, (WPARAM)flags, (LPARAM)&ft);
 		if(-1 == result){
-			MessageBox(CSTRING(FINISHED_SEARCHING), "fulDC", MB_OK | MB_ICONINFORMATION);
+			MessageBox(CTSTRING(FINISHED_SEARCHING), _T("fulDC"), MB_OK | MB_ICONINFORMATION);
 			curFindPos = 0;
 			return 0;
 		}
@@ -508,7 +509,7 @@ LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 		//select the result and scroll it into view
 		curFindPos = result +1 ;
 		SetFocus();
-		SetSel(result, result + strlen(ft.lpstrText));
+		SetSel(result, result + _tcslen(ft.lpstrText));
 		ScrollCaret();
 	}
 
@@ -553,13 +554,13 @@ void CFulEditCtrl::Find() {
 	curFindPos = 0;
 }
 
-bool CFulEditCtrl::LastSeen(string & nick){
+bool CFulEditCtrl::LastSeen(tstring & nick){
 	FINDTEXTEX ft;
 	CHARRANGE sel;
 	int result;
 	
 	bool found = false;
-	string search = "<" + nick + ">";
+	tstring search = _T("<") + nick + _T(">");
 		
 	ft.chrg.cpMin = 0;
 	ft.chrg.cpMax = -1;
@@ -580,13 +581,13 @@ bool CFulEditCtrl::LastSeen(string & nick){
 	return true;
 }
 
-void CFulEditCtrl::AddLogLine(string & line){
+void CFulEditCtrl::AddLogLine(tstring & line){
 	if(lastlog.size() == 100)
 		lastlog.pop_front();
 	
 	lastlog.push_back(line);
 }
 
-deque<string> *CFulEditCtrl::LastLog(){
+deque<tstring> *CFulEditCtrl::LastLog(){
 	return &lastlog;
 }

@@ -10,7 +10,7 @@
 
 PopupManager* Singleton< PopupManager >::instance = NULL;
 
-void PopupManager::Show(const string& aMsg ) {
+void PopupManager::Show(const tstring& aMsg ) {
 	if(!activated)
 		return;
 
@@ -73,7 +73,7 @@ void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t /*tick*/ 
 void PopupManager::on(QueueManagerListener::ReleaseDone, string msg) {
 	//we can't create the window in this thread, then the client will crash
 	//so post a message and let the main window thread create it
-	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, MainFrame::DOWNLOAD_COMPLETE, (LPARAM)new string(msg));
+	::PostMessage(WinUtil::mainWnd, WM_SPEAKER, MainFrame::DOWNLOAD_COMPLETE, (LPARAM)new tstring(WinUtil::toT(msg)));
 }
 
 void PopupManager::AutoRemove(){
@@ -152,45 +152,44 @@ void PopupManager::Remove(int pos) {
 	}
 }
 
-void PopupManager::ShowPm(const string& nick, const string& msg){
-	dcdebug("%s\n", msg);
-	int pos = msg.find_first_of(">")+1;
-	if(pos == string::npos )
+void PopupManager::ShowPm(const tstring& nick, const tstring& msg){
+	int pos = msg.find_first_of(_T(">"))+1;
+	if(pos == tstring::npos )
 		pos = 0;
 
-	string s = "New PM from: " + nick + " Msg:\r\n" + msg.substr(pos);
+	tstring s = _T("New PM from: ") + nick + _T(" Msg:\r\n") + msg.substr(pos);
 	Show(s);
 }
 
-void PopupManager::ShowMC(const string& nick, const string& msg){
-	string s = nick + " says:\r\n" + msg;
+void PopupManager::ShowMC(const tstring& nick, const tstring& msg){
+	tstring s = nick + _T(" says:\r\n") + msg;
 	Show(s);
 }
 
-void PopupManager::ShowMC(const string& msg){
-	int pos1 = msg.find_first_of("<");
-	int pos2 = msg.find_first_of(">");
+void PopupManager::ShowMC(const tstring& msg){
+	int pos1 = msg.find_first_of(_T("<"));
+	int pos2 = msg.find_first_of(_T(">"));
 	
 	//something wrong with the string, return
-	if(pos1 == string::npos || pos2 == string::npos)
+	if(pos1 == tstring::npos || pos2 == tstring::npos)
 		return;
 
 	ShowMC(msg.substr(pos1+1, pos2-pos1-1), msg.substr(pos2+1));
 	
 }
 
-void PopupManager::ShowDisconnected(const string& hub) {
-	string s = "you've been disconnected from:\r\n " + hub;
+void PopupManager::ShowDisconnected(const tstring& hub) {
+	tstring s = _T("you've been disconnected from:\r\n ") + hub;
 	Show(s);
 }
 
-void PopupManager::ShowDownloadComplete(string *msg){
-	string s = "Download complete:\r\n";
+void PopupManager::ShowDownloadComplete(tstring *msg){
+	tstring s = _T("Download complete:\r\n");
 	
 	//if we have a whole path remove everything but the last directory
-	if(msg->at(msg->length()-1) == '\\'){
-		int i = msg->rfind('\\', msg->length()-2);
-		if( i != string::npos)
+	if(msg->at(msg->length()-1) == _T('\\')){
+		int i = msg->rfind(_T('\\'), msg->length()-2);
+		if( i != tstring::npos)
 			s = s + msg->substr(i+1, msg->length() - i - 2);
 	}else {
 		s = s+ (*msg);

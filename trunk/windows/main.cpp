@@ -42,7 +42,7 @@ static char buf[DEBUG_BUFSIZE];
 #ifndef _DEBUG
 
 FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
-	MessageBox(WinUtil::mainWnd, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
+	MessageBox(WinUtil::mainWnd, _T("DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("DC++ Has Crashed"), MB_OK | MB_ICONERROR);
 	exit(-1);
 }
 
@@ -197,7 +197,7 @@ static DWORD checkCommonControls() {
 }
 
 void callBack(void* x, const string& a, const string& b) {
-	::SetWindowText((HWND)x, (a + STRING(LOADING) + "(" + b + ")").c_str());
+	::SetWindowText((HWND)x, WinUtil::toT(a + STRING(LOADING) + "(" + b + ")").c_str());
 	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
 }
 
@@ -234,9 +234,9 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	rc.left = rc.right / 2 - 200;
 	rc.right = rc.left + 400;
 
-	dummy.Create(NULL, rc, APPNAME " " VERSIONSTRING, WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	dummy.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
-	splash.Create(NULL, rc, APPNAME " " VERSIONSTRING, WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	splash.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_CENTER | ES_READONLY | ES_MULTILINE, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	

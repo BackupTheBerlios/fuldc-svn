@@ -44,7 +44,7 @@ TransferView::~TransferView() {
 
 LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 
-	arrows.CreateFromImage("icons\\arrows.bmp", 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	arrows.CreateFromImage(_T("icons\\arrows.bmp"), 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
@@ -68,17 +68,17 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlTransfers.setSortColumn(COLUMN_USER);
 
 	openMenu.CreatePopupMenu();
-	openMenu.AppendMenu(MF_STRING, IDC_OPEN, CSTRING(OPEN));
-	openMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CSTRING(OPEN_FOLDER));
+	openMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
+	openMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
 
 	pmMenu.CreatePopupMenu();
-	pmMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(USER));
-	pmMenu.AppendMenu(MF_STRING, IDC_PM_UP, CSTRING(ALL_UPLOADS));
-	pmMenu.AppendMenu(MF_STRING, IDC_PM_DOWN, CSTRING(ALL_DOWNLOADS));
+	pmMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CTSTRING(USER));
+	pmMenu.AppendMenu(MF_STRING, IDC_PM_UP, CTSTRING(ALL_UPLOADS));
+	pmMenu.AppendMenu(MF_STRING, IDC_PM_DOWN, CTSTRING(ALL_DOWNLOADS));
 
 	copyMenu.CreatePopupMenu();
 	for(int i = 0; i < COLUMN_LAST; ++i)
-		copyMenu.AppendMenu(MF_STRING, IDC_COPY+i, CSTRING_I(columnNames[i]));
+		copyMenu.AppendMenu(MF_STRING, IDC_COPY+i, CTSTRING_I(columnNames[i]));
 
 	transferMenu.CreatePopupMenu();
 	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
@@ -169,11 +169,13 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		ItemInfo* itemI = ctrlTransfers.getItemData(i);
 
 		ucParams["mynick"] = itemI->user->getClientNick();
+		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
 
-		itemI->user->getParams(ucParams);
-
-		itemI->user->send(Util::formatParams(uc.getCommand(), ucParams));
-		}
+		StringMap tmp = ucParams;
+		itemI->user->getParams(tmp);
+		itemI->user->clientEscapeParams(tmp);
+		itemI->user->send(Util::formatParams(uc.getCommand(), tmp));
+	}
 	return;
 };
 
@@ -214,7 +216,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 		lvc.pszText = headerBuf;
 		lvc.cchTextMax = 128;
 		ctrlTransfers.GetColumn(cd->iSubItem, &lvc);
-		if(Util::stricmp(headerBuf, CSTRING_I(columnNames[COLUMN_STATUS])) == 0) {
+		if(Util::stricmp(headerBuf, CTSTRING_I(columnNames[COLUMN_STATUS])) == 0) {
 			ItemInfo* ii = (ItemInfo*)cd->nmcd.lItemlParam;
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
@@ -371,13 +373,13 @@ void TransferView::ItemInfo::update() {
 	}
 	if(colMask & MASK_TOTALTIMELEFT) {
 		if(status == STATUS_RUNNING)
-			columns[COLUMN_TOTALTIMELEFT] = Util::formatSeconds(totalTimeLeft);
+			columns[COLUMN_TOTALTIMELEFT] = Util::formatSecondsW(totalTimeLeft);
 		else
-			columns[COLUMN_TOTALTIMELEFT] = Util::emptyString;
+			columns[COLUMN_TOTALTIMELEFT] = Util::emptyStringT;
 	}
 	if(colMask & MASK_SPEED) {
 		if (status == STATUS_RUNNING) {
-			columns[COLUMN_SPEED] = WinUtil::toT(Util::formatBytes(speed) + "/s");
+			columns[COLUMN_SPEED] = Util::formatBytesW(speed) + _T("/s");
 		} else {
 			columns[COLUMN_SPEED] = Util::emptyStringT;
 		}
@@ -630,7 +632,7 @@ LRESULT TransferView::onPmAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	if(dlg.DoModal() == IDCANCEL)
 		return 0;
 	
-	string msg = dlg.line;
+	tstring msg = dlg.line;
 
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_ALL)) != -1) {
@@ -645,7 +647,7 @@ LRESULT TransferView::onPmAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 LRESULT TransferView::onOpen(WORD , WORD wID, HWND , BOOL& ) {
 	ItemInfo *ii = ctrlTransfers.getItemData(ctrlTransfers.GetNextItem(-1, LVNI_SELECTED));
 
-	string path;
+	tstring path;
 
 	if(wID == IDC_OPEN) {
 		path = ii->path + ii->file;
@@ -653,7 +655,7 @@ LRESULT TransferView::onOpen(WORD , WORD wID, HWND , BOOL& ) {
 		path = ii->path;
 	}
 
-	ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOW);
+	ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOW);
 
 	return 0;
 }
@@ -667,7 +669,7 @@ LRESULT TransferView::onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		return 0;
 
 	resolveBuffer = new char[MAXGETHOSTSTRUCT];
-	unsigned long l = inet_addr(ctrlTransfers.getItemData(i)->getText(COLUMN_IP).c_str());
+	unsigned long l = inet_addr(WinUtil::fromT(ctrlTransfers.getItemData(i)->getText(COLUMN_IP)).c_str());
 
 	if( 0 == WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT)) {
 		delete[] resolveBuffer;
@@ -702,7 +704,7 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 LRESULT TransferView::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	ItemInfo *ii = ctrlTransfers.getSelectedItem();
 	if(ii != NULL)
-		WinUtil::copyToClipboard(ii->getText(wID - IDC_COPY));
+		WinUtil::setClipboard(ii->getText(wID - IDC_COPY));
 
 	return 0;
 }

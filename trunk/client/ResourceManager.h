@@ -66,11 +66,13 @@ private:
 
 #ifdef UNICODE
 #define TSTRING WSTRING
+#define TSTRING_I WSTRING_I
 #define CTSTRING CWSTRING
 #define CTSTRING_I CWSTRING_I
 #else
 #define TSTRING STRING
 #define CTSTRING CSTRING
+#define TSTRING_I STRING_I
 #endif
 
 

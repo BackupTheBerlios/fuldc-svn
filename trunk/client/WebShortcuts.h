@@ -28,13 +28,13 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	WebShortcut(const string& _name, const string& _key, const string& _url, bool _clean = false) :
+	WebShortcut(const tstring& _name, const tstring& _key, const tstring& _url, bool _clean = false) :
 	name(_name), key(_key), url(_url), clean(_clean) { }
 	WebShortcut() {}
 
-	string name;
-	string key;
-	string url;
+	tstring name;
+	tstring key;
+	tstring url;
 	bool clean;
 };
 
@@ -43,10 +43,10 @@ public:
 	WebShortcuts();
 	~WebShortcuts();
 
-	WebShortcut* getShortcutByName(const string& name);
-	WebShortcut* getShortcutByKey(const string& key);
-	static WebShortcut* getShortcutByName(WebShortcut::List& _list, const string& name);
-	static WebShortcut* getShortcutByKey(WebShortcut::List& _list, const string& key);
+	WebShortcut* getShortcutByName(const tstring& name);
+	WebShortcut* getShortcutByKey(const tstring& key);
+	static WebShortcut* getShortcutByName(WebShortcut::List& _list, const tstring& name);
+	static WebShortcut* getShortcutByKey(WebShortcut::List& _list, const tstring& key);
 
 	WebShortcut::List copyList();
 	void replaceList(WebShortcut::List& new_list);

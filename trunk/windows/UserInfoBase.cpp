@@ -46,7 +46,7 @@ void UserInfoBase::pm() {
 	PrivateFrame::openWindow(user);
 }
 
-void UserInfoBase::pm(const string& aMsg) {
+void UserInfoBase::pm(const tstring& aMsg) {
 	PrivateFrame::openWindow(user, aMsg);
 }
 void UserInfoBase::grant() {

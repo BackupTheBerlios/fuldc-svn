@@ -61,10 +61,11 @@ public:
 		time_t now = time(NULL);
 		strftime(buf, 20, "%Y-%m-%d ", localtime(&now));
 		if(!log(area + "\\" + buf + area, msg)) {
-			::CreateDirectory(Util::validateFileName(SETTING(LOG_DIRECTORY) + area).c_str(), NULL);
+			::CreateDirectoryA((SETTING(LOG_DIRECTORY) + area).c_str(), NULL);
 			log(area + "\\" + buf + area, msg);
 		}
 	}
+
 	void message(const string& msg) {
 		if(BOOLSETTING(LOG_SYSTEM)) {
 			log("system", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);

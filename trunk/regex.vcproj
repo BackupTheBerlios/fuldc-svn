@@ -15,7 +15,7 @@
 			OutputDirectory="vc7\debug\Regex\"
 			IntermediateDirectory="vc7\debug\Regex\"
 			ConfigurationType="4"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -26,6 +26,7 @@
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -59,7 +60,7 @@
 			OutputDirectory="vc7\release\Regex"
 			IntermediateDirectory="vc7\release\Regex"
 			ConfigurationType="4"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
 				GlobalOptimizations="TRUE"
@@ -74,6 +75,7 @@
 				MinimalRebuild="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -116,9 +118,6 @@
 				RelativePath=".\regex\pcre.c">
 			</File>
 			<File
-				RelativePath=".\regex\pme.cpp">
-			</File>
-			<File
 				RelativePath=".\regex\study.c">
 			</File>
 		</Filter>
@@ -128,9 +127,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath=".\regex\pcre.h">
-			</File>
-			<File
-				RelativePath=".\regex\pme.h">
 			</File>
 		</Filter>
 		<Filter

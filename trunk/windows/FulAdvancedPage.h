@@ -32,7 +32,7 @@ class FulAdvancedPage : public CPropertyPage<IDD_FULADVANCEDPAGE>, public PropPa
 {
 public:
 	FulAdvancedPage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CSTRING(SETTINGS_FUL_ADVANCED));
+		SetTitle(CTSTRING(SETTINGS_FUL_ADVANCED));
 	};
 
 	~FulAdvancedPage() { 
@@ -63,7 +63,7 @@ public:
 		ctrlWebShortcuts.SetItemText(pos, 2, wsList[pos]->url.c_str());
 	}
 	void addListItem(WebShortcut* ws) {
-		StringList cols;
+		TStringList cols;
 		cols.push_back(ws->name);
 		cols.push_back(ws->key);
 		cols.push_back(ws->url);

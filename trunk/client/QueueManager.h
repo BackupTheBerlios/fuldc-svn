@@ -38,7 +38,7 @@
 #include "SearchManagerListener.h"
 #include "ClientManagerListener.h"
 
-#include "../regex/pme.h"
+#include "../client/pme.h"
 
 STANDARD_EXCEPTION(QueueException);
 

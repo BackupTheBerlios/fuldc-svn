@@ -88,6 +88,7 @@
 			UseOfMFC="0"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="1"
 			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
@@ -105,6 +106,7 @@
 				RuntimeLibrary="0"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
 				AssemblerOutput="0"
@@ -464,10 +466,10 @@
 				RelativePath=".\windows\GeneralPage.h">
 			</File>
 			<File
-				RelativePath=".\windows\HighlightPage.h">
+				RelativePath=".\windows\HashProgressDlg.h">
 			</File>
 			<File
-				RelativePath=".\windows\HashProgressDlg.h">
+				RelativePath=".\windows\HighlightPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\HubFrame.h">

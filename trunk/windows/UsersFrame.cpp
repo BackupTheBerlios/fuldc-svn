@@ -67,7 +67,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
-	WinUtil::SetIcon(m_hWnd, "favoriteuser.ico");
+	WinUtil::SetIcon(m_hWnd, _T("favoriteuser.ico"));
 
 	startup = false;
 

@@ -52,7 +52,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	ctrlSetPriority.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON, 0, IDC_SET_PRIORITY);
-	ctrlSetPriority.SetWindowText(CSTRING(SET_PRIORITY));
+	ctrlSetPriority.SetWindowText(CTSTRING(SET_PRIORITY));
 	ctrlSetPriority.SetFont(WinUtil::systemFont);
 	
 	ctrlQueue.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -147,7 +147,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	memset(statusSizes, 0, sizeof(statusSizes));
 	statusSizes[0] = 16;
-	statusSizes[6] = WinUtil::getTextWidth(STRING(SET_PRIORITY), m_hWnd)+8;
+	statusSizes[6] = WinUtil::getTextWidth(TSTRING(SET_PRIORITY), m_hWnd)+8;
 	ctrlStatus.SetParts(7, statusSizes);
 	updateStatus();
 
@@ -159,7 +159,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		}while((item = ctrlDirs.GetNextSiblingItem(item)) != NULL);
 	}
 
-	WinUtil::SetIcon(m_hWnd, "Queue.ico");
+	WinUtil::SetIcon(m_hWnd, _T("Queue.ico"));
 
 	bHandled = FALSE;
 	return 1;
@@ -826,7 +826,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
 		if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
 			ctrlDirs.SelectItem(ht);
-		if(QueueManager::getInstance()->hasNotification(getDir(ht)))
+		if(QueueManager::getInstance()->hasNotification(WinUtil::fromT(getDir(ht))))
 			dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_CHECKED);
 		else
 			dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_UNCHECKED);
@@ -1220,15 +1220,15 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 LRESULT QueueFrame::onSetPriority(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	PriorityDlg dlg;
 
-	string search;
+	tstring search;
 	int prio;
 
 	if(dlg.DoModal() == IDOK){
 		prio = dlg.GetPriority();
 		search = dlg.GetSearch();
 
-		int count = QueueManager::getInstance()->changePriority(search, prio);
-		string tmp = "Changed priority for " + Util::toString(count) + " files";
+		int count = QueueManager::getInstance()->changePriority(WinUtil::fromT(search), prio);
+		tstring tmp = _T("Changed priority for ") + Util::toStringW(count) + _T(" files");
 		ctrlStatus.SetText(1, tmp.c_str());
 	}
 	
@@ -1265,13 +1265,13 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 
 	int tmp = wID - IDC_COPY;
 	
-	WinUtil::copyToClipboard(ii->getText(tmp));	
+	WinUtil::setClipboard(ii->getText(tmp));	
 	return 0;
 }
 
 LRESULT QueueFrame::onNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	HTREEITEM ht = ctrlDirs.GetSelectedItem();
-	string name = getDir(ht);
+	string name = WinUtil::fromT(getDir(ht));
 	if(QueueManager::getInstance()->hasNotification(name))
 		QueueManager::getInstance()->removeNotification(name);
 	else

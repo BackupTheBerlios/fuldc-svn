@@ -65,8 +65,8 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 				done = true;
 		}
 
-		if(done)
-			fire(HashManagerListener::Finished());
+		//if(done)
+			//fire(HashManagerListener::Finished());
 	}
 
 	string fn = aFileName;

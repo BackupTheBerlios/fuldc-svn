@@ -64,24 +64,24 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	tabMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
 	tabMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
-	tabMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
-	tabMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CSTRING(SHOW_LOG));
+	tabMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
+	tabMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
 
 
 	userMenu.CreatePopupMenu();
-	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	userMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
-	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
-	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
-	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
-	userMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CSTRING(SHOW_LOG));
+	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
+	userMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
+	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
+	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
+	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
+	userMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
 
 	searchMenu.CreatePopupMenu();
 	
 	mcMenu.CreatePopupMenu();
-	mcMenu.AppendMenu(MF_STRING, IDC_COPY, CSTRING(COPY));
-	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH, CSTRING(SEARCH));
-	mcMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CSTRING(SEARCH_SITES));
+	mcMenu.AppendMenu(MF_STRING, IDC_COPY, CTSTRING(COPY));
+	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
+	mcMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
 
 	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
 	MENUINFO inf;
@@ -95,7 +95,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ClientManager::getInstance()->addListener(this);
 
-	WinUtil::SetIcon(m_hWnd, "User.ico");
+	WinUtil::SetIcon(m_hWnd, _T("User.ico"));
 	
 	if(BOOLSETTING(STRIP_ISP_PM))
 		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
@@ -123,12 +123,12 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				p->addLine(aMessage);
 				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !p->muted) {
 					if(BOOLSETTING(CUSTOM_SOUND))
-						PlaySound("PM.wav", NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+						PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 					else
 						MessageBeep(MB_OK);
 				}
 				if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
-					PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
+					PopupManager::getInstance()->ShowPm(WinUtil::toT(aUser->getNick()), aMessage);
 				}
 				break;
 			}
@@ -140,29 +140,29 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
 				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->getConnection().empty()))
-					p->sendMessage(WinUtil::toT(Util::getAwayMessage()));
+					p->sendMessage(Util::getAwayMessage());
 			}
 
 			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
 				if(BOOLSETTING(CUSTOM_SOUND))
-					PlaySound("newPM.wav", NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+					PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 				else
 					MessageBeep(MB_OK);
 			}
 
 			if (BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
-				PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
+				PopupManager::getInstance()->ShowPm(WinUtil::toT(aUser->getNick()), aMessage);
 			}
 		}
 	} else {
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !i->second->muted) {
 			if(BOOLSETTING(CUSTOM_SOUND))
-				PlaySound("PM.wav", NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+				PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 			else
 				MessageBeep(MB_OK);
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
-			PopupManager::getInstance()->ShowPm(aUser->getNick(), aMessage);
+			PopupManager::getInstance()->ShowPm(WinUtil::toT(aUser->getNick()), aMessage);
 		}
 		i->second->addLine(aMessage);
 
@@ -219,9 +219,9 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 				if (curCommandPosition > 0 && !prevCommands.empty()) {
 					//check whether current command needs to be saved
 					if (curCommandPosition == prevCommands.size()) {
-						auto_ptr<char> messageContents(new char[ctrlMessage.GetWindowTextLength()+2]);
+						auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
 						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-						currentCommand = string(messageContents.get());
+						currentCommand = tstring(messageContents.get());
 					}
 
 					//replace current chat buffer with current command
@@ -255,9 +255,9 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				curCommandPosition = 0;
 
-				auto_ptr<char> messageContents(new char[ctrlMessage.GetWindowTextLength()+2]);
+				auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
 				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-				currentCommand = string(messageContents.get());
+				currentCommand = tstring(messageContents.get());
 
 				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
 			} else {
@@ -297,10 +297,10 @@ void PrivateFrame::onEnter()
 			++curCommandPosition;
 			prevCommands.push_back(s);
 		}
-		currentCommand = "";
+		currentCommand = _T("");
 
 		// Process special commands
-		if(s[0] == '/') {
+		if(s[0] == _T('/')) {
 			tstring param;
 			tstring message;
 			tstring status;
@@ -326,21 +326,21 @@ void PrivateFrame::onEnter()
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /mute, /unmute, /pop on|off"));
-			} else if(Util::stricmp(s.c_str(), "me") == 0) {
-				sendMessage("/" + s + " " + param);
-			} else if(Util::stricmp(s.c_str(), "mute") == 0) {
+			} else if(Util::stricmp(s.c_str(), _T("me")) == 0) {
+				sendMessage(_T("/") + s + _T(" ") + param);
+			} else if(Util::stricmp(s.c_str(), _T("mute")) == 0) {
 				muted = true;
-				addClientLine(STRING(MUTED));
-			} else if(Util::stricmp(s.c_str(), "unmute") == 0){
+				addClientLine(TSTRING(MUTED));
+			} else if(Util::stricmp(s.c_str(), _T("unmute")) == 0){
 				muted = false;
-				addClientLine(STRING(UNMUTED));
-			} else if(Util::stricmp(s.c_str(), "pop") == 0) {
-				if( Util::stricmp(param, "on") == 0){
+				addClientLine(TSTRING(UNMUTED));
+			} else if(Util::stricmp(s.c_str(), _T("pop")) == 0) {
+				if( Util::stricmp(param, _T("on")) == 0){
 					doPopups = true;
-					addClientLine(STRING(POPUPS_ACTIVATED));
-				}else if( Util::stricmp(param, "off") == 0){
+					addClientLine(TSTRING(POPUPS_ACTIVATED));
+				}else if( Util::stricmp(param, _T("off")) == 0){
 					doPopups = false;
-					addClientLine(STRING(POPUPS_DEACTIVATED));
+					addClientLine(TSTRING(POPUPS_DEACTIVATED));
 				}
 			} else {
 				if(user->isOnline()) {
@@ -396,7 +396,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 	if(ctrlClient.AddLine(aLine, BOOLSETTING(TIME_STAMPS)))
 		setNotify();
 	
-	addClientLine(CSTRING(LAST_CHANGE) + Util::getTimeString());
+	addClientLine(TSTRING(LAST_CHANGE) + Util::getTimeStringW());
 
 	if(bold)
 		setDirty();
@@ -419,8 +419,10 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 		return;
 
 	ucParams["mynick"] = user->getClientNick();
+	ucParams["mycid"] = user->getClientCID().toBase32();
 
 	user->getParams(ucParams);
+	user->clientEscapeParams(ucParams);
 
 	user->send(Util::formatParams(uc.getCommand(), ucParams));
 	return;
@@ -499,12 +501,12 @@ LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam,
 
 	if(PtInRect(&rc, pt)) {
 		//hämta raden som vi klickade på
-		string tmp;
-		string::size_type start = ctrlClient.TextUnderCursor(pt, tmp);
+		tstring tmp;
+		tstring::size_type start = ctrlClient.TextUnderCursor(pt, tmp);
 
 		// kontrollera ifall musen var över nicket
-		string::size_type end = tmp.find_first_of(" >\t", start+1);
-		if (end != string::npos && end != start+1 && tmp[start-1] == '<') {
+		tstring::size_type end = tmp.find_first_of(_T(" >\t"), start+1);
+		if (end != tstring::npos && end != start+1 && tmp[start-1] == _T('<')) {
 			
 			// konvertera tillbaka positionen för musen så menyn hamnar rätt
 			ctrlClient.ClientToScreen(&pt);
@@ -527,16 +529,16 @@ LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam,
 				CHARRANGE cr;
 				ctrlClient.GetSel(cr);
 				if(cr.cpMax != cr.cpMin) {
-					char *buf = new char[cr.cpMax - cr.cpMin + 1];
+					TCHAR *buf = new TCHAR[cr.cpMax - cr.cpMin + 1];
 					ctrlClient.GetSelText(buf);
 					searchTerm = buf;
 					delete[] buf;
 				} else {
-					string line;
+					tstring line;
 					int start = ctrlClient.TextUnderCursor(pt, line);
-					if( start != string::npos ) {
-						int end = line.find_first_of(" \t\r\n", start+1);
-						if(end == string::npos)
+					if( start != tstring::npos ) {
+						int end = line.find_first_of(_T(" \t\r\n"), start+1);
+						if(end == tstring::npos)
 							end = line.length();
 						searchTerm = line.substr(start, end-start);
 					}
@@ -548,7 +550,7 @@ LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam,
 			}
 		}
 	}else {
-		bHandled = false;
+		bHandled = FALSE;
 	}
 	return 0;
 }
@@ -557,8 +559,8 @@ LRESULT PrivateFrame::onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	if(searchTerm.empty()){
 		ctrlClient.Copy();
 	} else {
-		WinUtil::copyToClipboard(searchTerm);
-		searchTerm = Util::emptyString;
+		WinUtil::setClipboard(searchTerm);
+		searchTerm = Util::emptyStringT;
 	}
 
 	return 0;
@@ -566,14 +568,14 @@ LRESULT PrivateFrame::onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT PrivateFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	WinUtil::search(searchTerm, 0);
-	searchTerm = Util::emptyString;
+	searchTerm = Util::emptyStringT;
 	return 0;
 }
 
 LRESULT PrivateFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(searchMenu.m_hMenu == (HMENU)lParam) {
 		WinUtil::search(searchTerm, wParam+1);
-		searchTerm = Util::emptyString;
+		searchTerm = Util::emptyStringT;
 	} else {
 		MENUITEMINFO inf;
 		inf.cbSize = sizeof(MENUITEMINFO);
@@ -585,14 +587,14 @@ LRESULT PrivateFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	WinUtil::copyToClipboard(user->getNick());
+	WinUtil::setClipboard(WinUtil::toT(user->getNick()));
 
 	return 0;
 }
 
 LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	string path = SETTING(LOG_DIRECTORY) + user->getNick() + ".log";
-	ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	tstring path = WinUtil::toT(SETTING(LOG_DIRECTORY) + user->getNick() + ".log");
+	ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return 0;
 }
 LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
@@ -600,17 +602,17 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	bHandled = false;
 	if(focus == ctrlClient.m_hWnd) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		string x;
-		string::size_type start = (string::size_type)ctrlClient.TextUnderCursor(pt, x);
+		tstring x;
+		tstring::size_type start = (tstring::size_type)ctrlClient.TextUnderCursor(pt, x);
 		
-		if( (Util::strnicmp(x.c_str() + start, "http://", 7) == 0) || 
-			(Util::strnicmp(x.c_str() + start, "www.", 4) == 0) ||
-			(Util::strnicmp(x.c_str() + start, "ftp://", 6) == 0) )	{
+		if( (Util::strnicmp(x.c_str() + start, _T("http://"), 7) == 0) || 
+			(Util::strnicmp(x.c_str() + start, _T("www."), 4) == 0) ||
+			(Util::strnicmp(x.c_str() + start, _T("ftp://"), 6) == 0) )	{
 
 			bHandled = true;
 			// Web links...
-			string::size_type end = x.find(' ', start + 7);
-			if(end == string::npos) {
+			tstring::size_type end = x.find(_T(' '), start + 7);
+			if(end == tstring::npos) {
 				end = x.length();
 			}
 			if(end < start + 10) {

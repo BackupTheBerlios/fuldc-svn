@@ -34,6 +34,7 @@
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
 #include "TransferView.h"
+#include "./upnp.h"
 
 #define SERVER_SOCKET_MESSAGE (WM_APP + 1235)
 
@@ -364,6 +365,9 @@ private:
 
 	// QueueManagerListener
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi) throw();
+	// UPnP connectors
+	//UPnP* UPnP_TCPConnection;
+	//UPnP* UPnP_UDPConnection;
 };
 
 #endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)

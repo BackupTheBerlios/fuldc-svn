@@ -138,11 +138,7 @@ void startup(void (*f)(void*, const string&, const string&), void* p) {
 	if(f != NULL)
 		(*f)(p, tku[index], STRING(SHARED_FILES));
 
-	if(ShareManager::getInstance()->loadXmlList()){
-		ShareManager::getInstance()->refresh(false, true, true, false, false, false);
-	} else {
-		ShareManager::getInstance()->refresh(false, false, true, false, false, true);
-	}
+	ShareManager::getInstance()->refresh(true, false, true);
 
 	if(f != NULL)
 		(*f)(p, tku[index], STRING(DOWNLOAD_QUEUE));

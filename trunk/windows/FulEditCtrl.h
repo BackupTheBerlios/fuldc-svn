@@ -28,43 +28,43 @@ public:
 		HANDLE_URLS		= 0x20  //if not set, will not handle urls on LButtonDown
 	};
 
-	bool	AddLine(const string & line, bool timeStamps = false);
+	bool	AddLine(const tstring & line, bool timeStamps = false);
 	void	SetTextColor( COLORREF color );
 	void	ScrollToEnd();
 	void	ScrollToBeginning();
-	int		TextUnderCursor(POINT p, string& x);
+	int		TextUnderCursor(POINT p, tstring& x);
 	void	Find();
-	bool	LastSeen(string & nick);
+	bool	LastSeen(tstring & nick);
 		
-	deque<string>* LastLog();
+	deque<tstring>* LastLog();
 	
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 		
-	void	SetNick(const string& aNick) { nick = aNick; }
+	void	SetNick(const tstring& aNick) { nick = aNick; }
 
 private:
-	void	AddInternalLine(string &aLine);
+	void	AddInternalLine(tstring &aLine);
 	void	Colorize(int begin);
-	int		FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex);
-	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int &lineIndex);
-	void	AddLogLine(string & line);
+	int		FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, tstring &line, int pos, int &lineIndex);
+	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, tstring &line, int &lineIndex);
+	void	AddLogLine(tstring & line);
 
 	bool		matchedSound;
 	bool		matchedPopup;
 	bool		matchedTab;
 	bool		logged;
 	bool		skipLog;
-	string		nick;
+	tstring		nick;
 	CHARFORMAT2 selFormat;
-	char*		findBuffer;
+	TCHAR*		findBuffer;
 	int			curFindPos;
 	const WORD	findBufferSize;
     static UINT	WM_FINDREPLACE;
-	StringList	urls;
+	TStringList	urls;
 		
-	deque<string> lastlog;
+	deque<tstring> lastlog;
 };
 
 #endif

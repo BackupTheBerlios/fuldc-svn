@@ -11,7 +11,7 @@ class FulAppearancePage : public CPropertyPage<IDD_FULAPPEARANCEPAGE>, public Pr
 {
 public:
 	FulAppearancePage(SettingsManager *s) : PropPage(s) {	
-		SetTitle(CSTRING(SETTINGS_FUL_APPEARANCE));
+		SetTitle(CTSTRING(SETTINGS_FUL_APPEARANCE));
 	};
 	~FulAppearancePage() {};
 

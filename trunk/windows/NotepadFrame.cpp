@@ -53,7 +53,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.SetWindowText(WinUtil::toT(tmp).c_str());
 	ctrlPad.EmptyUndoBuffer();
 	
-	WinUtil::SetIcon(m_hWnd, "notepad.ico");
+	WinUtil::SetIcon(m_hWnd, _T("notepad.ico"));
 
 	bHandled = FALSE;
 	return 1;

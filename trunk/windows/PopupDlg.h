@@ -13,7 +13,7 @@
 class PopupWnd : public CWindowImpl<PopupWnd, CWindow>
 {
 public:
-	DECLARE_WND_CLASS("Popup");
+	DECLARE_WND_CLASS(_T("Popup"));
 
 	BEGIN_MSG_MAP(PopupWnd)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -22,10 +22,10 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 	END_MSG_MAP()
 
-	PopupWnd(const string& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
+	PopupWnd(const tstring& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
 		if(int(aMsg.length()) > SETTING(MAX_MSG_LENGTH)){
 			msg = aMsg.substr(0, SETTING(MAX_MSG_LENGTH)-3);
-			msg += "...";
+			msg += _T("...");
 		}
 		else
 			msg = aMsg;
@@ -37,7 +37,7 @@ public:
 		else
 			Create(NULL, rc, NULL, WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_TOOLWINDOW );
 
-		WinUtil::decodeFont(SETTING(POPUP_FONT), logFont);
+		WinUtil::decodeFont(WinUtil::toT(SETTING(POPUP_FONT)), logFont);
 		font = ::CreateFontIndirect(&logFont);
 
 	}
@@ -72,7 +72,7 @@ public:
 		label.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 			SS_CENTER | SS_NOPREFIX);
 
-		SetWindowText("fulDC");
+		SetWindowText(_T("fulDC"));
 
 		label.SetFont(WinUtil::font);
 		label.SetWindowText(msg.c_str());
@@ -136,7 +136,7 @@ public:
 	u_int32_t visible;
 
 private:
-	string  msg;
+	tstring  msg;
 	CStatic label;
 	HBITMAP bmp;
 	LOGFONT logFont;

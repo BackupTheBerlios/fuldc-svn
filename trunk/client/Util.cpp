@@ -47,7 +47,7 @@ wstring Util::emptyStringW;
 tstring Util::emptyStringT;
 
 bool Util::away = false;
-string Util::awayMsg;
+tstring Util::awayMsg;
 time_t Util::awayTime;
 
 wchar_t Util::lower[65536];
@@ -274,9 +274,14 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 		aServer = url.substr(i, k-i);
 }
 
-string Util::getAwayMessage() { 
-	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
+tstring Util::getAwayMessage() { 
+#ifdef UNICODE
+	return (formatTime(awayMsg.empty() ? Util::utf8ToWide(SETTING(DEFAULT_AWAY_MESSAGE)) : awayMsg, awayTime)) + _T(" <DC++ v") _T(VERSIONSTRING) _T(">");
+#else
+	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime) + " <DC++ v" VERSIONSTRING ">");
+#endif
 }
+
 string Util::formatBytes(int64_t aBytes) {
 	char buf[64];
 	if(aBytes < 1024) {
@@ -289,6 +294,23 @@ string Util::formatBytes(int64_t aBytes) {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GB));
 	} else {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TB));
+	}
+
+	return buf;
+}
+
+wstring Util::formatBytesW(int64_t aBytes) {
+	wchar_t buf[64];
+	if(aBytes < 1024) {
+		swprintf(buf, L"%d %s", (int)(aBytes&0xffffffff), CWSTRING(B));
+	} else if(aBytes < 1024*1024) {
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0), CWSTRING(KB));
+	} else if(aBytes < 1024*1024*1024) {
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0), CWSTRING(MB));
+	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CWSTRING(GB));
+	} else {
+		swprintf(buf, L"%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CWSTRING(TB));
 	}
 
 	return buf;
@@ -448,6 +470,19 @@ static wchar_t utf8ToC(ccp& str) {
 	}
 
 	return c;
+}
+wstring::size_type Util::findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type start ) {
+	if(aString.length() < start)
+		return wstring::npos;
+
+	if(aString.length() - start < aSubString.length())
+		return string::npos;
+
+	if(aSubString.empty())
+		return 0;
+
+	//this should probably be changed to something more efficient but it will do for now
+	return Util::toLower(aString).find(Util::toLower(aSubString), start);
 }
 
 string::size_type Util::findSubString(const string& aString, const string& aSubString, string::size_type start) throw() {
@@ -685,6 +720,28 @@ string Util::formatTime(const string &msg, const time_t t) {
 	return Util::emptyString;
 }
 
+wstring Util::formatTime(const wstring& msg, const time_t t){
+	if(!msg.empty()) {
+		size_t bufsize = msg.size() + 64;
+		struct tm* loc = localtime(&t);
+
+		if(!loc) {
+			return Util::emptyStringW;
+		}
+
+		AutoArray<wchar_t> buf(new wchar_t[bufsize]);
+
+		while(!wcsftime(buf, bufsize-1, msg.c_str(), loc)) {
+			bufsize += 64;
+			buf.resize(bufsize);
+		}
+
+		return wstring(buf);
+	}
+
+	return Util::emptyStringW;
+}
+
 /* Below is a high-speed random number generator with much
    better granularity than the CRT one in msvc...(no, I didn't
    write it...see copyright) */ 
@@ -870,6 +927,36 @@ string Util::toDOS(const string& tmp) {
 	return tmp2;
 }
 
+int Util::getOsMajor() 
+{
+#ifdef _WIN32
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMajorVersion;
+#endif //_WIN32
+}
+
+int Util::getOsMinor() 
+{
+#ifdef _WIN32
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMinorVersion;
+#endif //_WIN32
+}
+
 string Util::getShortTimeString() {
 	if(SETTING(TIME_STAMPS_FORMAT).empty())
 		return Util::emptyString;
@@ -886,6 +973,30 @@ string Util::getShortTimeString() {
 		return Util::emptyString;
 	} else {
 		while(0 == strftime(buf, bufSize, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm) ){
+			bufSize *= 2;
+			buf.resize(bufSize);
+		}
+	}
+	return buf;
+}
+
+wstring Util::getShortTimeStringW() {
+	if(SETTING(TIME_STAMPS_FORMAT).empty())
+		return Util::emptyStringW;
+
+	wstring tmp = Util::utf8ToWide(SETTING(TIME_STAMPS_FORMAT));
+	size_t bufSize = tmp.length() * 2;
+
+	bufSize = bufSize > 20 ? bufSize : 20;
+
+	AutoArray<wchar_t> buf(bufSize);
+
+	time_t _tt = time(NULL);
+	tm* _tm = localtime(&_tt);
+	if(_tm == NULL) {
+		return Util::emptyStringW;
+	} else {
+		while(0 == wcsftime(buf, bufSize, tmp.c_str(), _tm) ){
 			bufSize *= 2;
 			buf.resize(bufSize);
 		}

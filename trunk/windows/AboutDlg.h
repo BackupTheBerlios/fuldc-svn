@@ -37,7 +37,7 @@ _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pe
 _T("sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
 _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
 _T("theparanoidone, gadget, torgny nyblom, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
-_T("defr, ullner, fleetcommand, liny, xan, olle svensson. ")
+_T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie. ")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 
@@ -79,12 +79,12 @@ public:
 			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
 
 		if(SETTING(TOTAL_DOWNLOAD) > 0) {
-			char buf[64];
-			sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
-			SetDlgItemText(IDC_RATIO, WinUtil::toT(buf).c_str());
+			TCHAR buf[64];
+			_stprintf(buf, _T("Ratio (up/down): %.2f"), ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
+			SetDlgItemText(IDC_RATIO, buf);
 		}
 
-		tstring time = Util::formatTime(GET_TIME() - WinUtil::startTime);
+		tstring time = Util::formatTimeW(GET_TIME() - WinUtil::startTime);
 		SetDlgItemText(IDC_UPTIME, time.c_str());
 
 		CenterWindow(GetParent());

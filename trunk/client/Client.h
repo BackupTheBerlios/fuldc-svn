@@ -131,6 +131,14 @@ public:
 
 	void scheduleDestruction() const { socket->shutdown(); }
 
+	virtual string escape(string const& str) const { return str; };
+	StringMap& escapeParams(StringMap& sm) {
+		for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
+			i->second = escape(i->second);
+		}
+		return sm;
+	}
+
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
 	GETSET(bool, registered, Registered);

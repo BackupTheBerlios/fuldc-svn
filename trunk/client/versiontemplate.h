@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+  * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.4032"
-#define VERSIONFLOAT 0.4032
+#define VERSIONSTRING "0.40325"
+#define VERSIONFLOAT 0.40325
 
 #ifdef _DEBUG
 #define FULVERSIONSTRING "6.51 svn$WCREV$"

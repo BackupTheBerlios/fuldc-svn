@@ -37,7 +37,7 @@
 #include "StringTokenizer.h"
 #include "Singleton.h"
 
-#include "../regex/pme.h"
+#include "../client/pme.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //

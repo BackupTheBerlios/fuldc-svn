@@ -50,7 +50,7 @@ private:
 	WebShortcut* ws;
 	vector<WebShortcut*>& wslist;
 
-	static const string badkeys;
+	static const tstring badkeys;
 };
 
 #endif // _WEBSHORTCUTSPROPERTIES_H

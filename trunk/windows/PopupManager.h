@@ -24,7 +24,7 @@ public:
 		TimerManager::getInstance()->addListener(this);
 		QueueManager::getInstance()->addListener(this);
 
-		hBitmap = (HBITMAP)::LoadImage(NULL, "icons\\popup.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		hBitmap = (HBITMAP)::LoadImage(NULL, _T("icons\\popup.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		if(hBitmap != NULL){
 			BITMAP bm;
 			GetObject(hBitmap,sizeof(bm),&bm);
@@ -41,21 +41,21 @@ public:
 	}
 	
 	//performs some formatting of the string, strips <nick>
-	void ShowPm(const string& nick, const string& msg);
+	void ShowPm(const tstring& nick, const tstring& msg);
 	
 	//retrieves nick from <nick> and removes <nick> from msg
-	void ShowMC(const string& msg );
+	void ShowMC(const tstring& msg );
 
 	//the caller have to separate nick and format msg neatly
-	void ShowMC(const string& nick, const string& msg);
+	void ShowMC(const tstring& nick, const tstring& msg);
 	
 	//maybe change this in the future, couldn't think of any other
 	//important status messages
-	void ShowDisconnected(const string& hub);
+	void ShowDisconnected(const tstring& hub);
 
 	//since we create a new string in onAction use a pointer here
 	//and take care of cleanup
-	void ShowDownloadComplete(string *msg);
+	void ShowDownloadComplete(tstring *msg);
 
 	//remove the specified popup in list and move everyone else
 	void Remove(int pos = 0);
@@ -103,7 +103,7 @@ private:
 	virtual void on(QueueManagerListener::ReleaseDone, string msg) throw();
 
 	//call this with a preformatted message
-	void Show(const string &aMsg);
+	void Show(const tstring &aMsg);
 	
 };
 

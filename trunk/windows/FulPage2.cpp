@@ -41,30 +41,29 @@ LRESULT FulPage2::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 }
 
 LRESULT FulPage2::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	string tmp;
-	if(WinUtil::browseDirectory(tmp)){
-		char buf[1000];
+	tstring dir;
+	if(WinUtil::browseDirectory(dir)){
+		TCHAR buf[1000];
 		GetDlgItemText(IDC_PATHS, buf, 1000);
-		strncat(buf, tmp.c_str(), tmp.length());
-		strncat(buf, "|", 1);
-		SetDlgItemText(IDC_PATHS, buf);
+		tstring tmp(buf + dir + _T("|"));
+		SetDlgItemText(IDC_PATHS, tmp.c_str());
 	}
 
 	return 0;
 }
 
 void FulPage2::write() {
-	char buf[2000];
-	string tmp;
+	TCHAR buf[2000];
+	tstring tmp;
 	GetDlgItemText(IDC_PATHS, buf, 2000);
-	StringTokenizer t(buf, '|');
-	StringList l = t.getTokens();
+	StringTokenizer<tstring> t(buf, _T('|'));
+	TStringList l = t.getTokens();
 
-	for(StringIter i = l.begin(); i != l.end(); ++i){
-		if((*i)[i->length()-1] == '\\')
-			tmp += (*i) + "|";
+	for(TStringIter i = l.begin(); i != l.end(); ++i){
+		if((*i)[i->length()-1] == _T('\\'))
+			tmp += (*i) + _T("|");
 		else
-			tmp += (*i) + "\\|";
+			tmp += (*i) + _T("\\|");
 	}
 
 	SetDlgItemText(IDC_PATHS, tmp.c_str());

@@ -82,22 +82,22 @@ public:
 	static const u_int32_t startTime;
 	static DWORD comCtlVersion;
 
-	static void SearchSite(WebShortcut* ws, string strSearchString);
+	static void SearchSite(WebShortcut* ws, tstring strSearchString);
 
 
 	static void init(HWND hWnd);
 	static void uninit();
 
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
-
-	static void SetIcon(HWND hWnd, string file, bool big = false);
-	static void copyToClipboard(const string & aStr);
-	static void search(string searchTerm, int searchMode, bool tth = false);
+	
+	static void SetIcon(HWND hWnd, tstring file, bool big = false);
+	static void setClipboard(const tstring & str);
+	static void search(tstring searchTerm, int searchMode, bool tth = false);
 	static void AppendSearchMenu(CMenu& menu);
 
-	static string DiskSpaceInfo();
-	static string Help(const string& command);
-	static string Uptime();
+	static tstring DiskSpaceInfo();
+	static tstring Help(const tstring& command);
+	static tstring Uptime();
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 
 	/**
@@ -118,7 +118,7 @@ public:
 	static int getTextHeight(HDC dc);
 	static int getTextSpacing(HWND wnd, HFONT fnt); 
 
-	static void addLastDir(const string& dir);
+	static void addLastDir(const tstring& dir);
 #ifdef UNICODE
 	static wstring toT(const string& str) {
 		return Util::utf8ToWide(str);
@@ -137,7 +137,7 @@ public:
 	}
 #endif
 
-	static string encodeFont(LOGFONT const& font);
+	static tstring encodeFont(LOGFONT const& font);
 	
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);

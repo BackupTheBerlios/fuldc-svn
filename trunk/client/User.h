@@ -98,6 +98,7 @@ public:
 	void setClient(Client* aClient);
 	void connect();
 	const string& getClientNick() const;
+	const CID getClientCID() const;
 	const string& getClientName() const;
 	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
@@ -133,6 +134,8 @@ public:
 	void setUserDescription(const string& aDescription);
 
 	static void updated(User::Ptr& aUser);
+
+	StringMap& clientEscapeParams(StringMap& sm) const;
 	
 	GETSET(string, connection, Connection);
 	GETSET(string, nick, Nick);

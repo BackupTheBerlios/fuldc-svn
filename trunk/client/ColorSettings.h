@@ -27,16 +27,16 @@ public:
 	GETSET(int,  iFgColor, FgColor);
 	GETSET(bool, bHasBgColor, HasBgColor);
 	GETSET(bool, bHasFgColor, HasFgColor);
-	GETSET(string, strSoundFile, SoundFile);
+	GETSET(tstring, strSoundFile, SoundFile);
 	
-	void setMatch(string match){
-		if( match.compare("$ts$") == 0){
+	void setMatch(tstring match){
+		if( match.compare(_T("$ts$")) == 0){
 			bTimestamps = true;
-		}else if(match.compare("$users$") == 0) {
+		}else if(match.compare(_T("$users$")) == 0) {
 			bUsers = true;
-		}else if(match.compare("$mynick$") == 0) {
+		}else if(match.compare(_T("$mynick$")) == 0) {
 			bMyNick = true;
-		} else if(match.find("$Re:") == 0) {
+		} else if(match.find(_T("$Re:")) == 0) {
 			bUsingRegexp = true;
 		}
 		strMatch = match;
@@ -47,11 +47,11 @@ public:
 	bool getMyNick() { return bMyNick; }
 	bool usingRegexp() { return bUsingRegexp; }
 
-	const string & getMatch() { return strMatch; }
+	const tstring & getMatch() { return strMatch; }
 	
 private:
 	//string to match against
-	string strMatch;
+	tstring strMatch;
 
 	bool bTimestamps;
 	bool bUsers;

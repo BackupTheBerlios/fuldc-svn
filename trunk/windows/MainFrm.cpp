@@ -39,6 +39,7 @@
 #include "StatsFrame.h"
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
+#include "UPnP.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
 
@@ -123,7 +124,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage("icons\\toolbar.bmp", 16, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	m_CmdBar.m_hImageList = images;
 
 	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
@@ -217,13 +218,58 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
 
 	startSocket();
+	// we should have decided what ports we are using by now
+	// so if we are using UPnP lets open the ports.
+/*	if( BOOLSETTING( SETTINGS_USE_UPNP ) )
+	{
+		 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
+			  || Util::getOsMajor() >= 6 )  //Longhorn
+		 {
+			UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", "DC++ TCP Port Mapping", SearchManager::getInstance()->getPort() );
+			UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", "DC++ UDP Port Mapping", SearchManager::getInstance()->getPort() );
+		
+			if ( UPnP_UDPConnection->OpenPorts() || UPnP_TCPConnection->OpenPorts() )
+			{
+				LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
+				UPnP_TCPConnection = NULL;
+				UPnP_UDPConnection = NULL;
+			}
 
+			// now lets configure the external IP (connect to me) address
+			string ExternalIP = UPnP_TCPConnection->GetExternalIP();
+			if ( ExternalIP.size() > 0 )
+			{
+				// woohoo, we got the external IP from the UPnP framework
+				// lets populate the  Active IP dialog textbox with the discovered IP and disable it
+				SettingsManager::getInstance()->set(SettingsManager::SERVER, ExternalIP );
+				SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, SettingsManager::CONNECTION_ACTIVE );
+				::EnableWindow(GetDlgItem(IDC_SERVER), FALSE);
+			}
+			else
+			{
+				//:-(  Looks like we have to rely on the user setting the external IP manually
+				// so lets log something to the log, and ungrey the Active IP dialog textbox
+			}
+		}
+		 else
+		 {
+			LogManager::getInstance()->message(STRING(OPERATING_SYSTEM_NOT_COMPATIBLE));
+			UPnP_TCPConnection = NULL;
+			UPnP_UDPConnection = NULL;
+		 }
+	}
+	else
+	{
+		UPnP_TCPConnection = NULL;
+		UPnP_UDPConnection = NULL;
+	}
+	*/
 	if(SETTING(NICK).empty()) {
 		PostMessage(WM_COMMAND, IDC_HELP_README);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
 	}
 
-	WinUtil::SetIcon(m_hWnd, "DCPlusPlus.ico", true);
+	WinUtil::SetIcon(m_hWnd, _T("DCPlusPlus.ico"), true);
 
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
@@ -265,8 +311,8 @@ void MainFrame::startSocket() {
 }
 
 HWND MainFrame::createToolbar() {
-	largeImages.CreateFromImage("icons\\toolbar20.bmp", 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	largeImagesHot.CreateFromImage("icons\\toolbar20-highlight.bmp", 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImages.CreateFromImage(_T("icons\\toolbar20.bmp"), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImagesHot.CreateFromImage(_T("icons\\toolbar20-highlight.bmp"), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	
 	ctrlToolBar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrlToolBar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
@@ -450,7 +496,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		delete msg;
 	} else if(wParam == DOWNLOAD_COMPLETE) {
-		PopupManager::getInstance()->ShowDownloadComplete((string*)lParam);
+		PopupManager::getInstance()->ShowDownloadComplete((tstring*)lParam);
 	} else if(wParam == WM_CLOSE) {
 		PopupManager::getInstance()->Remove((int)lParam);
 	} else if(wParam == REMOVE_POPUP){
@@ -699,8 +745,8 @@ void MainFrame::updateTray(bool add /* = true */) {
 		nid.uID = 0;
 		nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
 		nid.uCallbackMessage = WM_APP + 242;
-		nid.hIcon = (HICON)::LoadImage(NULL, "icons\\dcplusplus.ico", IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
-		strncpy(nid.szTip, "DC++",64);
+		nid.hIcon = (HICON)::LoadImage(NULL, _T("icons\\dcplusplus.ico"), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
+		_tcsncpy(nid.szTip, _T("DC++"),64);
 		nid.szTip[63] = '\0';
 		lastMove = GET_TICK() - 1000;
 		::Shell_NotifyIcon(NIM_ADD, &nid);
@@ -812,6 +858,27 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			SearchManager::getInstance()->disconnect();
 			ConnectionManager::getInstance()->disconnect();
 
+/*			if( BOOLSETTING( SETTINGS_USE_UPNP ) )
+			{
+			 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
+				  || Util::getOsMajor() >= 6 )  //Longhorn
+				{
+					if (UPnP_UDPConnection && UPnP_TCPConnection )
+					{
+						if ( UPnP_UDPConnection->ClosePorts() || UPnP_TCPConnection->ClosePorts() )
+						{
+							LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
+						}
+						delete UPnP_UDPConnection;
+						delete UPnP_TCPConnection;
+					}
+				}
+				else
+				{
+					LogManager::getInstance()->message(STRING(OPERATING_SYSTEM_NOT_COMPATIBLE));
+				}
+			}
+*/
 			DWORD id;
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
 			closing = true;
@@ -844,7 +911,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
 	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
 	case IDC_HELP_DONATE: site = WinUtil::toT("https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
-	case IDC_HELP_FULPAGE: site = "http://ful.dcportal.net"; break;
+	case IDC_HELP_FULPAGE: site = _T("http://ful.dcportal.net"); break;
 	default: dcassert(0);
 	}
 
@@ -891,19 +958,19 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	tstring file;
 	
 	if(wID == IDC_OPEN_MY_LIST){
-		file = ShareManager::getInstance()->getBZXmlFile();
+		file = WinUtil::toT(ShareManager::getInstance()->getBZXmlFile());
 		DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser("My List"));
 				
 		return 0;
 	}
 
 
-	if(WinUtil::browseFile(file, m_hWnd, false, Util::getAppPath() + "FileLists\\", types)) {
-		string username;
-		if(file.rfind('\\') != string::npos) {
-			username = file.substr(file.rfind('\\') + 1);
-			if(username.rfind('.') != string::npos) {
-				username.erase(username.rfind('.'));
+	if(WinUtil::browseFile(file, m_hWnd, false, WinUtil::toT(Util::getAppPath() + "FileLists\\"), types)) {
+		tstring username;
+		if(file.rfind(_T('\\')) != tstring::npos) {
+			username = file.substr(file.rfind(_T('\\')) + 1);
+			if(username.rfind(_T('.')) != tstring::npos) {
+				username.erase(username.rfind(_T('.')));
 			}
 			if(username.length() > 4 && Util::stricmp(username.c_str() + username.length() - 4, _T(".xml")) == 0)
 				username.erase(username.length()-4);
@@ -1086,13 +1153,13 @@ LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	inf.dwStyle = MNS_NOTIFYBYPOS;
 	dropMenu.SetMenuInfo(&inf);
 
-	StringList l = ShareManager::getInstance()->getDirectories();
+	StringPairList l = ShareManager::getInstance()->getDirectories();
 	
-	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, CSTRING(SETTINGS_ST_REFRESH_INCOMING));
-	dropMenu.AppendMenu(MF_SEPARATOR, 0, "");
+	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, CTSTRING(SETTINGS_ST_REFRESH_INCOMING));
+	dropMenu.AppendMenu(MF_SEPARATOR);
 	int j = 1;
-	for(StringIter i = l.begin(); i != l.end(); ++i, ++j)
-		dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, (*i).c_str());
+	//for(StringPairIter i = l.begin(); i != l.end(); ++i, ++j)
+	//	dropMenu.AppendMenu(MF_STRING, IDC_REFRESH_MENU, (i->first).c_str());
 	
 	POINT pt;
 	pt.x = tb->rcButton.right;
@@ -1108,11 +1175,11 @@ LRESULT MainFrame::onRefreshMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/
 	{
 		ShareManager::getInstance()->setDirty();
 		if(wParam == 0){
-			ShareManager::getInstance()->refresh(false, true, false, true, false, false);
+			//ShareManager::getInstance()->refresh(false, true, false, true, false, false);
 		} else if(wParam > 1){
 			int id = wParam - 2;
-			StringList l = ShareManager::getInstance()->getDirectories();
-			ShareManager::getInstance()->refresh(l[id]);
+			//TStringList l = ShareManager::getInstance()->getDirectories();
+			//ShareManager::getInstance()->refresh(l[id]);
 		}
 	} catch(ShareException) {
 		//...

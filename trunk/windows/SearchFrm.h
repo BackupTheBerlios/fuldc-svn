@@ -27,7 +27,7 @@
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
-#include "../regex/pme.h"
+#include "../client/pme.h"
 
 #include "../client/Client.h"
 #include "../client/SearchManager.h"
@@ -47,6 +47,7 @@ class SearchFrame : public MDITabChildWindowImpl<SearchFrame>,
 {
 public:
 	static void openWindow(const tstring& str = Util::emptyStringW, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
+	static void closeAll();
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("SearchFrame"), IDR_SEARCH, 0, COLOR_3DFACE)
 
@@ -113,7 +114,7 @@ public:
 		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
-		StringTokenizer token(SETTING(DOWNLOAD_TO_PATHS), "|");
+		StringTokenizer<tstring> token(WinUtil::toT(SETTING(DOWNLOAD_TO_PATHS)), _T("|"));
 		downloadPaths = token.getTokens();
 	}
 

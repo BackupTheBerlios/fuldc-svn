@@ -31,7 +31,7 @@ void TextFrame::openWindow(const tstring& aFileName) {
 	frame->CreateEx(WinUtil::mdiClient);
 }
 
-void TextFrame::openWindow(deque<string>* aLog) {
+void TextFrame::openWindow(deque<tstring>* aLog) {
 	TextFrame* frame = new TextFrame(aLog);
 	frame->CreateEx(WinUtil::mdiClient);
 }
@@ -47,7 +47,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	m_hMenu = WinUtil::mainMenu;
 
-	WinUtil::SetIcon(m_hWnd, "notepad.ico");
+	WinUtil::SetIcon(m_hWnd, _T("notepad.ico"));
 	bHandled = FALSE;
 	
 	init = true;
@@ -58,11 +58,11 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 
 	if(file.empty()){
-		SetWindowText(CSTRING(SETTINGS_LASTLOG));
+		SetWindowText(CTSTRING(SETTINGS_LASTLOG));
 		ctrlPad.SetFont(WinUtil::font);
 		ctrlPad.SetBackgroundColor(WinUtil::bgColor);
 		ctrlPad.SetTextColor(WinUtil::textColor);
-		deque<string>::iterator i = log->begin();
+		deque<tstring>::iterator i = log->begin();
 		for(; i != log->end(); ++i)
 			ctrlPad.AddLine(*i);
 		return 1;

@@ -64,9 +64,7 @@ Global
 		{6B5E1154-D1FC-460A-B5F4-78ACB1E96349}.Release.ActiveCfg = Release|Win32
 		{6B5E1154-D1FC-460A-B5F4-78ACB1E96349}.Release.Build.0 = Release|Win32
 		{A1DDAB4C-B606-4928-B934-727AC4AFD33F}.Debug.ActiveCfg = Debug
-		{A1DDAB4C-B606-4928-B934-727AC4AFD33F}.Debug.Build.0 = Debug
 		{A1DDAB4C-B606-4928-B934-727AC4AFD33F}.Release.ActiveCfg = Release
-		{A1DDAB4C-B606-4928-B934-727AC4AFD33F}.Release.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

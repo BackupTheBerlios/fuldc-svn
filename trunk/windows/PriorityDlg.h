@@ -29,17 +29,17 @@ public:
 
 		//lägg till strängarna som ska visas i comboboxen
 		ctrlPriority.Attach(GetDlgItem(IDC_PRIORITY));
-		ctrlPriority.AddString("Paused");
-		ctrlPriority.AddString("Lowest");
-		ctrlPriority.AddString("Low");
-		ctrlPriority.AddString("Normal");
-		ctrlPriority.AddString("High");
-		ctrlPriority.AddString("Highest");
+		ctrlPriority.AddString(_T("Paused"));
+		ctrlPriority.AddString(_T("Lowest"));
+		ctrlPriority.AddString(_T("Low"));
+		ctrlPriority.AddString(_T("Normal"));
+		ctrlPriority.AddString(_T("High"));
+		ctrlPriority.AddString(_T("Highest"));
 
 		//Sätt förvalt till normal
 		ctrlPriority.SetCurSel(3);
 	
-		SetWindowText("Set Priority");
+		SetWindowText(_T("Set Priority"));
 
 		CenterWindow(GetParent());
 		return FALSE;
@@ -50,7 +50,7 @@ public:
 		if(wID == IDOK) {
 			//spara söksträngen så den kan hämtas senare
 			int len = ctrlSearch.GetWindowTextLength()+1;
-			char* buf = new char[len];
+			TCHAR* buf = new TCHAR[len];
 			GetDlgItemText(IDC_SEARCH, buf, len);
 			search = buf;
 			delete[] buf;
@@ -59,7 +59,7 @@ public:
 		}else {
 			//returnera -1 om användaren avbryter
 			priority = -1;
-			search = "";
+			search = Util::emptyStringT;
 		}
 
 		EndDialog(wID);
@@ -71,7 +71,7 @@ public:
 		return priority;
 	}
 
-	string GetSearch() {
+	tstring GetSearch() {
 		return search;
 	}
 
@@ -80,5 +80,5 @@ private:
 	CComboBox ctrlPriority;
 
 	int priority;
-	string search;
+	tstring search;
 };

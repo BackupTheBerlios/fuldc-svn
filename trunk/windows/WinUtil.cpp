@@ -40,7 +40,7 @@
 #include "HubFrame.h"
 #include "../client/SimpleXML.h"
 
-#include "../regex/pme.h"
+#include "../client/pme.h"
 
 #include <direct.h>
 #include <pdh.h>
@@ -262,10 +262,10 @@ void WinUtil::init(HWND hWnd) {
 		::DestroyIcon(fi.hIcon);
 		dirIconIndex = fileImageCount++;
 	} else {
-		fileImages.CreateFromImage("icons\\folders.bmp", 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+		fileImages.CreateFromImage(_T("icons\\folders.bmp"), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 		dirIconIndex = 0;
 	}
-	userImages.CreateFromImage("icons\\users.bmp", 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	userImages.CreateFromImage(_T("icons\\users.bmp"), 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 
 	LOGFONT lf, lf2;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -318,7 +318,7 @@ void WinUtil::uninit() {
 void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	StringTokenizer<tstring> st(setting, _T(','));
 	TStringList &sl = st.getTokens();
-	
+
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(dest), &dest);
 	tstring face;
 	if(sl.size() == 4)
@@ -328,7 +328,7 @@ void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 		dest.lfWeight = Util::toInt(WinUtil::fromT(sl[2]));
 		dest.lfItalic = (BYTE)Util::toInt(WinUtil::fromT(sl[3]));
 	}
-	
+
 	if(!face.empty()) {
 		::ZeroMemory(dest.lfFaceName, LF_FACESIZE);
 		_tcscpy(dest.lfFaceName, face.c_str());
@@ -375,10 +375,10 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 }
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
-	wchar_t buf[MAX_PATH];
+	TCHAR buf[MAX_PATH];
 	OPENFILENAMEW ofn;       // common dialog box structure
 	target = Util::utf8ToWide(Util::validateFileName(Util::wideToUtf8(target)));
-	memcpy(buf, target.c_str(), target.length() + 1);
+	_tcscpy(buf, target.c_str());
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
@@ -455,7 +455,7 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 			dlg.description = WinUtil::toT(name);
 			dlg.line = WinUtil::toT(sm["line:" + name]);
 			if(dlg.DoModal(parent) == IDOK) {
-				sm["line:" + name] = Util::validateMessage(WinUtil::fromT(dlg.line), false);
+				sm["line:" + name] = WinUtil::fromT(dlg.line);
 				done[name] = WinUtil::fromT(dlg.line);
 			} else {
 				return false;
@@ -502,93 +502,93 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		try {
 			ShareManager::getInstance()->setDirty();
 			if(!param.empty()) {
-				if(!ShareManager::getInstance()->refresh(param))
-					status = STRING(DIRECTORY_NOT_FOUND);
+			//	if(!ShareManager::getInstance()->refresh(param))
+					status = TSTRING(DIRECTORY_NOT_FOUND);
 			} else {
-				ShareManager::getInstance()->refresh(true);
+			//	ShareManager::getInstance()->refresh(true);
 			}
 		} catch(const ShareException& e) {
-			status = e.getError();
+			status = WinUtil::toT(e.getError());
 		}
-	} else if(Util::stricmp(cmd.c_str(), "refreshi") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("refreshi")) == 0) {
 		try {
-			ShareManager::getInstance()->setDirty();
-			ShareManager::getInstance()->refresh(false, true, false, true);
+			//ShareManager::getInstance()->setDirty();
+			//ShareManager::getInstance()->refresh(false, true, false, true);
 		} catch( const ShareException& e) {
-			status = e.getError();
+			status = WinUtil::toT(e.getError());
 		}
-	} else if(Util::stricmp(cmd.c_str(), "share") == 0){
+	} else if(Util::stricmp(cmd.c_str(), _T("share")) == 0){
 		if(!param.empty()){
 			try{
-				ShareManager::getInstance()->addDirectory(param);
-				status = STRING(ADDED) + " " + param;
+				//ShareManager::getInstance()->addDirectory(param);
+				status = TSTRING(ADDED) + L" " + param;
 			}catch(ShareException &se){
-				status = se.getError();
+				status = WinUtil::toT(se.getError());
 			}
 		}	
-	} else if(Util::stricmp(cmd.c_str(), "unshare") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("unshare")) == 0) {
 		if(!param.empty()){
-			ShareManager::getInstance()->removeDirectory(param);
-			status = STRING(REMOVED) + " " + param;
+			//ShareManager::getInstance()->removeDirectory(param);
+			status = TSTRING(REMOVED) + _T(" ") + param;
 		}
-	} else if(Util::stricmp(cmd.c_str(), "slots")==0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
 		if(param.empty()) {
 			int slots = SettingsManager::getInstance()->get(SettingsManager::SLOTS);
-			status = "Current number of slots: " + Util::toString(slots);
+			status = _T("Current number of slots: ") + Util::toStringW(slots);
 		}else {
 			int j = Util::toInt(param);
 			if(j > 0) {
 				SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
-				status = STRING(SLOTS_SET);
+				status = TSTRING(SLOTS_SET);
 				ClientManager::getInstance()->infoUpdated();
 			} else {
-				status = STRING(INVALID_NUMBER_OF_SLOTS);
+				status = TSTRING(INVALID_NUMBER_OF_SLOTS);
 			}
 		}
-	} else if(Util::stricmp(cmd.c_str(), "search") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
 			SearchFrame::openWindow(param);
 		} else {
-			status = STRING(SPECIFY_SEARCH_STRING);
+			status = TSTRING(SPECIFY_SEARCH_STRING);
 		}
-	} else if(Util::stricmp(cmd.c_str(), "dc++") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("dc++")) == 0) {
 		message = msgs[GET_TICK() % MSGS];
-	} else if(Util::stricmp(cmd.c_str(), "away") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("away")) == 0) {
 		if(Util::getAway() && param.empty()) {
 			Util::setAway(false);
-			status = STRING(AWAY_MODE_OFF);
+			status = TSTRING(AWAY_MODE_OFF);
 		} else {
 			Util::setAway(true);
 			Util::setAwayMessage(param);
-			status = STRING(AWAY_MODE_ON) + Util::getAwayMessage();
+			status = TSTRING(AWAY_MODE_ON) + Util::getAwayMessage();
 		}
-	} else if(Util::stricmp(cmd.c_str(), "back") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("back")) == 0) {
 		Util::setAway(false);
-		status = STRING(AWAY_MODE_OFF);
-	} else if(Util::stricmp(cmd.c_str(), "dslots") == 0) {
+		status = TSTRING(AWAY_MODE_OFF);
+	} else if(Util::stricmp(cmd.c_str(), _T("dslots")) == 0) {
 		if(param.empty()) {
 			int slots = SettingsManager::getInstance()->get(SettingsManager::DOWNLOAD_SLOTS);
-			status = "Current number of download slots: " + Util::toString(slots);
+			status = _T("Current number of download slots: ") + Util::toStringW(slots);
 		} else {
 			int nr = Util::toInt(param);
 			if( nr >= 0 ){
 				SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_SLOTS, nr);
-				status = "Download slots set";
+				status = _T("Download slots set");
 			} else {
-				status = "Invalid number of slots";
+				status = _T("Invalid number of slots");
 			}
 		} 
-	}else if(Util::stricmp(cmd.c_str(), "fuldc") == 0) {
-		message = "http://ful.dcportal.net <fulDC " + string(FULVERSIONSTRING) + ">";
-	} else if(Util::stricmp(cmd.c_str(), "fuptime") == 0) {
-		message = "fulDC uptime: " + Util::formatTime(GET_TIME() - WinUtil::startTime, false);
-	} else if(Util::stricmp(cmd.c_str(), "uptime") == 0) {
-		message = "System uptime: " + WinUtil::Uptime();
+	}else if(Util::stricmp(cmd.c_str(), _T("fuldc")) == 0) {
+		message = _T("http://ful.dcportal.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
+	} else if(Util::stricmp(cmd.c_str(), _T("fuptime")) == 0) {
+		message = _T("fulDC uptime: ") + Util::formatTimeW(GET_TIME() - WinUtil::startTime, false);
+	} else if(Util::stricmp(cmd.c_str(), _T("uptime")) == 0) {
+		message = _T("System uptime: ") + WinUtil::Uptime();
 	} else if(WebShortcuts::getInstance()->getShortcutByKey(cmd) != NULL) {
 		WinUtil::SearchSite(WebShortcuts::getInstance()->getShortcutByKey(cmd), param);
-	} else if(Util::stricmp(cmd.c_str(), "rebuild") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
 		HashManager::getInstance()->rebuild();
-		status = STRING(HASH_REBUILT);
+		status = TSTRING(HASH_REBUILT);
 	} else {
 		return false;
 	}
@@ -755,20 +755,20 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 	}
 }
 
-void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
+void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 	if(ws == NULL)
 		return;
 
 	if(ws->clean) {
 		PME regexp;
 
-		string strSearch = strSearchString;
-		string strStoplistText = "xvid|divx|dvdrip|dvdr|dvd-r|pal|ntsc|screener|dvdscr|complete|proper|.*|.ws.|ac3|internal|directoryfix|pdtv|hdtv|rerip|tvrip|swedish";
+		tstring strSearch = strSearchString;
+		tstring strStoplistText = _T("xvid|divx|dvdrip|dvdr|dvd-r|pal|ntsc|screener|dvdscr|complete|proper|.*|.ws.|ac3|internal|directoryfix|pdtv|hdtv|rerip|tvrip|swedish");
 		int intPos = 0;
 
 		// Convert the stoplist string to a vector
-		StringTokenizer t(strStoplistText, '|');
-		StringList strStoplist = t.getTokens();
+		StringTokenizer<tstring> t(strStoplistText, '|');
+		TStringList strStoplist = t.getTokens();
 		
 		// To lower case
 		strSearch = Util::toLower(strSearch);
@@ -781,33 +781,33 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 			}
 		}
 		// Just include the text until the first "-"
-		intPos = strSearch.find("-");
+		intPos = strSearch.find(_T("-"));
 		if (intPos > 0) {
 			strSearch = strSearch.substr(0, intPos);
 		}
 		// Exchange all "." with " "
 		intPos = 0;
-		while ( (intPos = strSearch.find_first_of("._", intPos)) != string::npos) {
-			strSearch.replace(intPos, 1, " ");
+		while ( (intPos = strSearch.find_first_of(_T("._"), intPos)) != string::npos) {
+			strSearch.replace(intPos, 1, _T(" "));
 		}
 		
 		// Remove 4 digits (year)
 		regexp.Init("\\d{4}", "i");
-		strSearch = regexp.sub(strSearch, "");
+		strSearch = regexp.sub(strSearch, Util::emptyStringT);
 				
 		// search for "s01e01" and remove
 		regexp.Init("s\\d{2}(e\\d{2})?", "i");
-		strSearch = regexp.sub(strSearch, "");
+		strSearch = regexp.sub(strSearch, Util::emptyStringT);
 
 		// search for "1x01" and remove
 		//regExp.Parse("{ [0-9]x[0-9][0-9]}", false);
 		regexp.Init("\\dx\\d{2}", "i");
-		strSearch = regexp.sub(strSearch, "");
+		strSearch = regexp.sub(strSearch, Util::emptyStringT);
 		
 		// Remove trailing spaces
 		intPos = strSearch.length() - 1;
 		while (intPos > 0) {
-			if (strSearch[intPos] != ' ') {
+			if (strSearch[intPos] != _T(' ')) {
 				break;
 			}
 			intPos--;
@@ -815,11 +815,11 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 		strSearchString = strSearch.substr(0, intPos + 1);
 	}
 	
-	char *buf = new char[ws->url.length() + strSearchString.length()];
-	sprintf(buf, ws->url.c_str(), strSearchString.c_str());
+	TCHAR *buf = new TCHAR[ws->url.length() + strSearchString.length()];
+	_tcprintf(buf, ws->url.c_str(), strSearchString.c_str());
 
 	DWORD escapedSize = 2048;
-	char* escapedBuf = new char[escapedSize];
+	TCHAR* escapedBuf = new TCHAR[escapedSize];
 
 
 	HRESULT res = UrlCanonicalize(buf, escapedBuf, &escapedSize, URL_DONT_SIMPLIFY | URL_ESCAPE_UNSAFE);
@@ -831,12 +831,13 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 	delete[] escapedBuf;
 }
 
-void WinUtil::search(string searchTerm, int searchMode, bool tth) {
+void WinUtil::search(tstring searchTerm, int searchMode, bool tth) {
 	if(!searchTerm.empty()) {
 		//skapa listan över icke tillåtna karaktärer
-		char chars[33] = {'<', '>', ',', ';', '.', ':', '-', '_', '!', '\"', '@', '#', '£',
-						'$', '%', '&', '/', '{', '(', '[', ')', ']', '=', '}', '?', '+', '´',
-						'`', '*', '^', '\\', '\r', '\n'};
+		TCHAR chars[33] = {_T('<'), _T('>'), _T(','), _T(';'), _T('.'), _T(':'), _T('-'), _T('_'), _T('!'),
+						_T('\"'), _T('@'), _T('#'), _T('£'), _T('$'), _T('%'), _T('&'), _T('/'), _T('{'),
+						_T('('), _T('['), _T(')'), _T(']'), _T('='), _T('}'), _T('?'), _T('+'), _T('´'),
+						_T('`'), _T('*'), _T('^'), _T('\\'), _T('\r'), _T('\n')};
 		
 		int length = searchTerm.length()-1;
 		try{
@@ -844,7 +845,7 @@ void WinUtil::search(string searchTerm, int searchMode, bool tth) {
 			for(int i = 0; i < 31; ++i) {
 				//om vi hittar ett tecken, ta bort det och börja om från början
 				if(searchTerm[0] == chars[i]) {
-					searchTerm.erase((string::size_type)0, (string::size_type)1);
+					searchTerm.erase((tstring::size_type)0, (tstring::size_type)1);
 					i = 0;
 					--length;
 				}
@@ -865,7 +866,7 @@ void WinUtil::search(string searchTerm, int searchMode, bool tth) {
 				else
 					pChild->setInitial(searchTerm, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
 				pChild->CreateEx(WinUtil::mdiClient);
-				searchTerm = string();
+				searchTerm = Util::emptyStringT;
 			}else{
 				--searchMode;
 				if(searchMode < (int)WebShortcuts::getInstance()->list.size()) {
@@ -889,8 +890,8 @@ void WinUtil::AppendSearchMenu(CMenu& menu) {
 	}
 }
 
-void WinUtil::SetIcon(HWND hWnd, string file, bool big) {
-	string path = "icons\\" + file;
+void WinUtil::SetIcon(HWND hWnd, tstring file, bool big) {
+	tstring path = _T("icons\\") + file;
 	HICON hIconSm = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
 	::SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIconSm);
 
@@ -901,18 +902,18 @@ void WinUtil::SetIcon(HWND hWnd, string file, bool big) {
 	
 }
 
-string WinUtil::encodeFont(LOGFONT const& font){
-	string res(font.lfFaceName);
-	res += ',';
-	res += Util::toString(font.lfHeight);
-	res += ',';
-	res += Util::toString(font.lfWeight);
-	res += ',';
-	res += Util::toString(font.lfItalic);
+tstring WinUtil::encodeFont(LOGFONT const& font){
+	tstring res(font.lfFaceName);
+	res += L',';
+	res += Util::utf8ToWide(Util::toString(font.lfHeight));
+	res += L',';
+	res += Util::utf8ToWide(Util::toString(font.lfWeight));
+	res += L',';
+	res += Util::utf8ToWide(Util::toString(font.lfItalic));
 	return res;
 }
 
-void WinUtil::addLastDir(const string& dir) {
+void WinUtil::addLastDir(const tstring& dir) {
 	if(find(lastDirs.begin(), lastDirs.end(), dir) != lastDirs.end()) {
 		return;
 	}
@@ -922,13 +923,13 @@ void WinUtil::addLastDir(const string& dir) {
 	lastDirs.push_back(dir);
 }
 
-int WinUtil::getTextWidth(const string& str, HWND hWnd) {
+int WinUtil::getTextWidth(const tstring& str, HWND hWnd) {
 	HDC dc = ::GetDC(hWnd);
 	int sz = getTextWidth(str, dc);
 	::ReleaseDC(hWnd, dc);
 	return sz;
 }
-int WinUtil::getTextWidth(const string& str, HDC dc) {
+int WinUtil::getTextWidth(const tstring& str, HDC dc) {
 	SIZE sz = { 0, 0 };
 	::GetTextExtentPoint32(dc, str.c_str(), str.length(), &sz);
 	return sz.cx;		
@@ -974,10 +975,10 @@ int WinUtil::getTextSpacing(HWND wnd, HFONT fnt) {
 	return tm.tmInternalLeading;
 }
 
-string WinUtil::DiskSpaceInfo() {
+tstring WinUtil::DiskSpaceInfo() {
 	ULONG drives = _getdrives();
-	char drive[3] = { 'C', ':', '\0' };
-	string ret = Util::emptyString;
+	TCHAR drive[3] = { _T('C'), _T(':'), _T('\0') };
+	tstring ret = Util::emptyStringT;
 	int64_t free = 0, totalFree = 0, size = 0, totalSize = 0;
 
 	drives = ( drives >> 2);
@@ -989,7 +990,7 @@ string WinUtil::DiskSpaceInfo() {
 				totalSize += size;
 				
 				ret.append(drive);
-				ret += "=" + Util::formatBytes(size) + " ";
+				ret += _T("=") + Util::formatBytesW(size) + _T(" ");
 			}
 		}
 
@@ -998,12 +999,13 @@ string WinUtil::DiskSpaceInfo() {
 	}
 
 	if(totalSize != 0)
-		ret += "total=" + Util::formatBytes(totalFree) + "/" + Util::formatBytes(totalSize);
+		ret += _T("total=") + Util::formatBytesW(totalFree) + _T("/") + Util::formatBytesW(totalSize);
 
 	return ret;
 }
 
-string WinUtil::Help(const string& command) {
+tstring WinUtil::Help(const tstring& cmd) {
+	string command = WinUtil::fromT(cmd);
 	string xmlString;
 	const size_t BUF_SIZE = 64*1024;
 	char *buf = new char[BUF_SIZE];
@@ -1021,12 +1023,13 @@ string WinUtil::Help(const string& command) {
 				break;
 		}
 		f.close();
-	}catch (Exception&) { 
-		//if we for some reason failed, return false to indicate that a refresh is needed
-		return Util::emptyString;
+		delete[] buf;
+	}catch (Exception& e) { 
+		delete[] buf;
+		return WinUtil::toT(e.getError());
 	}
 
-	string ret = Util::emptyString;
+	tstring ret = Util::emptyStringT;
 	try{
 		xml.fromXML(xmlString);
 
@@ -1039,44 +1042,44 @@ string WinUtil::Help(const string& command) {
 			found = xml.findChild(Util::toLower(command));
 
 		if(found)
-			ret = xml.getChildData();
+			ret = WinUtil::toT(xml.getChildData());
 	} catch(const SimpleXMLException &e) {
-		return e.getError();
+		return WinUtil::toT(e.getError());
 	}
 
 	return ret;
 }
 
-string WinUtil::Uptime() {
+tstring WinUtil::Uptime() {
 	HQUERY    hQuery	= NULL;
 	HCOUNTER  hCounter	= NULL;
-	string ret = Util::emptyString;
+	tstring ret = Util::emptyStringT;
 		
 	if ( PdhOpenQuery( NULL, 0, &hQuery ) == ERROR_SUCCESS ) {
 		//create some variables to fetch and store the counter path	
-		char path[PDH_MAX_COUNTER_PATH];
-		char tmp[PDH_MAX_COUNTER_PATH];
+		TCHAR path[PDH_MAX_COUNTER_PATH];
+		TCHAR tmp[PDH_MAX_COUNTER_PATH];
 		DWORD maxPath = PDH_MAX_COUNTER_PATH;
 
 		//fetch the first part of the counter path, the object name.
 		if(PdhLookupPerfNameByIndex(NULL, 2, tmp, &maxPath) == ERROR_SUCCESS){
 			//store it so that we can reuse the tmp variable.
-			strcpy(path, "\\");
-			strcat(path, tmp);
+			_tcscpy(path, _T("\\"));
+			_tcscat(path, tmp);
 			//restore maxPath to it's max length
 			maxPath = PDH_MAX_COUNTER_PATH;
 
 			//get the counter part of the path.
 			if(PdhLookupPerfNameByIndex(NULL, 674, tmp, &maxPath) == ERROR_SUCCESS){
-				strcat(path, "\\");
-				strcat(path, tmp);
+				_tcscat(path, _T("\\"));
+				_tcscat(path, tmp);
 
 				if(PdhAddCounter( hQuery, path, 0, &hCounter ) == ERROR_SUCCESS) {
 					PDH_FMT_COUNTERVALUE  pdhCounterValue;
 
 					if ( PdhCollectQueryData( hQuery ) == ERROR_SUCCESS )	{
 						if ( PdhGetFormattedCounterValue( hCounter, PDH_FMT_LARGE, NULL, &pdhCounterValue ) == ERROR_SUCCESS )
-							ret = Util::formatTime(pdhCounterValue.largeValue, false);
+							ret = WinUtil::toT(Util::formatTime(pdhCounterValue.largeValue, false));
 					}
 				}
 			}

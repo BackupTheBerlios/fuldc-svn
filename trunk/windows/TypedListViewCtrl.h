@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+* Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@
 
 class ColumnInfo {
 public:
-	ColumnInfo(string aName, int aPos, int aFormat, int aWidth): name(aName), pos(aPos), width(aWidth), 
+	ColumnInfo(const tstring &aName, int aPos, int aFormat, int aWidth): name(aName), pos(aPos), width(aWidth), 
 		format(aFormat), visible(true){}
-		string name;
+		tstring name;
 		bool visible;
 		int pos;
 		int width;
@@ -112,7 +112,7 @@ public:
 			int pos = di->item.iSubItem;
 			bool insert = false;
 			int j = 0;
-			CHAR *buf = new CHAR[512];
+			TCHAR *buf = new TCHAR[512];
 			LVCOLUMN lvc;
 			lvc.mask = LVCF_TEXT;
 			lvc.pszText = buf;
@@ -130,7 +130,7 @@ public:
 				insert = true;
 			}
 			if(insert == true)
-				di->item.pszText = const_cast<char*>(((T*)di->item.lParam)->getText(j).c_str());
+				di->item.pszText = const_cast<TCHAR*>(((T*)di->item.lParam)->getText(j).c_str());
 
 			delete[] buf;
 		}
@@ -238,9 +238,9 @@ public:
 
 			if(comp == 0) {
 				return mid;
-			} else if(comp == -1) {
+			} else if(comp < 0) {
 				high = mid - 1;
-			} else if(comp == 1) {
+			} else if(comp > 0) {
 				low = mid + 1;
 			}
 		}
@@ -264,7 +264,7 @@ public:
 	iterator begin() { return iterator(this); }
 	iterator end() { return iterator(this, GetItemCount()); }
 
-	int insertColumn(int nCol, string columnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1 ){
+	int insertColumn(int nCol, const tstring &columnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1 ){
 		columnList.push_back(new ColumnInfo(columnHeading, nCol, nFormat, nWidth));
 		return InsertColumn(nCol, columnHeading.c_str(), nFormat, nWidth, nSubItem);
 	}
@@ -297,7 +297,6 @@ public:
 			removeColumn(ci);
 		} else {
 			int pos = GetHeader().GetItemCount();
-			//InsertColumn(wParam, ci->name.c_str(), ci->format, ci->width, -1);
 			InsertColumn(pos, ci->name.c_str(), ci->format, ci->width, wParam);
 			LVCOLUMN lvcl = { 0 };
 			lvcl.mask = LVCF_ORDER;
@@ -315,7 +314,7 @@ public:
 	void saveHeaderOrder(SettingsManager::StrSetting order, SettingsManager::StrSetting widths, 
 		SettingsManager::StrSetting visible) throw() {
 		string tmp, tmp2, tmp3;
-		char *buf = new char[128];
+		TCHAR *buf = new TCHAR[128];
 		int size = GetHeader().GetItemCount();
 		for(int i = 0; i < size; ++i){
 			LVCOLUMN lvc;
@@ -358,7 +357,7 @@ public:
 	}
 
 	void setVisible(string vis){
-		StringTokenizer tok(vis, ',');
+		StringTokenizer<string> tok(vis, ',');
 		StringList l = tok.getTokens();
 
 		StringIter i = l.begin();
@@ -420,7 +419,7 @@ private:
 
 	//find the current position for the column that was inserted at the specified pos
 	int findColumn(int col){
-		CHAR *buf = new CHAR[512];
+		TCHAR *buf = new TCHAR[512];
 		LVCOLUMN lvcl;
 		lvcl.mask = LVCF_TEXT;
 		lvcl.pszText = buf;
@@ -444,7 +443,7 @@ private:
 	}
 
 	int findColumn(ColumnInfo* ci){
-		CHAR *buf = new CHAR[512];
+		TCHAR *buf = new TCHAR[512];
 		LVCOLUMN lvcl;
 		lvcl.mask = LVCF_TEXT;
 		lvcl.pszText = buf;

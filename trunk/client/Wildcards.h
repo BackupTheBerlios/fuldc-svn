@@ -28,25 +28,15 @@ public:
   // 0 - if *wildcard does not match *test
   // 1 - if *wildcard matches *test
   static int wildcardfit (const char *wildcard, const char *test);
+  static int wildcardfit (const wchar_t *wildcard, const wchar_t *test);
 
 	// Checks whether a text matches a pattern
-	static bool patternMatch(const string& text, const string& pattern) {
-		string sText = Util::toLower(text);
-		string sPattern = Util::toLower(pattern);
-		return (wildcardfit(sPattern.c_str(), sText.c_str())==1);
-	}
+	static bool patternMatch(const string& text, const string& pattern);
+	static bool patternMatch (const wstring& text, const wstring& pattern);
+
 	// Checks whether a text matches any pattern in a patternlist
-	static bool patternMatch(const string& text, const string& patternlist, char delimiter) {
-		StringTokenizer st = StringTokenizer(patternlist, delimiter);
-		bool bMatched = false;
-		for (StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			bMatched = patternMatch(text, *i);
-			if (bMatched) {
-				return true;
-			}
-		}
-		return bMatched;
-	}
+	static bool patternMatch(const string& text, const string& patternlist, char delimiter);
+	static bool patternMatch(const wstring& text, const wstring& patternlist, wchar_t delimiter);
        
 private:
   // Scans a set of characters and returns 0 if the set mismatches at this
@@ -54,9 +44,11 @@ private:
   // wildcard is set to the closing ] and test is unmodified if mismatched
   // and otherwise the char pointer is pointing to the next character
   static int set (const char **wildcard, const char **test);
+  static int set (const wchar_t **wildcard, const wchar_t **test);
 
   // Scans an asterisk
   static int asterisk (const char **wildcard, const char **test);
+  static int asterisk (const wchar_t **wildcard, const wchar_t **test);
 };
 
 #endif
