@@ -102,10 +102,10 @@ ShareManager::~ShareManager() {
 ShareManager::Directory::~Directory() {
 	for(MapIter i = directories.begin(); i != directories.end(); ++i)
 		delete i->second;
-	//for(File::Iter i = files.begin(); i != files.end(); ++i) {
-		//dcassert(i->getTTH() != NULL);
-		//ShareManager::getInstance()->removeTTH(i->getTTH(), i);
-	//}
+	for(File::Iter i = files.begin(); i != files.end(); ++i) {
+		dcassert(i->getTTH() != NULL);
+		ShareManager::getInstance()->removeTTH(i->getTTH(), i);
+	}
 }
 
 
