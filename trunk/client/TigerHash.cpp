@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,7 +166,7 @@ u_int8_t* TigerHash::finalize() {
 }
 
 u_int64_t TigerHash::table[4*256] = {
-		_ULL(0x02AAB17CF7E90C5E)   /*    0 */,    _ULL(0xAC424B03E243A8EC)   /*    1 */,
+	_ULL(0x02AAB17CF7E90C5E)   /*    0 */,    _ULL(0xAC424B03E243A8EC)   /*    1 */,
 		_ULL(0x72CD5BE30DD5FCD3)   /*    2 */,    _ULL(0x6D019B93F6F97F3A)   /*    3 */,
 		_ULL(0xCD9978FFD21F9193)   /*    4 */,    _ULL(0x7573A1C9708029E2)   /*    5 */,
 		_ULL(0xB164326B922A83C3)   /*    6 */,    _ULL(0x46883EEE04915870)   /*    7 */,

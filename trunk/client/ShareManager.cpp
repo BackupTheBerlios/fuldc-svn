@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,6 +179,26 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		
 		return j->second + file;
 	}
+}
+
+/** @todo Fix for file list */
+AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) {
+	if(aFile.compare(0, 4, "TTH/") != 0)
+		throw ShareException("File Not Available");
+
+	RLock<> l(cs);
+	TTHValue val(aFile.substr(4));
+	HashFileIter i = tthIndex.find(&val);
+	if(i == tthIndex.end()) {
+		throw ShareException("File Not Available");
+	}
+
+	Directory::File::Iter f = i->second;
+	AdcCommand cmd(AdcCommand::CMD_RES);
+	cmd.addParam("FN", f->getADCPath());
+	cmd.addParam("SI", Util::toString(f->getSize()));
+	cmd.addParam("TR", f->getTTH().toBase32());
+	return cmd;
 }
 
 //this method takes the full path instead of the virtual name

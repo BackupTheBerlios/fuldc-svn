@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@ UPnP::UPnP( const string theIPAddress, const string theProtocol, const string th
 // Opens the UPnP ports defined when the object was created
 HRESULT UPnP::OpenPorts()
 {
-	CoInitialize(NULL);
 	HRESULT hr = CoCreateInstance (__uuidof(UPnPNAT),
 		NULL,
 		CLSCTX_INPROC_SERVER,
@@ -87,7 +86,6 @@ HRESULT UPnP::ClosePorts()
 		SysFreeString (bstrInternalClient);
 		SysFreeString (bstrDescription);
 		SysFreeString (bstrExternalIP);
-		CoUninitialize();
 	}
 
 	return hr;

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,9 +177,9 @@ private:
 	virtual void on(GetListLength, UserConnection* conn) throw();
 	virtual void on(TransmitDone, UserConnection*) throw();
 	
-	virtual void on(Command::GET, UserConnection*, const Command&) throw();
-	virtual void on(Command::GFI, UserConnection*, const Command&) throw();
-	virtual void on(Command::NTD, UserConnection*, const Command&) throw();
+	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);

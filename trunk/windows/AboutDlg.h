@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2004 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2005 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 		CEdit ctrl(GetDlgItem(IDC_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);

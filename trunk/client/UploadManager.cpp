@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -335,11 +335,11 @@ void UploadManager::on(GetListLength, UserConnection* conn) throw() {
 	conn->listLen(ShareManager::getInstance()->getListLenString()); 
 }
 
-void UploadManager::on(Command::NTD, UserConnection* conn, const Command& c) throw() {
-
+void UploadManager::on(AdcCommand::NTD, UserConnection* aConn, const AdcCommand&) throw() {
+	removeConnection(aConn, true);
 }
 
-void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) throw() {
+void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
 	int64_t aBytes = Util::toInt64(c.getParam(3));
 	int64_t aStartPos = Util::toInt64(c.getParam(2));
 	const string& fname = c.getParam(1);
@@ -356,7 +356,7 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 
 		u->setStart(GET_TICK());
 
-		Command cmd = Command(Command::SND());
+		AdcCommand cmd(AdcCommand::CMD_SND);
 		cmd.addParam(c.getParam(0));
 		cmd.addParam(c.getParam(1));
 		cmd.addParam(c.getParam(2));
@@ -376,7 +376,7 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 }
 
 /** @todo fixme */
-void UploadManager::on(Command::GFI, UserConnection* aSource, const Command& c) throw() {
+void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcCommand& c) throw() {
 
 }
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,10 +146,10 @@ private:
 	virtual void on(MyNick, UserConnection*, const string&) throw();
 	virtual void on(Supports, UserConnection*, const StringList&) throw();
 
-	virtual void on(Command::SUP, UserConnection*, const Command&) throw();
-	virtual void on(Command::INF, UserConnection*, const Command&) throw();
-	virtual void on(Command::NTD, UserConnection*, const Command&) throw();
-	virtual void on(Command::STA, UserConnection*, const Command&) throw();
+	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();	

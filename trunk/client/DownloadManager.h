@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ public:
 	int64_t getTotalSecondsLeft();
 
 	/** @internal */
-	Command getCommand(bool zlib, bool tthf);
+	AdcCommand getCommand(bool zlib, bool tthf);
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSET(string, source, Source);
@@ -297,8 +297,8 @@ private:
 	virtual void on(MaxedOut, UserConnection*) throw();
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
-	virtual void on(Command::SND, UserConnection*, const Command&) throw();
-	virtual void on(Command::STA, UserConnection*, const Command&) throw();
+	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
 	// TimerManagerListener

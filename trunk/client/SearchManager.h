@@ -1,5 +1,5 @@
 	/* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@
 #include "MerkleTree.h"
 
 #include "SearchManagerListener.h"
+#include "TimerManager.h"
+#include "AdcCommand.h"
 
 class SearchManager;
 
@@ -67,7 +69,7 @@ public:
 
 	string getFileName() const;
 	string toSR() const;
-	string toRES() const;
+	AdcCommand toRES(char type) const;
 
 	User::Ptr& getUser() { return user; }
 	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
