@@ -68,7 +68,7 @@ const string SettingsManager::settingTags[] =
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
-	"OpenFinishedUploads", "OpenSearchSpy", "OpenNotepad",
+	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -213,6 +213,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_FINISHED_DOWNLOADS, false);
 	setDefault(OPEN_FINISHED_UPLOADS, false);
 	setDefault(OPEN_SEARCH_SPY, false);
+	setDefault(OPEN_NETWORK_STATISTICS, false);
 	setDefault(OPEN_NOTEPAD, false);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);

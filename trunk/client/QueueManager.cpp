@@ -1280,13 +1280,13 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			QueueItem* qi = qm->fileQueue.find(target);
 
 			if(qi == NULL) {
-				qm->updateTotalSize(target, size, true);
 				if(tthRoot.empty()) {
 					qi = qm->fileQueue.add(target, size, flags, p, tempTarget, downloaded, added, NULL);
 				} else {
 					TTHValue root(tthRoot);
 					qi = qm->fileQueue.add(target, size, flags, p, tempTarget, downloaded, added, &root);
 				}
+				qm->updateTotalSize(target, size, true);
 				qm->fire(QueueManagerListener::Added(), qi);
 			}
 			if(!simple)

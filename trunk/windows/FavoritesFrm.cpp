@@ -130,9 +130,9 @@ void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
 }
 
 LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-
 	if(reinterpret_cast<HWND>(wParam) == ctrlHubs) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		
 		if(pt.x == -1 && pt.y == -1) {
 			WinUtil::getContextMenuPos(ctrlHubs, pt);
 		}

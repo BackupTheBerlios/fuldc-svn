@@ -95,18 +95,16 @@ int64_t Download::getTotalSecondsLeft() {
 void DownloadManager::on(TimerManagerListener::Second, u_int32_t /*aTick*/) throw() {
 	Lock l(cs);
 
+	averageSpeedMap.clear();
+	averagePosMap.clear();
+
 	Download::List tickList;
 	// Tick each ongoing download
 	for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 		if((*i)->getTotal() > 0) {
 			tickList.push_back(*i);
 		}
-	}
-
-	averageSpeedMap.clear();
-	averagePosMap.clear();
-
-	for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i){
+	
 		Download* d = *i;
 		string tmp = d->getTarget().substr(0, d->getTarget().rfind("\\"));
 		StringIntIter j = averageSpeedMap.find(tmp);

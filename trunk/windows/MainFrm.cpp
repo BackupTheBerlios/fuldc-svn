@@ -125,29 +125,65 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 30, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	m_CmdBar.m_hImageList = images;
+	if(images.GetImageCount() > 15) {
+		//File
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_OWN_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_REFRESH_FILE_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_DOWNLOADS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_QUICK_CONNECT);
+		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 
-	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
-	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
-	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
-	m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
-	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-	m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
-	m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
-	m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
-	m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-	m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
-	m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
+		//View
+		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
+		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_HASH_PROGRESS);
+		
+		//Window
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_ARRANGE);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_DISCONNECTED);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_PM);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_DIR_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_SEARCH_FRAME);
+	} else if(images.GetImageCount() == 15) {
+		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
+		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+	}
+
+	
+
+	
 
 	// remove old menu
 	SetMenu(NULL);
@@ -203,6 +239,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED);
 	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_UL);
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
+	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
 	if(BOOLSETTING(OPEN_NOTEPAD)) PostMessage(WM_COMMAND, IDC_NOTEPAD);
 	
 	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
@@ -766,6 +803,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case IDC_REFRESH_FILE_LIST: stringId = ResourceManager::MENU_REFRESH_FILE_LIST; break;
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
+			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
 		}
 		if(stringId != -1) {

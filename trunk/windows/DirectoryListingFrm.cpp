@@ -537,17 +537,11 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 }
 
 HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	RECT rc;
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
 	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
 
-	// Get the bounding rectangle of the client area. 
-	ctrlList.GetClientRect(&rc);
-	
-	WinUtil::AppendSearchMenu(searchMenu);
-
-	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) {
+	if (reinterpret_cast<HWND>(wParam) == ctrlList && ctrlList.GetSelectedCount() > 0) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		
 		if(pt.x == -1 && pt.y == -1) {
 			WinUtil::getContextMenuPos(ctrlList, pt);
 		}
@@ -604,8 +598,9 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 		}
 		
 		return TRUE; 
-	} else if((HWND)wParam == ctrlTree && ctrlTree.GetSelectedItem() != NULL) { 
+	} else if(reinterpret_cast<HWND>(wParam) == ctrlTree && ctrlTree.GetSelectedItem() != NULL) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		
 		if(pt.x == -1 && pt.y == -1) {
 			WinUtil::getContextMenuPos(ctrlTree, pt);
 		} else {

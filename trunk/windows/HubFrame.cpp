@@ -814,7 +814,7 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) }; 
-
+	
 	bool doMenu = false;
 	bool doMcMenu = false;
 
@@ -822,6 +822,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		if(pt.x == -1 && pt.y == -1) {
 			WinUtil::getContextMenuPos(ctrlClient, pt);
 		}
+
 		tstring x;
 		ctrlClient.ScreenToClient(&pt);
 		string::size_type start = (string::size_type)ctrlClient.TextUnderCursor(pt, x);

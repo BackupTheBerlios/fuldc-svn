@@ -146,12 +146,6 @@ public:
 	static int getTextHeight(HDC dc);
 	static int getTextSpacing(HWND wnd, HFONT fnt); 
 
-	//returns the position where the context menu should be
-	//opened if it was invoked from the keyboard.
-	//aPt is relative to the screen not the control.
-	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
-	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
-	static void getContextMenuPos(CFulEditCtrl& aEdit,	POINT& aPt);
 
 	static void addLastDir(const tstring& dir);
 
@@ -182,6 +176,13 @@ public:
 	
 	static int getOsMajor();
 	static int getOsMinor();
+
+	//returns the position where the context menu should be
+	//opened if it was invoked from the keyboard.
+	//aPt is relative to the screen not the control.
+	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
+	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
+	static void getContextMenuPos(CFulEditCtrl& aEdit,	POINT& aPt);
 	
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 

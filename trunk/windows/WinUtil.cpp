@@ -216,8 +216,8 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, ID_FILE_SEARCH, CTSTRING(MENU_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CTSTRING(MENU_ADL_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CTSTRING(MENU_SEARCH_SPY));
-	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
 	view.AppendMenu(MF_STRING, IDC_NOTEPAD, CTSTRING(MENU_NOTEPAD));
+	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
 	view.AppendMenu(MF_STRING, IDC_HASH_PROGRESS, CTSTRING(MENU_HASH_PROGRESS));
 	view.AppendMenu(MF_SEPARATOR);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
@@ -911,6 +911,39 @@ int WinUtil::getOsMinor()
 	return ver.dwMinorVersion;
 }
 
+void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {
+	int pos = aList.GetNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
+	if(pos >= 0) {
+		CRect lrc;
+		aList.GetItemRect(pos, &lrc, LVIR_LABEL);
+		aPt.x = lrc.left;
+		aPt.y = lrc.top + (lrc.Height() / 2);
+	} else {
+		aPt.x = aPt.y = 0;
+	}
+	aList.ClientToScreen(&aPt);
+}
+
+void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
+	CRect trc;
+	HTREEITEM ht = aTree.GetSelectedItem();
+	if(ht) {
+		aTree.GetItemRect(ht, &trc, TRUE);
+		aPt.x = trc.left;
+		aPt.y = trc.top + (trc.Height() / 2);
+	} else {
+		aPt.x = aPt.y = 0;
+	}
+	aTree.ClientToScreen(&aPt);
+}
+void WinUtil::getContextMenuPos(CFulEditCtrl& aEdit, POINT& aPt) {
+	CRect erc;
+	aEdit.GetRect(&erc);
+	aPt.x = erc.Width() / 2;
+	aPt.y = erc.Height() / 2;
+	aEdit.ClientToScreen(&aPt);
+}
+
 void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 	if(ws == NULL)
 		return;
@@ -1388,39 +1421,6 @@ bool WinUtil::flashWindow() {
 	}
 
 	return false;
-}
-
-void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {
-	int pos = aList.GetNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
-	if(pos >= 0) {
-		CRect lrc;
-		aList.GetItemRect(pos, &lrc, LVIR_LABEL);
-		aPt.x = lrc.left;
-		aPt.y = lrc.top + (lrc.Height() / 2);
-	} else {
-		aPt.x = aPt.y = 0;
-	}
-	aList.ClientToScreen(&aPt);
-}
-
-void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
-	CRect trc;
-	HTREEITEM ht = aTree.GetSelectedItem();
-	if(ht) {
-		aTree.GetItemRect(ht, &trc, TRUE);
-		aPt.x = trc.left;
-		aPt.y = trc.top + (trc.Height() / 2);
-	} else {
-		aPt.x = aPt.y = 0;
-	}
-	aTree.ClientToScreen(&aPt);
-}
-void WinUtil::getContextMenuPos(CFulEditCtrl& aEdit, POINT& aPt) {
-	CRect erc;
-	aEdit.GetRect(&erc);
-	aPt.x = erc.Width() / 2;
-	aPt.y = erc.Height() / 2;
-	aEdit.ClientToScreen(&aPt);
 }
 
 /**
