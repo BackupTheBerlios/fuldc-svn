@@ -1412,9 +1412,14 @@ LRESULT HubFrame::onCopyUserList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 }
 
 void HubFrame::openLinksInTopic() {
-	TCHAR buf[512];
-	GetWindowText(buf, 512);
+	int length = GetWindowTextLength();
+	TCHAR* buf = new TCHAR[length + 1];
+	
+	GetWindowText(buf, length);
+	
 	tstring topic = buf;
+	delete[] buf;
+
 	int pos = -1;
 	TStringList urls;
 	
@@ -1470,7 +1475,7 @@ LRESULT HubFrame::onFilterChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	updateUserList();
 
-	bHandled = false;
+	bHandled = FALSE;
 
 	return 0;
 }
@@ -1483,7 +1488,7 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	
 	updateUserList();
 	
-	bHandled = false;
+	bHandled = FALSE;
 
 	return 0;
 }
