@@ -126,6 +126,9 @@ typedef StringMapIter TStringMapIter;
 extern void startup(void (*f)(void*, const tstring&, const tstring&), void* p);
 extern void shutdown();
 
+//remove this to remove hashing =)
+#define USE_TTH
+
 #endif // DCPLUSPLUS_H
 
 /**
