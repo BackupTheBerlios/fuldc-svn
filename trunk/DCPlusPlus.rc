@@ -410,11 +410,10 @@ BEGIN
     EDITTEXT        IDC_SKIPLIST_SHARE,15,71,245,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_INCOMING_REFRESH_TIME,15,112,37,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_SHARE_REFRESH_TIME,59,112,39,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_DISPLAYTIME,13,162,40,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_CHATBUFFERSIZE,165,112,95,14,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COLOR_COMBO,166,152,98,30,CBS_DROPDOWNLIST | 
+    COMBOBOX        IDC_COLOR_COMBO,15,148,98,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Select Color",IDC_COLOR_BUTTON,166,168,57,11
+    PUSHBUTTON      "Select Color",IDC_COLOR_BUTTON,15,164,57,11
     GROUPBOX        "Skiplist Downloads",IDC_STATIC,7,7,261,40
     GROUPBOX        "Refresh",IDC_STATIC,7,92,109,40
     LTEXT           "Skiplist (separate files with """"|""""):",IDC_STATIC,
@@ -426,11 +425,7 @@ BEGIN
     LTEXT           "Share",IDC_STATIC,60,102,20,8
     GROUPBOX        "Mainchat buffer size",IDC_STATIC,159,92,109,40
     LTEXT           "Max size ~2.1 billion (2^31)",IDC_STATIC,167,101,92,8
-    GROUPBOX        "Popup",IDC_STATIC,7,142,109,59
-    LTEXT           "Display popup for n seconds",IDC_STATIC,13,152,98,8
-    GROUPBOX        "Tab Colors",IDC_STATIC,159,142,109,40
-    PUSHBUTTON      "TextColor",IDC_TEXTCOLOR,9,180,50,14
-    PUSHBUTTON      "Font",IDC_FONT,62,180,50,14
+    GROUPBOX        "Tab Colors",IDC_STATIC,8,138,109,40
 END
 
 IDD_WEB_SHORTCUTS DIALOGEX 0, 0, 264, 153
@@ -527,21 +522,28 @@ EXSTYLE WS_EX_RTLREADING | WS_EX_LEFTSCROLLBAR
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "Minislots",IDC_STATIC,14,14,245,46
-    LTEXT           "Free slots file extensions",IDC_STATIC,22,24,134,8
     EDITTEXT        IDC_FREE_SLOTS_EXTENSIONS,24,39,178,14,ES_AUTOHSCROLL
-    LTEXT           "Free slots file size in kiB",IDC_STATIC,178,24,76,8
     EDITTEXT        IDC_FREE_SLOTS_SIZE,211,38,40,14,ES_AUTOHSCROLL
-    GROUPBOX        "Static ""download to"" directories",IDC_STATIC,14,66,
-                    245,43
     EDITTEXT        IDC_PATHS,22,91,176,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse",IDC_BROWSE,202,90,50,14
+    EDITTEXT        IDC_TAB_SIZE,23,127,93,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MAX_SOURCES,156,127,93,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DISPLAYTIME,25,172,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MESSAGE_LENGTH,106,172,40,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Font",IDC_FONT,181,156,50,14
+    PUSHBUTTON      "TextColor",IDC_TEXTCOLOR,181,174,50,14
+    GROUPBOX        "Minislots",IDC_STATIC,14,14,245,46
+    LTEXT           "Free slots file extensions",IDC_STATIC,22,24,134,8
+    LTEXT           "Free slots file size in kiB",IDC_STATIC,178,24,76,8
+    GROUPBOX        "Static ""download to"" directories",IDC_STATIC,14,66,
+                    245,43
     LTEXT           "Separate paths with |",IDC_STATIC,24,77,176,14
     GROUPBOX        "Size of string to display in tabs",IDC_STATIC,14,115,
                     110,32
-    EDITTEXT        IDC_TAB_SIZE,23,127,93,14,ES_AUTOHSCROLL
     GROUPBOX        "Max sources for match queue",IDC_STATIC,147,115,109,32
-    EDITTEXT        IDC_MAX_SOURCES,156,127,93,14,ES_AUTOHSCROLL
+    GROUPBOX        "Popup",IDC_STATIC,16,149,239,45
+    LTEXT           "Popup time in seconds",IDC_STATIC,25,160,77,8
+    LTEXT           "Max message length",IDC_STATIC,106,160,72,8
 END
 
 

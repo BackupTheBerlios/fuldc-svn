@@ -23,8 +23,8 @@ public:
 	END_MSG_MAP()
 
 	PopupWnd(HWND hWnd, const string& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
-		if(aMsg.length() > 90){
-			msg = aMsg.substr(0, 87);
+		if(aMsg.length() > SETTING(MAX_MSG_LENGTH)){
+			msg = aMsg.substr(0, SETTING(MAX_MSG_LENGTH)-3);
 			msg += "...";
 		}
 		else
@@ -126,7 +126,7 @@ public:
 		int yBorder = bm.bmHeight / 10;
 		CRect rc(xBorder, yBorder, bm.bmWidth - xBorder, bm.bmHeight - yBorder);
 
-		::DrawText(hdc, msg.c_str(), msg.length(), rc, DT_CENTER);
+		::DrawText(hdc, msg.c_str(), msg.length(), rc, DT_CENTER | DT_WORDBREAK);
 
 		SelectObject(hdc, oldFont);
 		::EndPaint(m_hWnd,&ps);

@@ -96,6 +96,7 @@ bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
 void CFulEditCtrl::Colorize(int begin) {
 	CHARFORMAT2 cf;
 	cf.cbSize = sizeof(CHARFORMAT2);
+	
 	ColorList *cList = HighlightManager::getInstance()->rLock();
 
 	int end = GetTextLengthEx(GTL_NUMCHARS);

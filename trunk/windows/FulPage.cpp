@@ -19,7 +19,6 @@ PropPage::Item FulPage::items[] = {
 	{ IDC_INCOMING_REFRESH_TIME, SettingsManager::INCOMING_REFRESH_TIME, PropPage::T_INT },
 	{ IDC_SHARE_REFRESH_TIME, SettingsManager::SHARE_REFRESH_TIME, PropPage::T_INT },
 	{ IDC_CHATBUFFERSIZE, SettingsManager::CHATBUFFERSIZE, PropPage::T_INT },
-	{ IDC_DISPLAYTIME, SettingsManager::POPUP_TIMEOUT, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -76,22 +75,5 @@ LRESULT FulPage::onColorButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		}
 	}
 
-	return 0;
-}
-
-LRESULT FulPage::onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CColorDialog dlg(SETTING(POPUP_TEXTCOLOR), CC_FULLOPEN);
-	if(dlg.DoModal() == IDOK)
-		SettingsManager::getInstance()->set(SettingsManager::POPUP_TEXTCOLOR, (int)dlg.GetColor());
-	return 0;
-}
-
-LRESULT FulPage::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	LOGFONT font;  
-	WinUtil::decodeFont(SETTING(POPUP_FONT), font);
-	CFontDialog dlg(&font, CF_EFFECTS | CF_SCREENFONTS);
-	if(dlg.DoModal() == IDOK){
-		settings->set(SettingsManager::POPUP_FONT, WinUtil::encodeFont(font));
-	}
 	return 0;
 }

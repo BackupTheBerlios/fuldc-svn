@@ -23,6 +23,7 @@
 #include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/ConnectionManager.h"
+#include "../client/Socket.h"
 
 #include "WinUtil.h"
 #include "TransferView.h"

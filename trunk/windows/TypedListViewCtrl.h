@@ -116,12 +116,16 @@ public:
 			lvc.pszText = buf;
 			lvc.cchTextMax = 512;
 			GetColumn(pos, &lvc);
-			for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++j){
-				if((Util::stricmp(buf, (*i)->name.c_str()) == 0)){
-					if((*i)->visible == true)
-						insert = true;
-					break;
+			if(columnList.size() > 0){
+				for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++j){
+					if((Util::stricmp(buf, (*i)->name.c_str()) == 0)){
+						if((*i)->visible == true)
+							insert = true;
+						break;
+					}
 				}
+			} else {
+				insert = true;
 			}
 			if(insert == true)
 				di->item.pszText = const_cast<char*>(((T*)di->item.lParam)->getText(j).c_str());
@@ -213,7 +217,7 @@ public:
 	int getSortPos(T* a) {
 		int high = GetItemCount();
 		if((sortColumn == -1) || (high == 0))
-			return 0;
+			return high;
 
 		high--;
 

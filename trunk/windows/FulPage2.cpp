@@ -19,6 +19,8 @@ PropPage::Item FulPage2::items[] = {
 	{ IDC_PATHS, SettingsManager::DOWNLOAD_TO_PATHS, PropPage::T_STR },
 	{ IDC_TAB_SIZE, SettingsManager::TAB_SIZE, PropPage::T_INT }, 
 	{ IDC_MAX_SOURCES, SettingsManager::MAX_AUTO_MATCH_SOURCES, PropPage::T_INT }, 
+	{ IDC_DISPLAYTIME, SettingsManager::POPUP_TIMEOUT, PropPage::T_INT },
+	{ IDC_MESSAGE_LENGTH, SettingsManager::MAX_MSG_LENGTH, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -43,4 +45,21 @@ LRESULT FulPage2::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 void FulPage2::write() {
 	PropPage::write((HWND)*this, items);
+}
+
+LRESULT FulPage2::onTextColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CColorDialog dlg(SETTING(POPUP_TEXTCOLOR), CC_FULLOPEN);
+	if(dlg.DoModal() == IDOK)
+		SettingsManager::getInstance()->set(SettingsManager::POPUP_TEXTCOLOR, (int)dlg.GetColor());
+	return 0;
+}
+
+LRESULT FulPage2::onFont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	LOGFONT font;  
+	WinUtil::decodeFont(SETTING(POPUP_FONT), font);
+	CFontDialog dlg(&font, CF_EFFECTS | CF_SCREENFONTS);
+	if(dlg.DoModal() == IDOK){
+		settings->set(SettingsManager::POPUP_FONT, WinUtil::encodeFont(font));
+	}
+	return 0;
 }

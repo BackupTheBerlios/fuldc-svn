@@ -63,7 +63,7 @@ const string SettingsManager::settingTags[] =
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
 	"PopupTextColor", "FreeSlotsSize", "ShowStatusbar", "ShowToolbar", "ShowTransferView",
-	"CustomSound", "TabSize", "RemovePopups", "ShowTopic", "MaxAutoMatchSource", 
+	"CustomSound", "TabSize", "RemovePopups", "ShowTopic", "MaxAutoMatchSource", "MaxMsgLength",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -206,6 +206,7 @@ SettingsManager::SettingsManager()
 	setDefault(REMOVE_POPUPS, true);
 	setDefault(SHOW_TOPIC, true);
 	setDefault(MAX_AUTO_MATCH_SOURCES, 5);
+	setDefault(MAX_MSG_LENGTH, 90);
 	
 	
 	

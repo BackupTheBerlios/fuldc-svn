@@ -189,7 +189,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.SetTextColor(WinUtil::textColor);
 	ctrlResults.SetFont(WinUtil::systemFont, FALSE);	// use Util::font instead to obey Appearace settings
 	
-	ctrlHubs.insertColumn(0, "Dummy", LVCFMT_LEFT, LVSCW_AUTOSIZE, 0);
+	ctrlHubs.InsertColumn(0, "Dummy", LVCFMT_LEFT, LVSCW_AUTOSIZE, 0);
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
@@ -368,18 +368,18 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 			return;
 		}
 
-		//if(isHash) {
-		//	if(aResult->getTTH() == NULL)
-		//		return;
-		//	if(Util::stricmp(aResult->getTTH()->toBase32(), search[0]) != 0)
-		//		return;
-		//} else {
+		if(isHash) {
+			if(aResult->getTTH() == NULL)
+				return;
+			if(Util::stricmp(aResult->getTTH()->toBase32(), search[0]) != 0)
+				return;
+		} else {
 			for(StringIter j = search.begin(); j != search.end(); ++j) {
 				if(Util::findSubString(aResult->getFile(), *j) == -1) {
 					return;
 				}
 			}
-		//}
+		}
 	}
 
 	// Reject results without free slots if selected

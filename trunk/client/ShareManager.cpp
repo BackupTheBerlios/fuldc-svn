@@ -212,7 +212,7 @@ bool ShareManager::loadXmlList(){
 		Util::toAcp(name);
 		Util::toAcp(path);
 				
-		directories[path] = addDirectoryFromXml(xml, NULL, name);; 
+		directories[path] = addDirectoryFromXml(xml, NULL, name, path); 
 		dirs[name] = path;
 	}
 
@@ -305,7 +305,7 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 	}
 }
 
-ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName){
+ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName, string & aPath){
 	Directory * dir = new Directory(aName, aParent);
 	dir->addType(SearchManager::TYPE_DIRECTORY);
 	dir->addSearchType(getMask(dir->getName()));
@@ -318,7 +318,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 		string name = xml->getChildAttrib("Name");
 		Util::toAcp(name);
 		u_int64_t size = xml->getIntChildAttrib("Size");
-		TTHValue *tth = HashManager::getInstance()->getTTH(name, size);
+		TTHValue *tth = HashManager::getInstance()->getTTH(aPath + PATH_SEPARATOR + name, size);
 
 		lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, tth));
 
@@ -337,7 +337,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 		string path = xml->getChildAttrib("Path");
 		Util::toAcp(name);
 		Util::toAcp(path);
-		dir->directories[path] = addDirectoryFromXml(xml, dir, name);
+		dir->directories[path] = addDirectoryFromXml(xml, dir, name, path);
 		dir->addSearchType(dir->directories[path]->getSearchTypes());
 	}
 
@@ -751,7 +751,7 @@ void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, c
 
 	indent += '\t';
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		i->second->toXmlList(xmlFile, indent, i->first);
+		i->second->toXmlList(xmlFile, indent, path + PATH_SEPARATOR + i->first);
 	}
 
 	Directory::File::Iter j = files.begin();

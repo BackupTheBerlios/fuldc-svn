@@ -267,7 +267,7 @@ private:
 	Directory* buildTree(const string& aName, Directory* aParent);
 
 	Directory* getDirectory(const string& fname);
-	Directory* addDirectoryFromXml(SimpleXML* xml, Directory* aParent, string& aName);
+	Directory* addDirectoryFromXml(SimpleXML* xml, Directory* aParent, string& aName, string& aPath);
 
 	virtual int run();
 

@@ -248,6 +248,7 @@ private:
 		COUNT_OP
 	};
 
+	string myInfoString;
 	string address;
 	string addressPort;
 	short port;

@@ -695,21 +695,15 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
 		if(fhe != NULL){
-			RECT rc, rc2;
+			CRect rc;
 			
 			//Get position of window
 			GetWindowRect(&rc);
-			::GetWindowRect(GetParent(), &rc2);
-
-			//convert the position so it's relative to main window
-			//+2 pixels seems to work well to avoid the windows moving down and right
-			//every time they're closed
-			rc.top -= (rc2.top+2);
-			rc.left -= (rc2.left+2);
-			rc.right -= (rc2.left+2);
-			rc.bottom -= (rc2.top+2);
 			
-
+			//convert the position so it's relative to main window
+			::ScreenToClient(GetParent(), &rc.TopLeft());
+			::ScreenToClient(GetParent(), &rc.BottomRight());
+			
 			//save the position
 			fhe->setBottom(rc.bottom > 0 ? rc.bottom : 0);
 			fhe->setTop(rc.top > 0 ? rc.top : 0);
@@ -828,6 +822,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ctrlClient.GetWindowRect(&rc);
 
 	bool doMenu = false;
+	bool doMcMenu = false;
 	
 	WinUtil::AppendSearchMenu(searchMenu);
 
@@ -858,7 +853,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 			ctrlClient.ClientToScreen(&pt);
 			doMenu = true; 
 		} else {
-			bHandled = FALSE;
+			doMcMenu = true;
 		}
 	} else {
 		// Get the bounding rectangle of the client area. 
@@ -886,7 +881,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		return TRUE;
 	}
 
-	if(!doMenu) {
+	if(doMcMenu) {
 		CHARRANGE cr;
 		ctrlClient.GetSel(cr);
 		if(cr.cpMax != cr.cpMin) {

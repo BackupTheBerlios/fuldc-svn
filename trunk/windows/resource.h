@@ -17,7 +17,6 @@
 #define IDC_OPEN                        110
 #define IDC_CUT                         111
 #define IDC_PM_UP                       111
-#define IDC_COPY                        112
 #define IDC_PM_DOWN                     112
 #define IDC_PASTE                       113
 #define IDC_SHOWLOG                     113
@@ -33,6 +32,7 @@
 #define IDC_OPEN_MY_LIST                121
 #define IDC_HEADER_MENU                 122
 #define IDC_SEARCH_BY_TTH               123
+#define IDC_RESOLVE_IP                  125
 #define IDC_SEARCH_RELEASEALTERNATES    127
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
@@ -56,6 +56,7 @@
 #define IDC_MATCHTYPE                   147
 #define IDC_STRING                      148
 #define IDC_UPDATE                      149
+#define IDC_COPY                        150
 #define IDD_SETTINGS                    201
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209
@@ -376,6 +377,7 @@
 #define IDC_SETTINGS_FORMAT4            1258
 #define IDC_SETTINGS_LOG_SYSTEM         1259
 #define IDC_LOG_SYSTEM                  1260
+#define IDC_MESSAGE_LENGTH              1262
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -423,7 +425,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
-#define _APS_NEXT_CONTROL_VALUE         1261
-#define _APS_NEXT_SYMED_VALUE           124
+#define _APS_NEXT_CONTROL_VALUE         1263
+#define _APS_NEXT_SYMED_VALUE           126
 #endif
 #endif

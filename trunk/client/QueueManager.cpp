@@ -766,6 +766,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 						flag = (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : 0)
 							| (q->isSet(QueueItem::FLAG_MATCH_QUEUE) ? QueueItem::FLAG_MATCH_QUEUE : 0);
 				} 
+				updateTotalSize(q->getTarget(), q->getSize(), false);
 				fileQueue.remove(q);
 				setDirty();
 				checkNotify();
