@@ -395,11 +395,11 @@ BEGIN
     EDITTEXT        IDC_SKIPLIST_SHARE,12,28,248,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_MINISLOTS_EXTENSIONS,12,79,191,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_MINISLOTS_SIZE,213,79,47,14,ES_AUTOHSCROLL
-    CONTROL         "refresh incoming",IDC_REFRESH_INCOMING,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,121,135,10
+    CONTROL         "Automatically refresh incoming",IDC_REFRESH_INCOMING,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,121,135,10
     EDITTEXT        IDC_INCOMING_REFRESH_TIME,213,117,47,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
-    CONTROL         "refresh share",IDC_REFRESH_SHARE,"Button",
+    CONTROL         "Automatically refresh share",IDC_REFRESH_SHARE,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,143,136,10
     EDITTEXT        IDC_SHARE_REFRESH_TIME,213,137,47,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
@@ -428,6 +428,8 @@ BEGIN
                     134,8
     LTEXT           "Minislots file size in KiB",IDC_ST_MINISLOTS_SIZE,190,
                     65,72,8
+    LTEXT           " -",IDC_STATIC,205,163,8,8
+    LTEXT           " -",IDC_STATIC,205,184,8,8
 END
 
 IDD_WEB_SHORTCUTS DIALOGEX 0, 0, 264, 238
