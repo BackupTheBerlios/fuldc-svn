@@ -92,7 +92,6 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 LRESULT TextFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	m_hMenu = NULL;
-	MDIDestroy(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 }

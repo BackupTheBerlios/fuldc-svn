@@ -625,7 +625,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	}
 }
 
-LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		if(!closing && BOOLSETTING(HUBFRAME_CONFIRMATION)) {
 			int ret = MessageBox("Do you really want to close this hub?", "Confirmation", MB_YESNO | MB_ICONQUESTION);
@@ -680,7 +680,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		}
 
 		m_hMenu = NULL;
-		MDIDestroy(m_hWnd);
+		bHandled = FALSE;
 		return 0;
 	}
 }
@@ -696,6 +696,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 		if( (Util::strnicmp(x.c_str() + start, "http://", 7) == 0) || 
 			(Util::strnicmp(x.c_str() + start, "www.", 4) == 0) ||
 			(Util::strnicmp(x.c_str() + start, "ftp://", 6) == 0) ||
+ 			(Util::strnicmp(x.c_str() + start, "irc://", 6) == 0) ||
 			(Util::strnicmp(x.c_str() + start, "https://", 8) == 0) )	{
 
 			bHandled = true;

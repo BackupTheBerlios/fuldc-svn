@@ -141,7 +141,6 @@ public:
 
 		bHandled = FALSE;
 		m_hMenu = NULL;
-		MDIDestroy(m_hWnd);
 		return 0;
 	}
 	

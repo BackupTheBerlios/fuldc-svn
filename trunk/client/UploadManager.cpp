@@ -126,6 +126,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 		is = new TreeInputStream<TigerHash>(tree);	
 		leaves = true;
 
+		free = true;
+
 	} else {
 		aSource->fileNotAvail();
 		return false;

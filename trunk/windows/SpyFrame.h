@@ -81,7 +81,7 @@ public:
 		} else {
 			checkButton(false);	
 			m_hMenu = NULL;
-			MDIDestroy(m_hWnd);
+			bHandled = FALSE;
 			return 0;
 		}
 	}
