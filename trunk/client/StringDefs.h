@@ -439,6 +439,7 @@ enum Strings { // @DontAdd
 	SETTINGS_TAB_COMPLETION, // "Tab completion of nicks in chat"
 	SETTINGS_TCP_PORT, // "TCP Port"
 	SETTINGS_TIME_STAMPS, // "Show timestamps in chat by default"
+	SETTINGS_TIME_STAMPS_FORMAT, // "Set timestamps"
 	SETTINGS_UDP_PORT, // "UDP Port"
 	SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY, // "Unfinished downloads directory"
 	SETTINGS_UPLOADS, // "DC++\\Sharing"

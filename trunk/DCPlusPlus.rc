@@ -1099,11 +1099,8 @@ BEGIN
     GROUPBOX        "Mainchat buffer size",IDC_SB_CHATBUFFERSIZE,7,7,115,43
     LTEXT           "Max size ~2.1 billion (2^31)",IDC_ST_CHATBUFFERSIZE,15,
                     15,92,8
-    GROUPBOX        "Time stamps",IDC_SB_TIME_STAMPS,150,7,116,43
-    EDITTEXT        IDC_EDIT_TIME_STAMPS,157,18,95,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Button1",IDC_BTN_TIME_STAMP_HELP,157,34,57,11
-    GROUPBOX        "Dupe Color",IDC_DUPES,7,58,116,35
-    PUSHBUTTON      "Select Color",IDC_DUPE_COLOR,15,71,90,14
+    GROUPBOX        "Dupe Color",IDC_DUPES,149,7,115,43
+    PUSHBUTTON      "Select Color",IDC_DUPE_COLOR,157,26,95,14
 END
 
 

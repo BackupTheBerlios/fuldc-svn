@@ -296,7 +296,7 @@ void HubFrame::onEnter() {
 						addLine(_T("*** /") + help);
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("showlog")) == 0) {
-				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + ".log")));
+				SendMessage(WM_COMMAND, IDC_SHOW_HUB_LOG);
 			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 				tstring nick, msg;
 				tstring::size_type j = param.find(_T(' '));

@@ -181,7 +181,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH_AUTO_MATCH, false);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
 	setDefault(LOG_SYSTEM, false);
-	setDefault(SEND_UNKNOWN_COMMANDS, true);
+	setDefault(SEND_UNKNOWN_COMMANDS, false);
 	setDefault(MAX_HASH_SPEED, 0);
 	setDefault(OPEN_USER_CMD_HELP, true);
 	setDefault(GET_USER_COUNTRY, true);
@@ -199,7 +199,7 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
 	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
 	setDefault(SEARCH_ONLY_TTH, false);
-	setDefault(SHOW_LAST_LINES_LOG, 0);
+	setDefault(SHOW_LAST_LINES_LOG, 5);
 	setDefault(CONFIRM_ITEM_REMOVAL, 0);
 	setDefault(ADVANCED_RESUME, true);
 	setDefault(ADC_DEBUG, false);
@@ -207,7 +207,7 @@ SettingsManager::SettingsManager()
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
 	setDefault(CHATBUFFERSIZE, 25000);
-	setDefault(EXPAND_QUEUE, true);
+	setDefault(EXPAND_QUEUE, false);
 	setDefault(STRIP_ISP, false);
 	setDefault(STRIP_ISP_PM, false);
 	setDefault(HUB_BOLD_TABS, true);
@@ -233,8 +233,8 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_TEXTCOLOR, RGB(0, 0, 0));
 	setDefault(FREE_SLOTS_EXTENSIONS, "*.nfo|*.sfv");
 	setDefault(FREE_SLOTS_SIZE, 64);
-	setDefault(SKIPLIST_SHARE, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
-	setDefault(SKIPLIST_DOWNLOAD, ".ioFTPD|.checked|.raidenftpd.acl|.SimSfvChk.log|*All-Files-CRC-OK*|.message|Descript.ion|.upChk.log|thumbs.db|.crc");
+	setDefault(SKIPLIST_SHARE, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db");
+	setDefault(SKIPLIST_DOWNLOAD, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db|");
 	setDefault(TAB_SHOW_ICONS, true);
 	setDefault(CUSTOM_SOUND, false);
 	setDefault(TAB_SIZE, 20);
@@ -243,7 +243,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_AUTO_MATCH_SOURCES, 5);
 	setDefault(MAX_MSG_LENGTH, 90);
 	setDefault(POPUP_MINIMIZED, false);
-	setDefault(BLEND_TABS, false);
+	setDefault(BLEND_TABS, true);
 	setDefault(TOGGLE_ACTIVE_WINDOW, false);
 	setDefault(POPUP_ACTIVATE_ON_CLICK, false);
 	setDefault(POPUP_DONT_SHOW_ON_ACTIVE, false);

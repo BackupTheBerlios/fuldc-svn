@@ -380,7 +380,6 @@ void SearchFrame::onEnter() {
 		// Start the countdown timer
 		timerID = SetTimer(1, 1000);
 	}
-	
 
 }
 
@@ -645,9 +644,7 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
  		ClientManager* clientMgr = ClientManager::getInstance();
  		clientMgr->removeListener(this);
 
-		FrameIter i = frames.find(m_hWnd);
-		if(i != frames.end())
-			frames.erase(i);
+		frames.erase(m_hWnd);
 
 		closed = true;
 		PostMessage(WM_CLOSE);

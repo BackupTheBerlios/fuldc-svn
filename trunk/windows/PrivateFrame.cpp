@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2005 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -319,14 +319,7 @@ void PrivateFrame::onEnter()
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), _T("showlog")) == 0) {
-				StringMap params;
-				params["user"] = user->getNick();
-				params["hub"] = user->getClientName();
-				params["mynick"] = user->getClientNick(); 
-				params["mycid"] = user->getClientCID().toBase32(); 
-				params["cid"] = user->getCID().toBase32(); 
-				params["hubaddr"] = user->getClientAddressPort();
-				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
+				SendMessage(WM_COMMAND, IDC_SHOWLOG);
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /mute, /unmute, /pop on|off"));
 			} else if(Util::stricmp(s.c_str(), _T("me")) == 0) {
@@ -578,8 +571,6 @@ void PrivateFrame::closeAll(){
 	FrameMap::iterator i = frames.begin();
 	for(; i != frames.end(); ++i)
 		i->second->PostMessage(WM_CLOSE, 0, 0);
-
-	frames.clear();
 }
 
 void PrivateFrame::FlashWindow() {

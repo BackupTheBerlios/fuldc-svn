@@ -12,8 +12,6 @@ PropPage::TextItem FulAppearancePage::texts[] = {
 	{ IDC_ST_CHATBUFFERSIZE,  ResourceManager::SETTINGS_ST_CHATBUFFERSIZE	 },
 	{ IDC_BTN_FONT,			  ResourceManager::SETTINGS_BTN_FONT			 },
 	{ IDC_BTN_TEXTCOLOR,	  ResourceManager::SETTINGS_BTN_TEXTCOLOR		 },
-	{ IDC_BTN_TIME_STAMP_HELP,ResourceManager::SETTINGS_TIME_STAMP_HELP		 },
-	{ IDC_SB_TIME_STAMPS,	  ResourceManager::SETTINGS_SB_TIME_STAMPS		 },
 	{ IDC_DUPE_COLOR,		  ResourceManager::SETTINGS_BTN_COLOR			 },
 	{ IDC_DUPES,			  ResourceManager::SETTINGS_DUPES				 },
 	{ 0,					  ResourceManager::SETTINGS_AUTO_AWAY			 }
@@ -38,12 +36,6 @@ void FulAppearancePage::write() {
 	PropPage::write((HWND)*this, items);
 
 	settings->set(SettingsManager::DUPE_COLOR, static_cast<int>(dupeColor));
-}
-
-LRESULT FulAppearancePage::onTimeStampHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	MessageBox(CTSTRING(HELP_TIME_STAMPS), CTSTRING(TIME_STAMPS_HELP_CAPTION), MB_OK | MB_ICONINFORMATION);
-
-	return 0;
 }
 
 LRESULT FulAppearancePage::onSelectColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

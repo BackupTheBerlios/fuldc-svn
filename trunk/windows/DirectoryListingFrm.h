@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2005 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,9 +146,8 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlList.SetRedraw(FALSE);
 		clearList();
-		FrameIter i = frames.find( m_hWnd );
-		if(i != frames.end())
-			frames.erase(i);
+		
+		frames.erase(m_hWnd);
 
 		bHandled = FALSE;
 		return 0;
@@ -331,7 +330,7 @@ private:
 	
 	DirectoryListing* dl;
 
-	typedef multimap< HWND , DirectoryListingFrame* > FrameMap;
+	typedef map< HWND , DirectoryListingFrame* > FrameMap;
 	typedef pair< HWND , DirectoryListingFrame* > FramePair;
 	typedef FrameMap::iterator FrameIter;
 
