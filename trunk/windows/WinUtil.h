@@ -75,6 +75,7 @@ public:
 	static FlatTabCtrl* tabCtrl;
 	static string commands;
 	static HHOOK hook;
+	static string tth;
 	static HWND findDialog;
 	static const u_int32_t startTime;
 

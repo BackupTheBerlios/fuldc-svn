@@ -61,9 +61,9 @@ HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
+string WinUtil::tth;
 HWND WinUtil::findDialog = NULL;
 const u_int32_t WinUtil::startTime = GET_TIME();
-
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));

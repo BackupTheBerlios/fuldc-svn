@@ -1277,6 +1277,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 				} catch(const Exception&) {
 					// ...
 				}
+				break;
 			}
 		}
 	}

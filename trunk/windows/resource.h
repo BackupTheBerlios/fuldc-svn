@@ -25,6 +25,7 @@
 #define IDC_DELETE                      116
 #define IDC_CLOSE_ALL_DIR_LIST          116
 #define IDC_COPY_TTH                    117
+#define IDC_TTH							118
 #define IDC_SHOW_HUB_LOG                119
 #define IDC_OPEN_LOG_DIR                120
 #define IDC_OPEN_MY_LIST                121

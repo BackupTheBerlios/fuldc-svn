@@ -52,28 +52,30 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 205, 307
+IDD_ABOUTBOX DIALOGEX 0, 0, 489, 206
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,77,286,50,14
-    CTEXT           "DC++ v0.20\n(c) Copyright 2001-2002 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/",
-                    IDC_VERSION,31,38,143,49
-    ICON            IDR_MAINFRAME,IDC_STATIC,92,15,21,20
-    GROUPBOX        "",IDC_STATIC,7,7,191,86
-    GROUPBOX        "Greetz && Contributors",IDC_STATIC,7,97,191,82,
+    DEFPUSHBUTTON   "OK",IDOK,341,182,50,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,110,15,21,20
+    GROUPBOX        "",IDC_STATIC,7,7,234,102
+    GROUPBOX        "Greetz && Contributors",IDC_STATIC,7,112,233,82,
                     BS_CENTER
-    GROUPBOX        "Latest version",IDC_STATIC,7,253,191,24,BS_CENTER
-    CTEXT           "0.xxx",IDC_LATEST,13,265,179,8
-    GROUPBOX        "Totals",IDC_STATIC,7,182,191,39,BS_CENTER
-    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,
-                    193,179,8
-    CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,206,179,8
-    EDITTEXT        IDC_THANKS,13,107,179,66,ES_MULTILINE | ES_READONLY | 
+    GROUPBOX        "Latest version",IDC_STATIC,247,49,235,24,BS_CENTER
+    CTEXT           "0.xxx",IDC_LATEST,252,60,227,8
+    GROUPBOX        "Totals",IDC_STATIC,247,7,235,39,BS_CENTER
+    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,251,
+                    18,227,8
+    CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,251,31,227,8
+    EDITTEXT        IDC_THANKS,13,122,227,66,ES_MULTILINE | ES_READONLY | 
                     WS_VSCROLL
-    GROUPBOX        "Uptime",IDC_STATIC,7,225,191,24,BS_CENTER
-    CTEXT           "00:00",IDC_UPTIME,13,236,179,8
+    CTEXT           "Static",IDC_VERSION,13,37,227,54
+    EDITTEXT        IDC_TTH,44,93,196,12,ES_AUTOHSCROLL | ES_READONLY | NOT 
+                    WS_BORDER
+    LTEXT           "TTH:",IDC_STATIC,13,93,18,12
+    GROUPBOX        "Uptime",IDC_STATIC,247,76,235,24,BS_CENTER
+    CTEXT           "00:00",IDC_UPTIME,252,87,227,8
 END
 
 IDD_LINE DIALOGEX 0, 0, 239, 46
@@ -449,7 +451,7 @@ BEGIN
     RTEXT           "&URL",IDC_WEB_SHORTCUT_URL_DESC,7,46,29,8,0,
                     WS_EX_TRANSPARENT
     GROUPBOX        "How to use",IDC_WEB_SHORTCUTS_HOWTO,7,76,250,118
-    LTEXT           "Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One ""%s"" which will be replaced with the string you'll enter. If no ""%s"" exists, nothing will be pasted to the url, and the page will just open up. An example is:\nhttp://domain.com/search=%s\n\nNote: The key is case sensitive!\n\nClean search string means that things like year, xvid, dvdrip, dots and other meaningless info will be removed from the string. e.g ""Movie.Name.2003.DVDRip.XviD-ABC"" will become ""Movie Name""",
+    LTEXT           "Web shortcuts are used to open web pages with specific contents. The key can be more than one character, but must not contain any space. The URL has to have exactly One ""%s"" which will be replaced with the string you'll enter. If no ""%s"" exists, nothing wi??",
                     IDC_WEB_SHORTCUTS_DESC,15,91,232,103,0,WS_EX_TRANSPARENT
     CONTROL         "Clean search term",IDC_WEB_SHORTCUTS_CLEAN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,41,61,215,10
@@ -558,11 +560,12 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 198
+        RIGHTMARGIN, 482
         VERTGUIDE, 13
-        VERTGUIDE, 192
+        VERTGUIDE, 240
+        VERTGUIDE, 247
         TOPMARGIN, 7
-        BOTTOMMARGIN, 300
+        BOTTOMMARGIN, 199
     END
 
     IDD_LINE, DIALOG
@@ -725,8 +728,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,4,0,2
- PRODUCTVERSION 0,4,0,2
+ FILEVERSION 0,4,0,3
+ PRODUCTVERSION 0,4,0,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -743,12 +746,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 4, 0, 2"
+            VALUE "FileVersion", "0, 4, 0, 3"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 4, 0, 2"
+            VALUE "ProductVersion", "0, 4, 0, 3"
         END
     END
     BLOCK "VarFileInfo"

@@ -341,6 +341,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
+
 #endif
 	
 	HRESULT hRes = ::CoInitialize(NULL);
@@ -373,7 +374,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			n2 = DEBUG_BUFSIZE;
 		}
 		tth.finalize();
-		strcpy(::tth, tth.getRoot().toBase32().c_str());
+		WinUtil::tth = tth.getRoot().toBase32();
+		strcpy(::tth, WinUtil::tth.c_str());
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
