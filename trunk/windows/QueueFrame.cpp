@@ -662,8 +662,9 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			
 			delete ii;
 			updateStatus();
-			if(BOOLSETTING(QUEUE_BOLD_TABS))
+			if (BOOLSETTING(QUEUE_DIRTY)) {
 				setDirty();
+			}
 		} else if(ti->first == UPDATE_ITEM) {
 			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
 			if(!showTree || isCurDir(ii->getPath())) {

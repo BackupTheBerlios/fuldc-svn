@@ -24,6 +24,7 @@
 #include "CryptoManager.h"
 #include "UploadManager.h"
 #include "ClientManager.h"
+#include "LogManager.h"
 #include "HashManager.h"
 
 #include "SimpleXML.h"
@@ -558,6 +559,7 @@ void ShareManager::removeIncoming(const string& dir){
 int ShareManager::run() {
 
 	string tmp, tmp2;
+	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
 	{
 		WLock l(cs);
 	
@@ -678,6 +680,7 @@ int ShareManager::run() {
 		lastUpdate = GET_TICK();
 	}
 
+	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 	if(update) {
 		ClientManager::getInstance()->infoUpdated();
 	}

@@ -31,7 +31,7 @@ static const u_int32_t HASH_FILE_VERSION=1;
 TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 	Lock l(cs);
 	TTHValue* root = store.getTTH(aFileName, aSize, aTimeStamp);
-	if(root == NULL && BOOLSETTING(HASH_FILES)) {
+	if(root == NULL) {
 		hasher.hashFile(aFileName);
 	}
 	return root;
@@ -40,7 +40,7 @@ TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t 
 TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize) {
 	Lock l(cs);
 	TTHValue* root = store.getTTH(aFileName, aSize);
-	if(root == NULL && BOOLSETTING(HASH_FILES)) {
+	if(root == NULL ) {
 		hasher.hashFile(aFileName);
 	}
 	return root;

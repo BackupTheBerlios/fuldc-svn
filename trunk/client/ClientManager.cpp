@@ -263,8 +263,6 @@ void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
 	if(CryptoManager::getInstance()->isExtended(aLock)) {
 		StringList feat = features;
-		if(BOOLSETTING(HASH_FILES))
-			feat.push_back("TTHSearch");
 		if(BOOLSETTING(COMPRESS_TRANSFERS))
 			feat.push_back("GetZBlock");
 		client->supports(feat);

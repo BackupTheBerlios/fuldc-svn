@@ -64,6 +64,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
 	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
 	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
+	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

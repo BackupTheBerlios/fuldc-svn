@@ -51,12 +51,12 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
+	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
-	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", 
-	"LogFilelistTransfers", "AutoSearchExact", "HashFiles",
+	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
+	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
-	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "QueueBoldTabs", "HighPrioSample",
+	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
 	"RotateLogs", "PopupTimeout", "PopupAway", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation", "QueueRemoveConfirmation", "PopunderPm", "PopunderDirlist",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
@@ -147,6 +147,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
 	setDefault(FINISHED_DIRTY, true);
+	setDefault(QUEUE_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
@@ -158,7 +159,8 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH_AUTO_MATCH, false);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
 	setDefault(AUTO_SEARCH_EXACT, true);
-	setDefault(HASH_FILES, true);
+	setDefault(LOG_SYSTEM, false);
+	setDefault(SEND_UNKNOWN_COMMANDS, true);
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
 	setDefault(CHATBUFFERSIZE, 25000);
@@ -167,7 +169,6 @@ SettingsManager::SettingsManager()
 	setDefault(STRIP_ISP_PM, false);
 	setDefault(HUB_BOLD_TABS, true);
 	setDefault(PM_BOLD_TABS, true);
-	setDefault(QUEUE_BOLD_TABS, true);
 	setDefault(HIGH_PRIO_SAMPLE, false);
 	setDefault(ROTATE_LOG, false);
 	setDefault(POPUP_TIMEOUT, 5);

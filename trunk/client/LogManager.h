@@ -26,6 +26,7 @@
 #include "File.h"
 #include "CriticalSection.h"
 #include "Singleton.h"
+#include "TimerManager.h"
 
 class LogManagerListener {
 public:
@@ -57,10 +58,7 @@ public:
 	};
 
 	void logDateTime(const string& area, const string& msg) throw() {
-		char buf[20];
-		time_t now = time(NULL);
-		strftime(buf, 20, "%Y-%m-%d %H:%M: ", localtime(&now));
-		log(area, buf + msg);
+		log(area, Util::formatTime("%Y-%m-%d %H:%M: ", TimerManager::getInstance()->getTime()) + msg);
 	}
 
 	void logMainChat(const string& area, const string& msg) throw() {
@@ -72,8 +70,11 @@ public:
 			log(area + "\\" + buf + area, msg);
 		}
 	}
-	void message(const string& m) {
-		fire(LogManagerListener::MESSAGE, m);
+	void message(const string& msg) {
+		if (BOOLSETTING(LOG_SYSTEM)) {
+			log("system", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
+		}
+		fire(LogManagerListener::MESSAGE, msg);
 	}
 
 private:

@@ -372,7 +372,11 @@ void HubFrame::onEnter() {
 				TextFrame::openWindow(*str, false);
 				delete str;
 			} else {
-				client->sendMessage(s);
+				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
+					client->sendMessage(s);
+				} else {
+					addClientLine(STRING(UNKNOWN_COMMAND) + cmd);
+				}
 			}
 		} else {
 			client->sendMessage(s);
@@ -1008,7 +1012,7 @@ void HubFrame::onTab() {
 	if(!up && curUser == usermap.end())
 		curUser = usermap.begin();
 
-	for(int i = 0; i < end; ++i){
+	for(int i = 0; i < end-1; ++i){
 		if(up){
 			if(curUser == usermap.begin())
 				curUser = usermap.end();

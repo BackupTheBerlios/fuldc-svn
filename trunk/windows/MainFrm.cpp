@@ -138,6 +138,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	int w[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 	ctrlStatus.SetParts(8, w);
 	statusSizes[0] = WinUtil::getTextWidth(STRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
+	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
+
+	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
+	ctrlLastLines.AddTool(&ti);
 
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
@@ -409,11 +413,18 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
         } else if(wParam == STATUS_MESSAGE) {
-		string* s = (string*)lParam;
 		if(ctrlStatus.IsWindow()) {
-			ctrlStatus.SetText(0, (Util::formatTime("[%H:%M] ", time(NULL))+ *s).c_str());
+			string line = "[" + Util::getShortTimeString() + "] " + *((string *)lParam);
+
+			ctrlStatus.SetText(0, line.c_str());
+			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
+				lastLinesList.erase(lastLinesList.begin());
+			if (line.find('\r') == string::npos) {
+				lastLinesList.push_back(line);
+			} else {
+				lastLinesList.push_back(line.substr(0, line.find('\r')));
+			}
 		}
-		delete s;
 	} else if(wParam == DOWNLOAD_COMPLETE) {
 		dcdebug("MainFrame::onSpeaker: %s", (string*)lParam);
 		PopupManager::getInstance()->ShowDownloadComplete((string*)lParam);
@@ -624,6 +635,16 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			strncpy(pDispInfo->lpszText, ResourceManager::getInstance()->getString((ResourceManager::Strings)stringId).c_str(), 79);
 			pDispInfo->uFlags |= TTF_DI_SETITEM;
 		}
+	} else { // if we're really in the status bar, this should be detected intelligently
+		lastLines.clear();
+		for(StringIter i = lastLinesList.begin(); i != lastLinesList.end(); ++i) {
+			lastLines += *i;
+			lastLines += "\r\n";
+		}
+		if(lastLines.size() > 2) {
+			lastLines.erase(lastLines.size() - 2);
+		}
+		pDispInfo->lpszText = const_cast<char*>(lastLines.c_str());
 	}
 	return 0;
 }
@@ -826,6 +847,8 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 		setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
 
 		ctrlStatus.SetParts(8, w);
+		ctrlLastLines.SetMaxTipWidth(w[0]);
+		ctrlLastLines.SetWindowPos(HWND_TOPMOST, sr.left, sr.top, sr.Width(), sr.Height(), SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
 	CRect rc = rect;
 	rc.top = rc.bottom - ctrlTab.getHeight();
@@ -859,9 +882,6 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT MainFrame::onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ShareManager::getInstance()->setDirty();
 	ShareManager::getInstance()->refresh(true);
-	string line = "[" + Util::getShortTimeString() + "] " +
-		STRING(FILE_LIST_REFRESHED);
-	ctrlStatus.SetText(0, line.c_str());
 	return 0;
 }
 

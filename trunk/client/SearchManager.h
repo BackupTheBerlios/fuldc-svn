@@ -64,7 +64,7 @@ public:
 
 	const string& getFile() const { return file; }
 	const string& getHubIpPort() const { return hubIpPort; }
-	const string& getHubName() const { return hubName; }
+	const string& getHubName() const { return hubName.empty() ? user->getClientName() : hubName; }
 	int64_t getSize() const { return size; }
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }

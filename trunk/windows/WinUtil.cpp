@@ -450,13 +450,10 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		try {
 			ShareManager::getInstance()->setDirty();
 			if(!param.empty()) {
-				if(ShareManager::getInstance()->refresh(param))
-					status = STRING(FILE_LIST_REFRESHED);
-				else
+				if(!ShareManager::getInstance()->refresh(param))
 					status = STRING(DIRECTORY_NOT_FOUND);
 			} else {
 				ShareManager::getInstance()->refresh(true);
-				status = STRING(FILE_LIST_REFRESHED);
 			}
 		} catch(const ShareException& e) {
 			status = e.getError();

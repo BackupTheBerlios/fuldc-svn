@@ -616,12 +616,20 @@ int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 		SizePair files = sizeMap.equal_range(adjustSize((u_int32_t)df->getSize(), df->getName()));
 		for(SizeIter j = files.first; j != files.second; ++j) {
 			QueueItem* qi = j->second;
-			if(Util::stricmp(utfEscaper(df->getName()), qi->getTargetFileName()) == 0) {
-				dcassert(df->getSize() == qi->getSize());			
-				try {
-					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), false, curDl->getUtf8());
-					matches++;
-				} catch(const Exception&) {
+			bool equal = false;
+			if(qi->getTTH() != NULL && df->getTTH() != NULL) {
+				equal = (*qi->getTTH() == *df->getTTH());
+			} else {
+				if(Util::stricmp(utfEscaper(df->getName()), qi->getTargetFileName()) == 0) {
+					dcassert(df->getSize() == qi->getSize());			
+					try {
+						addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), false, curDl->getUtf8());
+						matches++;
+					} catch(const Exception&) {
+					}
+					if(df->getTTH() != NULL) {
+						qi->setTTH(new TTHValue(*df->getTTH()));
+					}
 				}
 			}
 		}

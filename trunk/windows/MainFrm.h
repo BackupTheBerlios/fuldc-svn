@@ -325,6 +325,11 @@ private:
 	
 	TransferView transferView;
 
+	enum { MAX_CLIENT_LINES = 10 };
+	StringList lastLinesList;
+	string lastLines;
+	CToolTipCtrl ctrlLastLines;
+
 	CStatusBarCtrl ctrlStatus;
 	FlatTabCtrl ctrlTab;
 	HttpConnection* c;

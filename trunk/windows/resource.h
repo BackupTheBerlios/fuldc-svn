@@ -366,6 +366,12 @@
 #define IDC_HAS_FG_COLOR                1252
 #define IDC_PATHS                       1253
 #define IDC_TAB_SIZE                    1254
+#define IDC_SETTINGS_FORMAT1            1255
+#define IDC_SETTINGS_FORMAT2            1256
+#define IDC_SETTINGS_FORMAT3            1257
+#define IDC_SETTINGS_FORMAT4            1258
+#define IDC_SETTINGS_LOG_SYSTEM         1259
+#define IDC_LOG_SYSTEM                  1260
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -413,7 +419,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        250
 #define _APS_NEXT_COMMAND_VALUE         32812
-#define _APS_NEXT_CONTROL_VALUE         1255
+#define _APS_NEXT_CONTROL_VALUE         1261
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif
