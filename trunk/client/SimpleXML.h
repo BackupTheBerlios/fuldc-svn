@@ -93,6 +93,11 @@ public:
 		addTag(aName, Util::toString(aData));
 	}
 
+	void addTag(const string& aName, bool force) {
+		addTag(aName);
+		(*currentChild)->forceEndTag = force;
+	}
+
 	template<typename T>
 	void addAttrib(const string& aName, const T& aData) throw(SimpleXMLException) {
 		addAttrib(aName, Util::toString(aData));
@@ -218,10 +223,14 @@ private:
 		/** Parent tag, for easy traversal */
 		Ptr parent;
 
-		Tag(const string& aName, const StringPairList& a, Ptr aParent) : attribs(a), name(aName), data(), parent(aParent) { 
+		//used to force an end tag in empty tag's
+		//used to be compliant with the dc++ file list parser
+		bool forceEndTag;
+
+		Tag(const string& aName, const StringPairList& a, Ptr aParent) : attribs(a), name(aName), data(), parent(aParent), forceEndTag(false) { 
 		};
 
-		Tag(const string& aName, const string& d, Ptr aParent) : name(aName), data(d), parent(aParent) { 
+		Tag(const string& aName, const string& d, Ptr aParent) : name(aName), data(d), parent(aParent), forceEndTag(false) { 
 		};
 		
 		const string& getAttrib(const string& aName, const string& aDefault = Util::emptyString) {

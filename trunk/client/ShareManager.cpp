@@ -156,7 +156,7 @@ string ShareManager::translateFileName(const string& aFile, bool adc) throw(Shar
 		string aDir = file.substr(0, i);
 
 		RLock l(cs);
-		StringPairIter j = lookupVirtual(aDir);
+		/*StringPairIter j = lookupVirtual(aDir);
 		if(j == virtualMap.end()) {
 			throw ShareException("File Not Available");
 		}
@@ -165,7 +165,21 @@ string ShareManager::translateFileName(const string& aFile, bool adc) throw(Shar
 		
 		if(!checkFile(j->second, file)) {
 			throw ShareException("File Not Available");
+		}*/
+
+		bool found = false;
+
+		for(StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j) {
+			if( Util::stricmp(aDir, j->first) == 0 ){
+				if( checkFile(j->second, file) ){
+					found = true;
+					break;
+				}
+			}
 		}
+
+		if( ! found )
+			throw ShareException("File Not Available");
 		
 		return j->second + file;
 	}
@@ -280,9 +294,9 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 			}
 		}
 
-		if(lookupVirtual(aName) != virtualMap.end()) {
-			throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
-		}
+		//if(lookupVirtual(aName) != virtualMap.end()) {
+		//	throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
+		//}
 
 		dp = buildTree(d, NULL);
 		dp->setName(aName);
@@ -652,21 +666,30 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 		listN++;
 
 		try {
+			SimpleXML *xml = new SimpleXML();
 			string tmp2;
-			string indent;
 
+			xml->addTag("FileListing");
+			xml->addChildAttrib("Version", 1);
+			xml->addChildAttrib("Generator", string(APPNAME " " VERSIONSTRING));
+			xml->stepIn();
+
+			for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+				i->second->toXml(xml, tmp2);
+			}
+			
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
 				FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
+				xml->stepOut();
 				newXmlFile.write(SimpleXML::utf8Header);
-				newXmlFile.write("<FileListing Version=\"1\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
-				for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-					i->second->toXml(newXmlFile, indent, tmp2);
-				}
-				newXmlFile.write("</FileListing>");
+				xml->toXML(&newXmlFile);
 				newXmlFile.flush();
 			}
+			
+			delete xml;
 
+			
 			if(xFile != NULL) {
 				delete xFile;
 				xFile = NULL;
@@ -757,35 +780,40 @@ void ShareManager::Directory::toNmdc(string& nmdc, string& indent, string& tmp2)
 	indent.erase(indent.length()-1);
 }
 
-void ShareManager::Directory::toXml(OutputStream& xmlFile, string& indent, string& tmp2) {
-	xmlFile.write(indent);
-	xmlFile.write(LITERAL("<Directory Name=\""));
-	xmlFile.write(escaper(name, tmp2));
-	xmlFile.write(LITERAL("\">\r\n"));
+void ShareManager::Directory::toXml(SimpleXML* xml, string& tmp2) {
+	bool create = true;
+	xml->resetCurrentChild();
 
-	indent += '\t';
+	while( xml->findChild("Directory") ){
+		if( Util::stricmp(xml->getChildAttrib("Name"), name) == 0 ){
+			create = false;
+			break;	
+		}
+	}
+
+	if(create) {
+		xml->addTag("Directory", true);
+		xml->addChildAttrib("Name", name);
+	}
+
+	xml->stepIn();
+
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		i->second->toXml(xmlFile, indent, tmp2);
+		i->second->toXml(xml, tmp2);
 	}
 
 	for(Directory::File::Iter i = files.begin(); i != files.end(); ++i) {
 		const Directory::File& f = *i;
 
-		xmlFile.write(indent);
-		xmlFile.write(LITERAL("<File Name=\""));
-		xmlFile.write(escaper(f.getName(), tmp2));
-		xmlFile.write(LITERAL("\" Size=\""));
-		xmlFile.write(Util::toString(f.getSize()));
-		if(f.getTTH()) {
-			tmp2.clear();
-			xmlFile.write(LITERAL("\" TTH=\""));
-			xmlFile.write(f.getTTH()->toBase32(tmp2));
-		}
-		xmlFile.write(LITERAL("\"/>\r\n"));
+		xml->addTag("File");
+		xml->addChildAttrib("Name", f.getName() );
+		xml->addChildAttrib("Size", f.getSize() );
+		if(f.getTTH())
+			xml->addChildAttrib("TTH", f.getTTH()->toBase32() );
 	}
-	indent.erase(indent.length()-1);
-	xmlFile.write(indent);
-	xmlFile.write(LITERAL("</Directory>\r\n"));
+
+	xml->stepOut();
+		
 }
 
 
