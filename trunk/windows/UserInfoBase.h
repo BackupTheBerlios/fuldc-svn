@@ -57,6 +57,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 		COMMAND_ID_HANDLER(IDC_IGNORE, onIgnore)
 		COMMAND_ID_HANDLER(IDC_UNIGNORE, onUnIgnore)
+		COMMAND_ID_HANDLER(IDC_SHOWLOG, onShowLog)
 	END_MSG_MAP()
 
 	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -91,6 +92,11 @@ public:
 
 	LRESULT onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::unignore);
+		return 0;
+	}
+
+	LRESULT onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::showLog);
 		return 0;
 	}
 

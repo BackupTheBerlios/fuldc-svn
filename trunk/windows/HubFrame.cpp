@@ -1627,28 +1627,6 @@ LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 	return 0;
 }
 
-LRESULT HubFrame::onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	if(client->isConnected()) {
-		StringMap params;
-		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			User::Ptr user = ctrlUsers.getItemData(i)->user;
-
-			params["user"] = user->getNick();
-			params["hub"] = user->getClientName();
-			params["hubaddr"] = user->getClientAddressPort();
-			params["mynick"] = user->getClientNick(); 
-			params["mycid"] = user->getClientCID().toBase32(); 
-			params["cid"] = user->getCID().toBase32();
-
-			tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
-			if(!path.empty())
-				ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOW);
-		}
-	}
-	return 0;
-}
-
 HubFrame::UserInfo* HubFrame::findUser(tstring & nick){
 	if( !nick.empty() ){
 		UserInfo* ui = ctrlUsers.getItemData(ctrlUsers.GetNextItem(-1, LVNI_SELECTED));
@@ -1679,7 +1657,6 @@ bool HubFrame::resolve(const wstring& aDns) {
         
 		resolveBuffer = new char[MAXGETHOSTSTRUCT];
 		
-		//PME regexp("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\..*");
 		PME regexp("\\b(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\b");
 		
 		if(regexp.match(aDns)) {

@@ -24,6 +24,7 @@
 #include "../client/QueueManager.h"
 #include "../client/ConnectionManager.h"
 #include "../client/Socket.h"
+#include "../client/IgnoreManager.h"
 
 #include "WinUtil.h"
 #include "TransferView.h"
@@ -76,24 +77,35 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	pmMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CTSTRING(USER));
 	pmMenu.AppendMenu(MF_STRING, IDC_PM_UP, CTSTRING(ALL_UPLOADS));
 	pmMenu.AppendMenu(MF_STRING, IDC_PM_DOWN, CTSTRING(ALL_DOWNLOADS));
+	pmMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
 
 	copyMenu.CreatePopupMenu();
 	for(int i = 0; i < COLUMN_LAST; ++i)
 		copyMenu.AppendMenu(MF_STRING, IDC_COPY+i, CTSTRING_I(columnNames[i]));
 
+	userMenu.CreatePopupMenu();
+	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
+	userMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
+	userMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
+	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
+	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
+	userMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CTSTRING(REMOVE_FROM_ALL));
+	userMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
+	userMenu.AppendMenu(MF_SEPARATOR);
+	userMenu.AppendMenu(MF_STRING, IDC_IGNORE, CTSTRING(IGNOREA));
+	userMenu.AppendMenu(MF_STRING, IDC_UNIGNORE, CTSTRING(UNIGNORE));
+
 	transferMenu.CreatePopupMenu();
-	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
-	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
-	transferMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
-	transferMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
-	transferMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
-	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)openMenu, CTSTRING(OPEN));
+	transferMenu.AppendMenu(MF_POPUP, (HMENU)userMenu, CTSTRING(USER));
+	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY));
+	transferMenu.AppendMenu(MF_SEPARATOR);
+	transferMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)openMenu, CTSTRING(OPEN));
+	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_RESOLVE_IP, CTSTRING(RESOLVE_IP));
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(CLOSE_CONNECTION));
-	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CTSTRING(REMOVE_FROM_ALL));
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE_FILE, CTSTRING(REMOVE_FILE));
 	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
 
@@ -147,15 +159,32 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 			itemI = ctrlTransfers.getItemData(i);
 			bCustomMenu = true;
 
-			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
-			transferMenu.AppendMenu(MF_SEPARATOR);
+			prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
+			//userMenu.AppendMenu(MF_SEPARATOR);
+		}
+
+		if(ctrlTransfers.GetSelectedCount() == 1) {
+			int pos = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+			if(pos != -1) {
+				ItemInfo* ii = (ItemInfo*)ctrlTransfers.getItemData(pos);
+				if(IgnoreManager::getInstance()->isUserIgnored(ii->user->getNick())) {
+					userMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
+					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
+				} else {
+					userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
+				}
+			}
+		} else {
+			userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+			userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 		}
 
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		if ( bCustomMenu ) {
-			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-			cleanMenu(transferMenu);
+			//userMenu.DeleteMenu(userMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+			cleanMenu(userMenu);
 		}
 		return TRUE; 
 	}
@@ -196,10 +225,6 @@ LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 		ii->user->connect();
 	}
 	return 0;
-}
-
-void TransferView::ItemInfo::removeAll() {
-	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {

@@ -132,7 +132,7 @@
 				SuppressStartupBanner="TRUE"
 				IgnoreAllDefaultLibraries="FALSE"
 				IgnoreDefaultLibraryNames="kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib"
-				DelayLoadDLLs="dbghelp.dll;oleaut32.dll"
+				DelayLoadDLLs="dbghelp.dll;oleaut32.dll;pdh.dll;winmm.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="./App/DCPlusPlus.pdb"
 				GenerateMapFile="TRUE"
@@ -157,7 +157,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				Culture="1033"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\wtl&quot;"/>
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool

@@ -26,6 +26,7 @@
 #include "../client/UploadManager.h"
 #include "../client/User.h"
 #include "../client/IgnoreManager.h"
+#include "../client/LogManager.h"
 
 
 void UserInfoBase::matchQueue() {
@@ -62,4 +63,18 @@ void UserInfoBase::ignore() {
 }
 void UserInfoBase::unignore() {
 	IgnoreManager::getInstance()->unignore(user->getNick());
+}
+
+void UserInfoBase::showLog() {
+	StringMap params;
+	params["user"] = user->getNick();
+	params["hub"] = user->getClientName();
+	params["hubaddr"] = user->getClientAddressPort();
+	params["mynick"] = user->getClientNick(); 
+	params["mycid"] = user->getClientCID().toBase32(); 
+	params["cid"] = user->getCID().toBase32(); 
+
+	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
+	if(!path.empty())
+		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
 }

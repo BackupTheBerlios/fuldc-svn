@@ -61,7 +61,6 @@ public:
 		MESSAGE_HANDLER(WM_APP, onResolvedIP)
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 		COMMAND_ID_HANDLER(IDC_PM_UP, onPmAll)
 		COMMAND_ID_HANDLER(IDC_PM_DOWN, onPmAll)
 		COMMAND_ID_HANDLER(IDC_OPEN, onOpen)
@@ -100,11 +99,6 @@ public:
 
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		ctrlTransfers.forEachSelected(&ItemInfo::disconnect);
-		return 0;
-	}
-
-	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlTransfers.forEachSelected(&ItemInfo::removeAll);
 		return 0;
 	}
 
@@ -256,6 +250,7 @@ private:
 	CMenu pmMenu;
 	CMenu openMenu;
 	CMenu copyMenu;
+	CMenu userMenu;
 
 	CImageList arrows;
 

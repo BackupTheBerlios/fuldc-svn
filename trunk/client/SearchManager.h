@@ -162,11 +162,13 @@ public:
 	}
 	
 	int32_t timeToSearch() {
-		return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);
+		//return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);
+		return 0;
 	}
 
 	bool okToSearch() {
-		return timeToSearch() <= 0;
+		//return timeToSearch() <= 0;
+		return true;
 	}
 
 private:
