@@ -615,7 +615,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		Download* old = d->getOldDownload();
 
 		size_t bl = 1024;
-		while(bl * old->getTigerTree().getLeaves().size() < old->getSize())
+		while( (bl * (int64_t)old->getTigerTree().getLeaves().size()) < old->getSize())
 			bl *= 2;
 		old->getTigerTree().setBlockSize(bl);
 		dcassert(old->getSize() != -1);

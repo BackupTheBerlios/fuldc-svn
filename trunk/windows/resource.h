@@ -393,6 +393,8 @@
 #define IDC_WEB_SHORTCUTS_CLEAN         1229
 #define IDC_MESSAGE                     1230
 #define IDC_REFRESH_SHARE               1230
+#define IDC_STRIPISP2                   1230
+#define IDC_LOGMAINCHAT                 1230
 #define IDC_DISPLAYTIME                 1231
 #define IDC_FUL_ADVANCED_BOOLEANS       1234
 #define IDC_WEB_SHORTCUT_NAME           1235
@@ -474,6 +476,7 @@
 #define IDC_                            1302
 #define IDC_STRIP_ISP                   1302
 #define IDC_FH_STRIP_ISP                1303
+#define IDC_FH_LOG_MAIN_CHAT            1304
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

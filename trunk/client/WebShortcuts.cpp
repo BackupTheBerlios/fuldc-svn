@@ -21,7 +21,6 @@
 
 #include "SettingsManager.h"
 #include "StringTokenizer.h"
-#include "oxmllib.h"
 #include "SimpleXML.h"
 #include "WebShortcuts.h"
 
@@ -56,32 +55,12 @@ void WebShortcuts::load(SimpleXML* xml) {
 
 			tmp->name  = Text::toT(xml->getChildAttrib("Name"));
 			tmp->key   = Text::toT(xml->getChildAttrib("Key"));
-			tmp->url   = Text::toT(OXMLLib::decode(xml->getChildAttrib("URL"), false));
+			tmp->url   = Text::toT(xml->getChildAttrib("URL"));
 
 			tmp->clean = xml->getBoolChildAttrib("Clean");
 			list.push_back(tmp);
 		}
 		
-		xml->stepOut();
-		return;
-	}
-	
-	xml->resetCurrentChild();
-	if(xml->findChild("Settings")){
-		xml->stepIn();
-		if(xml->findChild("WebShortcuts")){
-
-			tstring s = Text::toT(OXMLLib::decode( xml->getChildData(), false));
-
-			clear();
-
-			StringTokenizer<tstring> st(s, _T('\x02'));
-			for (TStringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-				StringTokenizer<tstring> st_i(*i, _T('\x01'));
-				dcassert(st_i.getTokens().size() == 3);
-				list.push_back(new WebShortcut(st_i.getTokens()[0], st_i.getTokens()[1], st_i.getTokens()[2]));
-			}
-		}
 		xml->stepOut();
 	}
 }
@@ -91,15 +70,11 @@ void WebShortcuts::save(SimpleXML* xml) {
 	xml->stepIn();
 	for(WebShortcut::Iter i = list.begin(); i != list.end(); ++i){
 		xml->addTag("WebShortcut");
-#ifdef UNICODE
-		xml->addChildAttrib("Name", Text::wideToUtf8((*i)->name));
-		xml->addChildAttrib("Key", Text::wideToUtf8((*i)->key));
-		xml->addChildAttrib("URL", Text::wideToUtf8((*i)->url));
-#else
-		xml->addChildAttrib("Name", (*i)->name);
-		xml->addChildAttrib("Key", (*i)->key);
-		xml->addChildAttrib("URL", (*i)->url);
-#endif
+
+		xml->addChildAttrib("Name", Text::fromT((*i)->name));
+		xml->addChildAttrib("Key",	Text::fromT((*i)->key));
+		xml->addChildAttrib("URL",	Text::fromT((*i)->url));
+
 		xml->addChildAttrib("Clean", (*i)->clean);
 	}
 	xml->stepOut();

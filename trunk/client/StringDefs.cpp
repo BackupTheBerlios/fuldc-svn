@@ -649,6 +649,10 @@ string ResourceManager::strings[] = {
 "Changed priority for", 
 "Paste", 
 "Toggle window when selecting an active tab", 
+"Enabled logging of this hub", 
+"Disabled logging of this hub", 
+"Strip ISP", 
+"Log Chat", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1298,4 +1302,8 @@ string ResourceManager::names[] = {
 "ChangedPriority", 
 "Paste", 
 "ToggleActiveWindow", 
+"LoggingEnabled", 
+"LoggingDisabled", 
+"FhStripIsp", 
+"FhLogChat", 
 };

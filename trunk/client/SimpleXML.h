@@ -159,19 +159,21 @@ public:
 		return (*currentChild)->getAttrib(aName, aDefault);
 	}
 
-	int getIntChildAttrib(const string& aName) throw(SimpleXMLException) {
+	int getIntChildAttrib(const string& aName, int aDefault = 0) throw(SimpleXMLException) {
 		checkChildSelected();
-		return Util::toInt(getChildAttrib(aName));
+		const string& tmp = getChildAttrib(aName);
+		return (tmp.size() > 0) ? Util::toInt(tmp) : aDefault;
 	}
-	int64_t getLongLongChildAttrib(const string& aName) throw(SimpleXMLException) {
+	int64_t getLongLongChildAttrib(const string& aName, int64_t aDefault = 0) throw(SimpleXMLException) {
 		checkChildSelected();
-		return Util::toInt64(getChildAttrib(aName));
+		const string& tmp = getChildAttrib(aName);
+		return (tmp.size() > 0) ? Util::toInt64(tmp) : aDefault;
 	}
-	bool getBoolChildAttrib(const string& aName) throw(SimpleXMLException) {
+	bool getBoolChildAttrib(const string& aName, bool aDefault = false) throw(SimpleXMLException) {
 		checkChildSelected();
 		const string& tmp = getChildAttrib(aName);
 
-		return (tmp.size() > 0) && tmp[0] == '1';
+		return (tmp.size() > 0) ? tmp[0] == '1' : aDefault;
 	}
 	
 	void fromXML(const string& aXML) throw(SimpleXMLException);

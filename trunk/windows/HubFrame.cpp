@@ -291,7 +291,7 @@ void HubFrame::onEnter() {
 					else
 						addLine(_T("*** /") + help);
 				}
-			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+			} else if(Util::stricmp(cmd.c_str(), _T("showlog")) == 0) {
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + ".log")));
 			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 				tstring nick, msg;
@@ -327,6 +327,15 @@ void HubFrame::onEnter() {
 				} else if( 0 == res || (param.empty() && !PopupManager::getInstance()->isMuted()) ) {
 					PopupManager::getInstance()->Mute(true);
 					addClientLine(TSTRING(POPUPS_DEACTIVATED), BOOLSETTING(STATUS_IN_CHAT));
+				}
+			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+				int res = WinUtil::checkParam(param);
+				if( 1 == res || (param.empty() && !logMainChat) ) {
+					logMainChat = true;
+					addClientLine(TSTRING(LOGGING_ENABLED), BOOLSETTING(STATUS_IN_CHAT));
+				} else if( 0 == res || (param.empty() && logMainChat) ) {
+					logMainChat = false;
+					addClientLine(TSTRING(LOGGING_DISABLED), BOOLSETTING(STATUS_IN_CHAT));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("lastseen")) == 0) {
 				if(!param.empty()){
@@ -677,6 +686,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 			fhe->setShowJoins(showJoins);
 			fhe->setShowUserlist(showUserList);
+			fhe->setLogMainChat(logMainChat);
+
 			HubManager::getInstance()->save();
 		}
 
@@ -744,7 +755,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 }
 
 void HubFrame::addLine(tstring aLine, bool bold) {
-	if(BOOLSETTING(LOG_MAIN_CHAT)) {
+	if(logMainChat) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
 		if(BOOLSETTING(ROTATE_LOG)) {

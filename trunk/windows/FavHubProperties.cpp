@@ -38,7 +38,8 @@ LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	SetDlgItemText(IDC_FH_NICK, CTSTRING(NICK));
 	SetDlgItemText(IDC_FH_PASSWORD, CTSTRING(PASSWORD));
 	SetDlgItemText(IDC_FH_USER_DESC, CTSTRING(DESCRIPTION));
-	SetDlgItemText(IDC_FH_STRIP_ISP, CTSTRING(STRIP_ISP));
+	SetDlgItemText(IDC_FH_STRIP_ISP, CTSTRING(FH_STRIP_ISP));
+	SetDlgItemText(IDC_FH_LOG_MAIN_CHAT, CTSTRING(FH_LOG_CHAT));
 
 	// Fill in values
 	SetDlgItemText(IDC_HUBNAME, Text::toT(entry->getName()).c_str());
@@ -48,6 +49,7 @@ LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	SetDlgItemText(IDC_HUBPASS, Text::toT(entry->getPassword()).c_str());
 	SetDlgItemText(IDC_HUBUSERDESCR, Text::toT(entry->getUserDescription()).c_str());
 	CheckDlgButton(IDC_STRIPISP, entry->getStripIsp() ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_LOGMAINCHAT, entry->getLogMainChat() ? BST_CHECKED : BST_UNCHECKED);
 
 	CEdit tmp;
 	tmp.Attach(GetDlgItem(IDC_HUBNAME));
@@ -85,6 +87,8 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		GetDlgItemText(IDC_HUBUSERDESCR, buf, 256);
 		entry->setUserDescription(Text::fromT(buf));
 		entry->setStripIsp(IsDlgButtonChecked(IDC_STRIPISP) == BST_CHECKED);
+		entry->setLogMainChat(IsDlgButtonChecked(IDC_LOGMAINCHAT) == BST_CHECKED);
+
 		HubManager::getInstance()->save();
 	}
 	EndDialog(wID);

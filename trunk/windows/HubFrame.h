@@ -283,10 +283,12 @@ private:
 			stripIsp     = fhe->getStripIsp();
 			showJoins    = fhe->getShowJoins();
 			showUserList = fhe->getShowUserlist();
+			logMainChat	 = fhe->getLogMainChat();
 		} else {
 			stripIsp     = BOOLSETTING(STRIP_ISP);
 			showJoins    = BOOLSETTING(SHOW_JOINS);
-			showUserList = true;
+			showUserList = BOOLSETTING(GET_USER_INFO);
+			logMainChat  = BOOLSETTING(LOG_MAIN_CHAT);
 		}
 		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
 		client->setNick(aNick.empty() ? SETTING(NICK) : Text::fromT(aNick));
@@ -314,6 +316,7 @@ private:
 		tabList.push_back(_T("/help"));
 		tabList.push_back(_T("/join"));
 		tabList.push_back(_T("/lastlog"));
+		tabList.push_back(_T("/log"));
 		tabList.push_back(_T("/lastseen"));
 		tabList.push_back(_T("/pm"));
 		tabList.push_back(_T("/popups"));
@@ -323,6 +326,7 @@ private:
 		tabList.push_back(_T("/search"));
 		tabList.push_back(_T("/share"));
 		tabList.push_back(_T("/showjoins"));
+		tabList.push_back(_T("/showlog"));
 		tabList.push_back(_T("/slots"));
 		tabList.push_back(_T("/topic"));
 		tabList.push_back(_T("/ts"));
@@ -392,6 +396,7 @@ private:
 
 	bool closed;
 	static bool closing;
+	bool logMainChat;
 
 	StringMap ucParams;
 	TStringMap tabParams;

@@ -397,9 +397,6 @@
 				RelativePath=".\client\NmdcHub.h">
 			</File>
 			<File
-				RelativePath=".\client\OXMLLib.h">
-			</File>
-			<File
 				RelativePath=".\client\pme.h">
 			</File>
 			<File

@@ -648,5 +648,9 @@
 		<String Name="ChangedPriority">Changed priority for</String>
 		<String Name="Paste">Paste</String>
 		<String Name="ToggleActiveWindow">Toggle window when selecting an active tab</String>
+		<String Name="LoggingEnabled">Enabled logging of this hub</String>
+		<String Name="LoggingDisabled">Disabled logging of this hub</String>
+		<String Name="FhStripIsp">Strip ISP</String>
+		<String Name="FhLogChat">Log Chat</String>
 	</Strings>
 </Language>

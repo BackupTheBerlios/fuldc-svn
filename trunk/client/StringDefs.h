@@ -505,7 +505,7 @@ enum Strings { // @DontAdd
 	EXPAND_QUEUE, // "Expand Queue"
 	SEARCH_SITES, // "Search Sites"
 	STRIP_ISP, // "Strip ISP (public hubs only, see favorite hubs settings)"
-	STRIP_ISP_PM, // "Strip ISP in private messages"
+    STRIP_ISP_PM, // "Strip ISP in private messages"
 	ISP, // "ISP"
 	HUB_BOLD_TABS, // "Make tabs bold on status messages in Hubs"
 	PM_BOLD_TABS, // "Make tabs bold on status messages in private messages"
@@ -652,5 +652,9 @@ enum Strings { // @DontAdd
 	CHANGED_PRIORITY, // "Changed priority for"
 	PASTE, // "Paste"
 	TOGGLE_ACTIVE_WINDOW, // "Toggle window when selecting an active tab"
+	LOGGING_ENABLED, // "Enabled logging of this hub"
+	LOGGING_DISABLED, // "Disabled logging of this hub"
+	FH_STRIP_ISP, // "Strip ISP"
+	FH_LOG_CHAT, // "Log Chat"
 	LAST // @DontAdd
 };

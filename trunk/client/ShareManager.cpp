@@ -1312,6 +1312,7 @@ bool ShareManager::loadXmlList(){
 	//try to read the xml from the file
 	try{
 		::File f(Util::getAppPath() + "Share.xml.bz2", File::READ, File::OPEN);
+		xmlString->reserve( f.getSize() );
 		FilteredInputStream<UnBZFilter, false> xmlFile(&f);
 		for(;;) {
 			size_t tmp = BUF_SIZE;
@@ -1323,14 +1324,17 @@ bool ShareManager::loadXmlList(){
 		f.close();
 	}catch (Exception&) { 
         delete[] buf;
+		delete xmlString;
 		//if we for some reason failed, return false to indicate that a refresh is needed
 		return false;
 	}
 
 
 	//cleanup
-	delete[] buf;
-	buf = NULL;
+	if(buf) {
+		delete[] buf;
+		buf = NULL;
+	}
 
 	//same here =)
 	if(xmlString->empty()){

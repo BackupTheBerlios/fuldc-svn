@@ -173,20 +173,21 @@ void HubManager::save() {
 
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
 			xml.addTag("Hub");
-			xml.addChildAttrib("Name", (*i)->getName());
-			xml.addChildAttrib("Connect", (*i)->getConnect());
-			xml.addChildAttrib("Description", (*i)->getDescription());
-			xml.addChildAttrib("Nick", (*i)->getNick(false));
-			xml.addChildAttrib("Password", (*i)->getPassword());
-			xml.addChildAttrib("Server", (*i)->getServer());
-			xml.addChildAttrib("UserDescription", (*i)->getUserDescription());
-			xml.addChildAttrib("StripIsp", (*i)->getStripIsp());
-			xml.addChildAttrib("ShowJoins", (*i)->getShowJoins());
-			xml.addChildAttrib("ShowUserlist", (*i)->getShowUserlist());
-			xml.addChildAttrib("Bottom", Util::toString((*i)->getBottom()));
-			xml.addChildAttrib("Top", Util::toString((*i)->getTop()));
-			xml.addChildAttrib("Right", Util::toString((*i)->getRight()));
-			xml.addChildAttrib("Left", Util::toString((*i)->getLeft()));
+			xml.addChildAttrib("Name",				(*i)->getName());
+			xml.addChildAttrib("Connect",			(*i)->getConnect());
+			xml.addChildAttrib("Description",		(*i)->getDescription());
+			xml.addChildAttrib("Nick",				(*i)->getNick(false));
+			xml.addChildAttrib("Password",			(*i)->getPassword());
+			xml.addChildAttrib("Server",			(*i)->getServer());
+			xml.addChildAttrib("UserDescription",	(*i)->getUserDescription());
+			xml.addChildAttrib("StripIsp",			(*i)->getStripIsp());
+			xml.addChildAttrib("ShowJoins",			(*i)->getShowJoins());
+			xml.addChildAttrib("ShowUserlist",		(*i)->getShowUserlist());
+			xml.addChildAttrib("LogMainchat",		(*i)->getLogMainChat());
+			xml.addChildAttrib("Bottom",			Util::toString((*i)->getBottom()));
+			xml.addChildAttrib("Top",				Util::toString((*i)->getTop()));
+			xml.addChildAttrib("Right",				Util::toString((*i)->getRight()));
+			xml.addChildAttrib("Left",				Util::toString((*i)->getLeft()));
 		}
 		xml.stepOut();
 		xml.addTag("Users");
@@ -322,20 +323,21 @@ void HubManager::load(SimpleXML* aXml) {
 		aXml->stepIn();
 		while(aXml->findChild("Hub")) {
 			FavoriteHubEntry* e = new FavoriteHubEntry();
-			e->setName(aXml->getChildAttrib("Name"));
-			e->setConnect(aXml->getBoolChildAttrib("Connect"));
-			e->setDescription(aXml->getChildAttrib("Description"));
-			e->setNick(aXml->getChildAttrib("Nick"));
-			e->setPassword(aXml->getChildAttrib("Password"));
-			e->setServer(aXml->getChildAttrib("Server"));
-			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
-			e->setStripIsp(aXml->getBoolChildAttrib("StripIsp"));
-			e->setShowJoins(aXml->getBoolChildAttrib("ShowJoins"));
-			e->setShowUserlist(aXml->getBoolChildAttrib("ShowUserlist"));
+			e->setName(				aXml->getChildAttrib("Name"));
+			e->setConnect(			aXml->getBoolChildAttrib("Connect"));
+			e->setDescription(		aXml->getChildAttrib("Description"));
+			e->setNick(				aXml->getChildAttrib("Nick"));
+			e->setPassword(			aXml->getChildAttrib("Password"));
+			e->setServer(			aXml->getChildAttrib("Server"));
+			e->setUserDescription(	aXml->getChildAttrib("UserDescription"));
+			e->setStripIsp(			aXml->getBoolChildAttrib("StripIsp"));
+			e->setShowJoins(		aXml->getBoolChildAttrib("ShowJoins"));
+			e->setShowUserlist(		aXml->getBoolChildAttrib("ShowUserlist", BOOLSETTING(GET_USER_INFO)));
+			e->setLogMainChat(		aXml->getBoolChildAttrib("LogMainChat", BOOLSETTING(LOG_MAIN_CHAT)));
 			e->setBottom((u_int16_t)aXml->getIntChildAttrib("Bottom") );
-			e->setTop((u_int16_t)aXml->getIntChildAttrib("Top"));
-			e->setRight((u_int16_t)aXml->getIntChildAttrib("Right"));
-			e->setLeft((u_int16_t)aXml->getIntChildAttrib("Left"));
+			e->setTop((u_int16_t)	aXml->getIntChildAttrib("Top"));
+			e->setRight((u_int16_t)	aXml->getIntChildAttrib("Right"));
+			e->setLeft((u_int16_t)	aXml->getIntChildAttrib("Left"));
 			favoriteHubs.push_back(e);
 		}
 		aXml->stepOut();

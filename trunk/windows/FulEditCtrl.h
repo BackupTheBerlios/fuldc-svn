@@ -71,8 +71,10 @@ private:
 	bool		matchedTab;
 	bool		logged;
 	bool		skipLog;
+
 	tstring		nick;
 	tstring		searchTerm;
+
 	CHARFORMAT2 selFormat;
 	TCHAR*		findBuffer;
 	int			curFindPos;
