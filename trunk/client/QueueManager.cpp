@@ -602,7 +602,8 @@ static SizeMap sizeMap;
 static string utfTmp;
 
 static const string& utfEscaper(const string& x) {
-	return curDl->getUtf8() ? x : utfTmp.clear(), Text::acpToUtf8(x, utfTmp);
+	utfTmp.clear();
+	return curDl->getUtf8() ? x : Text::acpToUtf8(x, utfTmp);
 }
 
 int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {

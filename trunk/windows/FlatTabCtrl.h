@@ -562,7 +562,7 @@ private:
 		};
 
 		int getWidth() {
-			return (dirty ? boldSize.cx : size.cx) + ((wCode == -1) ? FT_EXTRA_SPACE -7: FT_EXTRA_SPACE) - (BOOLSETTING(TAB_SHOW_ICONS) ? 0 : 16);
+			return ( ( dirty && !BOOLSETTING(BLEND_TABS) ) ? boldSize.cx : size.cx) + ((wCode == -1) ? FT_EXTRA_SPACE -7: FT_EXTRA_SPACE) - (BOOLSETTING(TAB_SHOW_ICONS) ? 0 : 16);
 			
 		}
 	};
