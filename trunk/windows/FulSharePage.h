@@ -40,6 +40,8 @@ public:
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_REFRESH_INCOMING, onSetCheck)
 		COMMAND_ID_HANDLER(IDC_REFRESH_SHARE, onSetCheck)
+		COMMAND_ID_HANDLER(IDC_ONLY_REFRESH_INCOMING, onSetCheck)
+		COMMAND_ID_HANDLER(IDC_ONLY_REFRESH_SHARE, onSetCheck)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
@@ -55,6 +57,11 @@ public:
 protected:
 	static Item items[];
 	static TextItem texts[];
+
+	CComboBox incomingBegin;
+	CComboBox incomingEnd;
+	CComboBox shareBegin;
+	CComboBox shareEnd;
 };
 
 #endif //FULPAGE_H

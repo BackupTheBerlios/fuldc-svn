@@ -1442,19 +1442,46 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const T
 }
 
 void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
+	bool r;
 	if(BOOLSETTING(AUTO_UPDATE_LIST)) {
+		r = true;
 		if(lastFullUpdate + SETTING(SHARE_REFRESH_TIME) * 60 * 1000 < tick) {
-			try {
-				refresh(true, true);
-			} catch(const ShareException&) {
+			if(BOOLSETTING(REFRESH_SHARE_BETWEEN)) {
+				time_t _tt = time(NULL);
+				tm* _tm = localtime(&_tt);
+
+				if(!(_tm->tm_hour >= SETTING(REFRESH_SHARE_BEGIN) &&
+					_tm->tm_hour <= SETTING(REFRESH_SHARE_END))) {
+					r = false;
+				}
+			}
+
+			if(r) {
+				try {
+					refresh(true, true);
+				} catch(const ShareException&) {
+				}
 			}
 		}
 	}
 	if(BOOLSETTING(AUTO_UPDATE_INCOMING)) {
+		r = true;
 		if(lastIncomingUpdate + SETTING(INCOMING_REFRESH_TIME) * 60 * 1000 < tick) {
-			try{
-				refresh(false, true, false, true);
-			} catch(const ShareException&){
+			if(BOOLSETTING(REFRESH_INCOMING_BETWEEN)) {
+				time_t _tt = time(NULL);
+				tm* _tm = localtime(&_tt);
+
+				if(!(_tm->tm_hour >= SETTING(REFRESH_INCOMING_BEGIN) &&
+					_tm->tm_hour <= SETTING(REFRESH_INCOMING_END))) {
+					r = false;
+				}
+			}
+
+			if(r) {
+				try{
+					refresh(false, true, false, true);
+				} catch(const ShareException&){
+				}
 			}
 		}
 	}
@@ -1506,7 +1533,6 @@ bool ShareManager::loadXmlList(){
 
 	try{
 		xml = new SimpleXML();
-		//convert the xml string to an xml object
 		xml->fromXML(*xmlString);
 
 		//stepin inside <Share>

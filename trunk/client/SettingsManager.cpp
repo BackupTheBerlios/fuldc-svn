@@ -77,6 +77,8 @@ const string SettingsManager::settingTags[] =
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
+	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
+	"RefreshShareBegin", "RefreshShareEnd", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -256,6 +258,12 @@ SettingsManager::SettingsManager()
 	setDefault(ADD_FINISHED_DOWNLOADS, true);
 	setDefault(ADD_FINISHED_UPLOADS, true);
 	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,1,1,1");
+	setDefault(REFRESH_INCOMING_BETWEEN, false);
+	setDefault(REFRESH_SHARE_BETWEEN, false);
+	setDefault(REFRESH_INCOMING_BEGIN, 0);
+	setDefault(REFRESH_INCOMING_END, 0);
+	setDefault(REFRESH_SHARE_BEGIN, 0);
+	setDefault(REFRESH_SHARE_END, 0);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

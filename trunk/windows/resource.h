@@ -437,6 +437,8 @@
 #define IDC_REFRESH_SHARE               1230
 #define IDC_LOGMAINCHAT                 1230
 #define IDC_DISPLAYTIME                 1231
+#define IDC_ONLY_REFRESH_INCOMING       1231
+#define IDC_ONLY_REFRESH_SHARE          1232
 #define IDC_FUL_ADVANCED_BOOLEANS       1234
 #define IDC_WEB_SHORTCUT_NAME           1235
 #define IDC_WEB_SHORTCUT_KEY            1236
@@ -541,6 +543,11 @@
 #define IDC_PRESETMENU                  1316
 #define IDC_DUPE_DESCRIPTION            1317
 #define IDC_NOTTH_DESCRIPTION           1318
+#define IDC_ONLY_REFRESH_INCOMING_TIME1 1319
+#define IDC_ONLY_REFRESH_INCOMING_TIME2 1320
+#define IDC_ONLY_REFRESH_SHARE_TIME1    1321
+#define IDC_ONLY_REFRESH_SHARE_TIME2    1322
+#define IDC_CUSTOM1                     1323
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -590,7 +597,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1319
+#define _APS_NEXT_CONTROL_VALUE         1324
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif

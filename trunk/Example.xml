@@ -575,8 +575,6 @@
 		<String Name="SettingsStSkiplistShare">Skiplist (separate files with |):</String>
 		<String Name="SettingsSbRefresh">Refresh options</String>
 		<String Name="SettingsStRefreshIncoming">Incoming</String>
-		<String Name="SettingsStRefreshShare">Share</String>
-		<String Name="SettingsStRefreshHelp">Both values are time in minutes between refreshes</String>
 		<String Name="SettingsSbChatbuffersize">Mainchat buffer size</String>
 		<String Name="SettingsStChatbuffersize">Max size ~2.1 billion (2^31)</String>
 		<String Name="SettingsSbTabColors">Tab Colors</String>
@@ -615,6 +613,8 @@
 		<String Name="SettingsDupeDescription">Background color used in file lists and search window to show which files that's already shared</String>
 		<String Name="SettingsNotthBox">Missing TTH Color</String>
 		<String Name="SettingsNotthDescription">Background color used in search window to show which files are missing a TTH</String>
+		<String Name="SettingsRefreshShareBetween">Only refresh share between...</String>
+		<String Name="SettingsRefreshIncomingBetween">Only refresh incoming between...</String>
 		<String Name="Bold">Bold</String>
 		<String Name="Italic">Italic</String>
 		<String Name="Underline">Underline</String>
