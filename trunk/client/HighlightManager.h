@@ -38,15 +38,18 @@ public:
 	HighlightManager(void);
 	~HighlightManager(void);
 
-	ColorList*	rLock();
-	ColorList*	wLock();
-	void		rUnlock();
-	void		wUnlock();
+	ColorList*	getList() {
+		return &colorSettings;
+	}
+
+	void replaceList(ColorList& settings) {
+		colorSettings.clear();
+		colorSettings = settings;
+	}
+
 private:
 	//store all highlights
 	ColorList colorSettings;
-
-	RWLock<> lock;
 
 	void load(SimpleXML *aXml);
 	void save(SimpleXML *aXml);

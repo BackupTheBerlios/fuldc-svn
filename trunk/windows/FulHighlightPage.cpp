@@ -69,7 +69,7 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	ctrlStrings.GetClientRect(rc);
 	ctrlStrings.InsertColumn(0, CTSTRING(HIGHLIGHTLIST_HEADER), LVCFMT_LEFT, rc.Width(), 0);
 
-	ColorList* cList = HighlightManager::getInstance()->rLock();
+	ColorList* cList = HighlightManager::getInstance()->getList();
 		
 	//populate listview with current strings
 	highlights.reserve(cList->size());
@@ -77,8 +77,6 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		highlights.push_back((*i));
 		ctrlStrings.insert( ctrlStrings.GetItemCount(), (*i).getMatch());
 	}
-	
-	HighlightManager::getInstance()->rUnlock();
 	
 	//initalize colors
 	bgColor = WinUtil::bgColor;
@@ -119,10 +117,7 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 void FulHighlightPage::write(){
-	ColorList* cList = HighlightManager::getInstance()->wLock();
-    cList->clear();
-	*cList = highlights;
-	HighlightManager::getInstance()->wUnlock();
+	HighlightManager::getInstance()->replaceList(highlights);
 }
 
 LRESULT FulHighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){

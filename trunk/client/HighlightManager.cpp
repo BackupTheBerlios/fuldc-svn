@@ -101,23 +101,6 @@ void HighlightManager::save(SimpleXML *aXml){
 	aXml->stepOut();
 }
 
-ColorList* HighlightManager::rLock(){
-	lock.enterRead();
-	return &colorSettings;
-}
-ColorList* HighlightManager::wLock(){
-	lock.enterWrite();
-	return &colorSettings;
-}
-
-void HighlightManager::rUnlock(){
-	lock.leaveRead();
-}
-
-void HighlightManager::wUnlock(){
-	lock.leaveWrite();
-}
-
 void HighlightManager::on(SettingsManagerListener::Load, SimpleXML* xml){
 	load(xml);
 }

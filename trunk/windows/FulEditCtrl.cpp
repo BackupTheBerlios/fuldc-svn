@@ -162,7 +162,7 @@ void CFulEditCtrl::Colorize(const tstring& aLine, int begin) {
 	CHARFORMAT2 cf;
 	cf.cbSize = sizeof(CHARFORMAT2);
 	
-	ColorList *cList = HighlightManager::getInstance()->rLock();
+	ColorList *cList = HighlightManager::getInstance()->getList();
 
 	int end = GetTextLengthEx(GTL_NUMCHARS);
 	
@@ -214,8 +214,6 @@ void CFulEditCtrl::Colorize(const tstring& aLine, int begin) {
 		matchedSound = false;
 		
 	}//end for
-
-	HighlightManager::getInstance()->rUnlock();
 
 }//end Colorize
 
