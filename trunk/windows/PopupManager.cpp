@@ -10,8 +10,6 @@
 PopupManager* Singleton< PopupManager >::instance = NULL;
 
 void PopupManager::Show(const string& aMsg ) {
-	Lock l(cs);
-
 	if(!activated)
 		return;
 
@@ -30,6 +28,8 @@ void PopupManager::Show(const string& aMsg ) {
 	
 	int screenHeight = rcDesktop.bottom;
 	int screenWidth = rcDesktop.right;
+
+	Lock l(cs);
 
 	//if we have popups all the way up to the top of the screen do not create a new one
 	if( (offset + height) > screenHeight)
@@ -61,13 +61,15 @@ void PopupManager::Show(const string& aMsg ) {
 }
 
 void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t tick) {
+	if(!BOOLSETTING(REMOVE_POPUPS))
+		return;
+
+	Lock l(cs);
+
 	//we got nothing to do here
 	if(popups.empty()) {
 		return;
 	}
-
-	if(!BOOLSETTING(REMOVE_POPUPS))
-		return;
 
 	//check all popups and see if we need to remove anyone
 	PopupList::iterator i = popups.begin();
@@ -123,6 +125,7 @@ void PopupManager::Remove(int pos) {
 	
 	    
 	//set offset one window position lower
+	dcassert(offset > 0);
 	offset = offset - height;
 
 	//nothing to do

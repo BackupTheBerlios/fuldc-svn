@@ -89,7 +89,7 @@ private:
 	//turn on/off popups completely
 	bool activated;
 
-	//keep track on window state
+	//keep track of window state
 	bool minimized;
 
 	//this is the background of the popup window
@@ -99,7 +99,6 @@ private:
 	virtual void on(TimerManagerListener::Second, u_int32_t tick) throw();
 
 	//QueueManagerListener
-	//virtual void on(QueueManagerListener::Types type, QueueItem* aQi) throw() {}
 	virtual void on(QueueManagerListener::ReleaseDone, string msg) throw();
 
 	//call this with a preformatted message

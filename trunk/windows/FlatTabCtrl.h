@@ -248,6 +248,8 @@ public:
 				break;
 			}
 		}
+		
+		moving = NULL;
 
 		return 0;
 	}
@@ -578,8 +580,7 @@ private:
 		}
 
 		tabs.insert(i, moving);
-		moving = NULL;
-		
+				
 		update();
 		calcRows(false);
 		Invalidate();	
@@ -687,11 +688,11 @@ private:
 		//if the tab is inactive, use a light gray color on the text
 		oldTextColor = dc.SetTextColor(aActive ? SETTING(TAB_ACTIVE_TEXT) : SETTING(TAB_INACTIVE_TEXT));
 	
+		int mapMode = dc.SetMapMode(MM_TEXT);
+
 		//Draw the icon
 		if(tab->hIcon != NULL && BOOLSETTING(TAB_SHOW_ICONS)) {
-			int mapMode = dc.SetMapMode(MM_TEXT);
 			dc.DrawIconEx(pos+3, ypos + (getTabHeight() / 2) - 8 , tab->hIcon, 16, 16, 0, NULL, DI_NORMAL | DI_COMPAT);
-			dc.SetMapMode(mapMode);
 		}
 		
 		int spacing = BOOLSETTING(TAB_SHOW_ICONS) ? 20 : 2;
@@ -711,6 +712,8 @@ private:
 			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->name.length());
 		}
 	
+		dc.SetMapMode(mapMode);
+
 		//restore the old tools
 		dc.SetTextColor(oldTextColor);
 		dc.SelectPen(oldPen);

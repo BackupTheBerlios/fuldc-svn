@@ -54,7 +54,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 						  int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException) 
 {
 	if(p == QueueItem::DEFAULT)
-		p = (aSize <= 16*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
+		p = (aSize <= 64*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
 
 	if(BOOLSETTING(HIGH_PRIO_SAMPLE)){
 		if( (aTarget.find("sample") != string::npos || aTarget.find("subs") != string::npos) && (p !=  QueueItem::HIGHEST) )

@@ -1272,7 +1272,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 
 void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 	if(BOOLSETTING(AUTO_UPDATE_LIST)) {
-		if(lastUpdate + 60 * 60 * 1000 < tick) {
+		if(lastUpdate + SETTING(SHARE_REFRESH_TIME) * 60 * 1000 < tick) {
 			try {
 				dirty = true;
 				refresh(true, true);

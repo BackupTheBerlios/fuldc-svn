@@ -591,6 +591,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	dcassert(d != NULL);
 
 	if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+		dcassert(d->getFile() != NULL);
 		d->getFile()->flush();
 		delete d->getFile();
 		d->setFile(NULL);
