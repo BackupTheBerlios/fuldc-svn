@@ -49,7 +49,7 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	HashManager::getInstance()->addListener(this);
-	/* Common search words used to make search more efficient, should be more dynamic */
+	// Common search words used to make search more efficient, should be more dynamic
 	words.push_back("avi");
 	words.push_back("mp3");
 	words.push_back("bin");
@@ -77,8 +77,11 @@ ShareManager::~ShareManager() {
 	SettingsManager::getInstance()->removeListener(this);
 	TimerManager::getInstance()->removeListener(this);
 	DownloadManager::getInstance()->removeListener(this);
+	HashManager::getInstance()->removeListener(this);
 
 	join();
+	
+	saveXmlList();
 
 	delete lFile;
 	lFile = NULL;
@@ -495,16 +498,14 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	const Directory::File& f = *i;
 
-	//HashFileIter j = tthIndex.find(f.getTTH());
-	//if(j == tthIndex.end()) {
+	HashFileIter j = tthIndex.find(f.getTTH());
+	if(j == tthIndex.end()) {
 		dir->size+=f.getSize();
-	//} else {
-	//	if(!SETTING(LIST_DUPES)) {
-	//		LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
-	//		dir->files.erase(i);
-	//		return;
-	//	}
-	//}
+	} else if(!SETTING(LIST_DUPES)) {
+			LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
+			dir->files.erase(i);
+			return;
+	}
 
 	dir->addSearchType(getMask(f.getName()));
 	dir->addType(getType(f.getName()));
@@ -1208,6 +1209,181 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 			}
 		}
 	}
+}
+
+
+bool ShareManager::loadXmlList(){
+	string* xmlString = new string;
+	const size_t BUF_SIZE = 64*1024;
+	char *buf = new char[BUF_SIZE];
+	u_int32_t pos = 0;
+
+	//try to read the xml from the file
+	try{
+		::File f(Util::getAppPath() + "Share.xml.bz2", File::READ, File::OPEN);
+		FilteredInputStream<UnBZFilter, false> xmlFile(&f);
+		for(;;) {
+			size_t tmp = BUF_SIZE;
+			pos = xmlFile.read(buf, tmp);
+			xmlString->append(buf, pos);
+			if(pos < BUF_SIZE)
+				break;
+		}
+		f.close();
+	}catch (Exception&) { 
+        delete[] buf;
+		//if we for some reason failed, return false to indicate that a refresh is needed
+		return false;
+	}
+
+
+	//cleanup
+	delete[] buf;
+	buf = NULL;
+
+	//same here =)
+	if(xmlString->empty()){
+		delete xmlString;
+		return false;
+	}
+
+	bool result = true;
+
+	SimpleXML *xml = NULL;
+
+	try{
+		xml = new SimpleXML();
+		//convert the xml string to an xml object
+		xml->fromXML(*xmlString);
+
+		//stepin inside <Share>
+		xml->resetCurrentChild();
+		xml->findChild("Share");
+		xml->stepIn();
+
+		for(Directory::MapIter j = directories.begin(); j != directories.end(); ++j) {
+			delete j->second;
+		}
+		directories.clear();
+		virtualMap.clear();
+
+		WLock l(cs);
+
+		while (xml->findChild("Directory")) {
+			string name = xml->getChildAttrib("Name");
+			string path = xml->getChildAttrib("Path");
+			if(path[path.length() - 1] != PATH_SEPARATOR)
+				path += PATH_SEPARATOR;
+			//Util::toAcp(name);
+			//Util::toAcp(path);
+			
+			Directory *d = addDirectoryFromXml(xml, NULL, name, path); 
+			addTree(path, d);
+			directories[path] = d;
+			virtualMap.push_back(make_pair(name,path));
+		}
+		setDirty();
+	} catch(SimpleXMLException &e){
+		LogManager::getInstance()->message(e.getError());
+		result = false;
+	}
+
+	//cleanup
+	delete xmlString;
+	xmlString = NULL;
+	if(xml != NULL)
+		delete xml;
+
+	return result;
+}
+
+ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName, string & aPath){
+	Directory * dir = new Directory(aName, aParent);
+	dir->addType(SearchManager::TYPE_DIRECTORY);
+	dir->addSearchType(getMask(dir->getName()));
+	bloom.add(Util::toLower(dir->getName()));
+
+	xml->stepIn();
+
+	Directory::File::Iter lastFileIter = dir->files.begin();
+	while (xml->findChild("File")) {
+		string name = xml->getChildAttrib("Name");
+		//Util::toAcp(name);
+		u_int64_t size = xml->getIntChildAttrib("Size");
+		HashManager::getInstance()->checkTTH(aPath + PATH_SEPARATOR + name, size);
+		lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, NULL));
+	}
+
+	xml->resetCurrentChild();
+
+	while (xml->findChild("Directory")) {
+		string name = xml->getChildAttrib("Name");
+		string path = xml->getChildAttrib("Path");
+		//Util::toAcp(name);
+		//Util::toAcp(path);
+		dir->directories[name] = addDirectoryFromXml(xml, dir, name, path);
+		dir->addSearchType(dir->directories[name]->getSearchTypes());
+	}
+
+
+	xml->stepOut();
+
+	return dir;
+}
+
+void ShareManager::saveXmlList(){
+	RLock l(cs);
+	string indent;
+	FilteredOutputStream<BZFilter, true> *xmlFile = new FilteredOutputStream<BZFilter, true>(new File(Util::getAppPath() + "Share.xml.bz2", File::WRITE, File::TRUNCATE | File::CREATE));
+	try{
+		xmlFile->write(SimpleXML::utf8Header);
+		xmlFile->write("<Share>\r\n");
+
+		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+			i->second->toXmlList(xmlFile, indent, i->first);
+		}
+		xmlFile->write("</Share>");
+		xmlFile->flush();
+	}catch(Exception&){}
+
+	try{
+		delete xmlFile;
+		xmlFile = NULL;
+	}catch (Exception&) {
+	}
+
+}
+
+void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, const string& path){
+	string tmp, tmp2;
+
+	xmlFile->write(indent);
+	xmlFile->write(LITERAL("<Directory Name=\""));
+	xmlFile->write(escaper(name, tmp));
+	xmlFile->write(LITERAL("\" Path=\""));
+	xmlFile->write(escaper(path, tmp));
+	xmlFile->write(LITERAL("\">\r\n"));
+
+	indent += '\t';
+	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
+		i->second->toXmlList(xmlFile, indent, path + PATH_SEPARATOR + i->first);
+	}
+
+	Directory::File::Iter j = files.begin();
+	while(j != files.end()) {
+		xmlFile->write(indent);
+		xmlFile->write(LITERAL("<File Name=\""));
+		xmlFile->write(escaper(j->getName(), tmp));
+		xmlFile->write(LITERAL("\" Size=\""));
+		xmlFile->write(Util::toString(j->getSize()));
+		xmlFile->write(LITERAL("\"/>\r\n"));
+
+		++j;
+	}
+
+	indent.erase(indent.length()-1);
+	xmlFile->write(indent);
+	xmlFile->write(LITERAL("</Directory>\r\n"));
 }
 
 /**

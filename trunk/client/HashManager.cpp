@@ -35,6 +35,12 @@ void HashManager::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTi
 	}
 }
 
+void HashManager::checkTTH(const string& aFileName, int64_t aSize) {
+	Lock l(cs);
+	if(!store.checkTTH(aFileName, aSize)) {
+		hasher.hashFile(aFileName, aSize);
+	}
+}
 TTHValue* HashManager::getTTH(const string& aFileName) {
 	Lock l(cs);
 	return store.getTTH(aFileName);

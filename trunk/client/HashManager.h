@@ -61,6 +61,10 @@ public:
 	 * Check if the TTH tree associated with the filename is current.
 	 */
 	void checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
+	
+	//Same as above but this is used when loading the share from the xml and timestamps
+	//aren't availible
+	void checkTTH(const string& aFileName, int64_t aSize);
 
 	/**
 	 * Retrieves TTH root or queue's file for hashing.
@@ -185,6 +189,20 @@ private:
 			TTHIter i = indexTTH.find(aFileName);
 			if(i != indexTTH.end()) {
 				if(i->second->getSize() != aSize || i->second->getTimeStamp() != aTimeStamp) {
+					delete i->second;
+					indexTTH.erase(i);
+					dirty = true;
+					return false;
+				}
+				return true;
+			} 
+			return false;
+		}
+
+		bool checkTTH(const string& aFileName, int64_t aSize) {
+			TTHIter i = indexTTH.find(aFileName);
+			if(i != indexTTH.end()) {
+				if(i->second->getSize() != aSize ) {
 					delete i->second;
 					indexTTH.erase(i);
 					dirty = true;

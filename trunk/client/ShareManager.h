@@ -85,6 +85,8 @@ public:
 	GETSET(string, listFile, ListFile);
 	GETSET(string, bzXmlFile, BZXmlFile);
 
+	bool loadXmlList();
+
 private:
 	struct AdcSearch;
 
@@ -157,6 +159,7 @@ private:
 
 		void toNmdc(string& nmdc, string& indent, string& tmp2);
 		void toXml(OutputStream& xmlFile, string& indent, string& tmp2);
+		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
@@ -274,6 +277,8 @@ private:
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
+	void saveXmlList();
+	Directory* addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName, string & aPath);
 };
 
 #endif // !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
