@@ -124,6 +124,7 @@ public:
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	
 	
@@ -140,18 +141,6 @@ public:
 	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
-		return 0;
-	}
-
-	LRESULT onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i=-1;
-		if(client->isConnected()) {
-		
-			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				tstring path =	Text::toT(SETTING(LOG_DIRECTORY) + ctrlUsers.getItemData(i)->user->getNick() + ".log");
-				ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOW);
-			}
-		}
 		return 0;
 	}
 

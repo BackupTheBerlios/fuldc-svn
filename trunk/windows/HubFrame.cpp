@@ -1578,7 +1578,7 @@ void HubFrame::updateUserList() {
 	ctrlUsers.SetRedraw(TRUE);
 }
 
-LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	StringMap params;
 	params["hub"] = client->getName();
@@ -1586,9 +1586,34 @@ LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	params["mynick"] = client->getNick(); 
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::CHAT, params));
-	if(!path.empty())
+	if(!path.empty()) {
+		if(wID == IDC_OPEN_LOG_DIR) {
+			path = Util::getFilePath(path);	
+		}
 		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
-		
+	}
+	return 0;
+}
+
+LRESULT HubFrame::onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	if(client->isConnected()) {
+		StringMap params;
+		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			User::Ptr user = ctrlUsers.getItemData(i)->user;
+
+			params["user"] = user->getNick();
+			params["hub"] = user->getClientName();
+			params["hubaddr"] = user->getClientAddressPort();
+			params["mynick"] = user->getClientNick(); 
+			params["mycid"] = user->getClientCID().toBase32(); 
+			params["cid"] = user->getCID().toBase32();
+
+			tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
+			if(!path.empty())
+				ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOW);
+		}
+	}
 	return 0;
 }
 
