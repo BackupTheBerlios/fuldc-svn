@@ -135,7 +135,6 @@ public:
 		return (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
-	void importNMQueue(const string& aFile) throw(FileException);
 	void loadQueue() throw();
 	void saveQueue() throw();
 	

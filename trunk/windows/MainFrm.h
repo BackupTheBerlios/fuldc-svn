@@ -129,7 +129,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_README, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onLink)
-		COMMAND_ID_HANDLER(IDC_IMPORT_QUEUE, onImport)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(IDC_OPEN_MY_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
@@ -167,7 +166,6 @@ public:
 	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLink(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

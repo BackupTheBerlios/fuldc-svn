@@ -800,19 +800,6 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	return 0;
 }
 
-LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	string file = Util::getAppPath() + "queue.config";
- 	if(WinUtil::browseFile(file, m_hWnd, false) == IDOK) {
-		try {
-			QueueManager::getInstance()->importNMQueue(file);
- 		} catch(const FileException&) {
-			ctrlStatus.SetText(0, CSTRING(ERROR_OPENING_FILE));
- 		}
- 	} 
- 
- 	return 0;
-}
- 
 void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 {
 	RECT rect;

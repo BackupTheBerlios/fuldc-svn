@@ -1237,63 +1237,6 @@ void QueueLoader::endTag(const string& name, const string&) {
 	}
 }
 
-void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
-	File f(aFile, File::READ, File::OPEN);
-	
-	size_t size = (size_t)f.getSize();
-	
-	string tmp;
-	if(size > 16) {
-		AutoArray<u_int8_t> buf(size);
-		f.read(buf, size);
-		try {
-			CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-		} catch(const CryptoException&) {
-			return;
-		}
-	} else {
-		tmp = Util::emptyString;
-	}
-	
-	StringTokenizer line(tmp);
-	StringList& tokens = line.getTokens();
-	
-	for(StringIter i = tokens.begin(); i != tokens.end(); i++) {
-		const string& tok = *i;
-		string::size_type k = tok.find('|');
-
-		if( (k == string::npos) || ((k+1) >= tok.size()) )
-			continue;
-
-		string tmp = tok.substr(k+1);
-		if( (tmp == "Active") || (tmp == "Paused") ) {
-			continue; // ignore first line
-		}
-		
-		StringTokenizer t(tok, '\t');
-		StringList& records = t.getTokens();
-		
-		if(records.size() < 5)
-			continue;
-
-		StringIter j = records.begin();
-		++j; // filename
-
-		int64_t size = Util::toInt64(*(++j));
-		if(size <= 0)
-			continue;
-		const string& target = *(++j);
-		const string& file   = *(++j);
-		const string& nick   = *(++j);
-		
-		try {
-			add(file, size, ClientManager::getInstance()->getUser(nick), target, NULL);
-		} catch(const Exception&) {
-			// ...
-		}
-	}
-}
-
 // SearchManagerListener
 void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 	if(BOOLSETTING(AUTO_SEARCH)) {
