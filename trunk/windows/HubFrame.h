@@ -322,6 +322,7 @@ private:
 		tabList.push_back("/dslots");
 		tabList.push_back("/favorite");
 		tabList.push_back("/fuldc");
+		tabList.push_back("/fuptime");
 		tabList.push_back("/getlist");
 		tabList.push_back("/grant");
 		tabList.push_back("/help");

@@ -956,9 +956,15 @@ string WinUtil::Help(const string& command) {
 		xml.fromXML(xmlString);
 
 		xml.stepIn();
-		xml.findChild(command);
 
-		ret = xml.getChildData();
+		bool found = false;
+		if(Util::toLower(command).find("dc++") != string::npos)
+			found = xml.findChild("dc");
+		else
+			found = xml.findChild(Util::toLower(command));
+
+		if(found)
+			ret = xml.getChildData();
 	} catch(const SimpleXMLException &e) {
 		return e.getError();
 	}
@@ -987,12 +993,12 @@ string WinUtil::Uptime() {
 		if ( pdhStatus == ERROR_SUCCESS )
 		{
 			pdhStatus = PdhGetFormattedCounterValue( m_hCounter, 
-				PDH_FMT_LONG, 
+				PDH_FMT_LARGE, 
 				NULL, 
 				&pdhCounterValue );
 
 			if ( pdhStatus == ERROR_SUCCESS )
-				ret = Util::formatTime(pdhCounterValue.longValue, false);
+				ret = Util::formatTime(pdhCounterValue.largeValue, false);
 		}
 	}
 	

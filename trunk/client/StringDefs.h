@@ -499,5 +499,6 @@ enum Strings { // @DontAdd
 	MENU_OPEN_MY_LIST, // "Open my file list"
 	RESOLVE_IP, // "Resolve IP"
 	RESOLVES_TO, // "resolves to"
+	NOT_FOUND, // "Not found in help file"
 	LAST // @DontAdd
 };

@@ -496,6 +496,7 @@ string ResourceManager::strings[] = {
 "Open my file list", 
 "Resolve IP", 
 "resolves to", 
+"Not found in help file", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -992,4 +993,5 @@ string ResourceManager::names[] = {
 "MenuOpenMyList", 
 "ResolveIp", 
 "ResolvesTo", 
+"NotFound", 
 };
