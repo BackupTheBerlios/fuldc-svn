@@ -376,13 +376,10 @@ public:
 		CDC dc(::GetDC(m_hWnd));
 		HFONT oldfont = dc.SelectFont(WinUtil::font);
 		height = WinUtil::getTextHeight(dc) + 7;
-		//height = 20;
 		dc.SelectFont(oldfont);
 		::ReleaseDC(m_hWnd, dc);
 
-		//WinUtil::SetIcon(m_hWnd, "Queue.ico");
-	
-		//Set the background brusH, easier than processing WM_ERASEBKGND =)
+		//Set the background brush, easier than processing WM_ERASEBKGND =)
 		::SetClassLongPtr(m_hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)::CreateSolidBrush(SETTING(TAB_INACTIVE_BG)));
 		
 		return 0;
@@ -407,11 +404,11 @@ public:
 
 		if(GetUpdateRect(&rc, FALSE)) {
 			CPaintDC dc(m_hWnd);
+			dc.SetBkColor(SETTING(TAB_INACTIVE_BG));
 			CMemDC memDC(&dc);
-
+			
 			HFONT oldfont = memDC.SelectFont(WinUtil::font);
 
-			//ATLTRACE("%d, %d\n", rc.left, rc.right);
 			for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 				TabInfo* t = *i;
 				
