@@ -1,0 +1,1 @@
+..\MakeDefs StringDefs.h StringDefs.cpp ..\Example.xml
