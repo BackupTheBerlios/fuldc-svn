@@ -14,6 +14,9 @@ make changes to pcre.in. */
 #define PCRE_MINOR          5
 #define PCRE_DATE           01-December-2003
 
+//add utf8 support 
+#define SUPPORT_UTF8
+
 /* Win32 uses DLL by default */
 
 #ifdef _WIN32
@@ -145,19 +148,28 @@ that is triggered by the (?) regex item. Some magic is required for Win32 DLL;
 it is null on other OS. For Virtual Pascal, these have to be different again.
 */
 
-#ifndef VPCOMPAT
-PCRE_DATA_SCOPE void *(*pcre_malloc)(size_t);
-PCRE_DATA_SCOPE void  (*pcre_free)(void *);
-PCRE_DATA_SCOPE void *(*pcre_stack_malloc)(size_t);
-PCRE_DATA_SCOPE void  (*pcre_stack_free)(void *);
-PCRE_DATA_SCOPE int   (*pcre_callout)(pcre_callout_block *);
-#else   /* VPCOMPAT */
-extern void *pcre_malloc(size_t);
-extern void  pcre_free(void *);
-extern void *pcre_stack_malloc(size_t);
-extern void  pcre_stack_free(void *);
-extern int   pcre_callout(pcre_callout_block *);
-#endif  /* VPCOMPAT */
+//PCRE_DATA_SCOPE void *(*pcre_malloc)(size_t);
+//PCRE_DATA_SCOPE void  (*pcre_free)(void *);
+//PCRE_DATA_SCOPE void *(*pcre_stack_malloc)(size_t);
+//PCRE_DATA_SCOPE void  (*pcre_stack_free)(void *);
+//PCRE_DATA_SCOPE int   (*pcre_callout)(pcre_callout_block *);
+//#else   /* VPCOMPAT */
+//extern void *pcre_malloc(size_t);
+//extern void  pcre_free(void *);
+//extern void *pcre_stack_malloc(size_t);
+//extern void  pcre_stack_free(void *);
+//#ifdef __cplusplus
+//extern "C" {
+//	int   pcre_callout(pcre_callout_block *);
+//}
+//#else
+//	extern int pcre_callout(pcre_callout_block *);
+//#endif
+#define pcre_malloc malloc
+#define pcre_free free
+#define pcre_stack_malloc malloc
+#define pcre_stack_free free
+
 
 /* Exported PCRE functions */
 

@@ -449,7 +449,7 @@ pcre_study_data is fixed. We nevertheless save it in a field for returning via
 the pcre_fullinfo() function so that if it becomes variable in the future, we
 don't have to change that code. */
 
-extra = (pcre_extra *)(pcre_malloc)
+extra = (pcre_extra *)malloc
   (sizeof(pcre_extra) + sizeof(pcre_study_data));
 
 if (extra == NULL)

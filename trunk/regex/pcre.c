@@ -344,23 +344,17 @@ indirections below, and it can optionally do callouts. These values can be
 changed by the caller, but are shared between all threads. However, when
 compiling for Virtual Pascal, things are done differently (see pcre.in). */
 
-#ifndef VPCOMPAT
-#ifdef __cplusplus
-extern "C" {
-	void *(*pcre_malloc) (size_t) = malloc;
-	void  (* pcre_free) (void *) = free;
-	void *(*pcre_stack_malloc)(size_t) = malloc;
-	void  (*pcre_stack_free)(void *) = free;
-	int   (*pcre_callout)(pcre_callout_block *) = NULL;
-}
-#else
-void *(*pcre_malloc)(size_t) = malloc;
-void  (*pcre_free)(void *) = free;
-void *(*pcre_stack_malloc)(size_t) = malloc;
-void  (*pcre_stack_free)(void *) = free;
-int   (*pcre_callout)(pcre_callout_block *) = NULL;
-#endif
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//	void *(*pcre_malloc) (size_t) = malloc;
+//	void  (* pcre_free) (void *) = free;
+//	void *(*pcre_stack_malloc)(size_t) = malloc;
+//	void  (*pcre_stack_free)(void *) = free;
+  int   (*pcre_callout)(pcre_callout_block *) = NULL;
+//}
+//#else
+//  int   (*pcre_callout)(pcre_callout_block *) = NULL;
+//#endif
 
 
 /*************************************************
@@ -5025,7 +5019,7 @@ if (length > MAX_PATTERN_SIZE)
 externally provided function. */
 
 size = length + sizeof(real_pcre) + name_count * (max_name_size + 3);
-re = (real_pcre *)(pcre_malloc)(size);
+re = (real_pcre *)malloc(size);
 
 if (re == NULL)
   {
@@ -5344,7 +5338,7 @@ match(), which never actually changes. */
 
 #define RMATCH(rx,ra,rb,rc,rd,re,rf,rg)\
   {\
-  heapframe *newframe = (pcre_stack_malloc)(sizeof(heapframe));\
+  heapframe *newframe = malloc(sizeof(heapframe));\
   if (setjmp(frame->Xwhere) == 0)\
     {\
     newframe->Xeptr = ra;\
@@ -5370,7 +5364,7 @@ match(), which never actually changes. */
   {\
   heapframe *newframe = frame;\
   frame = newframe->Xprevframe;\
-  (pcre_stack_free)(newframe);\
+  free(newframe);\
   if (frame != NULL)\
     {\
     frame->Xresult = ra;\
@@ -5498,7 +5492,7 @@ heap storage. Set up the top-level frame here; others are obtained from the
 heap whenever RMATCH() does a "recursion". See the macro definitions above. */
 
 #ifdef NO_RECURSE
-heapframe *frame = (pcre_stack_malloc)(sizeof(heapframe));
+heapframe *frame = malloc(sizeof(heapframe));
 frame->Xprevframe = NULL;            /* Marks the top level */
 
 /* Copy in the original argument variables */
@@ -5949,7 +5943,7 @@ for (;;)
       else
         {
         new_recursive.offset_save =
-          (int *)(pcre_malloc)(new_recursive.saved_max * sizeof(int));
+          (int *)malloc(new_recursive.saved_max * sizeof(int));
         if (new_recursive.offset_save == NULL) RRETURN(PCRE_ERROR_NOMEMORY);
         }
 
@@ -8066,7 +8060,7 @@ ocount = offsetcount - (offsetcount % 3);
 if (re->top_backref > 0 && re->top_backref >= ocount/3)
   {
   ocount = re->top_backref * 3 + 3;
-  match_block.offset_vector = (int *)(pcre_malloc)(ocount * sizeof(int));
+  match_block.offset_vector = (int *)malloc(ocount * sizeof(int));
   if (match_block.offset_vector == NULL) return PCRE_ERROR_NOMEMORY;
   using_temporary_offsets = TRUE;
   DPRINTF(("Got memory to hold back references\n"));

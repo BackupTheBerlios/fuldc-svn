@@ -234,6 +234,7 @@ void ShareManager::load(SimpleXML* aXml) {
 			Directory* dp = new Directory(newVirt);
 			directories[d] = dp;
 			virtualMap.push_back(make_pair(newVirt, d));
+			incomingMap.insert(make_pair(d, aXml->getBoolChildAttrib("Incoming")));
 		}
 		aXml->stepOut();
 	}
@@ -247,6 +248,7 @@ void ShareManager::save(SimpleXML* aXml) {
 	for(StringPairIter i = virtualMap.begin(); i != virtualMap.end(); ++i) {
 		aXml->addTag("Directory", i->second);
 		aXml->addChildAttrib("Virtual", i->first);
+		aXml->addChildAttrib("Incoming", isIncoming(i->second));
 	}
 	aXml->stepOut();
 }
@@ -1399,6 +1401,33 @@ void ShareManager::Directory::toXmlList(OutputStream* xmlFile, string& indent, c
 	xmlFile->write(LITERAL("</Directory>\r\n"));
 }
 
+bool ShareManager::isIncoming(const string& aDir) {
+	string tmp = aDir;
+	if( aDir[ aDir.length() -1 ] != PATH_SEPARATOR )
+		tmp += PATH_SEPARATOR;
+
+	StringBoolMapIter i = incomingMap.find(tmp);
+
+	dcassert(i != incomingMap.end());
+	
+	return i->second;
+}
+
+void ShareManager::addIncoming(const string& aDir) {
+	string tmp = aDir;
+	if( aDir[ aDir.length() -1 ] != PATH_SEPARATOR )
+		tmp += PATH_SEPARATOR;
+
+	incomingMap[tmp] = true;
+}
+
+void ShareManager::removeIncoming(const string& aDir){
+	string tmp = aDir;
+	if( aDir[ aDir.length() -1 ] != PATH_SEPARATOR )
+		tmp += PATH_SEPARATOR;
+
+	incomingMap[tmp] = false;
+}
 /**
  * @file
  * $Id: ShareManager.cpp,v 1.9 2004/02/21 10:47:46 trem Exp $

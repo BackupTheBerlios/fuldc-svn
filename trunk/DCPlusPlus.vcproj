@@ -113,7 +113,7 @@
 				AssemblerOutput="0"
 				WarningLevel="4"
 				DebugInformationFormat="3"
-				CallingConvention="0"
+				CallingConvention="1"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

@@ -69,7 +69,7 @@ PME::compile(const std::string & s ///< string to compile into regular expressio
 	const char * errorptr;
 	int erroroffset;
 	
-	re = pcre_compile(s.c_str(), _opts, &errorptr, &erroroffset, 0);
+	re = pcre_compile(s.c_str(), _opts | PCRE_UTF8, &errorptr, &erroroffset, 0);
 
 	if ( re != NULL ) {
 		nValid = 1;

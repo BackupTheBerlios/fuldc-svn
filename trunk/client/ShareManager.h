@@ -80,12 +80,17 @@ public:
 	void addHits(u_int32_t aHits) {
 		hits += aHits;
 	}
-	
+
 	GETSET(u_int32_t, hits, Hits);
 	GETSET(string, listFile, ListFile);
 	GETSET(string, bzXmlFile, BZXmlFile);
 
 	bool loadXmlList();
+	void generateXmlList();
+
+	bool isIncoming(const string& aDir);
+	void addIncoming(const string& aDir);
+	void removeIncoming(const string& aDir);
 
 private:
 	struct AdcSearch;
@@ -241,6 +246,9 @@ private:
 	// Map virtual to real dir name
 	StringPairList virtualMap;
 
+	//keeps track of which dirs are marked as incoming
+	StringBoolMap incomingMap;
+
 	BloomFilter<5> bloom;
 	
 	/** Find virtual name from real name */
@@ -253,8 +261,7 @@ private:
 	void addTree(const string& aName, Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
 	void generateNmdcList();
-	void generateXmlList();
-
+	
 	void removeTTH(TTHValue* tth, const Directory::File::Iter&);
 
 	Directory* getDirectory(const string& fname);

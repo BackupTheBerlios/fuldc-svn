@@ -58,7 +58,7 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 {
 	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
-	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
 		
 	ctrlTotal.Attach(GetDlgItem(IDC_TOTAL));
 
@@ -72,6 +72,7 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	{
 		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), WinUtil::toT(j->second));
 		ctrlDirectories.SetItemText(i, 1, WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
+		ctrlDirectories.SetCheckState(i, ShareManager::getInstance()->isIncoming(j->second) );
 	}
 	
 	ctrlTotal.SetWindowText(WinUtil::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
@@ -111,6 +112,19 @@ void UploadPage::write()
 
 	if(SETTING(SLOTS) < 1)
 		settings->set(SettingsManager::SLOTS, 1);
+
+	int size = ctrlDirectories.GetItemCount();
+	TCHAR buf[MAX_PATH];
+
+	for(int i = 0; i < size; ++i){
+		ctrlDirectories.GetItemText(i, 0, buf, MAX_PATH);
+		string tmp = WinUtil::fromT(buf);
+		if( ctrlDirectories.GetCheckState(i) ){
+			ShareManager::getInstance()->addIncoming(tmp);
+		} else {
+			ShareManager::getInstance()->removeIncoming(tmp);
+		}
+	}
 
 	// Do specialized writing here
 	ShareManager::getInstance()->refresh();
@@ -185,6 +199,8 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 }
 
 void UploadPage::addDirectory(tstring path){
+	if( path[ path.length() -1 ] != _T('\\') )
+		path += _T('\\');
 	try {
 		ShareManager::getInstance()->addDirectory(WinUtil::fromT(path), Util::getLastDir(WinUtil::fromT(path)));
 		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), path);
