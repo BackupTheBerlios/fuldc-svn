@@ -100,6 +100,8 @@ void PopupManager::Remove(int pos) {
 
 	//get desktop rect so we know where to place the popup
 	::SystemParametersInfo(SPI_GETWORKAREA,0,&rcDesktop,0);
+	if(pos == 0)
+		pos = rcDesktop.bottom;
 
 	//find the correct window
 	int end = (rcDesktop.bottom - pos) / height;
