@@ -373,7 +373,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		int type = Util::toInt(param.substr(0, j));
 		i = j+1;
-		if(type == UserCommand::TYPE_SEPARATOR) {
+ 		if(type == UserCommand::TYPE_SEPARATOR || type == UserCommand::TYPE_CLEAR) {
 			int ctx = Util::toInt(param.substr(i));
 			Speaker<NmdcHubListener>::fire(NmdcHubListener::UserCommand(), this, type, ctx, Util::emptyString, Util::emptyString);
 		} else if(type == UserCommand::TYPE_RAW || type == UserCommand::TYPE_RAW_ONCE) {

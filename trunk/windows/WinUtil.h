@@ -91,6 +91,9 @@ public:
 	static void AppendSearchMenu(CMenu& menu);
 
 	static string DiskSpaceInfo();
+	static string Help(const string& command);
+	static string Uptime();
+	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 
 	/**
 	 * Check if this is a common /-command.

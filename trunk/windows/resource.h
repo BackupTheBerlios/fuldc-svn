@@ -368,6 +368,8 @@
 #define IDC_COLOR_COMBO                 1243
 #define IDC_TABCOLOR                    1245
 #define IDC_FONT                        1246
+#define IDC_TABCOLOR2                   1246
+#define IDC_LASTLOG                     1246
 #define IDC_FREE_SLOTS_EXTENSIONS       1247
 #define IDC_FREE_SLOTS_SIZE             1249
 #define IDC_CHECK2                      1250

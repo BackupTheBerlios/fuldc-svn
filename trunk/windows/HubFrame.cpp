@@ -282,7 +282,10 @@ void HubFrame::onEnter() {
 					addClientLine(ui->getText(COLUMN_NICK) + "granted");
 				}
 			} else if(Util::stricmp(cmd.c_str(), "help") == 0) {
-				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message]");
+				if(param.empty()) 
+					addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message]");
+				else
+					addLine("*** /" + WinUtil::Help(param));
 			} else if(Util::stricmp(cmd.c_str(), "pm") == 0) {
 				string nick, msg;
 				string::size_type j = param.find(' ');

@@ -220,6 +220,17 @@ public:
 		}
 	}
 
+	void removeHubUserCommands(int ctx, const string& hub) {
+		Lock l(cs);
+		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+			if(i->getHub() == hub && i->isSet(UserCommand::FLAG_NOSAVE) && i->getCtx() & ctx) {
+				i = userCommands.erase(i);
+			} else {
+				++i;
+			}
+		}
+	}
+
 	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; };
 	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
 

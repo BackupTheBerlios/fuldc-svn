@@ -738,7 +738,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser) throw() {
 	d = new Download(q);
 
 	if( BOOLSETTING(ANTI_FRAG) ) {
-		d->setPos(q->getDownloadedBytes());
+		d->setStartPos(q->getDownloadedBytes());
 	}
 	q->setCurrentDownload(d);
 
@@ -748,7 +748,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser) throw() {
 
 void QueueManager::putDownload(Download* aDownload, bool finished /* = false */) throw() {
 	User::List getConn;
-	string fname;
+ 	string fname;
 	User::Ptr up;
 	int flag = 0;
 
@@ -757,6 +757,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 		QueueItem* q = fileQueue.find(aDownload->getTarget());
 
 		if(q != NULL) {
+
 			if(finished) {
 				dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
 				userQueue.remove(q);
@@ -783,7 +784,8 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 				setDirty();
 				checkNotify();
 			} else {
-				q->setDownloadedBytes(aDownload->getPos());
+				if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD))
+					q->setDownloadedBytes(aDownload->getPos());
 				q->setCurrentDownload(NULL);
 				if(q->getDownloadedBytes() > 0)
 					q->setFlag(QueueItem::FLAG_EXISTS);

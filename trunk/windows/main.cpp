@@ -25,13 +25,17 @@
 #include "WinUtil.h"
 #include "SingleInstance.h"
 
+#include "../client/MerkleTree.h"
+
 #include <delayimp.h>
 CAppModule _Module;
 
 CriticalSection cs;
-enum { DEBUG_BUFSIZE = 4096 };
+enum { DEBUG_BUFSIZE = 8192 };
 static char guard[DEBUG_BUFSIZE];
 static int recursion = 0;
+static char tth[192*8/(5*8)+2];
+
 static char buf[DEBUG_BUFSIZE];
 
 #ifndef _DEBUG
@@ -69,12 +73,33 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
 
-	sprintf(buf, "\r\nUnhandled Exception\r\n  Code: %x\r\nVersion: %s\r\nfulDC: %s\r\nOs: %s\r\n", 
-		exceptionCode, VERSIONSTRING, FULVERSIONSTRING, Util::getOsVersion().c_str() );
+	sprintf(buf, "Code: %x\r\nVersion: %s\r\nfulDC: %s\r\n", 
+		exceptionCode, VERSIONSTRING, FULVERSIONSTRING);
 
 	f.write(buf, strlen(buf));
 
+	OSVERSIONINFOEX ver;
+	WinUtil::getVersionInfo(ver);
+
+	sprintf(buf, "Major: %d\r\nMinor: %d\r\nBuild: %d\r\nSP: %d\r\nType: %d\r\n",
+		(DWORD)ver.dwMajorVersion, (DWORD)ver.dwMinorVersion, (DWORD)ver.dwBuildNumber,
+		(DWORD)ver.wServicePackMajor, (DWORD)ver.wProductType);
+
+	f.write(buf, strlen(buf));
+	time_t now;
+	time(&now);
+	strftime(buf, DEBUG_BUFSIZE, "Time: %Y-%m-%d %H:%M:%S\r\n", localtime(&now));
+
+	f.write(buf, strlen(buf));
+
+	f.write(LIT("TTH: "));
+	f.write(tth, strlen(tth));
+	f.write(LIT("\r\n"));
+
+    f.write(LIT("\r\n"));
+
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
+	
 	f.close();
 
 #ifndef _DEBUG
@@ -277,7 +302,6 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
-
 	dcdebug("String: %d\n", sizeof(string));
 #ifndef _DEBUG
 	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
@@ -321,6 +345,20 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 	LoadLibrary( CRichEditCtrl::GetLibraryName() );
+	try {
+		File f(Util::getAppName(), File::READ, File::OPEN);
+		TigerTree tth(TigerTree::calcBlockSize(f.getSize(), 1));
+		size_t n = 0;
+		size_t n2 = DEBUG_BUFSIZE;
+		while( (n = f.read(buf, n2)) > 0) {
+			tth.update(buf, n);
+			n2 = DEBUG_BUFSIZE;
+		}
+		tth.finalize();
+		strcpy(::tth, tth.getRoot().toBase32().c_str());
+	} catch(const FileException&) {
+		dcdebug("Failed reading exe\n");
+	}
 	
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 	

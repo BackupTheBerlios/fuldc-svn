@@ -318,7 +318,11 @@ void ClientManager::on(Failed, Client* client, const string&) throw() {
 
 void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() { 
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
-		HubManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
+ 		if(aType == ::UserCommand::TYPE_CLEAR) {
+ 			HubManager::getInstance()->removeHubUserCommands(ctx, client->getAddressPort());
+ 		} else {
+ 			HubManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
+ 		}
 	}
 }
 /*

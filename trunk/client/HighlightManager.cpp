@@ -36,6 +36,7 @@ void HighlightManager::load(SimpleXML *aXml){
 			cs->setPopup( aXml->getBoolChildAttrib("Popup") );
 			cs->setTab( aXml->getBoolChildAttrib("Tab") );
 			cs->setPlaySound( aXml->getBoolChildAttrib("PlaySound") );
+			cs->setLog( aXml->getBoolChildAttrib("LastLog") );
 			cs->setMatchType( aXml->getIntChildAttrib("MatchType") );
 			cs->setHasFgColor( aXml->getBoolChildAttrib("HasFgColor") );
 			cs->setHasBgColor( aXml->getBoolChildAttrib("HasBgColor") );
@@ -71,6 +72,7 @@ void HighlightManager::save(SimpleXML *aXml){
 		aXml->addChildAttrib("Popup", (*iter)->getPopup());
 		aXml->addChildAttrib("Tab", (*iter)->getTab());
 		aXml->addChildAttrib("PlaySound", (*iter)->getPlaySound());
+		aXml->addChildAttrib("LastLog", (*iter)->getLog());
 		aXml->addChildAttrib("MatchType", (*iter)->getMatchType());
 		aXml->addChildAttrib("HasFgColor", (*iter)->getHasFgColor());
 		aXml->addChildAttrib("HasBgColor", (*iter)->getHasBgColor());

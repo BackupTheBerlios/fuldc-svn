@@ -95,6 +95,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 
 			if((aBytes < 0) || ((aStartPos + aBytes) > size)) {
 				aSource->fileNotAvail();
+				delete f;
 				return false;
 			}
 
@@ -113,8 +114,6 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 
 	} else if(aType == "tthl") {
 		// TTH Leaves...
-		free = true;
-
 		TigerTree tree;
 		if(!HashManager::getInstance()->getTree(file, tree)) {
 			aSource->fileNotAvail();
@@ -159,7 +158,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	u->setUserConnection(aSource);
 	u->setFile(is);
 	u->setSize(size);
-	u->setPos(aStartPos);
+	u->setStartPos(aStartPos);
 	u->setFileName(aFile);
 	u->setLocalFileName(file);
 
@@ -242,8 +241,7 @@ void UploadManager::on(UserConnectionListener::BytesSent, UserConnection* aSourc
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
 	Upload* u = aSource->getUpload();
 	dcassert(u != NULL);
-	u->addPos(aBytes);
-	u->addActual(aActual);
+	u->addPos(aBytes, aActual);
 }
 
 void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) {
@@ -318,15 +316,15 @@ void UploadManager::on(GetListLength, UserConnection* conn) throw() {
 	conn->listLen(ShareManager::getInstance()->getListLenString()); 
 }
 
-void UploadManager::on(Command::STA, UserConnection* conn, const Command& c) throw() {
+//void UploadManager::on(Command::STA, UserConnection* conn, const Command& c) throw() {
 
-}
+//}
 
 void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) throw() {
 	int64_t aBytes = Util::toInt64(c.getParam(3));
 	int64_t aStartPos = Util::toInt64(c.getParam(2));
 
-	if(prepareFile(aSource, c.getParam(0), c.getParam(1), aStartPos, aBytes)) {
+	if(prepareFile(aSource, c.getParam(0), Util::toNmdcFile(c.getParam(1)), aStartPos, aBytes)) {
 		Upload* u = aSource->getUpload();
 		dcassert(u != NULL);
 		if(aBytes == -1)

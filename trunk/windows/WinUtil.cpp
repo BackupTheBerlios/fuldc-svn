@@ -36,8 +36,10 @@
 #include "../client/UploadManager.h"
 #include "../client/WebShortcuts.h"
 #include "../client/HashManager.h"
+#include "../client/SimpleXML.h"
 
 #include <direct.h>
+#include <pdh.h>
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
@@ -139,6 +141,18 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S) {
 }
 
 
+bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
+			return false;
+		}
+	}
+	return true;
+}
 
 static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 	if(code == HC_ACTION) {
@@ -527,8 +541,10 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		} 
 	}else if(Util::stricmp(cmd.c_str(), "fuldc") == 0) {
 		message = "http://paxi.myftp.org <fulDC " + string(FULVERSIONSTRING) + ">";
-	} else if(Util::stricmp(cmd.c_str(), "uptime") == 0) {
+	} else if(Util::stricmp(cmd.c_str(), "fuptime") == 0) {
 		message = "fulDC uptime: " + Util::formatTime(GET_TIME() - WinUtil::startTime, false);
+	} else if(Util::stricmp(cmd.c_str(), "uptime") == 0) {
+		message = "System uptime: " + WinUtil::Uptime();
 	} else if(WebShortcuts::getInstance()->getShortcutByKey(cmd) != NULL) {
 		WinUtil::SearchSite(WebShortcuts::getInstance()->getShortcutByKey(cmd), param);
 	} else if(Util::stricmp(cmd.c_str(), "rebuild") == 0) {
@@ -908,6 +924,86 @@ string WinUtil::DiskSpaceInfo() {
 
 	if(totalSize != 0)
 		ret += "total=" + Util::formatBytes(totalFree) + "/" + Util::formatBytes(totalSize);
+
+	return ret;
+}
+
+string WinUtil::Help(const string& command) {
+	string xmlString;
+	const size_t BUF_SIZE = 64*1024;
+	char *buf = new char[BUF_SIZE];
+	u_int32_t pos = 0;
+	SimpleXML xml;
+
+	//try to read the xml from the file
+	try{
+		::File f(Util::getAppPath() + "Help.xml", File::READ, File::OPEN);
+		for(;;) {
+			size_t tmp = BUF_SIZE;
+			pos = f.read(buf, tmp);
+			xmlString.append(buf, pos);
+			if(pos < BUF_SIZE)
+				break;
+		}
+		f.close();
+	}catch (Exception&) { 
+		//if we for some reason failed, return false to indicate that a refresh is needed
+		return Util::emptyString;
+	}
+
+	string ret = Util::emptyString;
+	try{
+		xml.fromXML(xmlString);
+
+		xml.stepIn();
+		xml.findChild(command);
+
+		ret = xml.getChildData();
+	} catch(const SimpleXMLException &e) {
+		return e.getError();
+	}
+
+	return ret;
+}
+
+string WinUtil::Uptime() {
+	HQUERY    m_hQuery;
+	HCOUNTER  m_hCounter;
+	PDH_STATUS   pdhStatus = ERROR_SUCCESS;
+	string ret = Util::emptyString;
+	
+	pdhStatus = PdhOpenQuery( NULL, 0, &m_hQuery ) ;
+
+	if ( pdhStatus == ERROR_SUCCESS )
+		pdhStatus = PdhAddCounter( m_hQuery, "\\System\\System Up Time", 0, &m_hCounter ) ;
+	
+	if(pdhStatus == ERROR_SUCCESS) {
+		PDH_STATUS            pdhStatus  = ERROR_SUCCESS;
+		LONG                  nRetVal    = 0;
+		PDH_FMT_COUNTERVALUE  pdhCounterValue;
+
+		pdhStatus = PdhCollectQueryData( m_hQuery );
+
+		if ( pdhStatus == ERROR_SUCCESS )
+		{
+			pdhStatus = PdhGetFormattedCounterValue( m_hCounter, 
+				PDH_FMT_LONG, 
+				NULL, 
+				&pdhCounterValue );
+
+			if ( pdhStatus == ERROR_SUCCESS )
+				ret = Util::formatTime(pdhCounterValue.longValue, false);
+		}
+	}
+	
+	
+	if ( m_hCounter )   
+		PdhRemoveCounter( m_hCounter );
+	if ( m_hQuery )
+		PdhCloseQuery   ( m_hQuery );
+
+	m_hQuery   = NULL;
+	m_hCounter = NULL;
 
 	return ret;
 }

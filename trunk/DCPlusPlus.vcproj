@@ -43,10 +43,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib Winmm.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib Winmm.lib Pdh.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				IgnoreAllDefaultLibraries="FALSE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
 				SubSystem="2"

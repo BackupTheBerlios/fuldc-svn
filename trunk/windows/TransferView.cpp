@@ -394,7 +394,7 @@ void TransferView::ItemInfo::update() {
 	}
 	if(colMask & MASK_IP) {
 		if (country == "") columns[COLUMN_IP] = IP;
-		else columns[COLUMN_IP] = IP + " (" + country + ")";
+		else columns[COLUMN_IP] = country + " (" + IP + ")";
 	}
 	if(colMask & MASK_RATIO) {
 		columns[COLUMN_RATIO] = Util::toString(getRatio());

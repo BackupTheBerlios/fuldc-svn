@@ -138,6 +138,8 @@ bool HashManager::HashStore::getTree(const string& aFileName, TigerTree& tth) {
 		AutoArray<u_int8_t> buf(datalen);
 		f.read((u_int8_t*)buf, datalen);
 		tth = TigerTree(fi->getSize(), fi->getTimeStamp(), fi->getBlockSize(), buf);
+		if(!(tth.getRoot() == fi->getRoot()))
+			return false;
 	} catch(const FileException& ) {
 		return false;
 	}

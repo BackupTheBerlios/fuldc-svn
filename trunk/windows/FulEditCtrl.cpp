@@ -46,7 +46,7 @@ bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
 		ScrollCaret();
 		SetRedraw(true);
 	}
-	if(stripIsp) {
+	if(stripIsp && aLine[0] == '<') {
 		int pos = aLine.find("]");
 		if(pos < aLine.find(">") )
 			aLine = "<" + aLine.substr(pos+1);
@@ -314,7 +314,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 	if(cs->getTab())
 		matchedTab = true;
 
-	if(!cs->getTimestamps() && !cs->getUsers() && ! cs->getMyNick() && !logged){
+	if(cs->getLog() && !logged){
 		logged = true;
 		AddLogLine(line);
 	}
@@ -378,7 +378,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 		if(cs->getTab())
 			matchedTab = true;
 
-		if(!cs->getTimestamps() && !cs->getUsers() && cs->getMyNick() && !logged){
+		if(cs->getLog() && !logged){
 			logged = true;
 			AddLogLine(line);
 		}

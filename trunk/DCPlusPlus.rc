@@ -516,6 +516,8 @@ BEGIN
                     WS_TABSTOP,163,145,10,10
     CONTROL         "",IDC_HAS_FG_COLOR,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,163,163,10,10
+    CONTROL         "LastLog",IDC_LASTLOG,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,86,181,41,10
 END
 
 IDD_FULPAGE2 DIALOGEX 0, 0, 275, 225

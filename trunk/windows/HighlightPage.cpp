@@ -183,6 +183,7 @@ void HighlightPage::clear() {
 	CheckDlgButton(IDC_POPUP,			BST_UNCHECKED);
 	CheckDlgButton(IDC_TABCOLOR,		BST_UNCHECKED);
 	CheckDlgButton(IDC_SOUND,			BST_UNCHECKED);
+	CheckDlgButton(IDC_LASTLOG,			BST_UNCHECKED);
 
 	ctrlMatchType.SetCurSel(1);
 
@@ -218,8 +219,10 @@ void HighlightPage::getValues(ColorSettings* cs){
 	cs->setPopup(		  IsDlgButtonChecked(IDC_POPUP)			 );
 	cs->setTab(			  IsDlgButtonChecked(IDC_TABCOLOR)		 );
 	cs->setPlaySound(	  IsDlgButtonChecked(IDC_SOUND)			 );
+	cs->setLog(			  IsDlgButtonChecked(IDC_LASTLOG)		 );
 	cs->setHasBgColor(	  IsDlgButtonChecked(IDC_HAS_BG_COLOR)	 );
     cs->setHasFgColor(	  IsDlgButtonChecked(IDC_HAS_FG_COLOR)	 );
+
 	
 	cs->setBgColor( bgColor );
 	cs->setFgColor( fgColor );
@@ -255,6 +258,7 @@ LRESULT HighlightPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*b
 	CheckDlgButton(IDC_POPUP		, cs->getPopup()		 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_TABCOLOR		, cs->getTab()			 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_SOUND		, cs->getPlaySound()	 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_LASTLOG		, cs->getLog()			 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_HAS_BG_COLOR , cs->getHasBgColor()	 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_HAS_FG_COLOR , cs->getHasFgColor()	 ? BST_CHECKED : BST_UNCHECKED);
 
