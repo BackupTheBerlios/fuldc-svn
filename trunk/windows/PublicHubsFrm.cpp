@@ -397,15 +397,15 @@ LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 		hubs = HubManager::getInstance()->getPublicHubs();
 		updateList();
 		tstring* x = (tstring*)lParam;
-		ctrlStatus.SetText(0, (TSTRING(HUB_LIST_DOWNLOADED) + _T(" (") + (*x) + _T(")")).c_str());
+		ctrlStatus.SetText(0, ( TSTRING(HUB_LIST_DOWNLOADED) + _T(" (") + (*x) + _T(")") ).c_str());
 		delete x;
 	} else if(wParam == STARTING) {
 		tstring* x = (tstring*)lParam;
-		ctrlStatus.SetText(0, (TSTRING(DOWNLOADING_HUB_LIST) + _T(" (") + (*x) + _T(")")).c_str());
+		ctrlStatus.SetText(0, ( TSTRING(DOWNLOADING_HUB_LIST) + _T(" (") + (*x) + _T(")") ).c_str());
 		delete x;
 	} else if(wParam == FAILED) {
 		tstring* x = (tstring*)lParam;
-		ctrlStatus.SetText(0, (TSTRING(DOWNLOAD_FAILED) + (*x) ).c_str());
+		ctrlStatus.SetText(0, ( TSTRING(DOWNLOAD_FAILED) + (*x) ).c_str());
 		delete x;
 	}
 	return 0;
