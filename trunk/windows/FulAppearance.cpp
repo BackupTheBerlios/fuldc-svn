@@ -14,6 +14,11 @@ PropPage::TextItem FulAppearancePage::texts[] = {
 	{ IDC_BTN_TEXTCOLOR,	  ResourceManager::SETTINGS_BTN_TEXTCOLOR		 },
 	{ IDC_DUPE_COLOR,		  ResourceManager::SETTINGS_BTN_COLOR			 },
 	{ IDC_DUPES,			  ResourceManager::SETTINGS_DUPES				 },
+	{ IDC_DUPE_DESCRIPTION,	  ResourceManager::SETTINGS_DUPE_DESCRIPTION	 },
+	{ IDC_NOTTH_BOX,		  ResourceManager::SETTINGS_NOTTH_BOX			 },
+	{ IDC_NOTTH,			  ResourceManager::SETTINGS_BTN_COLOR			 },
+	{ IDC_NOTTH_DESCRIPTION,  ResourceManager::SETTINGS_NOTTH_DESCRIPTION	 },
+
 	{ 0,					  ResourceManager::SETTINGS_AUTO_AWAY			 }
 };
 
@@ -28,6 +33,7 @@ LRESULT FulAppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	PropPage::translate((HWND)(*this), texts);
 
 	dupeColor = SETTING(DUPE_COLOR);
+	noTTHColor = SETTING(NO_TTH_COLOR);
 
 	return TRUE;
 }
@@ -36,12 +42,21 @@ void FulAppearancePage::write() {
 	PropPage::write((HWND)*this, items);
 
 	settings->set(SettingsManager::DUPE_COLOR, static_cast<int>(dupeColor));
+	settings->set(SettingsManager::NO_TTH_COLOR, static_cast<int>(noTTHColor));
 }
 
-LRESULT FulAppearancePage::onSelectColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT FulAppearancePage::onDupeColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CColorDialog c(dupeColor, CC_FULLOPEN);
 	if( c.DoModal() == IDOK )
 		dupeColor = c.GetColor();
+
+	return 0;
+}
+
+LRESULT FulAppearancePage::onNoTTHColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CColorDialog c(noTTHColor, CC_FULLOPEN);
+	if( c.DoModal() == IDOK )
+		noTTHColor = c.GetColor();
 
 	return 0;
 }

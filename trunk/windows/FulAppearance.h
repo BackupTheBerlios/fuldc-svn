@@ -20,12 +20,14 @@ public:
 	BEGIN_MSG_MAP(FulAppearancePage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_DUPE_COLOR, onSelectColor)
+		COMMAND_ID_HANDLER(IDC_DUPE_COLOR, onDupeColor)
+		COMMAND_ID_HANDLER(IDC_NOTTH, onNoTTHColor)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onSelectColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDupeColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onNoTTHColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
@@ -35,6 +37,7 @@ public:
 
 protected:
 	DWORD dupeColor;
+	DWORD noTTHColor;
 	static Item items[];
 	static TextItem texts[];
 };

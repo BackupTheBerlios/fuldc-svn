@@ -527,8 +527,9 @@
 #define IDC_DUPES                       1304
 #define IDC_BUTTON1                     1305
 #define IDC_DUPE_COLOR                  1305
-#define IDC_NONTTH                      1306
+#define IDC_NOTTH_BOX                   1306
 #define IDC_DUPE_COLOR2                 1307
+#define IDC_NOTTH                       1307
 #define IDC_LOG_OPTIONS                 1308
 #define IDC_IGNORE                      1309
 #define IDC_UNIGNORE                    1310
@@ -538,6 +539,8 @@
 #define IDC_SETTINGS_SEARCH_HISTORY     1314
 #define IDC_SEARCH_HISTORY_SPIN         1315
 #define IDC_PRESETMENU                  1316
+#define IDC_DUPE_DESCRIPTION            1317
+#define IDC_NOTTH_DESCRIPTION           1318
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -587,7 +590,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1317
+#define _APS_NEXT_CONTROL_VALUE         1319
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif

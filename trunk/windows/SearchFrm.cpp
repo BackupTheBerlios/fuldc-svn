@@ -1169,18 +1169,20 @@ LRESULT SearchFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 }
 
 LRESULT SearchFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>( pnmh );
+	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>(pnmh);
 
-	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
+	if(CDDS_PREPAINT == plvcd->nmcd.dwDrawStage) {
 		return CDRF_NOTIFYITEMDRAW;
+	}
 
-	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
-		SearchInfo *ii = reinterpret_cast<SearchInfo*>(plvcd->nmcd.lItemlParam);
+	if(CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage) {
+		SearchInfo *si = reinterpret_cast<SearchInfo*>(plvcd->nmcd.lItemlParam);
 
-		if( ii->isDupe() )
+		if(si->isDupe()) {
 			plvcd->clrTextBk = SETTING(DUPE_COLOR);
-		if( ii->getTTH().empty() && ( ii->sr->getType() == SearchResult::TYPE_FILE) )
+		} else if(si->sr->getType() == SearchResult::TYPE_FILE && si->sr->getTTH() == NULL) {
 			plvcd->clrTextBk = SETTING(NO_TTH_COLOR);
+		}
 	}
 
 	return CDRF_DODEFAULT;

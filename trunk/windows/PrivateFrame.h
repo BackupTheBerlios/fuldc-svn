@@ -146,7 +146,7 @@ public:
 		if(!created) {
 			CreateEx(WinUtil::mdiClient);
 		}
-		ctrlStatus.SetText(0, (_T("[") + Text::toT(Util::getShortTimeString()) + _T("] ") + aLine).c_str());
+		ctrlStatus.SetText(0, (_T("[") + Util::getShortTimeString() + _T("] ") + aLine).c_str());
 		
 		if(BOOLSETTING(PM_BOLD_TABS))
 			setDirty();

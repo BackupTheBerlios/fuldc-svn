@@ -1110,8 +1110,14 @@ BEGIN
     GROUPBOX        "Mainchat buffer size",IDC_SB_CHATBUFFERSIZE,7,7,115,43
     LTEXT           "Max size ~2.1 billion (2^31)",IDC_ST_CHATBUFFERSIZE,15,
                     15,92,8
-    GROUPBOX        "Dupe Color",IDC_DUPES,149,7,115,43
-    PUSHBUTTON      "Select Color",IDC_DUPE_COLOR,157,26,95,14
+    GROUPBOX        "Dupe Color",IDC_DUPES,7,55,259,53
+    PUSHBUTTON      "Select Color",IDC_DUPE_COLOR,15,89,90,14
+    GROUPBOX        "Missing TTH Color",IDC_NOTTH_BOX,7,112,259,53
+    PUSHBUTTON      "Select Color",IDC_NOTTH,15,146,90,14
+    LTEXT           "Background color used in file lists and search window to show which files that's already shared",
+                    IDC_DUPE_DESCRIPTION,15,67,244,20
+    LTEXT           "Background color used in search window to show which files are missing a TTH",
+                    IDC_NOTTH_DESCRIPTION,15,123,244,20
 END
 
 IDD_FULIGNOREPAGE DIALOGEX 0, 0, 275, 225

@@ -298,8 +298,7 @@ public:
 
 	static string toDOS(const string& tmp);
 
-	static string getShortTimeString();
-	static wstring getShortTimeStringW();
+	static wstring getShortTimeString();
 
 	static tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
 

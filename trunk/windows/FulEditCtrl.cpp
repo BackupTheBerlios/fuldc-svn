@@ -106,7 +106,7 @@ bool CFulEditCtrl::AddLine(const tstring & line, bool aTimeStamps) {
 		aLine = _T("** ") + aLine.substr(1, pos-1) +  aLine.substr(pos+5, aLine.length());
 
 	if(timeStamps)
-		aLine = _T("[") + Util::getShortTimeStringW() + _T("] ") + aLine;
+		aLine = _T("[") + Util::getShortTimeString() + _T("] ") + aLine;
 	
 	
 	SetRedraw(FALSE);

@@ -516,7 +516,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == STATUS_MESSAGE) {
 		tstring* msg = (tstring*)lParam;
 		if(ctrlStatus.IsWindow()) {
-			tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + *msg;
+			tstring line = _T("[") + Util::getShortTimeString() + _T("] ") + *msg;
 
 			ctrlStatus.SetText(0, line.c_str());
 			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)

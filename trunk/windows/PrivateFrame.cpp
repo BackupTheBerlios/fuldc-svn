@@ -161,7 +161,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
 				}
 
-				if(BOOLSETTING(FLASH_WINDOW_ON_PM)){
+				if(BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)){
 					p->FlashWindow();
 				}
 			}

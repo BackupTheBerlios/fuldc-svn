@@ -612,6 +612,9 @@
 		<String Name="SettingsTabColor">Change Tabcolor</String>
 		<String Name="SettingsLastlog">Lastlog</String>
 		<String Name="SettingsDupes">Dupes Background Color</String>
+		<String Name="SettingsDupeDescription">Background color used in file lists and search window to show which files that's already shared</String>
+		<String Name="SettingsNotthBox">Missing TTH Color</String>
+		<String Name="SettingsNotthDescription">Background color used in search window to show which files are missing a TTH</String>
 		<String Name="Bold">Bold</String>
 		<String Name="Italic">Italic</String>
 		<String Name="Underline">Underline</String>

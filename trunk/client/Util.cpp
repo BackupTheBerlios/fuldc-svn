@@ -964,30 +964,7 @@ string Util::toDOS(const string& tmp) {
 	return tmp2;
 }
 
-string Util::getShortTimeString() {
-	if(SETTING(TIME_STAMPS_FORMAT).empty())
-		return Util::emptyString;
-
-	size_t bufSize = SETTING(TIME_STAMPS_FORMAT).length() * 2;
-
-	bufSize = bufSize > 20 ? bufSize : 20;
-
-	AutoArray<char> buf(bufSize);
-	
-	time_t _tt = time(NULL);
-	tm* _tm = localtime(&_tt);
-	if(_tm == NULL) {
-		return Util::emptyString;
-	} else {
-		while(0 == strftime(buf, bufSize, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm) ){
-			bufSize *= 2;
-			buf.resize(bufSize);
-		}
-	}
-	return string(buf);
-}
-
-wstring Util::getShortTimeStringW() {
+wstring Util::getShortTimeString() {
 	if(SETTING(TIME_STAMPS_FORMAT).empty())
 		return Util::emptyStringW;
 

@@ -985,12 +985,9 @@ LRESULT DirectoryListingFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
 		ItemInfo *ii = reinterpret_cast<ItemInfo*>(plvcd->nmcd.lItemlParam);
 
-		if( !mylist && ii->isDupe() )
+		if(!mylist && ii->isDupe()) {
 			plvcd->clrTextBk = SETTING(DUPE_COLOR);
-		if ( !mylist )
-			if ( ii->type == ItemInfo::FILE)
-				if (ii->file->getTTH() == NULL)
-					plvcd->clrTextBk = SETTING(NO_TTH_COLOR);
+		}
 	}
 
 	return CDRF_DODEFAULT;

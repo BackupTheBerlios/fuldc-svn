@@ -1262,7 +1262,7 @@ LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 }
 
 void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
-	tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + aLine;
+	tstring line = _T("[") + Util::getShortTimeString() + _T("] ") + aLine;
 
 	ctrlStatus.SetText(0, line.c_str());
 	while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
