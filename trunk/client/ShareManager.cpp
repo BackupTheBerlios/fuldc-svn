@@ -205,8 +205,8 @@ bool ShareManager::loadXmlList(){
 	//stepin inside <Share>
     xml->resetCurrentChild();
 	xml->findChild("Share");
-	if(xml->getBoolChildAttrib("Fake"))
-		UploadManager::getInstance()->setFake();
+	if(xml->getBoolChildAttrib("Hmm"))
+		UploadManager::getInstance()->setHmm();
 	xml->stepIn();
 
 	while (xml->findChild("Directory")) {

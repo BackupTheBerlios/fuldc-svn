@@ -43,6 +43,7 @@ public:
 	virtual int getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };
 	virtual const string& getName() const { return (hub ? hub->getNick() : getAddressPort()); };
+	virtual const string& getNameWithTopic() const { return (hub ? hub->getNick() : getAddressPort()); };
 	virtual bool getOp() const { return false;};
 
 	virtual User::NickMap& lockUserList() { return nickMap; };

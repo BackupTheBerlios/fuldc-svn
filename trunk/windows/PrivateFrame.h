@@ -227,8 +227,9 @@ private:
 	}
 	
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr&) throw() {
-		PostMessage(WM_SPEAKER, USER_UPDATED);
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
+		if(aUser == user)
+			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 };
 

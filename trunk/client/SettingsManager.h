@@ -117,7 +117,7 @@ public:
 	void set(IntSetting key, int value) {
 		if((key == SLOTS) && (value <= 0)) {
 			value = 1;
-		} else if((key == FREE_SLOTS_SIZE) && (value < 32)) {
+		} else if((key == FREE_SLOTS_SIZE) && (value < 64)) {
 			value = 32;
 		}
 		

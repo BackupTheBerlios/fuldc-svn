@@ -212,6 +212,7 @@ public:
 	}
 
 	const string& getName() const { return BOOLSETTING(REMOVE_TOPIC) ? shortName : name; };
+	virtual const string& getNameWithTopic() const { return name; }
 	bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
 
 	GETSET(int, supportFlags, SupportFlags);

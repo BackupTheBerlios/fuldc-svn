@@ -1299,7 +1299,7 @@ void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
 void HubFrame::on(HubUpdated, Client*) throw() { 
-	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getName(), true, false) + " (" + client->getAddressPort() + ")");
+	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getNameWithTopic(), true, false) + " (" + client->getAddressPort() + ")");
 }
 void HubFrame::on(Message, Client*, const string& line) throw() { 
 	if(SETTING(FILTER_MESSAGES)) {

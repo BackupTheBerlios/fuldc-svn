@@ -204,6 +204,7 @@ public:
 	void error(const string& aError) { send("$Error " + aError + '|'); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
 	void maxedOut() { send("$MaxedOut|"); };
+	void fileNotAvail() { send("$Error File Not Available|"); }
 
 	void send(const Command& c) {
 		send(c.toString(true));

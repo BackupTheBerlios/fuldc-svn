@@ -33,7 +33,6 @@ class Upload : public Transfer, public Flags {
 public:
 	enum Flags {
 		FLAG_USER_LIST = 0x01,
-		FLAG_SMALL_FILE = 0x02,
 		FLAG_ZUPLOAD = 0x04
 	};
 
@@ -85,7 +84,14 @@ public:
 	}
 	
 	int getRunning() { return running; };
-	int getFreeSlots() { return slotLock ? 0 : max((SETTING(SLOTS) - running), 0); }
+	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
+	bool getAutoSlot() {
+		if(SETTING(MIN_UPLOAD_SPEED) == 0)
+			return false;
+		if(getLastGrant() + 30*1000 < GET_TICK())
+			return false;
+		return (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed();
+	}
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
 	
 	void reserveSlot(const User::Ptr& aUser) {
@@ -100,15 +106,14 @@ public:
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
-	GETSET(u_int32_t, lastAutoGrant, LastAutoGrant);
-	
-	void setFake() { slotLock = true; }
+	GETSET(u_int32_t, lastGrant, LastGrant);
 
+	void setHmm() { hmms = true; }
 private:
 	Upload::List uploads;
 	CriticalSection cs;
 
-	bool slotLock;
+	bool hmms;
 
 	typedef HASH_MAP<User::Ptr, u_int32_t, User::HashFunction> SlotMap;
 	typedef SlotMap::iterator SlotIter;
@@ -148,7 +153,7 @@ private:
 	virtual void on(Command::STA, UserConnection*, const Command&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
-	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
+	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes);
 };
 
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
