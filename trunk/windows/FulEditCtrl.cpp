@@ -409,9 +409,12 @@ LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	
+	//set this here since it will be false in most cases anyway
+	bHandled = FALSE;
+
 	if(!isSet(HANDLE_URLS)){
-		bHandled = FALSE;
-		return 0;
+		return 1;
 	}
 
 	POINT mousePT = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
@@ -422,17 +425,13 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	//we have to check if the pointer was actually above the last char
 
 	//check xpos
-	if(mousePT.x < charPT.x || mousePT.x > (charPT.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font))) {
-		bHandled == FALSE;
-		return 0;
-	}
-
+	if(mousePT.x < charPT.x || mousePT.x > (charPT.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font))) 
+		return 1;
+	
 	//check ypos
-	if(mousePT.y < charPT.y || mousePT.y > (charPT.y + WinUtil::getTextHeight(m_hWnd, WinUtil::font))) {
-		bHandled = FALSE;
-		return 0;
-	}
-
+	if(mousePT.y < charPT.y || mousePT.y > (charPT.y + WinUtil::getTextHeight(m_hWnd, WinUtil::font)))
+		return 1;
+	
 
 	FINDTEXT ft;
 	ft.chrg.cpMin = ch;
@@ -469,13 +468,12 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		if(Util::strnicmp(url.c_str(), (*i).c_str(), (*i).length()) == 0){
 			found = true;
 			WinUtil::openLink(url);
-			break;
+			bHandled = TRUE;
+			return 0;
 		}
 	}
 
-	bHandled = found ? TRUE : FALSE;
-
-	return 0;
+	return 1;
 }
 
 LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
