@@ -38,6 +38,27 @@ CFulEditCtrl::~CFulEditCtrl(void)
 	delete[] findBuffer;
 }
 
+LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
+	searchMenu.CreatePopupMenu();
+
+	menu.CreatePopupMenu();
+	menu.AppendMenu(MF_STRING, IDC_COPY, CTSTRING(COPY));
+	menu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
+	menu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
+	menu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
+
+	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
+	MENUINFO inf;
+	inf.cbSize = sizeof(MENUINFO);
+	inf.fMask = MIM_STYLE | MIM_APPLYTOSUBMENUS;
+	inf.dwStyle = MNS_NOTIFYBYPOS;
+	menu.SetMenuInfo(&inf);
+
+	bHandled = FALSE;
+
+	return 1;
+}
+
 bool CFulEditCtrl::AddLine(const tstring & line, bool timeStamps) {
 	bool noScroll = false;
 	matchedTab = false;
@@ -537,7 +558,7 @@ void CFulEditCtrl::ScrollToBeginning() {
 	UpdateWindow();
 }
 
-void CFulEditCtrl::Find() {
+LRESULT CFulEditCtrl::onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	LPFINDREPLACE fr = new FINDREPLACE;
 	ZeroMemory(fr, sizeof(FINDREPLACE));
 	fr->lStructSize = sizeof(FINDREPLACE);
@@ -552,6 +573,34 @@ void CFulEditCtrl::Find() {
 		WinUtil::findDialog = ::FindText(fr);
 
 	curFindPos = 0;
+
+	return 0;
+}
+
+LRESULT CFulEditCtrl::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	HMENU m = (HMENU)lParam;
+	if( searchMenu.m_hMenu == m ) {
+		WinUtil::search(searchTerm, static_cast<int>(wParam)+1);
+		searchTerm = Util::emptyStringT;
+	} else if( menu.m_hMenu == m ){
+		switch( wParam ) {
+			case 0: 
+				if(searchTerm.empty())
+					Copy();
+				else
+					WinUtil::setClipboard(searchTerm);
+				break;
+			case 1:
+				WinUtil::search(searchTerm, 0, false);
+				break;
+			case 2:
+				WinUtil::search(searchTerm, 0, true);
+				break;
+		}
+
+		searchTerm = Util::emptyStringT;
+	}
+	return 0;
 }
 
 bool CFulEditCtrl::LastSeen(tstring & nick){
@@ -590,4 +639,32 @@ void CFulEditCtrl::AddLogLine(tstring & line){
 
 deque<tstring> *CFulEditCtrl::LastLog(){
 	return &lastlog;
+}
+
+BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
+	ScreenToClient(&pt);
+	
+	CHARRANGE cr;
+	GetSel(cr);
+	if(cr.cpMax != cr.cpMin) {
+		TCHAR *buf = new TCHAR[cr.cpMax - cr.cpMin + 1];
+		GetSelText(buf);
+		searchTerm = buf;
+		delete[] buf;
+	} else {
+		tstring line;
+		int start = TextUnderCursor(pt, line);
+		if( start != tstring::npos ) {
+			int end = line.find_first_of(_T(" \t\r\n"), start+1);
+			if(end == tstring::npos)
+				end = line.length();
+			searchTerm = line.substr(start, end-start);
+		}
+	}
+
+	ClientToScreen(&pt);
+
+	WinUtil::AppendSearchMenu(searchMenu);
+	
+	return menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, hWnd );
 }

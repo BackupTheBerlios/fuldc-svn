@@ -67,21 +67,18 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
-		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, ctrlClient.onMenuCommand)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
-		COMMAND_ID_HANDLER(IDC_COPY, onCopy)
-		COMMAND_ID_HANDLER(IDC_FIND, onFind)
+		COMMAND_ID_HANDLER(IDC_FIND, ctrlClient.onFind)
 		COMMAND_ID_HANDLER(IDC_SHOWLOG, onShowLog)
 		COMMAND_ID_HANDLER(IDC_SHOW_HUB_LOG, onShowHubLog)
 		COMMAND_ID_HANDLER(IDC_OPEN_LOG_DIR, onShowHubLog)
-		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
-		COMMAND_ID_HANDLER(IDC_SEARCH_BY_TTH, onSearch)
-		COMMAND_RANGE_HANDLER(IDC_COPY+1, IDC_COPY+1+COLUMN_LAST, onCopy);
+		COMMAND_RANGE_HANDLER(IDC_COPY+1, IDC_COPY+1+COLUMN_LAST, onCopyUserList);
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
 		CHAIN_MSG_MAP(baseClass)
@@ -118,12 +115,11 @@ public:
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEnterUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFilterChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	
 	
@@ -143,11 +139,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlClient.Find();
-		return 0;
-	}
-	
 	LRESULT onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		int i=-1;
 		if(client->isConnected()) {

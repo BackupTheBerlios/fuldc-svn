@@ -131,21 +131,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
 
-	searchMenu.CreatePopupMenu();
-	
-	mcMenu.CreatePopupMenu();
-	mcMenu.AppendMenu(MF_STRING, IDC_COPY, CTSTRING(COPY));
-	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
-	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
-	mcMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
 
-	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
-	MENUINFO inf;
-	inf.cbSize = sizeof(MENUINFO);
-	inf.fMask = MIM_STYLE | MIM_APPLYTOSUBMENUS;
-	inf.dwStyle = MNS_NOTIFYBYPOS;
-	mcMenu.SetMenuInfo(&inf);
-	
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
 
 	bHandled = FALSE;
@@ -799,8 +785,6 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	bool doMenu = false;
 	bool doMcMenu = false;
 	
-	WinUtil::AppendSearchMenu(searchMenu);
-
 	if (PtInRect(&rc, pt)) {
 		tstring x;
 		ctrlClient.ScreenToClient(&pt);
@@ -856,25 +840,8 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	}
 
 	if(doMcMenu) {
-		CHARRANGE cr;
-		ctrlClient.GetSel(cr);
-		if(cr.cpMax != cr.cpMin) {
-			TCHAR *buf = new TCHAR[cr.cpMax - cr.cpMin + 1];
-			ctrlClient.GetSelText(buf);
-			searchTerm = buf;
-			delete[] buf;
-		} else {
-			tstring line;
-			int start = ctrlClient.TextUnderCursor(pt, line);
-			if( start != tstring::npos ) {
-				int end = line.find_first_of(_T(" \t\r\n"), start+1);
-				if(end == tstring::npos)
-					end = line.length();
-				searchTerm = line.substr(start, end-start);
-			}
-		}
 		ctrlClient.ClientToScreen(&pt);
-		mcMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		ctrlClient.ShowMenu(m_hWnd, pt);
 		bHandled = true;
 		return TRUE;
 	}
@@ -1361,43 +1328,12 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
 }
 
-LRESULT HubFrame::onSearch(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(wID == IDC_SEARCH_BY_TTH)
-		WinUtil::search(searchTerm, 0, true);
-	else
-		WinUtil::search(searchTerm, 0, false);
-	searchTerm = Util::emptyStringT;
-	return 0;
-}
-LRESULT HubFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(searchMenu.m_hMenu == (HMENU)lParam) {
-		WinUtil::search(searchTerm, static_cast<int>(wParam)+1);
-		searchTerm = Util::emptyStringT;
-	} else {
-		MENUITEMINFO inf;
-		inf.cbSize = sizeof(MENUITEMINFO);
-		inf.fMask = MIIM_ID;
-		mcMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
-		PostMessage(WM_COMMAND, inf.wID, 0);
-	}
-	return 0;
-}
-
-LRESULT HubFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(wID == IDC_COPY){
-		if(searchTerm.empty()){
-			ctrlClient.Copy();
-		} else {
-			WinUtil::setClipboard(searchTerm);
-			searchTerm = Util::emptyStringT;
-		}
-	}else {
-		int id = wID - IDC_COPY -1;
-		UserInfo *ui = ctrlUsers.getSelectedItem();
-		if(ui != NULL)
-			WinUtil::setClipboard(ui->getText(id));
-	}
-
+LRESULT HubFrame::onCopyUserList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int id = wID - IDC_COPY -1;
+	UserInfo *ui = ctrlUsers.getSelectedItem();
+	if(ui != NULL)
+		WinUtil::setClipboard(ui->getText(id));
+	
 	return 0;
 }
 

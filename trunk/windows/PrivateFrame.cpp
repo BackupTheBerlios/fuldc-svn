@@ -67,20 +67,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	tabMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
 	tabMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
 
-	searchMenu.CreatePopupMenu();
-	
-	mcMenu.CreatePopupMenu();
-	mcMenu.AppendMenu(MF_STRING, IDC_COPY, CTSTRING(COPY));
-	mcMenu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
-	mcMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
 
-	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
-	MENUINFO inf;
-	inf.cbSize = sizeof(MENUINFO);
-	inf.fMask = MIM_STYLE | MIM_APPLYTOSUBMENUS;
-	inf.dwStyle = MNS_NOTIFYBYPOS;
-	mcMenu.SetMenuInfo(&inf);
-	
 	PostMessage(WM_SPEAKER, USER_UPDATED);
 	created = true;
 
@@ -490,12 +477,13 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	RECT rc;
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+	
+	if( pt.x == -1 && pt.y == -1 )
+		pt.x = pt.y = 0;
 
 	ctrlClient.GetClientRect(&rc);
 	if (uMsg == WM_CONTEXTMENU)
 		ctrlClient.ScreenToClient(&pt);
-
-	WinUtil::AppendSearchMenu(searchMenu);
 
 	if(PtInRect(&rc, pt)) {
 		//hämta raden som vi klickade på
@@ -523,63 +511,13 @@ LRESULT PrivateFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam,
 				bHandled = FALSE;
 				return FALSE;
 			} else {
-				ctrlClient.ScreenToClient(&pt);
-				CHARRANGE cr;
-				ctrlClient.GetSel(cr);
-				if(cr.cpMax != cr.cpMin) {
-					TCHAR *buf = new TCHAR[cr.cpMax - cr.cpMin + 1];
-					ctrlClient.GetSelText(buf);
-					searchTerm = buf;
-					delete[] buf;
-				} else {
-					tstring line;
-					int start = ctrlClient.TextUnderCursor(pt, line);
-					if( start != tstring::npos ) {
-						int end = line.find_first_of(_T(" \t\r\n"), start+1);
-						if(end == tstring::npos)
-							end = line.length();
-						searchTerm = line.substr(start, end-start);
-					}
-				}
-				ctrlClient.ClientToScreen(&pt);
-				mcMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-				bHandled = true;
+				ctrlClient.ShowMenu(m_hWnd, pt);
+				bHandled = TRUE;
 				return TRUE;
 			}
 		}
 	}else {
 		bHandled = FALSE;
-	}
-	return 0;
-}
-
-LRESULT PrivateFrame::onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(searchTerm.empty()){
-		ctrlClient.Copy();
-	} else {
-		WinUtil::setClipboard(searchTerm);
-		searchTerm = Util::emptyStringT;
-	}
-
-	return 0;
-}
-
-LRESULT PrivateFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	WinUtil::search(searchTerm, 0);
-	searchTerm = Util::emptyStringT;
-	return 0;
-}
-
-LRESULT PrivateFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(searchMenu.m_hMenu == (HMENU)lParam) {
-		WinUtil::search(searchTerm, static_cast<int>(wParam)+1);
-		searchTerm = Util::emptyStringT;
-	} else {
-		MENUITEMINFO inf;
-		inf.cbSize = sizeof(MENUITEMINFO);
-		inf.fMask = MIIM_ID;
-		mcMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
-		PostMessage(WM_COMMAND, inf.wID, 0);
 	}
 	return 0;
 }
@@ -593,33 +531,6 @@ LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring path = Text::toT(SETTING(LOG_DIRECTORY) + user->getNick() + ".log");
 	ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
-	return 0;
-}
-LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	HWND focus = GetFocus();
-	bHandled = false;
-	if(focus == ctrlClient.m_hWnd) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		tstring x;
-		tstring::size_type start = (tstring::size_type)ctrlClient.TextUnderCursor(pt, x);
-		
-		if( (Util::strnicmp(x.c_str() + start, _T("http://"), 7) == 0) || 
-			(Util::strnicmp(x.c_str() + start, _T("www."), 4) == 0) ||
-			(Util::strnicmp(x.c_str() + start, _T("ftp://"), 6) == 0) )	{
-
-			bHandled = true;
-			// Web links...
-			tstring::size_type end = x.find(_T(' '), start + 7);
-			if(end == tstring::npos) {
-				end = x.length();
-			}
-			if(end < start + 10) {
-				return 0;
-			}
-
-			WinUtil::openLink(x.substr(start, end-start));
-		} 
-	}
 	return 0;
 }
 

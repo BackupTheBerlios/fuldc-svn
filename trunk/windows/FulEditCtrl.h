@@ -7,20 +7,22 @@
 
 #include "../client/Util.h"
 
-class CFulEditCtrl : public CWindowImpl<CFulEditCtrl, CRichEditCtrl>, public Flags
+class CFulEditCtrl : public CWindowImpl<CFulEditCtrl, CRichEditCtrl >, public Flags
 {
 public:
 	BEGIN_MSG_MAP(CFulEditCtrl)
+		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_FINDREPLACE, onFind)
+		//MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
 	END_MSG_MAP()
 
 	CFulEditCtrl(void);
 	~CFulEditCtrl(void);
 
 	enum {
-		STRIP_ISP		= 0x01, // Activate strip isp
+		STRIP_ISP		= 0x01, //Activate strip isp
 		HANDLE_SCROLL	= 0x02, //Determines if the richedit will handle scrolling
 		POPUP			= 0x04, //if not set, will not popup messages on matches
 		SOUND			= 0x08, //if not set, will not play sound on matches
@@ -33,15 +35,21 @@ public:
 	void	ScrollToEnd();
 	void	ScrollToBeginning();
 	int		TextUnderCursor(POINT p, tstring& x);
-	void	Find();
 	bool	LastSeen(tstring & nick);
-		
+	BOOL	ShowMenu(HWND hWnd, POINT &pt);
+	
 	deque<tstring>* LastLog();
 	
+	//MESSAGE HANDLERS
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-		
+	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+
+	//COMMAND ID HANDLERS
+	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+			
 	void	SetNick(const tstring& aNick) { nick = aNick; }
 
 private:
@@ -57,13 +65,17 @@ private:
 	bool		logged;
 	bool		skipLog;
 	tstring		nick;
+	tstring		searchTerm;
 	CHARFORMAT2 selFormat;
 	TCHAR*		findBuffer;
 	int			curFindPos;
 	const WORD	findBufferSize;
     static UINT	WM_FINDREPLACE;
 	TStringList	urls;
-		
+	
+	CMenu		menu;
+	CMenu		searchMenu;
+
 	deque<tstring> lastlog;
 };
 

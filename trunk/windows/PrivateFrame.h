@@ -66,7 +66,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
-		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
+		MESSAGE_HANDLER(WM_MENUCOMMAND, ctrlClient.onMenuCommand)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
@@ -74,15 +74,12 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
-		COMMAND_ID_HANDLER(IDC_COPY, onCopy)
 		COMMAND_ID_HANDLER(IDC_SHOWLOG, onViewLog)
-		COMMAND_ID_HANDLER(IDC_FIND, onFind)
-		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
+		COMMAND_ID_HANDLER(IDC_FIND, ctrlClient.onFind)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
@@ -97,11 +94,7 @@ public:
 	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void addLine(const tstring& aLine, bool bold = true);
 	void onEnter();
@@ -112,11 +105,6 @@ public:
 	
 	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
-		return 0;
-	}
-
-	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlClient.Find();
 		return 0;
 	}
 
@@ -209,10 +197,6 @@ private:
 	tstring currentCommand;
 	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
-	CMenu mcMenu;
-	CMenu searchMenu;
-
-	tstring searchTerm;
 	
 	void updateTitle() {
 		if(user->isOnline()) {
