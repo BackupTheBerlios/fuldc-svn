@@ -33,12 +33,18 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem FulAdvancedPage::texts[] = {
+	{ IDC_WEB_SHORTCUTS_ADD,		ResourceManager::ADD						},
+	{ IDC_WEB_SHORTCUTS_REMOVE,		ResourceManager::REMOVE						},
+	{ IDC_WEB_SHORTCUTS_PROPERTIES, ResourceManager::PROPERTIES					},
+	{ IDC_SB_WEB_SHORTCUTS,			ResourceManager::SETTINGS_SB_WEB_SHORTCUTS	},
+	{ 0,							ResourceManager::SETTINGS_AUTO_AWAY			}
+};
 PropPage::Item FulAdvancedPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
 FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
-	{ SettingsManager::AUTO_UPDATE_INCOMING, ResourceManager::AUTO_UPDATE_INCOMING },
 	{ SettingsManager::EXPAND_QUEUE, ResourceManager::EXPAND_QUEUE },
 	{ SettingsManager::STRIP_ISP, ResourceManager::STRIP_ISP },
 	{ SettingsManager::STRIP_ISP_PM, ResourceManager::STRIP_ISP_PM },
@@ -65,6 +71,7 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 LRESULT FulAdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_FUL_ADVANCED_BOOLEANS));
+	PropPage::translate((HWND)(*this), texts);
 	
 	wsList = WebShortcuts::getInstance()->copyList();
 

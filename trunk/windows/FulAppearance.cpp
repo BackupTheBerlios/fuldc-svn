@@ -13,16 +13,31 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem FulAppearancePage::texts[] = {
+	{ IDC_SB_CHATBUFFERSIZE, ResourceManager::SETTINGS_SB_CHATBUFFERSIZE },
+	{ IDC_SB_POPUP,			 ResourceManager::SETTINGS_SB_POPUP			 },
+	{ IDC_SB_TAB_COLORS,	 ResourceManager::SETTINGS_SB_TAB_COLORS	 },
+	{ IDC_SB_TAB_SIZE,		 ResourceManager::SETTINGS_SB_TAB_SIZE		 },
+	{ IDC_ST_CHATBUFFERSIZE, ResourceManager::SETTINGS_ST_CHATBUFFERSIZE },
+	{ IDC_ST_DISPLAYTIME,	 ResourceManager::SETTINGS_ST_DISPLAYTIME	 },
+	{ IDC_ST_MESSAGE_LENGTH, ResourceManager::SETTINGS_ST_MESSAGE_LENGTH },
+	{ IDC_BTN_COLOR,		 ResourceManager::SETTINGS_BTN_COLOR		 },
+	{ IDC_BTN_FONT,			 ResourceManager::SETTINGS_BTN_FONT			 },
+	{ IDC_BTN_TEXTCOLOR,	 ResourceManager::SETTINGS_BTN_TEXTCOLOR	 },
+	{ 0,					 ResourceManager::SETTINGS_AUTO_AWAY		 }
+};
+
 PropPage::Item FulAppearancePage::items[] = {
-	{ IDC_CHATBUFFERSIZE, SettingsManager::CHATBUFFERSIZE, PropPage::T_INT },
-	{ IDC_TAB_SIZE, SettingsManager::TAB_SIZE, PropPage::T_INT }, 
-	{ IDC_DISPLAYTIME, SettingsManager::POPUP_TIMEOUT, PropPage::T_INT },
-	{ IDC_MESSAGE_LENGTH, SettingsManager::MAX_MSG_LENGTH, PropPage::T_INT },
-	{ 0, 0, PropPage::T_END }
+	{ IDC_CHATBUFFERSIZE,	SettingsManager::CHATBUFFERSIZE,	PropPage::T_INT },
+	{ IDC_TAB_SIZE,			SettingsManager::TAB_SIZE,			PropPage::T_INT }, 
+	{ IDC_DISPLAYTIME,		SettingsManager::POPUP_TIMEOUT,		PropPage::T_INT },
+	{ IDC_MESSAGE_LENGTH,	SettingsManager::MAX_MSG_LENGTH,	PropPage::T_INT },
+	{ 0,					0,									PropPage::T_END }
 };
 
 LRESULT FulAppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	PropPage::read((HWND)*this, items);
+	PropPage::translate((HWND)(*this), texts);
 
 	colorList.Attach(GetDlgItem(IDC_COLOR_COMBO));
 
@@ -36,16 +51,17 @@ LRESULT FulAppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	colorList.AddString(CSTRING(TAB_INACTIVE_BG_DISCONNECTED));
 	colorList.SetCurSel(0);
 
+	colorList.Detach();
+
 	return TRUE;
 }
 
 void FulAppearancePage::write() {
-	colorList.Detach();
-
 	PropPage::write((HWND)*this, items);
 }
 
 LRESULT FulAppearancePage::onColorButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	colorList.Attach(GetDlgItem(IDC_COLOR_COMBO));
 	int sel = colorList.GetCurSel();
 	COLORREF col;
 	switch(sel){
@@ -74,6 +90,7 @@ LRESULT FulAppearancePage::onColorButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		}
 	}
 
+	colorList.Detach();
 	return 0;
 }
 

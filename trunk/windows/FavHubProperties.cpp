@@ -69,7 +69,7 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		entry->setPassword(buf);
 		GetDlgItemText(IDC_HUBUSERDESCR, buf, 256);
 		entry->setUserDescription(buf);
-		entry->setStripIsp(IsDlgButtonChecked(IDC_STRIPISP));
+		entry->setStripIsp(IsDlgButtonChecked(IDC_STRIPISP) == BST_CHECKED);
 		HubManager::getInstance()->save();
 	}
 	EndDialog(wID);

@@ -82,7 +82,7 @@ bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
 		SetRedraw(true);
 	}
 	if(stripIsp && aLine[0] == '<') {
-		int pos = aLine.find("]");
+		u_int pos = aLine.find("]");
 		if(pos < aLine.find(">") )
 			aLine = "<" + aLine.substr(pos+1);
 	}
@@ -395,7 +395,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 			SetSel(begin, end);
 			SetSelectionCharFormat(cf);
 		} else {
-			for(int j = 1; j < result.cbackrefs(); ++j) {
+			for(u_int j = 1; j < result.cbackrefs(); ++j) {
 				begin = pos + lineIndex + result.rstart(j);
 				end = begin + result.rlength(j);
 				

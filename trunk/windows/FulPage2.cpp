@@ -15,6 +15,17 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem FulPage2::texts[] =  {
+	{ IDC_SB_MINISLOTS,		 ResourceManager::SETTINGS_SB_MINISLOTS		 },
+	{ IDC_SB_PATHS,			 ResourceManager::SETTINGS_SB_PATHS			 },
+	{ IDC_SB_MAX_SOURCES,	 ResourceManager::SETTINGS_SB_MAX_SOURCES	 },
+	{ IDC_ST_MINISLOTS_EXT,  ResourceManager::SETTINGS_ST_MINISLOTS_EXT	 },
+	{ IDC_ST_MINISLOTS_SIZE, ResourceManager::SETTINGS_ST_MINISLOTS_SIZE },
+	{ IDC_ST_PATHS,			 ResourceManager::SETTINGS_ST_PATHS			 },
+	{ IDC_BROWSE,			 ResourceManager::BROWSE					 },
+	{ 0,					 ResourceManager::SETTINGS_AUTO_AWAY		 }
+};
+
 PropPage::Item FulPage2::items[] = {
 	{ IDC_FREE_SLOTS_EXTENSIONS, SettingsManager::FREE_SLOTS_EXTENSIONS, PropPage::T_STR }, 
 	{ IDC_FREE_SLOTS_SIZE, SettingsManager::FREE_SLOTS_SIZE, PropPage::T_INT }, 

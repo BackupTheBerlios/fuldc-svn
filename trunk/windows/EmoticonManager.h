@@ -78,8 +78,8 @@ private:
 		int iHeightMM = GetDeviceCaps(winDC, VERTSIZE); 
 		int iWidthPels = GetDeviceCaps(winDC, HORZRES); 
 		int iHeightPels = GetDeviceCaps(winDC, VERTRES); 
-		float iDpiY =	  GetDeviceCaps(winDC, LOGPIXELSY);
-		float iDpiX =	  GetDeviceCaps(winDC, LOGPIXELSX);
+		float iDpiY =	  (float)GetDeviceCaps(winDC, LOGPIXELSY);
+		float iDpiX =	  (float)GetDeviceCaps(winDC, LOGPIXELSX);
 
 		
 		BITMAP bm;
@@ -88,10 +88,10 @@ private:
 		rc.right = (rc.right * iWidthMM * 100)/iWidthPels; 
 		rc.bottom = (rc.bottom * iHeightMM * 100)/iHeightPels; 
 
-		int picw	 = (bm.bmWidth  / iDpiX) * 2540;
-		int pich	 = (bm.bmHeight / iDpiY) * 2540;
-		int picwgoal = (bm.bmWidth  / iDpiX) * 1440;
-		int pichgoal = (bm.bmHeight / iDpiY) * 1440;
+		int picw	 = (int)(bm.bmWidth  / iDpiX) * 2540;
+		int pich	 = (int)(bm.bmHeight / iDpiY) * 2540;
+		int picwgoal = (int)(bm.bmWidth  / iDpiX) * 1440;
+		int pichgoal = (int)(bm.bmHeight / iDpiY) * 1440;
 		
 
 		::SelectObject(memDC, bmp);
@@ -113,7 +113,6 @@ private:
 			"\\picwgoal" + Util::toString(picwgoal) +  "\\pichgoal" + 
 			Util::toString(pichgoal) +	" " + toHex(buf, size);
 			
-		int sz = tmp.length();
 		emoticons[pattern] = tmp + "}\\par}";
 		//cleanup
 		delete[] buf;
@@ -132,8 +131,8 @@ private:
 		HDC winDC = GetDC(NULL);
 		HDC memDC = CreateCompatibleDC(winDC);
 				
-		float iDpiY     = GetDeviceCaps(winDC, LOGPIXELSY);
-		float iDpiX     = GetDeviceCaps(winDC, LOGPIXELSX);
+		float iDpiY     = (float)GetDeviceCaps(winDC, LOGPIXELSY);
+		float iDpiX     = (float)GetDeviceCaps(winDC, LOGPIXELSX);
 		int iWidthMM    = GetDeviceCaps(winDC, HORZSIZE) * 100; 
 		int iHeightMM   = GetDeviceCaps(winDC, VERTSIZE) * 100; 
 		int iWidthPels  = GetDeviceCaps(winDC, HORZRES); 
@@ -194,7 +193,6 @@ private:
 		f.write(tmp);
 		f.flush();
 		f.close();
-		int sz = tmp.length();
 		//cleanup
 		delete[] buf;
 		delete bitmap;

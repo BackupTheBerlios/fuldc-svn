@@ -1,10 +1,7 @@
 #ifndef COLORSETTINGS_H
 #define COLORSETTINGS_H
 
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
-
+#include "stdinc.h"
 #include "DcPlusPlus.h"
 
 class ColorSettings

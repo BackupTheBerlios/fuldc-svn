@@ -410,17 +410,23 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_SKIPLIST_DOWNLOAD,15,28,245,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_SKIPLIST_SHARE,15,71,245,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_INCOMING_REFRESH_TIME,15,112,37,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_SHARE_REFRESH_TIME,59,112,39,14,ES_AUTOHSCROLL
-    GROUPBOX        "Skiplist Downloads",IDC_STATIC,7,7,261,40
-    GROUPBOX        "Refresh",IDC_STATIC,7,92,109,40
-    LTEXT           "Skiplist (separate files with """"|""""):",IDC_STATIC,
-                    15,18,106,8
-    LTEXT           "Incoming",IDC_STATIC,15,102,30,8
-    GROUPBOX        "Skiplist Share",IDC_STATIC,7,49,261,40
-    LTEXT           "Skiplist (separate files with """"|""""):",IDC_STATIC,
-                    15,60,106,8
-    LTEXT           "Share",IDC_STATIC,60,102,20,8
+    EDITTEXT        IDC_INCOMING_REFRESH_TIME,15,137,37,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SHARE_REFRESH_TIME,59,137,39,14,ES_AUTOHSCROLL
+    GROUPBOX        "Skiplist Downloads",IDC_SB_SKIPLIST_DOWNLOAD,7,7,261,40
+    GROUPBOX        "Refresh",IDC_SB_REFRESH,7,92,261,65
+    LTEXT           "Skiplist (separate files with """"|""""):",
+                    IDC_ST_SKIPLIST_DOWNLOAD,15,18,106,8
+    LTEXT           "Incoming",IDC_ST_REFRESH_INCOMING,15,127,30,8
+    GROUPBOX        "Skiplist Share",IDC_SB_SKIPLIST_SHARE,7,49,261,40
+    LTEXT           "Skiplist (separate files with """"|""""):",
+                    IDC_ST_SKIPLIST_SHARE,15,60,106,8
+    LTEXT           "Share",IDC_ST_REFRESH_SHARE,60,127,20,8
+    CONTROL         "refresh incoming",IDC_REFRESH_INCOMING,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,100,150,10
+    CONTROL         "refresh share",IDC_REFRESH_SHARE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,114,150,10
+    LTEXT           "refresh settings help",IDC_ST_REFRESH_HELP,174,101,87,
+                    52
 END
 
 IDD_WEB_SHORTCUTS DIALOGEX 0, 0, 264, 153
@@ -489,7 +495,7 @@ BEGIN
                     WS_TABSTOP,86,157,54,10
     CONTROL         "Change Tabcolor",IDC_TABCOLOR,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,86,169,70,10
-    LTEXT           "Match Type",IDC_STATIC,179,114,58,8
+    LTEXT           "Match Type",IDC_ST_MATCH_TYPE,179,114,58,8
     COMBOBOX        IDC_MATCHTYPE,177,125,66,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Background Color",IDC_BGCOLOR,177,142,66,14,WS_DISABLED
@@ -502,8 +508,8 @@ BEGIN
     PUSHBUTTON      "Delete",IDC_DELETE,215,53,50,14
     PUSHBUTTON      "Move Up",IDC_MOVEUP,215,71,50,14
     PUSHBUTTON      "Move Down",IDC_MOVEDOWN,215,89,50,14
-    GROUPBOX        "Settings",IDC_STATIC,14,108,239,109
-    GROUPBOX        "Highlight Settings",IDC_STATIC,7,7,264,219
+    GROUPBOX        "Settings",IDC_SB_SETTINGS,14,108,239,109
+    GROUPBOX        "Highlight Settings",IDC_SB_HIGHLIGHT,7,7,264,219
     CONTROL         "",IDC_HAS_BG_COLOR,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,163,145,10,10
     CONTROL         "",IDC_HAS_FG_COLOR,"Button",BS_AUTOCHECKBOX | 
@@ -519,18 +525,21 @@ EXSTYLE WS_EX_RTLREADING | WS_EX_LEFTSCROLLBAR
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_FREE_SLOTS_EXTENSIONS,24,39,178,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_FREE_SLOTS_SIZE,211,38,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MINISLOTS_EXTENSIONS,24,39,178,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MINISLOTS_SIZE,211,38,40,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_PATHS,22,91,176,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse",IDC_BROWSE,202,90,50,14
     EDITTEXT        IDC_MAX_SOURCES,156,127,93,14,ES_AUTOHSCROLL
-    GROUPBOX        "Minislots",IDC_STATIC,14,14,245,46
-    LTEXT           "Free slots file extensions",IDC_STATIC,22,24,134,8
-    LTEXT           "Free slots file size in KiB",IDC_STATIC,178,24,76,8
-    GROUPBOX        "Static ""download to"" directories",IDC_STATIC,14,66,
+    GROUPBOX        "Minislots",IDC_SB_MINISLOTS,14,14,245,46
+    LTEXT           "Minislots file extensions",IDC_ST_MINISLOTS_EXT,22,24,
+                    134,8
+    LTEXT           "Minislots file size in KiB",IDC_ST_MINISLOTS_SIZE,178,
+                    24,72,8
+    GROUPBOX        "Static ""download to"" directories",IDC_SB_PATHS,14,66,
                     245,43
-    LTEXT           "Separate paths with |",IDC_STATIC,24,77,176,14
-    GROUPBOX        "Max sources for match queue",IDC_STATIC,147,115,109,32
+    LTEXT           "Separate paths with |",IDC_ST_PATHS,24,77,176,14
+    GROUPBOX        "Max sources for match queue",IDC_SB_MAX_SOURCES,147,115,
+                    109,32
 END
 
 
@@ -843,7 +852,7 @@ BEGIN
     CONTROL         "",IDC_FUL_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | 
                     LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,260,97
-    GROUPBOX        "Web Shortcuts",IDC_STATIC,7,109,260,102
+    GROUPBOX        "Web Shortcuts",IDC_SB_WEB_SHORTCUTS,7,109,260,102
     CONTROL         "",IDC_WEB_SHORTCUTS_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,15,122,186,82
@@ -858,22 +867,24 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_CHATBUFFERSIZE,19,29,95,14,ES_AUTOHSCROLL
-    GROUPBOX        "Mainchat buffer size",IDC_STATIC,13,10,109,40
-    LTEXT           "Max size ~2.1 billion (2^31)",IDC_STATIC,21,18,92,8
+    GROUPBOX        "Mainchat buffer size",IDC_SB_CHATBUFFERSIZE,13,10,109,
+                    40
+    LTEXT           "Max size ~2.1 billion (2^31)",IDC_ST_CHATBUFFERSIZE,21,
+                    18,92,8
     COMBOBOX        IDC_COLOR_COMBO,157,20,98,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Select Color",IDC_COLOR_BUTTON,157,36,57,11
-    GROUPBOX        "Tab Colors",IDC_STATIC,150,10,109,40
+    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,36,57,11
+    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,10,109,40
     EDITTEXT        IDC_TAB_SIZE,23,70,93,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_DISPLAYTIME,25,115,40,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_MESSAGE_LENGTH,106,115,40,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Font",IDC_FONT,181,99,50,14
-    PUSHBUTTON      "TextColor",IDC_TEXTCOLOR,181,117,50,14
-    GROUPBOX        "Size of string to display in tabs",IDC_STATIC,14,58,110,
-                    32
-    GROUPBOX        "Popup",IDC_STATIC,16,92,239,45
-    LTEXT           "Popup time in seconds",IDC_STATIC,25,103,77,8
-    LTEXT           "Max message length",IDC_STATIC,106,103,72,8
+    PUSHBUTTON      "Font",IDC_BTN_FONT,202,100,50,14
+    PUSHBUTTON      "TextColor",IDC_BTN_TEXTCOLOR,202,118,50,14
+    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,13,
+                    58,110,32
+    GROUPBOX        "Popup",IDC_SB_POPUP,13,92,246,45
+    LTEXT           "Popup time in seconds",IDC_ST_DISPLAYTIME,25,103,77,8
+    LTEXT           "Max message length",IDC_ST_MESSAGE_LENGTH,106,103,72,8
 END
 
 
@@ -899,6 +910,7 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 266
+        VERTGUIDE, 259
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END

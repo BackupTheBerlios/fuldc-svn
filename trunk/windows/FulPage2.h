@@ -30,6 +30,7 @@ public:
 
 protected:
 	static Item items[];
+	static TextItem texts[];
 };
 
 #endif

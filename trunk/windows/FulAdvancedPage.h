@@ -77,6 +77,7 @@ public:
 
 protected:
 	static Item items[];
+	static TextItem texts[];
 	static ListItem listItems[];
 
 	ExListViewCtrl ctrlWebShortcuts;

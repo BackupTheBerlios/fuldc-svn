@@ -55,12 +55,12 @@ void PopupManager::Show(const string& aMsg ) {
 	
 	
 	//increase offset so we know where to place the next popup
-	offset += height;
+	offset = offset + height;
 
 	popups.push_back(p);
 }
 
-void PopupManager::on(TimerManagerListener::Second type, u_int32_t tick) {
+void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t tick) {
 	//we got nothing to do here
 	if(popups.empty()) {
 		return;
@@ -123,7 +123,7 @@ void PopupManager::Remove(int pos) {
 	
 	    
 	//set offset one window position lower
-	offset -= height;
+	offset = offset - height;
 
 	//nothing to do
 	if(popups.empty())

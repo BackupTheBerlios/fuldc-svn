@@ -19,6 +19,7 @@
 #ifndef _WEBSHORTCUTS_H
 #define _WEBSHORTCUTS_H
 
+
 #include "Singleton.h"
 
 class WebShortcut {

@@ -23,7 +23,7 @@ public:
 	END_MSG_MAP()
 
 	PopupWnd(HWND hWnd, const string& aMsg, CRect rc, HBITMAP hBmp): visible(GET_TICK()) {
-		if(aMsg.length() > SETTING(MAX_MSG_LENGTH)){
+		if(int(aMsg.length()) > SETTING(MAX_MSG_LENGTH)){
 			msg = aMsg.substr(0, SETTING(MAX_MSG_LENGTH)-3);
 			msg += "...";
 		}

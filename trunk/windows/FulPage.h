@@ -15,9 +15,12 @@ public:
 
 	BEGIN_MSG_MAP(FulPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		COMMAND_ID_HANDLER(IDC_REFRESH_INCOMING, onSetCheck)
+		COMMAND_ID_HANDLER(IDC_REFRESH_SHARE, onSetCheck)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onSetCheck(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -26,6 +29,7 @@ public:
 	
 protected:
 	static Item items[];
+	static TextItem texts[];
 };
 
 #endif //FULPAGE_H

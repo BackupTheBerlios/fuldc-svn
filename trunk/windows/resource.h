@@ -326,10 +326,12 @@
 #define IDC_WEB_SHORTCUTS_ADD           1208
 #define IDC_COLOR_BUTTON                1208
 #define IDC_SELECT_SOUND                1208
+#define IDC_BTN_COLOR                   1208
 #define IDC_BUTTON2                     1209
 #define IDC_WEB_SHORTCUTS_REMOVE        1209
 #define IDC_TEXTCOLOR                   1209
 #define IDC_MOVEUP                      1209
+#define IDC_BTN_TEXTCOLOR               1209
 #define IDC_REFRESH_FILE_LIST           1210
 #define IDC_WEB_SHORTCUTS_PROPERTIES    1210
 #define IDC_ONCE_PER_NICK               1211
@@ -353,7 +355,9 @@
 #define IDC_CHECK1                      1229
 #define IDC_STRIPISP                    1229
 #define IDC_POPUP                       1229
+#define IDC_REFRESH_INCOMING            1229
 #define IDC_MESSAGE                     1230
+#define IDC_REFRESH_SHARE               1230
 #define IDC_DISPLAYTIME                 1231
 #define IDC_LIST1                       1233
 #define IDC_FUL_ADVANCED_BOOLEANS       1234
@@ -371,8 +375,11 @@
 #define IDC_FONT                        1246
 #define IDC_TABCOLOR2                   1246
 #define IDC_LASTLOG                     1246
+#define IDC_BTN_FONT                    1246
 #define IDC_FREE_SLOTS_EXTENSIONS       1247
+#define IDC_MINISLOTS_EXTENSIONS        1247
 #define IDC_FREE_SLOTS_SIZE             1249
+#define IDC_MINISLOTS_SIZE              1249
 #define IDC_CHECK2                      1250
 #define IDC_HAS_BG_COLOR                1250
 #define IDC_MOVEDOWN                    1251
@@ -387,6 +394,31 @@
 #define IDC_SETTINGS_LOG_SYSTEM         1259
 #define IDC_LOG_SYSTEM                  1260
 #define IDC_MESSAGE_LENGTH              1262
+#define IDC_SB_SKIPLIST_DOWNLOAD        1263
+#define IDC_ST_SKIPLIST_DOWNLOAD        1264
+#define IDC_SB_SKIPLIST_SHARE           1265
+#define IDC_ST_SKIPLIST_SHARE           1266
+#define IDC_SB_REFRESH                  1267
+#define IDC_ST_REFRESH_INCOMING         1268
+#define IDC_ST_REFRESH_SHARE            1269
+#define IDC_ST_REFRESH_HELP             1270
+#define IDC_SB_CHATBUFFERSIZE           1271
+#define IDC_ST_CHATBUFFERSIZE           1272
+#define IDC_SB_TAB_COLORS               1273
+#define IDC_SB_TAB_SIZE                 1274
+#define IDC_SB_POPUP                    1275
+#define IDC_ST_DISPLAYTIME              1276
+#define IDC_ST_MESSAGE_LENGTH           1277
+#define IDC_SB_MINISLOTS                1278
+#define IDC_ST_MINISLOTS_EXT            1279
+#define IDC_ST_MINISLOTS_SIZE           1280
+#define IDC_SB_PATHS                    1281
+#define IDC_ST_PATHS                    1282
+#define IDC_SB_MAX_SOURCES              1283
+#define IDC_SB_WEB_SHORTCUTS            1284
+#define IDC_SB_HIGHLIGHT                1285
+#define IDC_SB_SETTINGS                 1286
+#define IDC_ST_MATCH_TYPE               1287
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -434,7 +466,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        254
 #define _APS_NEXT_COMMAND_VALUE         32816
-#define _APS_NEXT_CONTROL_VALUE         1263
+#define _APS_NEXT_CONTROL_VALUE         1288
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

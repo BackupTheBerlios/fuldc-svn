@@ -51,7 +51,9 @@ class HighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	//virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 
 	void getValues(ColorSettings* );
-private:
+protected:
+	static TextItem texts[];
+	
 	CComboBox ctrlMatchType;
 	ExListViewCtrl ctrlStrings;
 

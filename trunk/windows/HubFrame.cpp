@@ -893,7 +893,7 @@ void HubFrame::onTab() {
 		return;
 	}
 		
-	bool up = (GetAsyncKeyState(VK_SHIFT) & 0x8000) ;
+	bool up = ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
 
 	int n = ctrlMessage.GetWindowTextLength();
 	AutoArray<char> buf(n+1);
@@ -947,7 +947,7 @@ void HubFrame::onTab() {
 		}
 
 		//just iterate through the list once
-		for(int j = 0; j < tabList.size(); ++j){
+		for(u_int j = 0; j < tabList.size(); ++j){
 			//make sure we're not outside the list
 			if(i == tabList.end()){
 				i = tabList.begin();

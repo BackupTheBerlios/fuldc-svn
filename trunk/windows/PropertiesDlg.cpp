@@ -46,9 +46,9 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CSTRING(SET
 	pages[6]  = new UCPage(s);
 	pages[7]  = new FulPage(s);
 	pages[8]  = new FulPage2(s);
-	pages[9]  = new FulAppearancePage(s);
-	pages[10] = new FulAdvancedPage(s);
-	pages[11] = new HighlightPage(s);
+	pages[9]  = new FulAdvancedPage(s);
+	pages[10] = new HighlightPage(s);
+	pages[11] = new FulAppearancePage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());

@@ -8,8 +8,8 @@
 
 #include "../greta/regexpr2.h"
 
-#include "WinUtil.h"
 #include "HighlightPage.h"
+#include "WinUtil.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -17,7 +17,36 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem HighlightPage::texts[] = {
+	{ IDC_SB_HIGHLIGHT,  ResourceManager::SETTINGS_SB_HIGHLIGHT		},
+	{ IDC_SB_SETTINGS,   ResourceManager::SETTINGS_SB_SETTINGS		},
+	{ IDC_ST_MATCH_TYPE, ResourceManager::SETTINGS_ST_MATCH_TYPE	},
+	{ IDC_ADD,			 ResourceManager::ADD						},
+	{ IDC_DELETE,		 ResourceManager::REMOVE					},
+	{ IDC_UPDATE,		 ResourceManager::SETTINGS_BTN_UPDATE		},
+	{ IDC_MOVE_UP,		 ResourceManager::SETTINGS_BTN_MOVEUP		},
+	{ IDC_MOVE_DOWN,	 ResourceManager::SETTINGS_BTN_MOVEDOWN		},
+	{ IDC_BGCOLOR,		 ResourceManager::SETTINGS_BTN_BGCOLOR		},
+	{ IDC_FGCOLOR,		 ResourceManager::SETTINGS_BTN_COLOR		},
+	{ IDC_SELECT_SOUND,  ResourceManager::SETTINGS_SELECT_SOUND		},
+	{ IDC_BOLD,			 ResourceManager::BOLD						},
+	{ IDC_ITALIC,		 ResourceManager::ITALIC					},
+	{ IDC_UNDERLINE,	 ResourceManager::UNDERLINE					},
+	{ IDC_STRIKEOUT,	 ResourceManager::STRIKEOUT					},
+	{ IDC_POPUP,		 ResourceManager::SETTINGS_POPUP			},
+	{ IDC_SOUND,		 ResourceManager::SETTINGS_PLAY_SOUND		},
+	{ IDC_INCLUDENICK,	 ResourceManager::SETTINGS_INCLUDE_NICK		},
+	{ IDC_WHOLELINE,	 ResourceManager::SETTINGS_WHOLE_LINE		},
+	{ IDC_CASESENSITIVE, ResourceManager::SETTINGS_CASE_SENSITIVE	},
+	{ IDC_WHOLEWORD,	 ResourceManager::SETTINGS_ENTIRE_WORD		},
+	{ IDC_TABCOLOR,		 ResourceManager::SETTINGS_TAB_COLOR		},
+	{ IDC_LASTLOG,		 ResourceManager::SETTINGS_LASTLOG			}, 
+	{ 0,				 ResourceManager::SETTINGS_AUTO_AWAY		}
+};
+
 LRESULT HighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	PropPage::translate((HWND)(*this), texts);
+
 	CRect rc;
 	
 	//Initalize listview
@@ -207,21 +236,21 @@ void HighlightPage::getValues(ColorSettings* cs){
 	GetDlgItemText(IDC_STRING, buf, 1000);
 	cs->setMatch(buf);
 
-	cs->setBold(	  IsDlgButtonChecked(IDC_BOLD)	    );
-	cs->setItalic(	  IsDlgButtonChecked(IDC_ITALIC)    );
-	cs->setUnderline( IsDlgButtonChecked(IDC_UNDERLINE) );
-	cs->setStrikeout( IsDlgButtonChecked(IDC_STRIKEOUT) );
+	cs->setBold(	  IsDlgButtonChecked(IDC_BOLD)		== BST_CHECKED );
+	cs->setItalic(	  IsDlgButtonChecked(IDC_ITALIC)	== BST_CHECKED );
+	cs->setUnderline( IsDlgButtonChecked(IDC_UNDERLINE)	== BST_CHECKED );
+	cs->setStrikeout( IsDlgButtonChecked(IDC_STRIKEOUT) == BST_CHECKED );
 
-	cs->setCaseSensitive( IsDlgButtonChecked(IDC_CASESENSITIVE)	 );
-	cs->setIncludeNick(	  IsDlgButtonChecked(IDC_INCLUDENICK)	 );
-	cs->setWholeLine(	  IsDlgButtonChecked(IDC_WHOLELINE)		 );
-	cs->setWholeWord(	  IsDlgButtonChecked(IDC_WHOLEWORD)		 );
-	cs->setPopup(		  IsDlgButtonChecked(IDC_POPUP)			 );
-	cs->setTab(			  IsDlgButtonChecked(IDC_TABCOLOR)		 );
-	cs->setPlaySound(	  IsDlgButtonChecked(IDC_SOUND)			 );
-	cs->setLog(			  IsDlgButtonChecked(IDC_LASTLOG)		 );
-	cs->setHasBgColor(	  IsDlgButtonChecked(IDC_HAS_BG_COLOR)	 );
-    cs->setHasFgColor(	  IsDlgButtonChecked(IDC_HAS_FG_COLOR)	 );
+	cs->setCaseSensitive( IsDlgButtonChecked(IDC_CASESENSITIVE) == BST_CHECKED );
+	cs->setIncludeNick(	  IsDlgButtonChecked(IDC_INCLUDENICK)	== BST_CHECKED );
+	cs->setWholeLine(	  IsDlgButtonChecked(IDC_WHOLELINE)		== BST_CHECKED );
+	cs->setWholeWord(	  IsDlgButtonChecked(IDC_WHOLEWORD)		== BST_CHECKED );
+	cs->setPopup(		  IsDlgButtonChecked(IDC_POPUP)			== BST_CHECKED );
+	cs->setTab(			  IsDlgButtonChecked(IDC_TABCOLOR)		== BST_CHECKED );
+	cs->setPlaySound(	  IsDlgButtonChecked(IDC_SOUND)			== BST_CHECKED );
+	cs->setLog(			  IsDlgButtonChecked(IDC_LASTLOG)		== BST_CHECKED );
+	cs->setHasBgColor(	  IsDlgButtonChecked(IDC_HAS_BG_COLOR)	== BST_CHECKED );
+    cs->setHasFgColor(	  IsDlgButtonChecked(IDC_HAS_FG_COLOR)	== BST_CHECKED );
 
 	
 	cs->setBgColor( bgColor );
@@ -286,7 +315,7 @@ LRESULT HighlightPage::onClickedBox(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 	case IDC_HAS_FG_COLOR: button = IDC_FGCOLOR;	  break;
 	}
 
-	bool enabled = IsDlgButtonChecked(wID);
+	bool enabled = IsDlgButtonChecked(wID) == BST_CHECKED;
 	ctrlButton.Attach(GetDlgItem(button));
 	ctrlButton.EnableWindow(enabled);
 	ctrlButton.Detach();
