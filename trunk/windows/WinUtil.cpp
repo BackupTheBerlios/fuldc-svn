@@ -37,6 +37,8 @@
 #include "../client/WebShortcuts.h"
 #include "../client/HashManager.h"
 
+#include <direct.h>
+
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
 HBRUSH WinUtil::bgBrush = NULL;
@@ -879,6 +881,35 @@ int WinUtil::getTextSpacing(HWND wnd, HFONT fnt) {
 	::SelectObject(dc, old);
 	::ReleaseDC(wnd, dc);
 	return tm.tmInternalLeading;
+}
+
+string WinUtil::DiskSpaceInfo() {
+	ULONG drives = _getdrives();
+	char drive[3] = { 'C', ':', '\0' };
+	string ret = Util::emptyString;
+	int64_t free = 0, totalFree = 0, size = 0, totalSize = 0;
+
+	drives = ( drives >> 2);
+	
+	while(drives != 0) {
+		if(drives & 1 && GetDriveType(drive) != DRIVE_CDROM){
+			if(GetDiskFreeSpaceEx(drive, NULL, (PULARGE_INTEGER)&size, (PULARGE_INTEGER)&free)){
+				totalFree += free;
+				totalSize += size;
+				
+				ret.append(drive);
+				ret += "=" + Util::formatBytes(free) + "/" + Util::formatBytes(size) + " ";
+			}
+		}
+
+		++drive[0];
+		drives = (drives >> 1);
+	}
+
+	if(totalSize != 0)
+		ret += "total=" + Util::formatBytes(totalFree) + "/" + Util::formatBytes(totalSize);
+
+	return ret;
 }
 /**
  * @file

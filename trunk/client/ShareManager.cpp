@@ -214,8 +214,8 @@ bool ShareManager::loadXmlList(){
 	while (xml->findChild("Directory")) {
 		string name = xml->getChildAttrib("Name");
 		string path = xml->getChildAttrib("Path");
-		//Util::toAcp(name);
-		//Util::toAcp(path);
+		Util::toAcp(name);
+		Util::toAcp(path);
 				
 		directories[path] = addDirectoryFromXml(xml, NULL, name, path); 
 		dirs[name] = path;
@@ -321,7 +321,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	Directory::File::Iter lastFileIter = dir->files.begin();
 	while (xml->findChild("File")) {
 		string name = xml->getChildAttrib("Name");
-		//Util::toAcp(name);
+		Util::toAcp(name);
 		u_int64_t size = xml->getIntChildAttrib("Size");
 		TTHValue *tth = HashManager::getInstance()->getTTH(aPath + PATH_SEPARATOR + name, size);
 
@@ -340,8 +340,8 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	while (xml->findChild("Directory")) {
 		string name = xml->getChildAttrib("Name");
 		string path = xml->getChildAttrib("Path");
-		//Util::toAcp(name);
-		//Util::toAcp(path);
+		Util::toAcp(name);
+		Util::toAcp(path);
 		dir->directories[name] = addDirectoryFromXml(xml, dir, name, path);
 		dir->addSearchType(dir->directories[name]->getSearchTypes());
 	}

@@ -330,6 +330,8 @@ void HubFrame::onEnter() {
 					ctrlClient.LastLog(str, Util::toInt(param));
 				TextFrame::openWindow(*str, false);
 				delete str;
+			}else if(Util::stricmp(cmd.c_str(), "df") == 0) {
+				client->hubMessage(WinUtil::DiskSpaceInfo());
 			} else {
 				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
 					client->hubMessage(s);

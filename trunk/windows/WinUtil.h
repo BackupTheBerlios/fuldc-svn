@@ -90,6 +90,8 @@ public:
 	static void search(string searchTerm, int searchMode);
 	static void AppendSearchMenu(CMenu& menu);
 
+	static string DiskSpaceInfo();
+
 	/**
 	 * Check if this is a common /-command.
 	 * @param cmd The whole text string, will be updated to contain only the command.

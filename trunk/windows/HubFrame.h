@@ -318,6 +318,7 @@ private:
 		tabList.push_back("/connection");
 		tabList.push_back("/ctopic");
 		tabList.push_back("/dc++");
+		tabList.push_back("/df");
 		tabList.push_back("/dslots");
 		tabList.push_back("/favorite");
 		tabList.push_back("/fuldc");
@@ -331,6 +332,7 @@ private:
 		tabList.push_back("/popups");
 		tabList.push_back("/rebuild");
 		tabList.push_back("/refresh");
+		tabList.push_back("/refreshi");
 		tabList.push_back("/search");
 		tabList.push_back("/share");
 		tabList.push_back("/showjoins");
