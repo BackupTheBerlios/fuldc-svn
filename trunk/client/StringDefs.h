@@ -706,5 +706,6 @@ enum Strings { // @DontAdd
 	NEW_IGNORE_PATTERN_TITLE, // "New ignore pattern"
 	NEW_IGNORE_PATTERN_DESCRIPTION, // "full nick, wildcard or a regexp"
 	ALREADY_IGNORED, // "Pattern is already in the list"
+	REMOVE_FILE, // "Remove file from queue"
 	LAST // @DontAdd
 };

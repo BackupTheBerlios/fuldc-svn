@@ -702,5 +702,6 @@
 		<String Name="NewIgnorePatternTitle">New ignore pattern</String>
 		<String Name="NewIgnorePatternDescription">full nick, wildcard or a regexp</String>
 		<String Name="AlreadyIgnored">Pattern is already in the list</String>
+		<String Name="RemoveFile">Remove file from queue</String>
 	</Strings>
 </Language>

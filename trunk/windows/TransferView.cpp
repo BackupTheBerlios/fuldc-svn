@@ -94,6 +94,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(CLOSE_CONNECTION));
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CTSTRING(REMOVE_FROM_ALL));
+	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE_FILE, CTSTRING(REMOVE_FILE));
 	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
 
 	ConnectionManager::getInstance()->addListener(this);
@@ -720,6 +721,16 @@ LRESULT TransferView::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, B
 	ItemInfo *ii = ctrlTransfers.getSelectedItem();
 	if(ii != NULL)
 		WinUtil::setClipboard(ii->getText(wID - IDC_COPY));
+
+	return 0;
+}
+
+LRESULT TransferView::onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		ItemInfo *ii = ctrlTransfers.getItemData(i);
+		QueueManager::getInstance()->remove(Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE)));
+	}
 
 	return 0;
 }

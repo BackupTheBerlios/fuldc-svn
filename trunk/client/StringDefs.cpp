@@ -703,6 +703,7 @@ string ResourceManager::strings[] = {
 "New ignore pattern", 
 "full nick, wildcard or a regexp", 
 "Pattern is already in the list", 
+"Remove file from queue", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1406,4 +1407,5 @@ string ResourceManager::names[] = {
 "NewIgnorePatternTitle", 
 "NewIgnorePatternDescription", 
 "AlreadyIgnored", 
+"RemoveFile", 
 };
