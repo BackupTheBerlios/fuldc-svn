@@ -61,6 +61,8 @@ private:
 
 		SetMapMode(m_pDC->GetMapMode());
 
+		SelectFont(m_pDC->GetCurrentFont());
+
 		SIZE size = {0, 0};
 		if( 0 != m_pDC->GetWindowExt(&size))
 			SetWindowExt(size);

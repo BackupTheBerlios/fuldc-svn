@@ -5,7 +5,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-class CFulEditCtrl : /*public CRichEditCtrl*/ public CWindowImpl<CFulEditCtrl, CRichEditCtrl>
+class CFulEditCtrl : public CWindowImpl<CFulEditCtrl, CRichEditCtrl>
 {
 public:
 	BEGIN_MSG_MAP(CFulEditCtrl)

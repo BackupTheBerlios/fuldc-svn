@@ -12,41 +12,6 @@
 #include <MMSystem.h>
 
 #include "WinUtil.h"
-#include "EmoticonManager.h"
-
-struct StreamInfo
-{
-	StreamInfo(): pos(0) {}
-	StreamInfo(string *aMsg): pos(0) {
-		msg = aMsg;
-	}
-	string *msg;
-	int pos;
-};
-
-
-static DWORD CALLBACK EditStreamCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
-{
-	StreamInfo *pstr = (StreamInfo *)dwCookie;
-
-	if( (LONG)pstr->msg->length() < cb )
-	{
-		*pcb = (pstr->msg->length() - pstr->pos);
-		memcpy(pbBuff, pstr->msg->substr(pstr->pos).c_str(), *pcb );
-		pstr->pos += (*pcb);
-		if((*pcb) == 0)
-			delete pstr;
-	}
-	else
-	{
-		*pcb = cb;
-		memcpy(pbBuff, pstr->msg->substr(pstr->pos).c_str(), *pcb );
-		pstr->pos += cb;
-	}
-	
-	return 0;
-}
-
 
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
@@ -242,12 +207,7 @@ void CFulEditCtrl::AddInternalLine(string & aLine) {
 	int length = GetTextLengthEx(GTL_NUMCHARS)+1;
 	AppendText(aLine.c_str());
 	Colorize(length);
-	//StringMapIter i = EmoticonManager::getInstance()->getEmoticons()->begin();
 	
-	//SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
-
-	//EDITSTREAM es = {(DWORD)new StreamInfo(&i->second), 0, EditStreamCallBack};
-	//StreamIn(SF_RTF , es);
 	SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 	
 	skipLog = false;

@@ -282,12 +282,10 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				DeleteObject(memDC.SelectPen(oldpen));
 				DeleteObject(memDC.SelectBrush(oldbr));
 
-				HFONT oldFont = memDC.SelectFont(WinUtil::font);
-
 				int right = rc2.right;
 				left = rc2.left;
 				rc2.right = rc.right;
-				int top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(memDC) - 1)/2;
+				int top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
 				memDC.SetBkMode(TRANSPARENT);
 				memDC.SetTextColor(RGB(255, 255, 255));
 				memDC.ExtTextOut(left, top, ETO_CLIPPED, rc2, buf, strlen(buf), NULL);
@@ -298,8 +296,6 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				memDC.SetTextColor(WinUtil::textColor);
 				memDC.ExtTextOut(left, top, ETO_CLIPPED, rc2, buf, strlen(buf), NULL);
 				
-				memDC.SelectFont(oldFont);
-
 				return CDRF_SKIPDEFAULT;
 			}
 		}

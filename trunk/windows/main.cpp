@@ -24,7 +24,6 @@
 #include "ExtendedTrace.h"
 #include "WinUtil.h"
 #include "SingleInstance.h"
-#include "EmoticonManager.h"
 
 #include "../client/MerkleTree.h"
 
