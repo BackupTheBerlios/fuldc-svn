@@ -40,9 +40,6 @@ void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	if( (offset + height) > screenHeight)
 		return;
 	
-	//get the handle of the window that has focus
-	HWND gotFocus = ::SetFocus(WinUtil::mainWnd);
-	
 	//compute the window position
 	CRect rc(screenWidth - width , screenHeight - height - offset, screenWidth, screenHeight - offset);
 	
@@ -53,11 +50,8 @@ void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	//move the window to the top of the z-order and display it
 	p->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
-	//restore focus to window
-	::SetFocus(gotFocus);
-	
 	//increase offset so we know where to place the next popup
-	offset = offset + height;
+	offset += height;
 
 	popups.push_back(p);
 }
@@ -132,8 +126,13 @@ void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
 	delete p;
 	p = NULL;
 
-	if( clicked && BOOLSETTING(POPUP_ACTIVATE_ON_CLICK) )
+	if( clicked && BOOLSETTING(POPUP_ACTIVATE_ON_CLICK) ) {
+		SetForegroundWindow(WinUtil::mainWnd);
+		if( IsIconic(WinUtil::mainWnd) )
+			ShowWindow(WinUtil::mainWnd, SW_RESTORE);
+		
 		::SendMessage(WinUtil::mdiClient, WM_MDIACTIVATE, (WPARAM)w, NULL);
+	}
 
 	//set offset one window position lower
 	dcassert(offset > 0);

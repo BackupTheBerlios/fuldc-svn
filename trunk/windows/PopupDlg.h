@@ -57,7 +57,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
 		//if we have a background don't create CStatic control
 		if(bmp != NULL) {
-			bHandled = false;
+			bHandled = FALSE;
 			return 1;
 		}
 
@@ -79,19 +79,18 @@ public:
 		label.SetWindowText(msg.c_str());
 
 
-		bHandled = false;
-		return 1;
+		bHandled = TRUE;
+		return 0;
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/){
 		if(bmp == NULL){
 			label.DestroyWindow();
 			label.Detach();
 		}
 		DestroyWindow();
 
-		bHandled = false;
-		return 1;
+		return 0;
 	}
 
 	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
