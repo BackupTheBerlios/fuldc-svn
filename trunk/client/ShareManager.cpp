@@ -511,16 +511,16 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	const Directory::File& f = *i;
 
-	HashFileIter j = tthIndex.find(f.getTTH());
-	if(j == tthIndex.end()) {
+	//HashFileIter j = tthIndex.find(f.getTTH());
+	//if(j == tthIndex.end()) {
 		dir->size+=f.getSize();
-	} else {
-		if(!SETTING(LIST_DUPES)) {
-			LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
-			dir->files.erase(i);
-			return;
-		}
-	}
+	//} else {
+	//	if(!SETTING(LIST_DUPES)) {
+	//		LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
+	//		dir->files.erase(i);
+	//		return;
+	//	}
+	//}
 
 	dir->addSearchType(getMask(f.getName()));
 	dir->addType(getType(f.getName()));
@@ -1034,13 +1034,15 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 	if(aFileType == SearchManager::TYPE_HASH) {
 		if(aString.compare(0, 4, "TTH:") == 0) {
 			TTHValue tth(aString.substr(4));
-			HashFileIter i = tthIndex.find(&tth);
-			if(i != tthIndex.end()) {
-				dcassert(i->second->getTTH() != NULL);
+			
+			pair< HashFileIter, HashFileIter> iter = tthIndex.equal_range(&tth);
+			for(; iter.first != iter.second; ++(iter.first) ){
+				dcassert(iter.first->second->getTTH() != NULL);
 
 				SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_FILE, 
-					i->second->getSize(), i->second->getParent()->getFullName() + i->second->getName(), 
-					i->second->getTTH());
+					iter.first->second->getSize(),
+					iter.first->second->getParent()->getFullName() + iter.first->second->getName(), 
+					iter.first->second->getTTH());
 
 				results.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -1389,7 +1391,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	Directory::File::Iter lastFileIter = dir->files.begin();
 	while (xml->findChild("File")) {
 		string name = xml->getChildAttrib("Name");
-		//Util::toAcp(name);
+		
 		u_int64_t size = xml->getIntChildAttrib("Size");
 		HashManager::getInstance()->checkTTH(aPath + PATH_SEPARATOR + name, size);
 		lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, NULL));
@@ -1400,8 +1402,7 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 	while (xml->findChild("Directory")) {
 		string name = xml->getChildAttrib("Name");
 		string path = xml->getChildAttrib("Path");
-		//Util::toAcp(name);
-		//Util::toAcp(path);
+		
 		dir->directories[name] = addDirectoryFromXml(xml, dir, name, path);
 		dir->addSearchType(dir->directories[name]->getSearchTypes());
 	}

@@ -422,7 +422,7 @@ void WinUtil::setClipboard(const tstring& str) {
 	GlobalUnlock(hglbCopy); 
 
 	// Place the handle on the clipboard. 
-	SetClipboardData(CF_TEXT, hglbCopy); 
+	SetClipboardData(CF_UNICODETEXT, hglbCopy); 
 	CloseClipboard();
 }
 
