@@ -207,6 +207,7 @@ private:
 		virtual void on(ValidateDenied, NmdcHub*) throw() { c->fire(ClientListener::NickTaken(), c); }
 		virtual void on(Hello, NmdcHub*, const User::Ptr& u) throw() { c->fire(ClientListener::UserUpdated(), c, u); }
 		virtual void on(Search, NmdcHub*, const string& a, int b, int64_t d, int e, const string& f) throw() { c->fire(ClientListener::NmdcSearch(), c, a, b, d, e, f); }
+		virtual void on(UserIp, NmdcHub*, const User::List& l) throw() { c->fire(ClientListener::UserIp(), c, l); }
 	} adapter;
 
 	enum States {

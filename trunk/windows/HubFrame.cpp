@@ -39,10 +39,10 @@
 HubFrame::FrameMap HubFrame::frames;
 bool HubFrame::closing = false;
 
-int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 75, 100};
-int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_ISP, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL };
+int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100,75, 100};
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_ISP, COLUMN_TAG, COLUMN_IP, COLUMN_CONNECTION, COLUMN_EMAIL };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-ResourceManager::DESCRIPTION, ResourceManager::ISP, ResourceManager::TAG,
+ResourceManager::DESCRIPTION, ResourceManager::ISP, ResourceManager::TAG, ResourceManager::IP_BARE,
 ResourceManager::CONNECTION, ResourceManager::EMAIL };
 
 
@@ -1290,6 +1290,18 @@ void HubFrame::on(UserUpdated, Client*, const User::Ptr& user) throw() {
 		speak(UPDATE_USER, user);
 }
 void HubFrame::on(UsersUpdated, Client*, const User::List& aList) throw() {
+	Lock l(updateCS);
+	updateList.reserve(aList.size());
+	for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+		if(!(*i)->isSet(User::HIDDEN))
+			updateList.push_back(make_pair(*i, UPDATE_USERS));
+	}
+	if(!updateList.empty()) {
+		PostMessage(WM_SPEAKER, UPDATE_USERS);
+	}
+}
+
+void HubFrame::on(UserIp, Client*, const User::List& aList) throw() {
 	Lock l(updateCS);
 	updateList.reserve(aList.size());
 	for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {

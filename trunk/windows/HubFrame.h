@@ -220,6 +220,7 @@ private:
 		COLUMN_DESCRIPTION, 
 		COLUMN_ISP,
 		COLUMN_TAG,
+		COLUMN_IP,
 		COLUMN_CONNECTION, 
 		COLUMN_EMAIL, 
 		COLUMN_LAST
@@ -255,6 +256,7 @@ private:
 			columns[COLUMN_DESCRIPTION] = Text::toT(user->getDescription());
 			columns[COLUMN_TAG] = Text::toT(user->getTag());
 			columns[COLUMN_ISP] = Text::toT(user->getIsp());
+			columns[COLUMN_IP] = Text::toT(user->getIp());
 			columns[COLUMN_CONNECTION] = Text::toT(user->getConnection());
 			columns[COLUMN_EMAIL] = Text::toT(user->getEmail());
 			op = user->isSet(User::OP); 
@@ -482,6 +484,7 @@ private:
 	virtual void on(PrivateMessage, Client*, const User::Ptr&, const string&) throw();
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
+	virtual void on(UserIp, Client*, const User::List&) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); };
