@@ -201,10 +201,12 @@ PME::match(const std::string & s, ///< s String to match against
 		offset += lastglobalposition;
 	}
 
-	//fprintf ( stderr, "string: '%s' length: %d offset: %d\n", s.c_str ( ), s.length ( ), offset );
-	nMatches = pcre_exec(re, extra, s.c_str(), s.length(), offset, 0, m, msize);
-	//fprintf ( stderr, "pcre_exec result = %d\n", nMatches );
+	//check that the offset isn't at the last position in the string
+	if( offset == s.length() )
+		return 0;
 
+	nMatches = pcre_exec(re, extra, s.c_str(), s.length(), offset, 0, m, msize);
+	
 	for ( int i = 0, *p = m ; i < nMatches ; i++, p+=2 ) {
 		marks.push_back(markers(p[0], p[1]));
 	}

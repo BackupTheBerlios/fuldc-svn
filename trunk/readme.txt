@@ -19,6 +19,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+Magnet.exe is licensed under the Apache License.
+Full license text: http://www.apache.org/licenses/LICENSE-2.0
+Project Home Page: http://sourceforge.net/projects/magnethandler
+
 --------------------------------------------------
 
 This Readme will give you a quick startup guide and explain some features

@@ -557,6 +557,7 @@ string ResourceManager::strings[] = {
 "Not found in help file", 
 "Results: ", 
 "Filtered: ", 
+"Notify Me", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1114,4 +1115,5 @@ string ResourceManager::names[] = {
 "NotFound", 
 "Results", 
 "Filtered", 
+"NotifyMe", 
 };

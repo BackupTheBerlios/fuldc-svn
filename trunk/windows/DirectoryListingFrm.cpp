@@ -600,7 +600,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 			
 			try {
 				if(newId < downloadPaths.size())
-					dl->download(ii->file, downloadPaths[newId]);
+					dl->download(ii->file, downloadPaths[newId] + ii->file->getName());
 				else
 					dl->download(ii->file, targets[newId - downloadPaths.size()]);
 			} catch(const Exception& e) {

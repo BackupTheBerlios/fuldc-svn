@@ -556,5 +556,6 @@
 		<String Name="NotFound">Not found in help file</String>
 		<String Name="Results">Results: </String>
 		<String Name="Filtered">Filtered: </String>
+		<String Name="NotifyMe">Notify Me</String>
 	</Strings>
 </Language>

@@ -560,5 +560,6 @@ enum Strings { // @DontAdd
 	NOT_FOUND, // "Not found in help file"
 	RESULTS, // "Results: "
 	FILTERED, // "Filtered: "
+	NOTIFY_ME, // "Notify Me"
 	LAST // @DontAdd
 };
