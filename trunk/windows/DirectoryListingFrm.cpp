@@ -909,8 +909,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 	return;
 }
 
-LRESULT DirectoryListingFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+void DirectoryListingFrame::copy(UINT wID) {
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 	tstring tmp;
@@ -929,8 +928,6 @@ LRESULT DirectoryListingFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	
 	if(!tmp.empty())
 		WinUtil::setClipboard(tmp);
-	
-	return 0;
 }
 
 LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -948,26 +945,31 @@ void DirectoryListingFrame::closeAll(){
 }
 
 LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(searchMenu.m_hMenu == (HMENU)lParam) {
+	HMENU menu = reinterpret_cast<HMENU>(lParam);
+	UINT pos = static_cast<UINT>(wParam);
+
+	if(searchMenu.m_hMenu == menu) {
 		tstring searchTerm;
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 		searchTerm = ii->getText(COLUMN_FILENAME);
 		
-		WinUtil::search(searchTerm, static_cast<UINT>(wParam) + 1);
+		WinUtil::search(searchTerm, pos + 1);
 	} else {
 		MENUITEMINFO inf;
 		inf.cbSize = sizeof(MENUITEMINFO);
 		inf.fMask = MIIM_ID;
 		inf.wID = 0;
 
-		if(fileMenu.m_hMenu == (HMENU)lParam) {
-			fileMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
-		} else if(copyMenu.m_hMenu == (HMENU)lParam) {
-			copyMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
-		} else if(targetMenu.m_hMenu == (HMENU)lParam) {
-			targetMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
-		} else if(targetDirMenu.m_hMenu == (HMENU)lParam) {
-			targetDirMenu.GetMenuItemInfo(static_cast<UINT>(wParam), TRUE, &inf);
+		if(fileMenu.m_hMenu == menu) {
+			fileMenu.GetMenuItemInfo(pos, TRUE, &inf);
+		} else if(copyMenu.m_hMenu == menu) {
+			copyMenu.GetMenuItemInfo(pos, TRUE, &inf);
+			copy(inf.wID);
+			return 0;
+		} else if(targetMenu.m_hMenu == menu) {
+			targetMenu.GetMenuItemInfo(pos, TRUE, &inf);
+		} else if(targetDirMenu.m_hMenu == menu) {
+			targetDirMenu.GetMenuItemInfo(pos, TRUE, &inf);
 		}
 		PostMessage(WM_COMMAND, inf.wID, 0);
 	}

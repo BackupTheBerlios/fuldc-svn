@@ -42,7 +42,7 @@ class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, C
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:
-	TypedListViewCtrl() : sortColumn(-1), sortAscending(true), ownerDraw(true), state(-1) { };
+	TypedListViewCtrl() : sortColumn(-1), sortAscending(true), ownerDraw(true) { };
 	~TypedListViewCtrl() {
 		for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i){
 			delete (*i);
@@ -339,7 +339,7 @@ public:
 			removeColumn(ci);
 		} else {
 			int pos = GetHeader().GetItemCount();
-			InsertColumn(pos, ci->name.c_str(), ci->format, ci->width, static_cast<int>(wParam));
+			CListViewCtrl::InsertColumn(pos, ci->name.c_str(), ci->format, ci->width, static_cast<int>(wParam));
 			LVCOLUMN lvcl = { 0 };
 			lvcl.mask = LVCF_ORDER;
 			lvcl.iOrder = ci->pos;
@@ -467,9 +467,6 @@ private:
 
 	//should we handle the drawing?
 	bool ownerDraw;
-
-	//this is to keep track on custom draw operations
-	int state;
 
 	int sortColumn;
 	bool sortAscending;

@@ -1223,6 +1223,8 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 					&iter.first->second->getTTH(), true));
 
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
+				if(ShareManager::getInstance()->getHits() == maxResults)
+					break;
 			}
 		}
 		return;
