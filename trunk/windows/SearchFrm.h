@@ -119,7 +119,7 @@ public:
 		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
 		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
-		onlyTTH(false), timerID(0)
+		onlyTTH(BOOLSETTING(SEARCH_ONLY_TTH)), timerID(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
 		downloadPaths = SettingsManager::getInstance()->getDownloadPaths();

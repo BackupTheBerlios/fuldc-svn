@@ -143,7 +143,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlTTH.SetButtonStyle(BS_AUTOCHECKBOX, FALSE);
 	ctrlTTH.SetFont(WinUtil::systemFont, FALSE);
 	ctrlTTH.SetWindowText(CTSTRING(ONLY_TTH));
-	ctrlTTH.SetCheck(BOOLSETTING(SEARCH_ONLY_TTH));
+	ctrlTTH.SetCheck(onlyTTH);
 	tthContainer.SubclassWindow(ctrlTTH.m_hWnd);
 
 	ctrlShowUI.Create(ctrlStatus.m_hWnd, rcDefault, _T("+/-"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
