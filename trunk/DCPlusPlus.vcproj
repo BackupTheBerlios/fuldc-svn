@@ -122,7 +122,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="htmlhelp.lib unicows.lib comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib"
+				AdditionalDependencies="htmlhelp.lib unicows.lib comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib pdh.lib winmm.lib"
 				OutputFile="./App/DCPlusPlus.exe"
 				Version=""
 				LinkIncremental="1"
