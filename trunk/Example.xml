@@ -112,6 +112,7 @@
 		<String Name="FilesPerHour">files/h</String>
 		<String Name="FilesLeft">files left</String>
 		<String Name="Filter">F&amp;ilter</String>
+		<String Name="Filtered">Filtered</String>
 		<String Name="Find">Find</String>
 		<String Name="FinishedDownloads">Finished Downloads</String>
 		<String Name="FinishedUploads">Finished Uploads</String>
@@ -477,6 +478,7 @@
 		<String Name="PopupOnPm">Show popup on PM</String>
 		<String Name="PopupOnNewPm">Show popup on PM only if it's from a new user</String>
 		<String Name="PopupOnHubstatus">Show popup on hub status messages such as disconnected</String>
+		<String Name="PopupAppearance">Appearance</String>
 		<String Name="HubframeConfirmation">Confirm hub exit</String>
 		<String Name="QueueRemoveConfirmation">Confirm removal of files from download queue</String>
 		<String Name="FavoritesRemoveConfirmation">Confirm removal of favorites hub entries</String>
@@ -583,7 +585,6 @@
 		<String Name="ResolvesTo">resolves to</String>
 		<String Name="NotFound">Not found in help file</String>
 		<String Name="Results">Results: </String>
-		<String Name="Filtered">Filtered: </String>
 		<String Name="NotifyMe">Notify Me</String>
 		<String Name="HelpTimeStamps">%a - Abbreviated weekday name\n%A - Full weekday name\n%b - Abbreviated month name\n%B - Full month name\n%c - Date and time representation appropriate for locale\n%d - Day of month as decimal number (01 – 31)\n%H - Hour in 24-hour format (00 – 23)\n%I - Hour in 12-hour format (01 – 12)\n%j - Day of year as decimal number (001 – 366)\n%m - Month as decimal number (01 – 12)\n%M - Minute as decimal number (00 – 59)\n%p - Current locale's A.M./P.M. indicator for 12-hour clock\n%S - Second as decimal number (00 – 59)\n%U - Week of year as decimal number, with Sunday as first day of week (00 – 53)\n%w - Weekday as decimal number (0 – 6; Sunday is 0)\n%W - Week of year as decimal number, with Monday as first day of week (00 – 53)\n%x - Date representation for current locale\n%X - Time representation for current locale\n%y - Year without century, as decimal number (00 – 99)\n%Y - Year with century, as decimal number\n%z, %Z - Either the time-zone name or time zone abbreviation, depending on registry settings; no characters if time zone is unknown\n%% - Percent sign</String>
 		<String Name="TimeStampsHelpCaption">Time Format</String>

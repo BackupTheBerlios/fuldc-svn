@@ -103,8 +103,6 @@ public:
 	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
-	void kick(const string& aMsg);
-	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp() const;
 	void send(const string& msg);
 	void sendUserCmd(const string& aUserCmd);

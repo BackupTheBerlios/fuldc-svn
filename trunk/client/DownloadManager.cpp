@@ -751,6 +751,7 @@ noCRC:
 		params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
 		params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
+		params["tth"] = d->getTTH()->toBase32();
 		LOG(DOWNLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
 	}
 

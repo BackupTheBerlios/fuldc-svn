@@ -13,7 +13,7 @@ PropPage::TextItem FulPopupsPage::texts[] = {
 	{ IDC_POPUP_ON_NEW_PM,		ResourceManager::POPUP_ON_NEW_PM			},
 	{ IDC_POPUP_ON_HUBSTATUS,	ResourceManager::POPUP_ON_HUBSTATUS			},
 	{ IDC_POPUP_REMOVE,			ResourceManager::REMOVE_POPUPS				},
-	{ IDC_SB_POPUP,				ResourceManager::SETTINGS_SB_POPUP			},
+	{ IDC_POPUP_APPEARANCE,		ResourceManager::POPUP_APPEARANCE			},
 	{ IDC_ST_DISPLAYTIME,		ResourceManager::SETTINGS_ST_DISPLAYTIME	},
 	{ IDC_ST_MESSAGE_LENGTH,	ResourceManager::SETTINGS_ST_MESSAGE_LENGTH	},
 	{ 0,						ResourceManager::SETTINGS_AUTO_AWAY			}

@@ -452,8 +452,9 @@
 #define IDC_POPUP_ON_PM                 1297
 #define IDC_POPUP_ON_NEW_PM             1298
 #define IDC_POPUP_ON_HUBSTATUS          1299
-#define IDC_CHECK6                      1300
 #define IDC_POPUP_REMOVE                1300
+#define IDC_APPEARANCE                  1301
+#define IDC_POPUP_APPEARANCE            1301
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -501,7 +502,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        259
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1296
+#define _APS_NEXT_CONTROL_VALUE         1302
 #define _APS_NEXT_SYMED_VALUE           136
 #endif
 #endif

@@ -140,7 +140,7 @@ public:
 	// Sorting
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		int column = findColumn(l->iSubItem);
+		int column = l->iSubItem;//findColumn(l->iSubItem);
 		if(column != sortColumn) {
 			sortAscending = true;
 			sortColumn = column;

@@ -134,9 +134,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
 
-	bHandled = FALSE;
-	client->connect();
-	
 	tstring nick = Text::toT(client->getNick());
 	if(stripIsp) {
 		tstring::size_type pos = nick.find(_T("["));
@@ -161,17 +158,17 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	WinUtil::SetIcon(m_hWnd, _T("hub.ico"));
 
+	bHandled = FALSE;
+	client->connect();
+
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 	if(fhe != NULL){
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
 		
-		//if we don't have any window position stored, return so we don't
-		//set window size to zero 
-		if(rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0)
-			return 1;		
-
-		MoveWindow(rc, TRUE);
+		//check that we have a window position stored
+		if(! (rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0) )
+			MoveWindow(rc, TRUE);
 	}
 
 	//avoid receiving timer messages before the window has been created
