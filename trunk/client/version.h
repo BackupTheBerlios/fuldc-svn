@@ -20,10 +20,8 @@
 #define VERSIONSTRING "0.403"
 #define VERSIONFLOAT 0.403
 
-/* fnord fulhackar lite svnjunk */
-
 #ifdef _DEBUG
-#define FULVERSIONSTRING "6.49 svn123"
+#define FULVERSIONSTRING "6.49 svn124"
 #else
 #define FULVERSIONSTRING "6.49"
 #endif

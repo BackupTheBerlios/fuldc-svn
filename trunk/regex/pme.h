@@ -91,7 +91,7 @@ public:
 	/// substitutes out whatever matches the regex for the second paramter
 	std::string             sub ( const std::string & s, 
 								  const std::string & r,
-								  int dodollarsubstitution = 1 );
+								  int dodollarsubstitution = 0 );
 
 	/// study the regular expression to make it faster
 	void                    study();

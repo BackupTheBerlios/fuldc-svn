@@ -455,60 +455,15 @@ std::string PME::sub ( const std::string & s, const std::string & r,
 						 int dodollarsubstitution )
 {
 	
-	string newstring;
+	string newstring = s;
 		
 	if ( m_isglobal ) {
 			
-		int endoflastmatch = 0;
-			
-		while ( match ( s ) ) {
-				
-			// copy from the end of the last match to the beginning of the current match, then
-			//   copy in the replacement
-			newstring.append( s.substr ( endoflastmatch, m_marks[0].first - endoflastmatch ) );
-
-			std::string finalreplacement = r;
-
-			if ( dodollarsubstitution ) {
-
-				finalreplacement = UpdateReplacementString ( r );
-
-			}
-
-			newstring.append( finalreplacement );
-			
-			endoflastmatch = m_marks[0].second;
-		}
-
-		// copy the last bit
-		newstring.append( s.substr ( endoflastmatch ) );
-
+		while ( match ( s ) ) 
+			newstring.replace(m_marks[0].first, m_marks[0].second, r);
 	} else {
-
-		int nMatches = match ( s );
-
-		if ( nMatches > 0 ) {
-			
-			std::string finalreplacement = r;
-			
-			
-			if ( dodollarsubstitution ) {
-				
-				finalreplacement = UpdateReplacementString ( r );
-				
-			}
-			
-			
-			
-			newstring.append( s.substr ( 0, m_marks[0].first ) );
-			newstring.append( finalreplacement );
-			newstring.append( s.substr ( m_marks[0].second ) );
-
-		} else {
-
-			newstring.append( s );
-
-		}
+		if ( match ( s ) > 0 ) 
+			newstring.replace(m_marks[0].first, m_marks[0].second, r);
 	}
 
 	return newstring;
