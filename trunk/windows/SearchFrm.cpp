@@ -177,10 +177,11 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_SIZE || j == COLUMN_EXACT_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlResults.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		ctrlResults.insertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 
 	ctrlResults.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlResults.setVisible(SETTING(SEARCHFRAME_VISIBLE));
 
 	ctrlResults.SetBkColor(WinUtil::bgColor);
 	ctrlResults.SetTextBkColor(WinUtil::bgColor);
@@ -566,8 +567,10 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		}
 		ctrlHubs.DeleteAllItems();
 
-		WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
-			SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		//WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
+		//	SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		ctrlResults.saveHeaderOrder(SettingsManager::SEARCHFRAME_ORDER, SettingsManager::SEARCHFRAME_WIDTHS, 
+			SettingsManager::SEARCHFRAME_VISIBLE);
 
 		MDIDestroy(m_hWnd);
 		return 0;
@@ -839,6 +842,12 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
+	ctrlResults.GetHeader().GetWindowRect(&rc);
+	if(PtInRect(&rc, pt)){
+		ctrlResults.showMenu(pt);
+		return TRUE;
+	}
+
 	// Get the bounding rectangle of the client area. 
 	ctrlResults.GetClientRect(&rc);
 	ctrlResults.ScreenToClient(&pt); 
@@ -907,6 +916,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		cleanMenu(resultsMenu);
 		return TRUE; 
 	}
+
 	return FALSE; 
 }
 

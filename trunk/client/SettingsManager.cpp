@@ -39,7 +39,8 @@ const string SettingsManager::settingTags[] =
 	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder",
 	"DownloadSkiplist", "ShareSkiplist", "WebShortcuts", "PopupFont", "FreeSlotsExtentions",
-	"DownloadToPaths", "HubFrameVisible",
+	"DownloadToPaths", "HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
+	"QueueFrameVisible", 
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",

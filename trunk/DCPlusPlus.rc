@@ -425,7 +425,7 @@ BEGIN
                     15,60,106,8
     LTEXT           "Share",IDC_STATIC,60,102,20,8
     GROUPBOX        "Mainchat buffer size",IDC_STATIC,159,92,109,40
-    LTEXT           "Max size ~4 million (2^32)",IDC_STATIC,167,101,92,8
+    LTEXT           "Max size ~2.1 billion (2^31)",IDC_STATIC,167,101,92,8
     GROUPBOX        "Popup",IDC_STATIC,7,142,109,59
     LTEXT           "Display popup for n seconds",IDC_STATIC,13,152,98,8
     GROUPBOX        "Tab Colors",IDC_STATIC,159,142,109,40

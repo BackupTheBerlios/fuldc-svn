@@ -80,10 +80,11 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_SIZE || j == COLUMN_DOWNLOADED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlQueue.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		ctrlQueue.insertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
 	ctrlQueue.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlQueue.setVisible(SETTING(QUEUEFRAME_VISIBLE));
 	
 	ctrlQueue.SetBkColor(WinUtil::bgColor);
 	ctrlQueue.SetTextBkColor(WinUtil::bgColor);
@@ -858,9 +859,16 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
+	
+	ctrlQueue.GetHeader().GetWindowRect(&rc);
+	if(PtInRect(&rc, pt)){
+		ctrlQueue.showMenu(pt);
+		return TRUE;
+	}
 	// Get the bounding rectangle of the client area. 
 	ctrlQueue.GetClientRect(&rc);
 	ctrlQueue.ScreenToClient(&pt); 
+
 	if (PtInRect(&rc, pt) && ctrlQueue.GetSelectedCount() > 0) { 
 		usingDirMenu = false;
 		CMenuItemInfo mi;
@@ -922,10 +930,10 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		}
 		
 		return TRUE; 
-	}
+	} 
 
 	ctrlQueue.ClientToScreen(&pt);
-
+	
 	ctrlDirs.GetClientRect(&rc);
 	ctrlDirs.ScreenToClient(&pt);
 
@@ -1246,8 +1254,10 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		}
 		ctrlQueue.DeleteAllItems();
 
-		WinUtil::saveHeaderOrder(ctrlQueue, SettingsManager::QUEUEFRAME_ORDER, 
-			SettingsManager::QUEUEFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		//WinUtil::saveHeaderOrder(ctrlQueue, SettingsManager::QUEUEFRAME_ORDER, 
+		//	SettingsManager::QUEUEFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		ctrlQueue.saveHeaderOrder(SettingsManager::QUEUEFRAME_ORDER, 
+			SettingsManager::QUEUEFRAME_WIDTHS, SettingsManager::QUEUEFRAME_VISIBLE);
 
 		MDIDestroy(m_hWnd);
 		return 0;

@@ -56,10 +56,11 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_SIZE || j == COLUMN_TIMELEFT || j == COLUMN_TOTALTIMELEFT || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlTransfers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		ctrlTransfers.insertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 
 	ctrlTransfers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlTransfers.setVisible(SETTING(MAINFRAME_VISIBLE));
 
 	ctrlTransfers.SetBkColor(WinUtil::bgColor);
 	ctrlTransfers.SetTextBkColor(WinUtil::bgColor);
@@ -102,8 +103,8 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 }
 
 void TransferView::prepareClose() {
-	WinUtil::saveHeaderOrder(ctrlTransfers, SettingsManager::MAINFRAME_ORDER, 
-		SettingsManager::MAINFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+	ctrlTransfers.saveHeaderOrder(SettingsManager::MAINFRAME_ORDER, SettingsManager::MAINFRAME_WIDTHS,
+		SettingsManager::MAINFRAME_VISIBLE);
 	
 	ConnectionManager::getInstance()->removeListener(this);
 	DownloadManager::getInstance()->removeListener(this);
@@ -120,12 +121,13 @@ LRESULT TransferView::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+	RECT rc, rc2;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 
 	// Get the bounding rectangle of the client area. 
-	ctrlTransfers.GetClientRect(&rc);
-	ctrlTransfers.ScreenToClient(&pt); 
+	ctrlTransfers.GetWindowRect(&rc);
+	//ctrlTransfers.ScreenToClient(&pt); 
+	ctrlTransfers.GetHeader().GetWindowRect(&rc2);
 	if (PtInRect(&rc, pt) && ctrlTransfers.GetSelectedCount() > 0) 
 	{ 
 		ctrlTransfers.ClientToScreen(&pt);
@@ -147,6 +149,8 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 			cleanMenu(transferMenu);
 		}
 		return TRUE; 
+	} else if(PtInRect(&rc, pt)){
+		ctrlTransfers.showMenu(pt);
 	}
 	return FALSE; 
 }
