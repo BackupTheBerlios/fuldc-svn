@@ -122,7 +122,12 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 				string res;
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					res += sr->toSR();
+					if( res.size() + sr->toSR().size() < 1450 ) {
+                        res += sr->toSR();
+					} else {
+						s.writeTo(ip, port, res);
+						res.clear();
+					}
 					sr->decRef();
 				}
 				s.writeTo(ip, port, res);
