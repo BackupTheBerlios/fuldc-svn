@@ -584,6 +584,7 @@
 		<String Name="TimeStampsHelpCaption">Time Format</String>
 		<String Name="SettingsTimeStampHelp">Help</String>
 		<String Name="SettingsSbTimeStamps">Time Format</String>
+		<String Name="SettingsSbDirtyBlend">Amount of blending when dirty</String>
 		<String Name="UserCameOnline">User came online</String>
 		<String Name="HighlightMatchTypes">Begins,Contains,Ends,Equals</String>
 		<String Name="ConfirmRemove">Do you really want to remove this item?</String>
@@ -602,5 +603,6 @@
 		<String Name="SystemUptime">System uptime:</String>
 		<String Name="NameExists">Name already exists</String>
 		<String Name="DisplayName">Name to be displayed in menus</String>
+		<String Name="BlendTabs">Blend tabs instead of using bold font when dirty(see appearance page)</String>
 	</Strings>
 </Language>

@@ -26,6 +26,7 @@ PropPage::TextItem FulAppearancePage::texts[] = {
 	{ IDC_BTN_TEXTCOLOR,	  ResourceManager::SETTINGS_BTN_TEXTCOLOR		 },
 	{ IDC_BTN_TIME_STAMP_HELP,ResourceManager::SETTINGS_TIME_STAMP_HELP		 },
 	{ IDC_SB_TIME_STAMPS,	  ResourceManager::SETTINGS_SB_TIME_STAMPS		 },
+	{ IDC_SB_TAB_DIRTY_BLEND, ResourceManager::SETTINGS_SB_DIRTY_BLEND		 },
 	{ 0,					  ResourceManager::SETTINGS_AUTO_AWAY			 }
 };
 
@@ -35,6 +36,7 @@ PropPage::Item FulAppearancePage::items[] = {
 	{ IDC_DISPLAYTIME,		SettingsManager::POPUP_TIMEOUT,		PropPage::T_INT },
 	{ IDC_MESSAGE_LENGTH,	SettingsManager::MAX_MSG_LENGTH,	PropPage::T_INT },
 	{ IDC_EDIT_TIME_STAMPS, SettingsManager::TIME_STAMPS_FORMAT,PropPage::T_STR },
+	{ IDC_TAB_DIRTY_BLEND,	SettingsManager::TAB_DIRTY_BLEND,	PropPage::T_INT },
 	{ 0,					0,									PropPage::T_END }
 };
 

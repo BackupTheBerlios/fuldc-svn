@@ -66,8 +66,8 @@ const string SettingsManager::settingTags[] =
 	"HubFrameConfirmation", "QueueRemoveConfirmation", "FavoritesRemoveConfirmation",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
 	"TabInactiveText", "TabInactiveBorder", "TabInactiveBGNotify", "TabInactiveBGDisconnected", 
-	"PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
-	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength",
+	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
+	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -201,6 +201,7 @@ SettingsManager::SettingsManager()
 	setDefault(TAB_INACTIVE_TEXT, RGB(115, 115, 118));
 	setDefault(TAB_INACTIVE_BORDER, RGB(157, 157, 161));
 	setDefault(TAB_INACTIVE_BG_NOTIFY, RGB(176, 169, 185));
+	setDefault(TAB_DIRTY_BLEND, 10);
 	setDefault(POPUP_FONT, "MS Shell Dlg,-11,400,0");
 	setDefault(POPUP_TEXTCOLOR, RGB(0, 0, 0));
 	setDefault(FREE_SLOTS_EXTENSIONS, "*.nfo|*.sfv");
@@ -215,6 +216,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_AUTO_MATCH_SOURCES, 5);
 	setDefault(MAX_MSG_LENGTH, 90);
 	setDefault(POPUP_MINIMIZED, false);
+	setDefault(BLEND_TABS, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

@@ -585,6 +585,7 @@ string ResourceManager::strings[] = {
 "Time Format", 
 "Help", 
 "Time Format", 
+"Amount of blending when dirty", 
 "User came online", 
 "Begins,Contains,Ends,Equals", 
 "Do you really want to remove this item?", 
@@ -603,6 +604,7 @@ string ResourceManager::strings[] = {
 "System uptime:", 
 "Name already exists", 
 "Name to be displayed in menus", 
+"Blend tabs instead of using bold font when dirty(see appearance page)", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1188,6 +1190,7 @@ string ResourceManager::names[] = {
 "TimeStampsHelpCaption", 
 "SettingsTimeStampHelp", 
 "SettingsSbTimeStamps", 
+"SettingsSbDirtyBlend", 
 "UserCameOnline", 
 "HighlightMatchTypes", 
 "ConfirmRemove", 
@@ -1206,4 +1209,5 @@ string ResourceManager::names[] = {
 "SystemUptime", 
 "NameExists", 
 "DisplayName", 
+"BlendTabs", 
 };

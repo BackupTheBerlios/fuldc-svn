@@ -588,6 +588,7 @@ enum Strings { // @DontAdd
 	TIME_STAMPS_HELP_CAPTION, // "Time Format"
 	SETTINGS_TIME_STAMP_HELP, // "Help"
 	SETTINGS_SB_TIME_STAMPS, // "Time Format"
+	SETTINGS_SB_DIRTY_BLEND, // "Amount of blending when dirty"
 	USER_CAME_ONLINE, // "User came online"
 	HIGHLIGHT_MATCH_TYPES, // "Begins,Contains,Ends,Equals"
 	CONFIRM_REMOVE, // "Do you really want to remove this item?"
@@ -606,5 +607,6 @@ enum Strings { // @DontAdd
 	SYSTEM_UPTIME, // "System uptime:"
 	NAME_EXISTS, // "Name already exists"
 	DISPLAY_NAME, // "Name to be displayed in menus"
+	BLEND_TABS, // "Blend tabs instead of using bold font when dirty(see appearance page)"
 	LAST // @DontAdd
 };

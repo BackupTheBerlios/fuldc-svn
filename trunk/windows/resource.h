@@ -431,8 +431,10 @@
 #define IDC_ST_MATCH_TYPE               1287
 #define IDC_EDIT_TIME_STAMPS            1288
 #define IDC_BTN_TIME_STAMP_HELP         1289
-#define IDC_LIST1                       1290
 #define IDC_DOWNLOAD_LIST               1290
+#define IDC_TAB_DIRTY_BLEND             1292
+#define IDC_SB_                         1293
+#define IDC_SB_TAB_DIRTY_BLEND          1293
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -480,7 +482,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        257
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1292
+#define _APS_NEXT_CONTROL_VALUE         1294
 #define _APS_NEXT_SYMED_VALUE           135
 #endif
 #endif

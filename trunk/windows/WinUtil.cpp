@@ -992,11 +992,6 @@ tstring WinUtil::DiskSpaceInfo(bool onlyTotal /* = false */) {
 			if(GetDiskFreeSpaceEx(drive, NULL, (PULARGE_INTEGER)&size, (PULARGE_INTEGER)&free)){
 				totalFree += free;
 				totalSize += size;
-				
-				if( !onlyTotal ){
-					ret.append(drive);
-					ret += _T("=") + Util::formatBytesW(size) + _T(" ");
-				}
 			}
 		}
 
@@ -1006,7 +1001,7 @@ tstring WinUtil::DiskSpaceInfo(bool onlyTotal /* = false */) {
 
 	if(totalSize != 0)
 		if( !onlyTotal )
-			ret += _T("total=") + Util::formatBytesW(totalFree) + _T("/") + Util::formatBytesW(totalSize);
+			ret += _T("HDD space (free/total): ") + Util::formatBytesW(totalFree) + _T("/") + Util::formatBytesW(totalSize);
 		else
 			ret += Util::formatBytesW(totalFree) + _T("/") + Util::formatBytesW(totalSize);
 

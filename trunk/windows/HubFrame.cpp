@@ -57,7 +57,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.SetFont(WinUtil::font);
 	ctrlClient.SetBackgroundColor(WinUtil::bgColor);
 	ctrlClient.SetTextColor(WinUtil::textColor);
-	//clientContainer.SubclassWindow(ctrlClient.m_hWnd);
+	clientContainer.SubclassWindow(ctrlClient.m_hWnd);
 	
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VSCROLL |
 		ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);

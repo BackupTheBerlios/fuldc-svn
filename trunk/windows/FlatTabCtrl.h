@@ -645,8 +645,16 @@ private:
 			brBackground = ::CreateSolidBrush(SETTING(TAB_INACTIVE_BG_DISCONNECTED));
 		else if(tab->notification && !aActive)
 			brBackground = ::CreateSolidBrush(SETTING(TAB_INACTIVE_BG_NOTIFY));
-		else
-			brBackground = ::CreateSolidBrush(SETTING(TAB_INACTIVE_BG));
+		else{
+			if( tab->dirty && BOOLSETTING(BLEND_TABS) ){
+				COLORREF bgBase = SETTING(TAB_INACTIVE_BG);
+				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? - SETTING(TAB_DIRTY_BLEND) : SETTING(TAB_DIRTY_BLEND);
+				brBackground = ::CreateSolidBrush( HLS_TRANSFORM(bgBase, mod, 0) );
+			} else {
+				brBackground = ::CreateSolidBrush( SETTING(TAB_INACTIVE_BG) );
+			}
+		}
+
 		
 		//Create the pen used to draw the borders
 		HPEN borderPen = ::CreatePen(PS_SOLID, 1, aActive ? SETTING(TAB_ACTIVE_BORDER) : SETTING(TAB_INACTIVE_BORDER));
@@ -714,7 +722,7 @@ private:
 			spacing += WinUtil::getTextWidth(m_hWnd, WinUtil::tabFont) + 2;
 		}
 
-		if(tab->dirty) {
+		if( tab->dirty && !BOOLSETTING(BLEND_TABS) ) {
 			HFONT f = dc.SelectFont(WinUtil::boldFont);
 			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->name.length());
 			dc.SelectFont(f);		
