@@ -658,18 +658,20 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		if(fhe != NULL){
 			CRect rc;
 			
-			//Get position of window
-			GetWindowRect(&rc);
-			
-			//convert the position so it's relative to main window
-			::ScreenToClient(GetParent(), &rc.TopLeft());
-			::ScreenToClient(GetParent(), &rc.BottomRight());
-			
-			//save the position
-			fhe->setBottom((u_int16_t)(rc.bottom > 0 ? rc.bottom : 0));
-			fhe->setTop((u_int16_t)(rc.top > 0 ? rc.top : 0));
-			fhe->setLeft((u_int16_t)(rc.left > 0 ? rc.left : 0));
-			fhe->setRight((u_int16_t)(rc.right > 0 ? rc.right : 0));
+			if(!IsIconic()){
+				//Get position of window
+				GetWindowRect(&rc);
+				
+				//convert the position so it's relative to main window
+				::ScreenToClient(GetParent(), &rc.TopLeft());
+				::ScreenToClient(GetParent(), &rc.BottomRight());
+				
+				//save the position
+				fhe->setBottom((u_int16_t)(rc.bottom > 0 ? rc.bottom : 0));
+				fhe->setTop((u_int16_t)(rc.top > 0 ? rc.top : 0));
+				fhe->setLeft((u_int16_t)(rc.left > 0 ? rc.left : 0));
+				fhe->setRight((u_int16_t)(rc.right > 0 ? rc.right : 0));
+			}
 
 			fhe->setShowJoins(showJoins);
 			fhe->setShowUserlist(showUserList);

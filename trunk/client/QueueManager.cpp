@@ -1462,9 +1462,12 @@ void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, b
 		else
 			i->second += size;
 	} else {
-		i->second -= size;
-		if(i->second == 0)
-			totalSizeMap.erase(i);
+		dcassert( i != totalSizeMap.end() );
+		if(i != totalSizeMap.end()) {
+			i->second -= size;
+			if(i->second <= 0)
+				totalSizeMap.erase(i);
+		}
 	}
 }
 
