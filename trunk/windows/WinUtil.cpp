@@ -543,7 +543,7 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 			}
 		} 
 	}else if(Util::stricmp(cmd.c_str(), "fuldc") == 0) {
-		message = "http://paxi.myftp.org <fulDC " + string(FULVERSIONSTRING) + ">";
+		message = "http://ful.dcportal.net <fulDC " + string(FULVERSIONSTRING) + ">";
 	} else if(Util::stricmp(cmd.c_str(), "fuptime") == 0) {
 		message = "fulDC uptime: " + Util::formatTime(GET_TIME() - WinUtil::startTime, false);
 	} else if(Util::stricmp(cmd.c_str(), "uptime") == 0) {
