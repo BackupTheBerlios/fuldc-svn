@@ -29,12 +29,13 @@
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
 #include "../client/LogManager.h"
+#include "../client/version.h"
 #include "../client/ShareManager.h"
 
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
 #include "TransferView.h"
-#include "upnp.h"
+#include "UPnP.h"
 #include "HashProgressDlg.h"
 
 #define SERVER_SOCKET_MESSAGE (WM_APP + 1235)

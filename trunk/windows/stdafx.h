@@ -39,6 +39,11 @@
 
 #include <winsock2.h>
 
+// Fix nt4 startup
+// Don't care about nt4
+//#define COMPILE_MULTIMON_STUBS
+//#include <multimon.h>
+
 #include <atlbase.h>
 #include <atlapp.h>
 

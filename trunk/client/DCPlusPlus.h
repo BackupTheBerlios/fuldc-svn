@@ -128,8 +128,6 @@ typedef StringMap TStringMap;
 typedef StringMapIter TStringMapIter;
 #endif
 
-#include "version.h"
-
 extern void startup(void (*f)(void*, const tstring&, const tstring&), void* p);
 extern void shutdown();
 

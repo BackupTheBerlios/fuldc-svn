@@ -657,7 +657,6 @@ int HashManager::Hasher::run() {
 				delete buf;
 			}
 			buf = NULL;
-			total = 0;
 		}
 	}
 	return 0;

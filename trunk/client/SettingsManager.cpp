@@ -25,6 +25,7 @@
 #include "SimpleXML.h"
 #include "Util.h"
 #include "File.h"
+#include "version.h"
 #include "StringTokenizer.h"
 
 const string SettingsManager::settingTags[] =
@@ -304,8 +305,13 @@ void SettingsManager::load(string const& aFileName)
 			xml.stepOut();
 		}
 
-		// double v = Util::toDouble(SETTING(CONFIG_VERSION));
+		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
+		if(v < 0.668 && isSet[IN_PORT]) {
+			set(UDP_PORT, SETTING(IN_PORT));
+		}
+
+		setDefault(UDP_PORT, SETTING(IN_PORT));
 
 		xml.resetCurrentChild();
 		if(xml.findChild("DownloadPaths")) {

@@ -34,6 +34,7 @@
 
 #include <limits>
 
+// some strange mac definition
 #ifdef ff
 #undef ff
 #endif

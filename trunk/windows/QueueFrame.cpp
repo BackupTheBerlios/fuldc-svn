@@ -28,6 +28,7 @@
 
 #include "../client/StringTokenizer.h"
 #include "../client/ShareManager.h"
+#include "../client/version.h"
 
 #include <stack>
 

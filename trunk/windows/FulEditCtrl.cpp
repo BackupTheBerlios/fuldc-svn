@@ -4,8 +4,9 @@
 #include "../client/highlightmanager.h"
 #include "../client/LogManager.h"
 #include "../client/ResourceManager.h"
-
+#include "../client/version.h"
 #include "../client/pme.h"
+
 
 #include "fuleditctrl.h"
 #include "PopupManager.h"

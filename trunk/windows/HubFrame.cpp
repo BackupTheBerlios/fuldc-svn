@@ -34,6 +34,7 @@
 #include "../client/HubManager.h"
 #include "../client/LogManager.h"
 #include "../client/AdcCommand.h"
+#include "../client/version.h"
 
 HubFrame::FrameMap HubFrame::frames;
 bool HubFrame::closing = false;
@@ -405,7 +406,7 @@ void HubFrame::addAsFavorite() {
 	aEntry.setServer(Text::fromT(server));
 	aEntry.setName(Text::fromT(buf));
 	aEntry.setDescription(Text::fromT(buf));
-	aEntry.setConnect(TRUE);
+	aEntry.setConnect(false);
 	aEntry.setNick(client->getNick());
 	aEntry.setShowJoins(showJoins);
 	aEntry.setShowUserlist(showUserList);

@@ -59,7 +59,7 @@
 
 #include <utility>
 
-#ifdef HAS_STLPORT
+#ifdef HAVE_STLPORT
 using namespace _STL;
 #include <hash_map>
 

@@ -4,6 +4,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/StringTokenizer.h"
+#include "../client/version.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
 

@@ -6,7 +6,7 @@
 #include "../client/ColorSettings.h"
 #include "../client/HighlightManager.h"
 #include "../client/StringTokenizer.h"
-
+#include "../client/version.h"
 #include "../client/pme.h"
 
 #include "FulHighlightPage.h"

@@ -38,6 +38,7 @@
 #include "TextFrame.h"
 #include "StatsFrame.h"
 #include "LineDlg.h"
+#include "HashProgressDlg.h"
 #include "UPnP.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
@@ -48,6 +49,7 @@
 #include "../client/StringTokenizer.h"
 #include "../client/SimpleXML.h"
 #include "../client/ShareManager.h"
+#include "../client/version.h"
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
@@ -224,7 +226,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
 			  || Util::getOsMajor() >= 6 )  //Longhorn
 		 {
-			UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
+			UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(ConnectionManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
 			UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", APPNAME " Search Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " UDP)", SearchManager::getInstance()->getPort() );
 		
 			if ( UPnP_UDPConnection->OpenPorts() || UPnP_TCPConnection->OpenPorts() )
@@ -319,7 +321,7 @@ void MainFrame::startSocket() {
 					// Changing default didn't change port, a fixed port must be in use...(or we
 					// tried all ports
 					AutoArray<TCHAR> buf(STRING(PORT_IS_BUSY).size() + 8);
-					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
+					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(UDP_PORT));
 					MessageBox(buf, _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 					break;
 				}

@@ -45,7 +45,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 	cur.reserve(128);
 
 	bool toSet = false;
-	bool fromSet = false;
+	bool fromSet = nmdc; // $ADCxxx never have a from CID...
 
 	while(i < len) {
 		switch(buf[i]) {
@@ -53,7 +53,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		case ' ': 
 			// New parameter...
 			{
-				if(!nmdc && !fromSet) {
+				if(!fromSet) {
 					from = CID(cur);
 					fromSet = true;
 				} else if(type == TYPE_DIRECT && !toSet) {
@@ -71,7 +71,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		i++;
 	}
 	if(!cur.empty()) {
-		if(!nmdc && !fromSet) {
+		if(!fromSet) {
 			to = CID(cur);
 			fromSet = true;
 		} else if(type == TYPE_DIRECT && !toSet) {

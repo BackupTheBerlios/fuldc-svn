@@ -29,6 +29,7 @@
 #include "../client/QueueManager.h"
 #include "../client/CriticalSection.h"
 #include "../client/FastAlloc.h"
+#include "../client/version.h"
 
 #define SHOWTREE_MESSAGE_MAP 12
 

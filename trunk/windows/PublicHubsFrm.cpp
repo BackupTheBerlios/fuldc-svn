@@ -27,6 +27,7 @@
 
 #include "../client/Client.h"
 #include "../client/StringTokenizer.h"
+#include "../client/version.h"
 
 int PublicHubsFrame::columnIndexes[] = { 
 	COLUMN_NAME,
@@ -212,6 +213,20 @@ LRESULT PublicHubsFrame::onClickedConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	if(dlg.DoModal(m_hWnd) == IDOK) {
 		updateDropDown();
 	}
+	return 0;
+}
+
+LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(!checkNick())
+		return 0;
+
+	if(ctrlHubs.GetSelectedCount() == 1) {
+		TCHAR buf[256];
+		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
+		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
+		HubFrame::openWindow(buf);
+	}
+
 	return 0;
 }
 

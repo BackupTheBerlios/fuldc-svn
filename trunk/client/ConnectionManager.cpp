@@ -39,6 +39,8 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 	features.push_back(UserConnection::FEATURE_ADCGET);
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
+
+	adcFeatures.push_back("BASE");
 };
 
 /**
@@ -328,7 +330,7 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 	}
 }
 
-void ConnectionManager::connect(const string& aServer, short aPort, const CID& aCID, u_int32_t aToken) {
+void ConnectionManager::connect(const string& aServer, short aPort, const CID& aCID, const string& aToken) {
 	if(shuttingDown)
 		return;
 
@@ -353,7 +355,7 @@ void ConnectionManager::on(Command::SUP, UserConnection* aSource, const Command&
 	}
 
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
-		aSource->sup();
+		aSource->sup(adcFeatures);
 		aSource->inf(false);
 	} else {
 		aSource->inf(true);
@@ -361,12 +363,12 @@ void ConnectionManager::on(Command::SUP, UserConnection* aSource, const Command&
 	aSource->setState(UserConnection::STATE_INF);
 }
 
-void ConnectionManager::on(Command::NTD, UserConnection* aSource, const Command&) throw() {
-	
+void ConnectionManager::on(Command::NTD, UserConnection*, const Command&) throw() {
+
 }
 
 void ConnectionManager::on(Command::STA, UserConnection*, const Command&) throw() {
-
+	
 }
 
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
@@ -375,7 +377,7 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
 		aSource->myNick(aSource->getNick());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} else {
-		aSource->sup();
+		aSource->sup(adcFeatures);
 	}
 	aSource->setState(UserConnection::STATE_SUPNICK);
 }

@@ -178,7 +178,7 @@ void HubManager::onHttpFinished() throw() {
 		Lock l(cs);
 		publicListMatrix[publicListServer].clear();
 
-		if(x->compare(0, 5, "<?xml") == 0) {
+		if(x->compare(0, 5, "<?xml") == 0 || x->compare(0, 8, "\xEF\xBB\xBF<?xml") == 0) {
 			loadXmlList(*x);
 		} else {
 			i = 0;
