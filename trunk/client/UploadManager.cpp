@@ -358,8 +358,8 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 		AdcCommand cmd(AdcCommand::CMD_SND);
 		cmd.addParam(c.getParam(0));
 		cmd.addParam(c.getParam(1));
-		cmd.addParam(c.getParam(2));
-		cmd.addParam(Util::toString(aBytes));
+		cmd.addParam(Util::toString(u->getPos()));
+		cmd.addParam(Util::toString(u->getSize() - u->getPos()));
 
 		if(c.hasFlag("ZL", 4)) {
 			u->setFile(new FilteredInputStream<ZFilter, true>(u->getFile()));

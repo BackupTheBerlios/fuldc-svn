@@ -173,7 +173,7 @@ public:
 	}
 
 	virtual size_t flush() throw(Exception) {
-		if(!FlushFileBuffers(h))
+		if(isOpen() && !FlushFileBuffers(h))
 			throw FileException(Util::translateError(GetLastError()));
 		return 0;
 	}

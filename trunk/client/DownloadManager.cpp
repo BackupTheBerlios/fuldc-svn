@@ -297,12 +297,14 @@ public:
 int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, int64_t startPos) {
 	// Always discard data until the last block
 	startPos = startPos - (startPos % tt.getBlockSize());
+	if(startPos < tt.getBlockSize())
+		return 0;
+
 	DummyOutputStream dummy;
 
 	vector<u_int8_t> buf((size_t)min((int64_t)1024*1024, tt.getBlockSize()));
 
-	while(startPos >= tt.getBlockSize()) {
-
+	do {
 		int64_t blockPos = startPos - tt.getBlockSize();
 		MerkleCheckOutputStream<TigerTree, false> check(tt, &dummy, blockPos);
 
@@ -316,12 +318,12 @@ int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, i
 				check.write(&buf[0], n);
 				bytesLeft -= n;
 			}
+			break;
 		} catch(const Exception&) {
 			dcdebug("Removed bad block at " I64_FMT "\n", blockPos);
-			startPos -= tt.getBlockSize();
 		}
-		break;
-	}
+		startPos = blockPos;
+	} while(startPos > 0);
 	return startPos;
 }
 
@@ -359,7 +361,7 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 	const string& type = cmd.getParam(0);
 	int64_t bytes = Util::toInt64(cmd.getParam(3));
 
-	if((aSource->getDownload()->isSet(Download::FLAG_TREE_DOWNLOAD) && type != "tthl")) 
+	if(!(type == "file" || (type == "tthl" && aSource->getDownload()->isSet(Download::FLAG_TREE_DOWNLOAD))))
 	{
 		// Uhh??? We didn't ask for this?
 		aSource->disconnect();
@@ -475,6 +477,11 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 
 		d->setFile(file);
 
+
+		if(SETTING(BUFFER_SIZE) > 0 ) {
+			d->setFile(new BufferedOutputStream<true>(d->getFile()));
+		}
+
 		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 
 		if(sfvcheck) {
@@ -494,9 +501,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
 		}
 
-		if(SETTING(BUFFER_SIZE) > 0 ) {
-			d->setFile(new BufferedOutputStream<true>(d->getFile()));
-		}
 	}
 
 	if(z) {
@@ -571,7 +575,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		d->setFile(NULL);
 
 		int64_t bl = 1024;
-		while(bl * (int64_t)d->getTigerTree().getLeaves().size() < d->getSize())
+		while(bl * (int64_t)d->getTigerTree().getLeaves().size() < d->getTigerTree().getFileSize())
 			bl *= 2;
 		d->getTigerTree().setBlockSize(bl);
 		d->getTigerTree().calcRoot();
@@ -590,6 +594,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 			checkDownloads(aSource);
 			return;
 		}
+		d->setTreeValid(true);
 	} else {
 
 		// Hm, if the real crc == 0, we'll get a file reread extra, but what the heck...
@@ -635,7 +640,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 				return;
 		}
 
-		if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !d->isSet(Download::FLAG_USER_LIST))) {
+		if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !d->isSet(Download::FLAG_USER_LIST)) && !d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 			logDownload(aSource, d);
 		}
 
@@ -889,7 +894,7 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 	aSource->setDownload(NULL);
 
-	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false, d->isSet(Download::FLAG_TREE_DOWNLOAD));
+	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), d->isSet(Download::FLAG_TREE_DOWNLOAD) ? QueueItem::Source::FLAG_NO_TREE : QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);

@@ -478,6 +478,10 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 		i->country = Text::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
 			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
+
+		if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+			i->file = _T("TTH: ") + i->file;
+		}
 	}
 
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
@@ -535,6 +539,11 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 		i->path = Text::toT(Util::getFilePath(aDownload->getTarget()));
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_SIZE | ItemInfo::MASK_FILE |
 		ItemInfo::MASK_PATH;
+
+		if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+			i->file = _T("TTH: ") + i->file;
+		}
+
 	}
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
@@ -561,6 +570,11 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 		i->country = Text::toT(Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp()));
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
 			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
+
+		if(aUpload->isSet(Upload::FLAG_TTH_LEAVES)) {
+			i->file = _T("TTH: ") + i->file;
+		}
+
 	}
 
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);

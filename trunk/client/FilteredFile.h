@@ -115,6 +115,7 @@ public:
 				if(len > 0) {
 					throw Exception("Garbage data after end of stream");
 				}
+				flushed = true;
 				return written;
 			}
 		}

@@ -779,6 +779,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw(
 			d->setFlag(Download::FLAG_TREE_DOWNLOAD);
 			d->getTigerTree().setFileSize(d->getSize());
 			d->setPos(0);
+			d->setSize(-1);
 			d->unsetFlag(Download::FLAG_RESUME);
 		} else {
 			// Use the root as tree to get some sort of validation at least...
@@ -816,9 +817,9 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 				}
 			}
 
-			dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
 
 			if(finished) {
+				dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
 				if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 					// Got a full tree, now add it to the HashManager
 					dcassert(aDownload->getTreeValid());
@@ -983,7 +984,7 @@ void QueueManager::remove(const string& aTarget) throw() {
 	}
 }
 
-void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn /* = true */, bool isTree /* = false */) throw() {
+void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn /* = true */) throw() {
 	Lock l(cs);
 	QueueItem* q = fileQueue.find(aTarget);
 	string x;
@@ -994,9 +995,9 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 			return;
 		}
 
-		if(isTree) {
+		if(reason == QueueItem::Source::FLAG_NO_TREE) {
 			QueueItem::Source* s = *q->getSource(aUser);
-			s->setFlag(QueueItem::Source::FLAG_NO_TREE);
+			s->setFlag(reason);
 			return;
 		}
 

@@ -108,7 +108,7 @@ public:
 	void move(const string& aSource, const string& aTarget) throw();
 
 	void remove(const string& aTarget) throw();
-	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true, bool isTree = false) throw();
+	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true) throw();
 	void removeSources(User::Ptr& aUser, int reason) throw();
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();

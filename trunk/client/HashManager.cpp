@@ -60,7 +60,7 @@ void HashManager::hashDone(const string& aFileName, u_int32_t aTimeStamp, const 
 		root = store.getTTH(aFileName);
 	}
 
-	if(root != NULL) {
+	if(root != NULL && speed > -1) {
 		fire(HashManagerListener::TTHDone(), aFileName, *root);
 	}
 
@@ -110,6 +110,7 @@ bool HashManager::HashStore::addTree(const TigerTree& tth) {
 	} catch(const Exception& ) {
 		return false;
 	}
+	dirty = true;
 	return true;
 }
 
@@ -350,7 +351,7 @@ static const string sHash = "Hash";
 static const string sType = "Type";
 static const string sTTH = "TTH";
 static const string sIndex = "Index";
-static const string sLeafSize = "LeafSize";
+static const string sLeafSize = "LeafSize";		// Residue from v1 as well
 static const string sBlockSize = "BlockSize";
 static const string sTimeStamp = "TimeStamp";
 static const string sRoot = "Root";
