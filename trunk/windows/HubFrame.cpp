@@ -1281,12 +1281,11 @@ void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
 		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
 		case ClientListener::HUB_NAME:
-			speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getAddressPort() + ")");
+			speak(SET_WINDOW_TITLE, Util::validateMessage(client->getName(), true, false) + " (" + client->getAddressPort() + ")");
 			break;
 		case ClientListener::VALIDATE_DENIED:
-			client->removeListener(this);
-			client->disconnect();
 			speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
+			speak(DISCONNECTED);
 			break;
 	}
 }
@@ -1421,17 +1420,15 @@ void HubFrame::removeUser(const User::Ptr& u) {
 	UserMap::iterator i = usermap.begin();
 	for(; i != usermap.end(); ++i) {
 		if(Util::stricmp(i->second->user->getNick(), u->getNick()) == 0){
-			bool change = false;
 			if(curUser != usermap.end()){
-				if(Util::stricmp(i->second->user->getNick(), curUser->second->user->getNick()) == 0) 
-					change = true;
+				if(Util::stricmp(u->getNick(), curUser->second->user->getNick()) == 0) 
+					curUser = usermap.end();
 			}
 			
 			delete i->second;
 			i->second = NULL;
 			usermap.erase(i);
-			if(change)
-				curUser = usermap.begin();
+			
 			break;
 		}
 	}

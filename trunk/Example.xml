@@ -63,7 +63,7 @@
 		<String Name="DownloadFinishedIdle">Download finished, idle...</String>
 		<String Name="DownloadStarting">Download starting...</String>
 		<String Name="DownloadTo">Download to...</String>
-		<String Name="DownloadQueue">Download queue</String>
+		<String Name="DownloadQueue">Download Queue</String>
 		<String Name="DownloadWholeDir">Download whole directory</String>
 		<String Name="DownloadWholeDirTo">Download whole directory to...</String>
 		<String Name="Downloaded">Downloaded</String>
@@ -159,7 +159,7 @@
 		<String Name="MenuRefreshFileList">Refresh file list</String>
 		<String Name="MenuShow">Show</String>
 		<String Name="MenuSearch">&amp;Search	Ctrl+S</String>
-		<String Name="MenuSearchSpy">Search spy</String>
+		<String Name="MenuSearchSpy">Search Spy</String>
 		<String Name="MenuSettings">Settings...</String>
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuAbout">About DC++...</String>

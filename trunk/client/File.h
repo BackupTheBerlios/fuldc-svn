@@ -378,7 +378,7 @@ private:
 template<bool managed>
 class LimitedInputStream : public InputStream {
 public:
-	LimitedInputStream(InputStream* s, int aMaxBytes) : maxBytes(aMaxBytes) {
+	LimitedInputStream(InputStream* is, int aMaxBytes) : s(is), maxBytes(aMaxBytes) {
 	}
 	virtual ~LimitedInputStream() { if(managed) delete s; }
 		
@@ -393,6 +393,7 @@ public:
 	}
 	
 private:
+	InputStream* s;
 	int64_t maxBytes;
 };
 

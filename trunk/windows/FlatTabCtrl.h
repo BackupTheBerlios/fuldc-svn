@@ -275,6 +275,7 @@ public:
 	}
 
 	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		if(::IsWindow(closing))
 		::SendMessage(closing, WM_CLOSE, 0, 0);
 		return 0;
 	}

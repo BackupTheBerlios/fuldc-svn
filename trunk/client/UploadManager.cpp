@@ -49,7 +49,7 @@ UploadManager::~UploadManager() throw() {
 	}
 }
 
-bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume) {
+bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes) {
 	if(aSource->getState() != UserConnection::STATE_GET) {
 		dcdebug("UM:onGet Wrong state, ignoring\n");
 		return false;
@@ -144,6 +144,10 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	u->setFileName(aFile);
 	u->setLocalFileName(file);
 
+	if(aBytes != -1 && aResume + aBytes < f->getSize()) {
+		u->setFile(new LimitedInputStream<true>(u->getFile(), aBytes));
+	}
+
 	if(smallfile)
 		u->setFlag(Upload::FLAG_SMALL_FILE);
 	if(userlist)
@@ -181,7 +185,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 }
 
 void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t aResume) {
-	if(prepareFile(aSource, aFile, aResume)) {
+	if(prepareFile(aSource, aFile, aResume, -1)) {
 		aSource->setState(UserConnection::STATE_SEND);
 		aSource->fileLength(Util::toString(aSource->getUpload()->getSize()));
 	}
@@ -189,7 +193,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 
 void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z) {
 	if(!z || BOOLSETTING(COMPRESS_TRANSFERS)) {
-		if(prepareFile(aSource, aFile, aResume)) {
+		if(prepareFile(aSource, aFile, aResume, aBytes)) {
 			Upload* u = aSource->getUpload();
 			dcassert(u != NULL);
 			if(aBytes == -1)

@@ -552,29 +552,26 @@ void WinUtil::openLink(const string& url) {
 				if(end == string::npos)
 					end = cmd.length();
 
-				cmd = cmd.substr(start, end-start);
-				::ShellExecute(NULL, cmd.c_str(), url.c_str(), NULL, NULL, SW_SHOWNORMAL);
-				/*size_t p = cmd.find("%1");
-				if(p != string::npos)
-					cmd.replace(p, 2, url);
+				//cmd = cmd.substr(start, end-start);
+				//::ShellExecute(NULL, cmd.c_str(), url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+				//size_t p = cmd.find("%1");
+				//if(p != string::npos)
+				//	cmd.replace(p, 2, url);
 				
 				STARTUPINFO si = { sizeof(si), 0 };
 				PROCESS_INFORMATION pi = { 0 };
-				AutoArray<char> buf(cmd.length() + url.length() + 4);
+				AutoArray<char> buf(url.length() + 4);
 				size_t pos = 0;
 				buf[pos++] = '"';
-				strcpy(buf + pos, cmd.c_str());
-				pos += cmd.size();
-				buf[pos++] = '"';
-				buf[pos++] = ' ';
 				strcpy(buf + pos, url.c_str());
 				pos += url.length();
+				buf[pos++] = '"';
 				buf[pos++] = 0;
-				if(::CreateProcess(NULL, buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+				if(::CreateProcess(cmd.c_str(), buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
 					::CloseHandle(pi.hThread);
 					::CloseHandle(pi.hProcess);
 					return;
-				}*/
+				}
 			}
 		}
 	}
