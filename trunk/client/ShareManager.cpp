@@ -1470,7 +1470,7 @@ bool ShareManager::loadXmlList(){
 	//try to read the xml from the file
 	try{
 		::File f(Util::getAppPath() + "Share.xml.bz2", File::READ, File::OPEN);
-		xmlString->reserve( f.getSize() );
+		xmlString->reserve( static_cast<string::size_type>(f.getSize()) );
 		FilteredInputStream<UnBZFilter, false> xmlFile(&f);
 		for(;;) {
 			size_t tmp = BUF_SIZE;

@@ -30,8 +30,6 @@
 #include "SearchFrm.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
-#include "stack"
-#include "../client/MerkleTree.h"
 
 DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
