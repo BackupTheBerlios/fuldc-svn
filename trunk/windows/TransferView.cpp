@@ -718,7 +718,13 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam
 	if(resolveBuffer == NULL)
 		return 0;
 	
-	::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new string(((hostent*)resolveBuffer)->h_name));
+	hostent *h = (hostent*)resolveBuffer;
+	in_addr a;
+		
+	memcpy(&a.S_un.S_addr, h->h_addr_list[0], 4);
+	char * c = inet_ntoa(a);
+	if(c != NULL)
+		::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new string(string(c) + " " +  STRING(RESOLVES_TO) + " " + h->h_name));
 	delete[] resolveBuffer;
 	resolveBuffer = NULL;
 

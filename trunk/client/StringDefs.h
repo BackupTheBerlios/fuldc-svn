@@ -495,5 +495,6 @@ enum Strings { // @DontAdd
 	TOTAL_TIME_LEFT, // "Total Time Left"
 	MENU_OPEN_MY_LIST, // "Open my file list"
 	RESOLVE_IP, // "Resolve IP"
+	RESOLVES_TO, // "resolves to"
 	LAST // @DontAdd
 };

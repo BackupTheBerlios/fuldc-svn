@@ -491,5 +491,6 @@
 		<String Name="TotalTimeLeft">Total Time Left</String>
 		<String Name="MenuOpenMyList">Open my file list</String>
 		<String Name="ResolveIp">Resolve IP</String>
+		<String Name="ResolvesTo">resolves to</String>
 	</Strings>
 </Language>

@@ -492,6 +492,7 @@ string ResourceManager::strings[] = {
 "Total Time Left", 
 "Open my file list", 
 "Resolve IP", 
+"resolves to", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -984,4 +985,5 @@ string ResourceManager::names[] = {
 "TotalTimeLeft", 
 "MenuOpenMyList", 
 "ResolveIp", 
+"ResolvesTo", 
 };
