@@ -39,7 +39,7 @@ private:
 	void	AddInternalLine(string &aLine);
 	void	Colorize(int begin);
 	int		FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex);
-	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex);
+	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int &lineIndex);
 	void	AddLogLine(string & line);
 
 	bool		matchedSound;

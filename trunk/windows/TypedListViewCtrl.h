@@ -287,7 +287,7 @@ public:
 
 	LRESULT onHeaderMenu(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ColumnIter i = columnList.begin();
-		for(int j = 0; j < wParam; ++j, ++i );
+		for(unsigned int j = 0; j < wParam; ++j, ++i );
 
 		ColumnInfo * ci = (*i);
 		ci->visible = ! ci->visible;

@@ -187,7 +187,7 @@ void CFulEditCtrl::Colorize(int begin) {
 
 		while( pos != string::npos ){
 			if(cs->getMatch().find("$Re:") != string::npos ) {
-				pos = RegExpMatch(cs, cf, line, pos, begin);
+				pos = RegExpMatch(cs, cf, line, begin);
 			} else {
 				pos = FullTextMatch(cs, cf, line, pos, begin);
 			}
@@ -377,7 +377,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 		return string::npos;
 }
 
-int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int pos, int &lineIndex) {
+int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int &lineIndex) {
 	int begin = 0, end = 0;
 	
 	try{
@@ -399,7 +399,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 			SetSelectionCharFormat(cf);
 		} else {
 			for(u_int j = 1; j < result.cbackrefs(); ++j) {
-				begin = pos + lineIndex + result.rstart(j);
+				begin = lineIndex + result.rstart(j);
 				end = begin + result.rlength(j);
 				
 				SetSel(begin, end);
