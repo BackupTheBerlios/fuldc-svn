@@ -190,6 +190,10 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		ctrlDirectories.GetItem(&item);
 		ShareManager::getInstance()->removeDirectory(buf);
 		ShareManager::getInstance()->removeIncoming(buf);
+		
+		//remove the directory from the hash queue to avoid unnecessary cpu usage
+		HashManager::getInstance()->remove(buf);
+
 		ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
 		ctrlDirectories.DeleteItem(i);
 	}

@@ -426,8 +426,6 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 		}
 	}
 	dirty = true;
-
-	HashManager::getInstance()->remove( d );
 }
 
 void ShareManager::addFinishedFile(Directory* aParent, const string& aName, int64_t aSize) {
