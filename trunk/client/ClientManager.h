@@ -148,8 +148,10 @@ private:
 
 	Socket s;
 
+	u_int32_t lastInfo;
+
 	friend class Singleton<ClientManager>;
-	ClientManager() { 
+	ClientManager() : lastInfo(0) { 
 		TimerManager::getInstance()->addListener(this); 
 		if(SETTING(CLIENT_ID).empty())
 			SettingsManager::getInstance()->set(SettingsManager::CLIENT_ID, CID::generate().toBase32());

@@ -309,8 +309,11 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 		}
 	}
 
-	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
-		(*j)->info();
+	if( GET_TICK() - lastInfo > 1000*600 ){
+		for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
+			(*j)->info();
+		}
+		lastInfo = GET_TICK();
 	}
 }
 

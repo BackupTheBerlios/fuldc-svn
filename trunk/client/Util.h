@@ -381,6 +381,12 @@ public:
 #endif
 	}
 
+	static string toString(int val) {
+		char buf[16];
+		sprintf(buf, "%d", val);
+		return buf;
+	}
+
 	static string toString(u_int32_t val) {
 		char buf[16];
 		sprintf(buf, "%lu", (unsigned long)val);
