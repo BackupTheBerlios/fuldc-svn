@@ -311,7 +311,10 @@ void SettingsManager::save(string const& aFileName) {
 	for(i=STR_FIRST; i<STR_LAST; i++)
 	{
 		if(i == CONFIG_VERSION) {
-			xml.addTag(settingTags[i], Util::toString(VERSIONFLOAT));
+			char buf[16];
+			sprintf(buf, "%0.4f", VERSIONFLOAT);
+
+			xml.addTag(settingTags[i], buf);
 			xml.addChildAttrib(type, curType);
 		} else if(isSet[i]) {
 			xml.addTag(settingTags[i], get(StrSetting(i), false));

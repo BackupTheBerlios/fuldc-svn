@@ -538,7 +538,7 @@ string ResourceManager::strings[] = {
 "Inactive text color", 
 "Inactive border color", 
 "Inactive notification color", 
-"Finished searching the chat", 
+"Finished searching", 
 "User hasn't been seen", 
 "Removed", 
 "Directory not shared", 

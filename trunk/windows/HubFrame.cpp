@@ -476,7 +476,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 					if(updateUser(u)) {
 						if(showJoins) {
 							if (!favShowJoins || u->isFavoriteUser()) {
-								addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()));
+								addLine("*** " + STRING(JOINS) + (stripIsp ? u->getShortNick() : u->getNick()), BOOLSETTING(HUB_BOLD_TABS));
 							}
 						}
 					}
@@ -1422,7 +1422,7 @@ void HubFrame::removeUser(const User::Ptr& u) {
 
 	if(showJoins) {
 		if (!favShowJoins || u->isFavoriteUser()) {
-			addLine("*** " + STRING(PARTS) + nick);
+			addLine("*** " + STRING(PARTS) + nick, BOOLSETTING(HUB_BOLD_TABS));
 		}
 	}
 }

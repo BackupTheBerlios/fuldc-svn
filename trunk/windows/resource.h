@@ -92,6 +92,7 @@
 #define IDC_MAX_HASH_SPEED              251
 #define IDC_SETTINGS_MBS                252
 #define IDD_FULAPPEARANCEPAGE           253
+#define IDR_NOTEPAD                     256
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -158,7 +159,6 @@
 #define IDC_PUBLIC_HUBS                 1054
 #define IDC_THANKS                      1055
 #define IDC_DOWNLOADS                   1056
-#define IDC_THANKS2                     1056
 #define IDC_FULTHANKS                   1056
 #define IDC_SLOTSSPIN                   1057
 #define IDC_MAXSPEED                    1058
@@ -458,8 +458,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        256
-#define _APS_NEXT_COMMAND_VALUE         32818
+#define _APS_NEXT_RESOURCE_VALUE        257
+#define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1290
 #define _APS_NEXT_SYMED_VALUE           135
 #endif

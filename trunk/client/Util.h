@@ -403,7 +403,7 @@ public:
 	}
 	static string toString(double val) {
 		char buf[16];
-		sprintf(buf, "%0.4f", val);
+		sprintf(buf, "%0.2f", val);
 		return buf;
 	}
 	static string toHexEscape(char val) {

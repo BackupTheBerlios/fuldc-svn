@@ -537,7 +537,7 @@
 		<String Name="TabInactiveText">Inactive text color</String>
 		<String Name="TabInactiveBorder">Inactive border color</String>
 		<String Name="TabInactiveBgNotify">Inactive notification color</String>
-		<String Name="FinishedSearching">Finished searching the chat</String>
+		<String Name="FinishedSearching">Finished searching</String>
 		<String Name="LastseenError">User hasn't been seen</String>
 		<String Name="Removed">Removed</String>
 		<String Name="DirectoryNotFound">Directory not shared</String>

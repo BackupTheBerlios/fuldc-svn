@@ -25,11 +25,12 @@
 
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
+#include "FulEditCtrl.h"
 
 class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, public StaticFrame<NotepadFrame, ResourceManager::NOTEPAD, IDC_NOTEPAD>
 {
 public:
-	DECLARE_FRAME_WND_CLASS_EX("NotepadFrame", 0, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX("NotepadFrame", IDR_NOTEPAD, 0, COLOR_3DFACE);
 
 	NotepadFrame() : dirty(false) { }
 	~NotepadFrame() { }
@@ -45,6 +46,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		COMMAND_ID_HANDLER(IDC_FIND, onFind)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -69,11 +71,16 @@ public:
 		ctrlPad.SetFocus();
 		return 0;
 	}
+
+	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		ctrlPad.Find();
+		return 0;
+	}
 	
 private:
 	
 	bool dirty;
-	CEdit ctrlPad;
+	CFulEditCtrl ctrlPad;
 };
 
 #endif // !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)

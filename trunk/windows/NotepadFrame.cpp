@@ -31,6 +31,10 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
+	ctrlPad.SetBackgroundColor(WinUtil::bgColor);
+	ctrlPad.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB | CFulEditCtrl::STRIP_ISP |
+		CFulEditCtrl::HANDLE_SCROLL);
+
 	string tmp;
 	try {
 		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ, File::OPEN).read();

@@ -409,13 +409,22 @@ LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	POINT pt2, pt = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
-	int ch = CharFromPos(pt);
-	pt2 = PosFromChar(ch);
+	POINT mousePT = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
+	int ch = CharFromPos(mousePT);
+	POINT charPT = PosFromChar(ch);
 
 	//since CharFromPos returns the last character even if the pointer is past the end of text
 	//we have to check if the pointer was actually above the last char
-	if(pt.x > pt2.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font)){
+	//if(pt.x > pt2.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font) || pt.y > pt2.y){
+	//	bHandled = FALSE;
+	//	return 0;
+	//}
+	if(mousePT.x < charPT.x || mousePT.x > (charPT.x + WinUtil::getTextWidth(m_hWnd, WinUtil::font))) {
+		bHandled == FALSE;
+		return 0;
+	}
+
+	if(mousePT.y < charPT.y || mousePT.y > (charPT.y + WinUtil::getTextHeight(m_hWnd, WinUtil::font))) {
 		bHandled = FALSE;
 		return 0;
 	}

@@ -541,7 +541,7 @@ enum Strings { // @DontAdd
 	TAB_INACTIVE_TEXT, // "Inactive text color"
 	TAB_INACTIVE_BORDER, // "Inactive border color"
 	TAB_INACTIVE_BG_NOTIFY, // "Inactive notification color"
-	FINISHED_SEARCHING, // "Finished searching the chat"
+	FINISHED_SEARCHING, // "Finished searching"
 	LASTSEEN_ERROR, // "User hasn't been seen"
 	REMOVED, // "Removed"
 	DIRECTORY_NOT_FOUND, // "Directory not shared"

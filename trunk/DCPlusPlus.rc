@@ -838,6 +838,12 @@ BEGIN
     VK_F3,          IDC_FIND,               VIRTKEY, NOINVERT
 END
 
+IDR_NOTEPAD ACCELERATORS 
+BEGIN
+    "F",            IDC_FIND,               VIRTKEY, ALT, NOINVERT
+    VK_F3,          IDC_FIND,               VIRTKEY, NOINVERT
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
