@@ -36,10 +36,8 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 		switch(i->type)
 		{
 		case T_STR:
-			//if(!SettingsManager::getInstance()->isDefault(i->setting)) {
-				::SetDlgItemText(page, i->itemID,
-					settings->get((SettingsManager::StrSetting)i->setting, useDef).c_str());
-			//}
+			::SetDlgItemText(page, i->itemID,
+				settings->get((SettingsManager::StrSetting)i->setting, useDef).c_str());
 			break;
 		case T_INT:
 			if(settings->isDefault(i->setting) && i->setting == SettingsManager::IN_PORT)

@@ -162,7 +162,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	}
 
 	ctrlClient.SetNick(nick);
-	ctrlClient.StripIsp(stripIsp);
+	if(stripIsp)
+		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
 
 	for(int j=0; j<COLUMN_LAST; j++) {
 		ctrlFilterSel.AddString(CSTRING_I(columnNames[j]));

@@ -97,7 +97,8 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	WinUtil::SetIcon(m_hWnd, "User.ico");
 	
-	ctrlClient.StripIsp(BOOLSETTING(STRIP_ISP_PM));
+	if(BOOLSETTING(STRIP_ISP_PM))
+		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
 
 	bHandled = FALSE;
 	return 1;

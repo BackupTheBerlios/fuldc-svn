@@ -15,7 +15,7 @@
 
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
-CFulEditCtrl::CFulEditCtrl(void): handleScrolling(true), matchedPopup(false), nick(Util::emptyString), findBufferSize(100),
+CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyString), findBufferSize(100),
 								logged(false), matchedSound(false), skipLog(false)
 {
 	findBuffer = new char[findBufferSize];
@@ -28,6 +28,8 @@ CFulEditCtrl::CFulEditCtrl(void): handleScrolling(true), matchedPopup(false), ni
 	urls.push_back("ftps://");
 	urls.push_back("mms://");
 	urls.push_back("dchub://");
+
+	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND);
 
 }
 CFulEditCtrl::~CFulEditCtrl(void)
@@ -50,7 +52,7 @@ bool CFulEditCtrl::AddLine(const string & line, bool timeStamps) {
 	if(Util::strnicmp("<" + nick + ">", aLine, nick.length() + 2) == 0)
 		skipLog = true;
 
-	if(stripIsp && aLine[0] == '<') {
+	if(isSet(STRIP_ISP) && aLine[0] == '<') {
 		u_int pos = aLine.find("]");
 		if(pos < aLine.find(">") )
 			aLine = "<" + aLine.substr(pos+1);
@@ -244,12 +246,11 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 		}
 	}
 	//return if no matches where found
-	if( index != string::npos ){
-		pos = index + searchString.length();
-	}
-	else
+	if( index == string::npos )
 		return string::npos;
 
+	pos = index + searchString.length();
+	
 	//found the string, now make sure it matches
 	//the way the user specified
 	int length;
@@ -269,10 +270,8 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 					return string::npos;
 				break;
 			case 3:
-				if((index == 0 || line[index-1] == ' ') && (line[index+length] == ' ' || line[index+length] == '\r') ){
-				}else{
+				if( !( (index == 0 || line[index-1] == ' ') && (line[index+length] == ' ' || line[index+length] == '\r') ) )
 					return string::npos;
-				}
 				break;
 		}
 	}
@@ -295,6 +294,7 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 		tmp = line.find_last_of(" \t\r\n", index);
 		if(tmp != string::npos )
 			begin += tmp+1;
+		
 		tmp = line.find_first_of(" \t\r\n", index);
 		if(tmp != string::npos )
 			end = lineIndex + tmp;
@@ -312,11 +312,11 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 	SetSel(GetTextLength()-1, GetTextLength()-1);
 	SetSelectionCharFormat(selFormat);
 
-	if(cs->getPopup() && !matchedPopup) {
+	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
 		matchedPopup = true;
 		PopupManager::getInstance()->ShowMC(line);
 	}
-	if(cs->getTab())
+	if(cs->getTab() && isSet(TAB))
 		matchedTab = true;
 
 	if(cs->getLog() && !logged && !skipLog){
@@ -324,15 +324,15 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 		AddLogLine(line);
 	}
 
-	if(cs->getPlaySound() && !matchedSound){
+	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
 		matchedSound = true;
 		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 	}
 					
-	if( !cs->getTimestamps() && !cs->getUsers() )
-		return pos;	
-	else
+	if( cs->getTimestamps() || cs->getUsers() )
 		return string::npos;
+	
+	return pos;
 }
 
 int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int &lineIndex) {
@@ -374,12 +374,12 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 	SetSel(GetTextLength()-1, GetTextLength()-1);
 	SetSelectionCharFormat(selFormat);
 
-	if(cs->getPopup() && !matchedPopup) {
+	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
 		matchedPopup = true;
 		PopupManager::getInstance()->ShowMC(line);
 	}
 
-	if(cs->getTab())
+	if(cs->getTab() && isSet(TAB))
 		matchedTab = true;
 
 	if(cs->getLog() && !logged && !skipLog){
@@ -387,7 +387,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 		AddLogLine(line);
 	}
 
-	if(cs->getPlaySound() && !matchedSound){
+	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
 		matchedSound = true;
 		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
 	}
@@ -396,7 +396,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, 
 }
 
 LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
-	if(handleScrolling)
+	if(isSet(HANDLE_SCROLL))
 		ScrollToEnd();
 			
 	bHandled = FALSE;
@@ -571,8 +571,4 @@ void CFulEditCtrl::AddLogLine(string & line){
 
 deque<string> *CFulEditCtrl::LastLog(){
 	return &lastlog;
-}
-
-void CFulEditCtrl::DisableScrollHandling(bool disable){
-	handleScrolling = !disable;
 }

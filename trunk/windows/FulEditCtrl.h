@@ -5,7 +5,9 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-class CFulEditCtrl : public CWindowImpl<CFulEditCtrl, CRichEditCtrl>
+#include "../client/Util.h"
+
+class CFulEditCtrl : public CWindowImpl<CFulEditCtrl, CRichEditCtrl>, public Flags
 {
 public:
 	BEGIN_MSG_MAP(CFulEditCtrl)
@@ -17,6 +19,14 @@ public:
 	CFulEditCtrl(void);
 	~CFulEditCtrl(void);
 
+	enum {
+		STRIP_ISP		= 0x01, // Activate strip isp
+		HANDLE_SCROLL	= 0x02, //Determines if the richedit will handle scrolling
+		POPUP			= 0x04, //if not set, will not popup messages on matches
+		SOUND			= 0x08, //if not set, will not play sound on matches
+		TAB				= 0x10  //if not set, will not color the tab on matches
+	};
+
 	bool	AddLine(const string & line, bool timeStamps = false);
 	void	SetTextColor( COLORREF color );
 	void	ScrollToEnd();
@@ -24,16 +34,14 @@ public:
 	int		TextUnderCursor(POINT p, string& x);
 	void	Find();
 	bool	LastSeen(string & nick);
-	void	DisableScrollHandling(bool disable = true);
-	
+		
 	deque<string>* LastLog();
 	
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 		
-	void	StripIsp(bool strip = false) { stripIsp = strip; }
-	void	SetNick(const string aNick) { nick = aNick; }
+	void	SetNick(const string& aNick) { nick = aNick; }
 
 private:
 	void	AddInternalLine(string &aLine);
@@ -45,10 +53,8 @@ private:
 	bool		matchedSound;
 	bool		matchedPopup;
 	bool		matchedTab;
-	bool		stripIsp;
 	bool		logged;
 	bool		skipLog;
-	bool		handleScrolling;
 	string		nick;
 	CHARFORMAT2 selFormat;
 	char*		findBuffer;

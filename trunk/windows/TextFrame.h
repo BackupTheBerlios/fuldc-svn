@@ -82,7 +82,7 @@ public:
 			init = false;
 			
 		} else {
-			ctrlPad.DisableScrollHandling(false);
+			ctrlPad.setFlag(CFulEditCtrl::HANDLE_SCROLL);
 		}
 		
 		bHandled = FALSE;

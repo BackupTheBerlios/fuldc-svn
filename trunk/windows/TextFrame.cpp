@@ -51,10 +51,14 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	bHandled = FALSE;
 	
 	init = true;
-	ctrlPad.DisableScrollHandling();
+	ctrlPad.unsetFlag(	CFulEditCtrl::HANDLE_SCROLL |
+						CFulEditCtrl::POPUP |
+						CFulEditCtrl::SOUND |
+						CFulEditCtrl::TAB );
+	
 
 	if(file.empty()){
-		SetWindowText("Lastlog");
+		SetWindowText(CSTRING(SETTINGS_LASTLOG));
 		ctrlPad.SetFont(WinUtil::font);
 		ctrlPad.SetBackgroundColor(WinUtil::bgColor);
 		ctrlPad.SetTextColor(WinUtil::textColor);
