@@ -21,8 +21,7 @@
 
 #include "FinishedManager.h"
 
-FinishedManager::~FinishedManager()
-{
+FinishedManager::~FinishedManager() throw() {
 	Lock l(cs);
 	for_each(downloads.begin(), downloads.end(), DeleteFunction<FinishedItem*>());
 	for_each(uploads.begin(), uploads.end(), DeleteFunction<FinishedItem*>());

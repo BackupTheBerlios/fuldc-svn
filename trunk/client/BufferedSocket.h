@@ -99,7 +99,7 @@ public:
 		addTask(ACCEPTED);
 	}
 
-	virtual void disconnect() {
+	virtual void disconnect() throw() {
 		Lock l(cs);
 		addTask(DISCONNECT);
 	}
@@ -154,7 +154,7 @@ private:
 	BufferedSocket(const BufferedSocket&);
 	BufferedSocket& operator=(const BufferedSocket&);
 
-	virtual ~BufferedSocket();
+	virtual ~BufferedSocket() throw();
 
 	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	

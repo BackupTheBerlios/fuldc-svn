@@ -168,6 +168,9 @@ public:
 		return dirIconIndex;
 	}
 	
+	static int getOsMajor();
+	static int getOsMinor();
+	
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();

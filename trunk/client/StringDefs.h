@@ -28,6 +28,7 @@ enum Strings { // @DontAdd
 	ALL_USERS_OFFLINE, // "All %d users offline"
 	ALL_3_USERS_OFFLINE, // "All 3 users offline"
 	ALL_4_USERS_OFFLINE, // "All 4 users offline"
+	ALL, // "All"
 	ANY, // "Any"
 	AT_LEAST, // "At least"
 	AT_MOST, // "At most"
@@ -196,7 +197,7 @@ enum Strings { // @DontAdd
 	MENU_CLOSE_DISCONNECTED, // "Close disconnected"
 	MENU_CONTENTS, // "Help &Contents\tF1"
 	MENU_DISCUSS, // "DC++ discussion forum"
-	MENU_DONATE, // "Donate €€€/$$$ (paypal)"
+	MENU_DONATE, // "Donate ï¿½ï¿½ï¿½/$$$ (paypal)"
 	MENU_DOWNLOAD_QUEUE, // "&Download Queue\tCtrl+D"
 	MENU_EXIT, // "&Exit"
 	MENU_FAQ, // "Frequently asked questions"
@@ -356,7 +357,7 @@ enum Strings { // @DontAdd
 	SETTINGS_DOWNLOADS, // "DC++\\Downloads"
 	SETTINGS_DOWNLOADS_MAX, // "Maximum simultaneous downloads (0 = infinite)"
 	SETTINGS_DOWNLOADS_SPEED_PAUSE, // "No new downloads if speed exceeds (KiB/s, 0 = disable)"
-	SETTINGS_EXAMPLE_TEXT, // "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
+	SETTINGS_EXAMPLE_TEXT, // "Donate ï¿½ï¿½ï¿½:s! (ok, dirty dollars are fine as well =) (see help menu)"
 	SETTINGS_FAV_SHOW_JOINS, // "Only show joins / parts for favorite users"
 	SETTINGS_FAVORITE_DIRS_PAGE, // "Downloads\\Download to"
 	SETTINGS_FAVORITE_DIRS, // "Favorite download to directories"
@@ -691,6 +692,6 @@ enum Strings { // @DontAdd
 	DROP_STUPID_CONNECTION_LOG, // "Incoming connection dropped because user tried to use a fake nick, IP="
 	FLASH_WINDOW_ON_PM, // "Flash window on PM"
 	FLASH_WINDOW_ON_NEW_PM, // "Flash window on PM only if it's from a new user"
-	END_LOG, // "--End Log--"
+	IGNORE_TTH_INCONSISTENCY, // "Ignore TTH inconsistency on downloads"
 	LAST // @DontAdd
 };

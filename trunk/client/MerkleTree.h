@@ -98,7 +98,7 @@ public:
 			Hasher h;
 			h.update(&zero, 1);
 			h.update(buf + i, n);
-			if(baseBlockSize < blockSize) {
+			if((int64_t)baseBlockSize < blockSize) {
 				blocks.push_back(make_pair(MerkleValue(h.finalize()), baseBlockSize));
 				reduceBlocks();
 			} else {
@@ -155,7 +155,7 @@ public:
 	}
 
 private:	
-	typedef pair<MerkleValue, size_t> MerkleBlock;
+	typedef pair<MerkleValue, int64_t> MerkleBlock;
 	typedef vector<MerkleBlock> MBList;
 
 	MBList blocks;

@@ -257,7 +257,7 @@ private:
 	friend class Singleton<QueueManager>;
 	
 	QueueManager();
-	virtual ~QueueManager();
+	virtual ~QueueManager() throw();
 	
 	CriticalSection cs;
 	
@@ -283,7 +283,6 @@ private:
 
 	int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
 
-	void removeAll(QueueItem* q);
 	void load(SimpleXML* aXml);
 
 	void setDirty() {

@@ -389,7 +389,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 		}
 	}
 	
-	dcdebug("u_int8_ts: %d\n", os.size());
+	dcdebug("u_int8_ts: %lu\n", os.size());
 	bos.skipToByte();
 
 	for(string::size_type j=0; j<is.size(); j++) {

@@ -358,11 +358,7 @@ public:
 
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
-#ifdef _WIN32
-		sprintf(buf, "%01I64d:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
-#else
-		sprintf(buf, "%01lld:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
-#endif		
+		sprintf(buf, "%01lu:%02d:%02d", (unsigned long)(aSec / (60*60)), (int)((aSec / 60) % 60), (int)(aSec % 60));
 		return buf;
 	}
 
@@ -560,9 +556,6 @@ public:
 	static string getOsVersion();
 
 	static string getIpCountry (string IP);
-
-	static int getOsMinor();
-	static int getOsMajor(); 
 
 	static bool getAway() { return away; };
 	static void setAway(bool aAway) {

@@ -119,7 +119,7 @@ private:
 	friend class Singleton<ConnectionManager>;
 	ConnectionManager();
 
-	virtual ~ConnectionManager() { shutdown(); };
+	virtual ~ConnectionManager() throw() { shutdown(); };
 	
 	UserConnection* getConnection(bool aNmdc) throw(SocketException) {
 		UserConnection* uc = new UserConnection();

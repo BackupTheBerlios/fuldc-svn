@@ -224,8 +224,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// so if we are using UPnP lets open the ports.
 	if( BOOLSETTING( SETTINGS_USE_UPNP ) )
 	{
-		 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
-			  || Util::getOsMajor() >= 6 )  //Longhorn
+		 if ( ( WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 )//WinXP & WinSvr2003
+			  || WinUtil::getOsMajor() >= 6 )  //Longhorn
 		 {
 			UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(ConnectionManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
 			UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", APPNAME " Search Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " UDP)", SearchManager::getInstance()->getPort() );
@@ -909,8 +909,8 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 			if( BOOLSETTING( SETTINGS_USE_UPNP ) )
 			{
-			 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
-				  || Util::getOsMajor() >= 6 )  //Longhorn
+			 if ( ( WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 )//WinXP & WinSvr2003
+				  || WinUtil::getOsMajor() >= 6 )  //Longhorn
 				{
 					if (UPnP_UDPConnection && UPnP_TCPConnection )
 					{

@@ -51,6 +51,7 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::DROP_STUPID_CONNECTION,			ResourceManager::DROP_STUPID_CONNECTION		},
 	{ SettingsManager::FLASH_WINDOW_ON_PM,				ResourceManager::FLASH_WINDOW_ON_PM			},
 	{ SettingsManager::FLASH_WINDOW_ON_NEW_PM,			ResourceManager::FLASH_WINDOW_ON_NEW_PM		},
+	{ SettingsManager::IGNORE_TTH_INCONSISTENCY,		ResourceManager::IGNORE_TTH_INCONSISTENCY	},
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 

@@ -371,7 +371,6 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 class RollbackException : public FileException {
 public:
 	RollbackException (const string& aError) : FileException(aError) { };
-	virtual ~RollbackException() { };
 };
 
 template<bool managed>
@@ -412,24 +411,42 @@ private:
 	u_int8_t* buf;
 };
 
+class TTHException: public Exception {
+public:
+#ifdef _DEBUG
+	TTHException(const string& aError) throw() : Exception("TTHException: " + aError) { }
+#else //_DEBUG
+	TTHException(const string& aError) throw() : Exception(aError) { }
+#endif // _DEBUG
+
+	virtual ~TTHException() throw() { }
+};
+
 template<bool managed>
 class TigerCheckOutputStream : public OutputStream {
 public:
-	TigerCheckOutputStream(const TigerTree& aTree, OutputStream* aStream) : s(aStream), real(aTree), cur(aTree.getBlockSize()), verified(0), bufPos(0) {
+	TigerCheckOutputStream(const TigerTree& aTree, OutputStream* aStream) : s(aStream), real(aTree), cur(aTree.getBlockSize()), verified(0), bufPos(0), lastWritePos(0) {
 	}
 	virtual ~TigerCheckOutputStream() { if(managed) delete s; };
 
-	virtual size_t flush() throw(FileException) {
+	virtual size_t flush() throw(TTHException,FileException) {
 		if (bufPos != 0)
 			cur.update(buf, bufPos);
 		bufPos = 0;
 
 		cur.finalize();
-		checkTrees();
-		return s->flush();
+		if(BOOLSETTING(IGNORE_TTH_INCONSISTENCY)) {
+			lastWritePos = s->flush();
+			checkTrees();
+		} else {
+			checkTrees();
+			lastWritePos =  s->flush();
+		}
+
+		return lastWritePos;
 	}
 
-	virtual size_t write(const void* b, size_t len) throw(FileException) {
+	virtual size_t write(const void* b, size_t len) throw(TTHException,FileException) {
 		u_int8_t* xb = (u_int8_t*)b;
 		size_t pos = 0;
 
@@ -458,28 +475,38 @@ public:
 			bufPos = left;
 		}
 
-		checkTrees();
-		return s->write(b, len);
+		if(BOOLSETTING(IGNORE_TTH_INCONSISTENCY)) {
+			lastWritePos = s->write(b, len);
+			checkTrees();
+		} else {
+			checkTrees();
+			lastWritePos = s->write(b, len);
+		}
+
+		return lastWritePos;
 	}
 	
 	virtual int64_t verifiedBytes() {
 		return min(real.getFileSize(), (int64_t)(cur.getBlockSize() * cur.getLeaves().size()));
 	}
+
+	size_t getLastWritePos() const { return lastWritePos; }
 private:
 	OutputStream* s;
 	const TigerTree& real;
 	TigerTree cur;
 	size_t verified;
+	size_t lastWritePos;
 
 	u_int8_t buf[TigerTree::BASE_BLOCK_SIZE];
 	size_t bufPos;
 
-	void checkTrees() throw(FileException) {
+	void checkTrees() throw(TTHException) {
 		while(cur.getLeaves().size() > verified) {
 			if(cur.getLeaves().size() > real.getLeaves().size() ||
 				!(cur.getLeaves()[verified] == real.getLeaves()[verified])) 
 			{
-				throw FileException(STRING(TTH_INCONSISTENCY));
+				throw TTHException(STRING(TTH_INCONSISTENCY));
 			}
 			verified++;
 		}
@@ -558,7 +585,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	}
 
 	if(d->getPos() == 0) {
-		if(!d->getTreeValid() && d->getTTH() != NULL && d->getSize() < numeric_limits<size_t>::max()) {
+		if(!d->getTreeValid() && d->getTTH() != NULL && d->getSize() < (int64_t)numeric_limits<size_t>::max()) {
 			// We make a single node tree...
 			d->getTigerTree().setFileSize(d->getSize());
 			d->getTigerTree().setBlockSize((size_t)d->getSize());
@@ -596,6 +623,38 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 		} else if(d->getPos() == d->getSize()) {
 			handleEndData(aSource);
 			aSource->setLineMode();
+		}
+	} catch(const TTHException& e) {
+		if(BOOLSETTING(IGNORE_TTH_INCONSISTENCY)) {
+			LogManager::getInstance()->message(e.getError() + ": " + d->getTargetFileName());
+			TigerCheckOutputStream<true> *tco = reinterpret_cast<TigerCheckOutputStream<true>*>(d->getFile());
+			if(tco) {
+				try {
+					d->addPos(tco->getLastWritePos(), aLen);
+					if(d->getPos() > d->getSize()) {
+						throw Exception(STRING(TOO_MUCH_DATA));
+					} else if(d->getPos() == d->getSize()) {
+						handleEndData(aSource);
+						aSource->setLineMode();
+					}
+				} catch(const Exception& e) {
+					fire(DownloadManagerListener::Failed(), d, e.getError());
+					// Nuke the bytes we have written, this is probably a compression error
+					d->resetPos();
+					aSource->setDownload(NULL);
+					removeDownload(d, true);
+					removeConnection(aSource);
+				}
+			}
+			return;
+		} else {
+			fire(DownloadManagerListener::Failed(), d, e.getError());
+
+			d->resetPos();
+			aSource->setDownload(NULL);
+			removeDownload(d, true);
+			removeConnection(aSource);
+			return;
 		}
 	} catch(const RollbackException& e) {
 		string target = d->getTarget();
@@ -641,7 +700,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		Download* old = d->getOldDownload();
 
 		int64_t bl = 1024;
-		while(bl * old->getTigerTree().getLeaves().size() < old->getSize())
+		while(bl * (int64_t)old->getTigerTree().getLeaves().size() < old->getSize())
 			bl *= 2;
 		old->getTigerTree().setBlockSize(bl);
 		dcassert(old->getSize() != -1);
@@ -681,7 +740,13 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 	// First, finish writing the file (flushing the buffers and closing the file...)
 	try {
-		d->getFile()->flush();
+		try {
+			d->getFile()->flush();
+		} catch (const TTHException &e) {
+			if(!BOOLSETTING(IGNORE_TTH_INCONSISTENCY))
+				throw e;
+		}
+		
 		if(hasCrc)
 			crc = d->getCrcCalc()->getFilter().getValue();
 		delete d->getFile();
@@ -703,6 +768,13 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	} catch(const FileException& e) {
 		fire(DownloadManagerListener::Failed(), d, e.getError());
 		
+		aSource->setDownload(NULL);
+		removeDownload(d, true);
+		removeConnection(aSource);
+		return;
+	} catch(const TTHException& e) {
+		fire(DownloadManagerListener::Failed(), d, e.getError());
+
 		aSource->setDownload(NULL);
 		removeDownload(d, true);
 		removeConnection(aSource);

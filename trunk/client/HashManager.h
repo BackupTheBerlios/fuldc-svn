@@ -53,7 +53,7 @@ public:
 	HashManager() {
 		TimerManager::getInstance()->addListener(this);
 	}
-	virtual ~HashManager() {
+	virtual ~HashManager() throw() {
 		TimerManager::getInstance()->removeListener(this);
 		hasher.join();
 	}
@@ -113,7 +113,7 @@ private:
 	class Hasher : public Thread {
 	public:
 		enum { MIN_BLOCK_SIZE = 64*1024 };
-		Hasher() : stop(false), running(false), total(0), rebuild(false) { }
+		Hasher() : stop(false), running(false), rebuild(false), total(0) { }
 
 		void hashFile(const string& fileName, int64_t size) {
 #ifndef USE_TTH

@@ -108,7 +108,7 @@ private:
 		logOptions[STATUS][FILE]		= SettingsManager::LOG_FILE_STATUS;
 		logOptions[STATUS][FORMAT]		= SettingsManager::LOG_FORMAT_STATUS;
 	};
-	virtual ~LogManager() { };
+	virtual ~LogManager() throw() { };
 
 };
 

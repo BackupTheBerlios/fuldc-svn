@@ -81,7 +81,7 @@ public:
 	typedef List::iterator Iter;
 
 	Client(const string& hubURL, char separator, bool usesEscapes = false);
-	virtual ~Client();
+	virtual ~Client() throw();
 
 	virtual void connect(const User* user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
@@ -166,8 +166,8 @@ protected:
 
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
-	GETSET(bool, registered, Registered);
 	GETSET(u_int32_t, reconnDelay, ReconnDelay);
+	GETSET(bool, registered, Registered);
 private:
 
 	enum CountType {

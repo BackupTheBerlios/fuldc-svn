@@ -57,7 +57,7 @@
 				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="SubWCRev.exe . client/versiontemplate.h client/version.h"/>
+				CommandLine="versiontemplate.py"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool

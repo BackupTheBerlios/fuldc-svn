@@ -177,7 +177,7 @@ private:
 
 	virtual int run();
 
-	virtual ~SearchManager() { 
+	virtual ~SearchManager() throw() { 
 		if(socket) {
 			stop = true;
 			socket->disconnect();

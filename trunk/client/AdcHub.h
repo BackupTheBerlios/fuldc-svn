@@ -79,7 +79,7 @@ private:
 
 	AdcHub(const AdcHub&);
 	AdcHub& operator=(const AdcHub&);
-
+	virtual ~AdcHub() throw() { }
 	User::NickMap nickMap;
 	User::Ptr hub;
 	StringMap lastInfoMap;

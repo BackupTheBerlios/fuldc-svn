@@ -30,7 +30,7 @@
 class LogPage : public CPropertyPage<IDD_LOGPAGE>, public PropPage
 {
 public:
-	LogPage(SettingsManager *s) : PropPage(s), oldSelection(-1) { 
+	LogPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle(CTSTRING(SETTINGS_LOGS));
 		 m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -68,6 +68,8 @@ protected:
 	//if the user cancels the dialog.
 	//.first is filename and .second is format
 	TStringPairList options;
+
+	void getValues();
 };
 
 #endif //LOGPAGE_H
