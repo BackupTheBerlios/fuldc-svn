@@ -337,8 +337,8 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 		string path = xml->getChildAttrib("Path");
 		Util::toAcp(name);
 		Util::toAcp(path);
-		dir->directories[path] = addDirectoryFromXml(xml, dir, name, path);
-		dir->addSearchType(dir->directories[path]->getSearchTypes());
+		dir->directories[name] = addDirectoryFromXml(xml, dir, name, path);
+		dir->addSearchType(dir->directories[name]->getSearchTypes());
 	}
 
 	
