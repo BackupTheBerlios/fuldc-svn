@@ -288,7 +288,11 @@ private:
 
 			switch(col) {
 				case COLUMN_NICK: return Util::stricmp(a->nick, b->nick);
-				case COLUMN_FILENAME: return Util::stricmp(a->fileName, b->fileName);
+				case COLUMN_FILENAME: 
+					if(a->sr->getType() == b->sr->getType())
+						return Util::stricmp(a->fileName, b->fileName);
+					else 
+						return ( a->sr->getType() == SearchResult::TYPE_DIRECTORY ) ? -1 : 1;
 				case COLUMN_TYPE: 
 					if(a->sr->getType() == b->sr->getType())
 						return Util::stricmp(a->type, b->type);

@@ -656,5 +656,6 @@ enum Strings { // @DontAdd
 	LOGGING_DISABLED, // "Disabled logging of this hub"
 	FH_STRIP_ISP, // "Strip ISP"
 	FH_LOG_CHAT, // "Log Chat"
+	FOLDER_NAME, // "Name"
 	LAST // @DontAdd
 };

@@ -106,7 +106,8 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	readdMenu.CreatePopupMenu();
 
 	copyMenu.CreatePopupMenu();
-	for(int i = 0; i <COLUMN_LAST; ++i)
+	int i = 0;
+	for(; i <COLUMN_LAST; ++i)
 		copyMenu.AppendMenu(MF_STRING, IDC_COPY + i, CTSTRING_I(columnNames[i]));
 
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
@@ -138,6 +139,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	dirMenu.AppendMenu(MF_STRING, IDC_SEARCH_RELEASEALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	dirMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
 	dirMenu.AppendMenu(MF_STRING, IDC_NOTIFY, CTSTRING(NOTIFY_ME));
+	dirMenu.AppendMenu(MF_SEPARATOR);
+	dirMenu.AppendMenu(MF_STRING, IDC_COPY + i++, (TSTRING(COPY) + _T(" ") + TSTRING(FOLDER_NAME)).c_str());
+	dirMenu.AppendMenu(MF_STRING, IDC_COPY + i, (TSTRING(COPY) + _T(" ") + TSTRING(PATH)).c_str());
 	dirMenu.AppendMenu(MF_SEPARATOR);
 	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
@@ -1270,8 +1274,20 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 	QueueItemInfo *ii = (QueueItemInfo*)ctrlQueue.GetItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 
 	int tmp = wID - IDC_COPY;
-	
-	WinUtil::setClipboard(ii->getText(tmp));	
+
+	if(tmp < COLUMN_LAST)
+		WinUtil::setClipboard(ii->getText(tmp));	
+	else {
+		HTREEITEM ht = ctrlDirs.GetSelectedItem();
+		if(ht) {
+			tstring * name = (tstring*)ctrlDirs.GetItemData(ht);
+
+			if(tmp == COLUMN_LAST)
+				WinUtil::setClipboard( Util::getLastDir(*name) );
+			else 
+				WinUtil::setClipboard( *name );
+		}
+	}
 	return 0;
 }
 

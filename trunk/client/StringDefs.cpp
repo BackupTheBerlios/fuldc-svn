@@ -653,6 +653,7 @@ string ResourceManager::strings[] = {
 "Disabled logging of this hub", 
 "Strip ISP", 
 "Log Chat", 
+"Name", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1306,4 +1307,5 @@ string ResourceManager::names[] = {
 "LoggingDisabled", 
 "FhStripIsp", 
 "FhLogChat", 
+"FolderName", 
 };

@@ -259,6 +259,7 @@ public:
 		updateArrow();
 	}
 	int getSortColumn() { return sortColumn; }
+	int getRealSortColumn() { return findColumn(sortColumn); }
 	bool isAscending() { return sortAscending; }
 
 	iterator begin() { return iterator(this); }
@@ -389,7 +390,7 @@ private:
 	
 	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		thisClass* t = (thisClass*)lParamSort;
-		int result = T::compareItems((T*)lParam1, (T*)lParam2, t->sortColumn);
+		int result = T::compareItems((T*)lParam1, (T*)lParam2, t->getRealSortColumn());
 		return (t->sortAscending ? result : -result);
 	}
 

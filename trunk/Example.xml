@@ -652,5 +652,6 @@
 		<String Name="LoggingDisabled">Disabled logging of this hub</String>
 		<String Name="FhStripIsp">Strip ISP</String>
 		<String Name="FhLogChat">Log Chat</String>
+		<String Name="FolderName">Name</String>
 	</Strings>
 </Language>
