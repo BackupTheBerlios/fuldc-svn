@@ -31,6 +31,7 @@
 #include "File.h"
 #include "FilteredFile.h"
 #include "BZUtils.h"
+#include "Wildcards.h"
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -40,6 +41,9 @@
 #endif
 
 #include <limits>
+
+//just remove this to remove the hashing =)
+#define USE_TTH
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	xmlDirty(false), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
@@ -102,10 +106,13 @@ ShareManager::~ShareManager() {
 ShareManager::Directory::~Directory() {
 	for(MapIter i = directories.begin(); i != directories.end(); ++i)
 		delete i->second;
+	
+#ifdef USE_TTH
 	for(File::Iter i = files.begin(); i != files.end(); ++i) {
 		dcassert(i->getTTH() != NULL);
 		ShareManager::getInstance()->removeTTH(i->getTTH(), i);
 	}
+#endif
 }
 
 
@@ -287,10 +294,6 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 			}
 		}
 
-		//if(lookupVirtual(aName) != virtualMap.end()) {
-		//	throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
-		//}
-
 		dp = buildTree(d, NULL);
 		dp->setName(aName);
 	}
@@ -462,6 +465,10 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			LogManager::getInstance()->message(STRING(FORBIDDEN_DOLLAR_FILE) + name + " (" + STRING(SIZE) + ": " + Util::toString(File::getSize(name)) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + aName + "\")");
 			continue;
 		}
+
+		if( Wildcard::patternMatch( name, SETTING(SKIPLIST_SHARE), '|' ) )
+			continue;
+
 		if(!BOOLSETTING(SHARE_HIDDEN) && i->isHidden() )
 			continue;
 
@@ -480,7 +487,10 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 				int64_t size = i->getSize();
 
+#ifdef USE_TTH
 				HashManager::getInstance()->checkTTH(aName + name, size, i->getLastWriteTime());
+#endif
+
 				lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, NULL));
 
 			}
@@ -505,13 +515,17 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 		Directory::File& f = const_cast<Directory::File&>(f2);
 		string fileName = fullName + f.getName();
 
+#ifdef USE_TTH		
 		f.setTTH(HashManager::getInstance()->getTTH(fileName));
 
 		if(f.getTTH() != NULL) {
+#endif
 			addFile(dir, i++);
+#ifdef USE_TTH
 		} else {
 			dir->files.erase(i++);
 		}
+#endif
 	}
 }
 
@@ -523,7 +537,10 @@ void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	dir->addSearchType(getMask(f.getName()));
 	dir->addType(getType(f.getName()));
 
+#ifdef USE_TTH
 	tthIndex.insert(make_pair(f.getTTH(), i));
+#endif
+
 	bloom.add(Text::toLower(f.getName()));
 }
 
@@ -1411,11 +1428,12 @@ ShareManager::Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Direc
 		string name = xml->getChildAttrib("Name");
 		u_int64_t size = xml->getIntChildAttrib("Size");
 
+#ifdef USE_TTH
 		if( aPath[ aPath.length() -1 ] == PATH_SEPARATOR )
 			HashManager::getInstance()->checkTTH(aPath + name, size);
 		else
 			HashManager::getInstance()->checkTTH(aPath + PATH_SEPARATOR + name, size);
-
+#endif
 		lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, NULL));
 	}
 

@@ -570,7 +570,7 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 			aSource->setLineMode();
 		}
 		if(d->getPos() > d->getSize()) {
-			throw Exception(STRING(TOO_MUCH_DATA));
+			//throw Exception(STRING(TOO_MUCH_DATA));
 		}
 	} catch(const RollbackException& e) {
 		string target = d->getTarget();
