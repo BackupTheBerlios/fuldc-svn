@@ -20,7 +20,7 @@
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
-#include "../greta/regexpr2.h"
+#include "../regex/pme.h"
 
 #include "SearchFrm.h"
 #include "LineDlg.h"
@@ -260,13 +260,12 @@ void SearchFrame::onEnter() {
 	filterList.clear();
 	if(!f.empty()){
 		if(Util::strnicmp(f, "$Re:", 4) == 0){
-			try{
-				filterRegExp.init(f.substr(4), regex::NOCASE);
-				useRegExp = true;
-			}catch(regex::bad_regexpr){
+			filterRegExp.Init(f.substr(4), "i");
+			if(!filterRegExp.IsValid()) {
 				MessageBox(CSTRING(BAD_REGEXP), "", MB_OK | MB_ICONEXCLAMATION);
 				return;
 			}
+			useRegExp = true;
 		} else {
 			StringTokenizer t(Util::toLower(f), ' ');
 			filterList = t.getTokens();
@@ -391,8 +390,7 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 			}
 		}
 	} else if(useRegExp){
-		regex::match_results result;
-		if(!filterRegExp.match(aResult->getFile(), result).matched){
+		if(filterRegExp.match(aResult->getFile()) == 0){
 			filtered++;
 			return;
 		}

@@ -27,7 +27,7 @@
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
-#include "../greta/regexpr2.h"
+#include "../regex/pme.h"
 
 #include "../client/Client.h"
 #include "../client/SearchManager.h"
@@ -412,7 +412,7 @@ private:
 	StringList downloadPaths;
 	StringList filterList;
 
-	regex::rpattern filterRegExp;
+	PME filterRegExp;
 	bool useRegExp;
 
 	/** Parameter map for user commands */

@@ -24,7 +24,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib.vcproj", "{DFB
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Greta", "Greta.vcproj", "{6B5E1154-D1FC-460A-B5F4-78ACB1E96349}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Regex", "Regex.vcproj", "{6B5E1154-D1FC-460A-B5F4-78ACB1E96349}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

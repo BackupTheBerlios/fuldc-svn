@@ -6,7 +6,7 @@
 #include "../client/ColorSettings.h"
 #include "../client/HighlightManager.h"
 
-#include "../greta/regexpr2.h"
+#include "../regex/pme.h"
 
 #include "HighlightPage.h"
 #include "WinUtil.h"
@@ -104,9 +104,8 @@ LRESULT HighlightPage::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	}
 
 	if(cs->getMatch().find("$Re:") == 0) {
-		try{
-			regex::rpattern reg(cs->getMatch().substr(4));
-		}catch(regex::bad_regexpr){
+		PME reg(cs->getMatch().substr(4));
+		if(! reg.IsValid()){
 			MessageBox(CSTRING(BAD_REGEXP), "", MB_OK | MB_ICONEXCLAMATION);
 			return TRUE;
 		}

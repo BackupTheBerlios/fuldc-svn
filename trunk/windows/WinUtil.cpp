@@ -38,6 +38,8 @@
 #include "../client/HashManager.h"
 #include "../client/SimpleXML.h"
 
+#include "../regex/pme.h"
+
 #include <direct.h>
 #include <pdh.h>
 
@@ -682,9 +684,7 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 		return;
 
 	if(ws->clean) {
-		regex::rpattern regexp;
-		regex::match_results result;
-		regex::rpattern::backref_type br;
+		PME regexp;
 
 		string strSearch = strSearchString;
 		string strStoplistText = "xvid|divx|dvdrip|dvdr|dvd-r|pal|ntsc|screener|dvdscr|complete|proper|.*|.ws.|ac3|internal|directoryfix|pdtv|hdtv|rerip|tvrip|swedish";
@@ -716,24 +716,18 @@ void WinUtil::SearchSite(WebShortcut* ws, string strSearchString) {
 		}
 		
 		// Remove 4 digits (year)
-		regexp.init("\\d{4}");
-		br = regexp.match(strSearch, result);
-		if(br.matched) {
-			strSearch.replace(result.rstart(), result.rlength(), "");
-		}
+		regexp.Init("\\d{4}", "i");
+		strSearch = regexp.sub(strSearch, "");
+				
 		// search for "s01e01" and remove
-		regexp.init("s\\d{2}(e\\d{2})?", regex::NOCASE);
-		br = regexp.match(strSearch, result);
-		if (br.matched) {
-			strSearch.replace(result.rstart(), result.rlength(), "");
-		}
+		regexp.Init("s\\d{2}(e\\d{2})?", "i");
+		strSearch = regexp.sub(strSearch, "");
+
 		// search for "1x01" and remove
 		//regExp.Parse("{ [0-9]x[0-9][0-9]}", false);
-		regexp.init("\\dx\\d{2}", regex::NOCASE);
-		br = regexp.match(strSearch, result);
-		if (br.matched) {
-			strSearch.replace(result.rstart(), result.rlength(), "");
-		}
+		regexp.Init("\\dx\\d{2}", "i");
+		strSearch = regexp.sub(strSearch, "");
+		
 		// Remove trailing spaces
 		intPos = strSearch.length() - 1;
 		while (intPos > 0) {

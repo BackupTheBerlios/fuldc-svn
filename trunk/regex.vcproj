@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="Greta"
+	Name="Regex"
 	ProjectGUID="{6B5E1154-D1FC-460A-B5F4-78ACB1E96349}"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="vc7\debug\Greta\"
-			IntermediateDirectory="vc7\debug\Greta\"
+			OutputDirectory="vc7\debug\Regex\"
+			IntermediateDirectory="vc7\debug\Regex\"
 			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
@@ -34,7 +34,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/Greta.lib"/>
+				OutputFile="$(OutDir)/Regex.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -56,8 +56,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="vc7\release\Greta"
-			IntermediateDirectory="vc7\release\Greta"
+			OutputDirectory="vc7\release\Regex"
+			IntermediateDirectory="vc7\release\Regex"
 			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
@@ -74,7 +74,7 @@
 				MinimalRebuild="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"
@@ -83,7 +83,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/Greta.lib"/>
+				OutputFile="$(OutDir)/Regex.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -112,10 +112,13 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\greta\regexpr2.cpp">
+				RelativePath=".\regex\pcre.c">
 			</File>
 			<File
-				RelativePath=".\greta\syntax2.cpp">
+				RelativePath=".\regex\pme.cpp">
+			</File>
+			<File
+				RelativePath=".\regex\study.c">
 			</File>
 		</Filter>
 		<Filter
@@ -123,16 +126,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\greta\regexpr2.h">
+				RelativePath=".\regex\pcre.h">
 			</File>
 			<File
-				RelativePath=".\greta\reimpl2.h">
-			</File>
-			<File
-				RelativePath=".\greta\restack.h">
-			</File>
-			<File
-				RelativePath=".\greta\syntax2.h">
+				RelativePath=".\regex\pme.h">
 			</File>
 		</Filter>
 		<Filter

@@ -284,7 +284,7 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queu
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
 	Util::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
-	regexp.init("[r0-9][a0-9][r0-9]", regex::NOCASE);
+	regexp.Init("[Rr0-9][Aa0-9][Rr0-9]");
 };
 
 QueueManager::~QueueManager() { 
@@ -1266,12 +1266,8 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 					added = true;
 					users = qi->countOnlineUsers();
 
-					regex::match_results result;
-					regexp.match(sr->getFile(), result, sr->getFile().length()-4);
-					if(result.backref(0).matched) {
+					if( regexp.match(sr->getFile(), sr->getFile().length()-4) > 0 )
 						addAlternates(sr->getFile(), sr->getUser());
-					}
-
 				} catch(const Exception&) {
 					// ...
 				}
@@ -1381,9 +1377,8 @@ int QueueManager::changePriority(const string& search, int priority) {
 		useRegexp = true;
 	}
 
-	regex::rpattern reg(search.substr(4), regex::NOCASE);
-	regex::match_results mr;
-
+	PME reg(search.substr(4), "i");
+	
 	QueueItem::StringMap::iterator i;
 	QueueItem* q;
 
@@ -1392,7 +1387,7 @@ int QueueManager::changePriority(const string& search, int priority) {
 
 		//get the first source to get the path
 		if(useRegexp){
-			if(reg.match(q->getTarget(), mr, 0).matched) {
+			if(reg.match(q->getTarget()) > 0) {
 				setPriority(q->getTarget(), (QueueItem::Priority)priority);
 				++count;
 			}

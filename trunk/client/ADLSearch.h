@@ -37,7 +37,7 @@
 #include "StringTokenizer.h"
 #include "Singleton.h"
 
-#include "../greta/regexpr2.h"
+#include "../regex/pme.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -59,9 +59,7 @@ public:
 			stringSearchList.clear();
 
 			if(searchString.find("$Re:") == 0){
-				try {
-					regexp.init(searchString.substr(4), regex::NOCASE);
-				} catch(regex::bad_regexpr){}
+				regexp.Init(searchString.substr(4), "i");
 			} else {
 				// Replace parameters such as %[nick]
 				string stringParams = Util::formatParams(searchString, params);
@@ -221,12 +219,11 @@ private:
 
 	//decide if regexps should be used
 	bool bUseRegexp;
-	regex::rpattern regexp;
+	PME regexp;
 
 	bool SearchAll(const string& s) {
 		if(bUseRegexp){
-			regex::match_results result;
-			if(regexp.match(s, result, 0).matched)
+			if(regexp.match(s))
 				return true;
 			else
 				return false;

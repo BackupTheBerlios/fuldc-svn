@@ -4,8 +4,7 @@
 #include "../client/highlightmanager.h"
 #include "../client/LogManager.h"
 
-
-#include "../greta/regexpr2.h"
+#include "../regex/pme.h"
 
 #include "fuleditctrl.h"
 #include "PopupManager.h"
@@ -379,65 +378,44 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line
 int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, string &line, int &lineIndex) {
 	int begin = 0, end = 0;
 	
-	try{
-	
-		regex::rpattern regexp(cs->getMatch().substr(4), regex::GLOBAL | regex::NOCASE | regex::SINGLELINE | regex::MULTILINE | regex::ALLBACKREFS);
-		regex::rpattern::backref_type br;
-		regex::match_results result;
-		
-		br = regexp.match(line, result);
-
-		if(!br.matched)
+	PME regexp(cs->getMatch().substr(4), "gims");
+				
+		if( regexp.match(line) == 0)
 			return string::npos;
 
-		if( result.cbackrefs() == 1){
-			begin = lineIndex + result.rstart();
-			end = begin + result.rlength();
-
-			SetSel(begin, end);
-			SetSelectionCharFormat(cf);
-		} else {
-			for(u_int j = 1; j < result.cbackrefs(); ++j) {
-				begin = lineIndex + result.rstart(j);
-				end = begin + result.rlength(j);
-				
-				SetSel(begin, end);
-				SetSelectionCharFormat(cf);
-
-				SetSel(GetTextLength()-1, GetTextLength()-1);
-				SetSelectionCharFormat(selFormat);
-			}
-		}
+	for(int j = 0; j < regexp.NumBackRefs(); ++j) {
+		begin = lineIndex + regexp.GetStartPos(j);
+		end = begin + regexp.GetLength(j);
 		
+		SetSel(begin, end);
+		SetSelectionCharFormat(cf);
 
 		SetSel(GetTextLength()-1, GetTextLength()-1);
 		SetSelectionCharFormat(selFormat);
-
-		if(cs->getPopup() && !matchedPopup) {
-			matchedPopup = true;
-			PopupManager::getInstance()->ShowMC(line);
-		}
-
-		if(cs->getTab())
-			matchedTab = true;
-
-		if(cs->getLog() && !logged && !skipLog){
-			logged = true;
-			AddLogLine(line);
-		}
-
-		if(cs->getPlaySound() && !matchedSound){
-			matchedSound = true;
-			PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-		}
-	
-	} catch (bad_alloc) {
-		return string::npos;
-	} catch (regex::bad_regexpr) {
-		return string::npos;
-	} catch (out_of_range) {
-		return string::npos;
 	}
+	
+
+	SetSel(GetTextLength()-1, GetTextLength()-1);
+	SetSelectionCharFormat(selFormat);
+
+	if(cs->getPopup() && !matchedPopup) {
+		matchedPopup = true;
+		PopupManager::getInstance()->ShowMC(line);
+	}
+
+	if(cs->getTab())
+		matchedTab = true;
+
+	if(cs->getLog() && !logged && !skipLog){
+		logged = true;
+		AddLogLine(line);
+	}
+
+	if(cs->getPlaySound() && !matchedSound){
+		matchedSound = true;
+		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+	}
+	
 	return string::npos;
 }
 

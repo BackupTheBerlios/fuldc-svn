@@ -38,7 +38,7 @@
 #include "SearchManagerListener.h"
 #include "ClientManagerListener.h"
 
-#include "../greta/regexpr2.h"
+#include "../regex/pme.h"
 
 STANDARD_EXCEPTION(QueueException);
 
@@ -171,7 +171,7 @@ public:
 
 private:
 	//MY STUFF =)
-	regex::rpattern regexp;
+	PME regexp;
 	deque< QueueItem::Ptr > searchQueue;
 	StringList notifyList;
 	bool addAlternates(string, User::Ptr);
