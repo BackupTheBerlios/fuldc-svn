@@ -698,7 +698,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			fhe->setShowUserlist(showUserList);
 			fhe->setLogMainChat(logMainChat);
 
-			HubManager::getInstance()->save();
+			HubManager::getInstance()->setDirty();
 		}
 
 		bHandled = FALSE;

@@ -31,6 +31,7 @@
 #include "UserCommand.h"
 #include "FavoriteUser.h"
 #include "Singleton.h"
+#include "TimerManager.h"
 
 class HubEntry {
 public:
@@ -147,7 +148,7 @@ class SimpleXML;
  * Public hub list, favorites (hub&user). Assumed to be called only by UI thread.
  */
 class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>,
-	private SettingsManagerListener
+	private SettingsManagerListener, private TimerManagerListener
 {
 public:
 // Public Hubs
@@ -202,6 +203,8 @@ public:
 
 	void load();
 	void save();
+
+	void setDirty() { dirty = true; }
 	
 private:
 	FavoriteHubEntry::List favoriteHubs;
@@ -225,14 +228,24 @@ private:
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
+	bool dirty;
+	u_int32_t lastSave;
+
+
 	friend class Singleton<HubManager>;
 	
-	HubManager() : running(false), c(NULL), lastServer(0), lastId(0), dontSave(false), listType(TYPE_NORMAL) {
+	HubManager() : running(false), c(NULL), lastServer(0), lastId(0), dontSave(false), listType(TYPE_NORMAL),
+		dirty(false), lastSave(0) {
+
 		SettingsManager::getInstance()->addListener(this);
 	}
 
 	virtual ~HubManager() {
-		SettingsManager::getInstance()->addListener(this);
+		if(dirty)
+			save();
+
+		SettingsManager::getInstance()->removeListener(this);
+
 		if(c) {
 			c->removeListener(this);
 			delete c;
@@ -267,6 +280,10 @@ private:
 	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
 		load(xml);
 	}
+
+	//TimerManagerListener
+	virtual void on(TimerManagerListener::Minute, u_int32_t ticks) throw();
+	
 
 	void load(SimpleXML* aXml);
 	
