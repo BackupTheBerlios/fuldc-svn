@@ -117,6 +117,9 @@ private:
 		Hasher() : stop(false), running(false), total(0), rebuild(false) { }
 
 		void hashFile(const string& fileName, int64_t size) {
+#ifndef USE_TTH
+			return;
+#endif
 			Lock l(cs);
 			if(w.insert(make_pair(fileName, size)).second) {
 				s.signal();

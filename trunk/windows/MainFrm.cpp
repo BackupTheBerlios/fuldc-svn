@@ -297,10 +297,9 @@ void MainFrame::startSocket() {
 				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
 					// Changing default didn't change port, a fixed port must be in use...(or we
 					// tried all ports
-					TCHAR* buf = new TCHAR[STRING(PORT_IS_BUSY).size() + 8];
+					AutoArray<TCHAR> buf(STRING(PORT_IS_BUSY).size() + 8);
 					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
 					MessageBox(buf, _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONSTOP | MB_OK);
-					delete[] buf;
 					break;
 				}
 				lastPort = newPort;

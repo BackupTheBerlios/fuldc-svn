@@ -489,7 +489,7 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 	vector<ItemInfo*>* v = new vector<ItemInfo*>();
 	v->reserve(dl.size());
 
-	TCHAR* buf = new TCHAR[TSTRING(DOWNLOADED_BYTES).size() + 64];
+	AutoArray<TCHAR> buf(TSTRING(DOWNLOADED_BYTES).size() + 64);
 
 	{
 		Lock l(cs);
@@ -517,7 +517,6 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 			v->push_back(i);
 		}
 	}
-	delete[] buf;
 
 	PostMessage(WM_SPEAKER, UPDATE_ITEMS, (LPARAM)v);
 }
@@ -573,7 +572,7 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 	vector<ItemInfo*>* v = new vector<ItemInfo*>();
 	v->reserve(ul.size());
 
-	TCHAR* buf = new TCHAR[STRING(UPLOADED_BYTES).size() + 64];
+	AutoArray<TCHAR> buf(STRING(UPLOADED_BYTES).size() + 64);
 
 	{
 		Lock l(cs);
@@ -600,8 +599,6 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			v->push_back(i);
 		}
 	}
-
-	delete[] buf;
 
 	PostMessage(WM_SPEAKER, UPDATE_ITEMS, (LPARAM)v);
 }

@@ -161,6 +161,9 @@ public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
 
 #define LIT(x) x, (sizeof(x)-1)
 
+//just remove this to remove the hashing =)
+#define USE_TTH
+
 #endif // _DCPLUSPLUS_H
 
 /**

@@ -659,7 +659,7 @@ void NmdcHub::disconnect() throw() {
 
 void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString){
 	checkstate(); 
-	char* buf;
+	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
 	string tmp = toNmdc(aString);
@@ -677,7 +677,6 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", getNick().c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	}
 	send(buf, chars);
-	delete[] buf;
 }
 
 // TimerManagerListener

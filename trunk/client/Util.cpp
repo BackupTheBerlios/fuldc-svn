@@ -543,7 +543,7 @@ int Util::stricmp(const char* a, const char* b) {
 		ca = Text::toLower(ca);
 		cb = Text::toLower(cb);
 		if(ca != cb) {
-			return (int)cb - (int)ca;
+			return (int)ca - (int)cb;
 		}
 		a+= na < 0 ? 1 : na;
 		b+= nb < 0 ? 1 : nb;
@@ -552,7 +552,7 @@ int Util::stricmp(const char* a, const char* b) {
 	Text::utf8ToWc(a, ca);
 	Text::utf8ToWc(b, cb);
 
-	return (int)Text::toLower(cb) - (int)Text::toLower(ca);
+	return (int)Text::toLower(ca) - (int)Text::toLower(cb);
 }
 
 int Util::strnicmp(const char* a, const char* b, size_t n) {
@@ -564,7 +564,7 @@ int Util::strnicmp(const char* a, const char* b, size_t n) {
 		ca = Text::toLower(ca);
 		cb = Text::toLower(cb);
 		if(ca != cb) {
-			return (int)cb - (int)ca;
+			return (int)ca - (int)cb;
 		}
 		a+= na < 0 ? 1 : na;
 		b+= nb < 0 ? 1 : nb;
@@ -572,7 +572,7 @@ int Util::strnicmp(const char* a, const char* b, size_t n) {
 	wchar_t ca = 0, cb = 0;
 	Text::utf8ToWc(a, ca);
 	Text::utf8ToWc(b, cb);
-	return (a >= end) ? 0 : ((int)Text::toLower(cb) - (int)Text::toLower(ca));
+	return (a >= end) ? 0 : ((int)Text::toLower(ca) - (int)Text::toLower(cb));
 }
 
 string Util::encodeURI(const string& aString, bool reverse) {
@@ -694,7 +694,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 			return Util::emptyString;
 		}
 #if _WIN32
-		AutoArray<TCHAR> buf(new TCHAR[bufsize]);
+		AutoArray<TCHAR> buf(bufsize);
 
 		if(!_tcsftime(buf, bufsize-1, Text::toT(msg).c_str(), loc)) {
 			return fixedftime(msg, loc);
@@ -704,7 +704,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 #else
 		// will this give wide representations for %a and %A?
 		// surely win32 can't have a leg up on linux/unixen in this area. - Todd
-		AutoArray<char> buf(new char[bufsize]);
+		AutoArray<char> buf(bufsize);
 
 		while(!strftime(buf, bufsize-1, msg.c_str(), loc)) {
 			bufsize+=64;

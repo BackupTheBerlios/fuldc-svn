@@ -55,6 +55,9 @@ bool HashManager::getTree(const string& aFileName, const TTHValue* root, TigerTr
 }
 
 void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_t speed) {
+#ifndef USE_TTH
+	return;
+#endif
 	const TTHValue* root = NULL;
 	{
 		Lock l(cs);
@@ -225,6 +228,10 @@ bool HashManager::HashStore::checkTTH(const string& aFileName, int64_t aSize) {
 }
 
 const TTHValue* HashManager::HashStore::getTTH(const string& aFileName) {
+#ifndef USE_TTH
+	return NULL;
+#endif
+
 	string fname = Text::toLower(Util::getFileName(aFileName));
 	string fpath = Text::toLower(Util::getFilePath(aFileName));
 
@@ -282,6 +289,10 @@ void HashManager::HashStore::rebuild() {
 #define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
 
 void HashManager::HashStore::save() {
+#ifndef USE_TTH
+	return;
+#endif
+
 	if(dirty) {
 		try {
 			File ff(indexFile + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
@@ -343,6 +354,10 @@ private:
 };
 
 void HashManager::HashStore::load() {
+#ifndef USE_TTH
+	return;
+#endif
+
 	try {
 		HashLoader l(*this);
 		SimpleXMLReader(&l).fromXML(File(indexFile, File::READ, File::OPEN).read());
@@ -389,6 +404,7 @@ void HashLoader::endTag(const string& name, const string&) {
 HashManager::HashStore::HashStore() : indexFile(Util::getAppPath() + "HashIndex.xml"), 
 dataFile(Util::getAppPath() + "HashData.dat"), dirty(false) 
 { 
+#ifdef USE_TTH
 	if(File::getSize(dataFile) <= 0) {
 		try {
 			createDataFile(dataFile);
@@ -396,6 +412,7 @@ dataFile(Util::getAppPath() + "HashData.dat"), dirty(false)
 			// ?
 		}
 	}
+#endif
 };
 
 /**
@@ -527,6 +544,9 @@ cleanup:
 #endif
 
 int HashManager::Hasher::run() {
+#ifndef USE_TTH
+	return 0;
+#endif
 	setThreadPriority(Thread::IDLE);
 
 	u_int8_t* buf = NULL;
