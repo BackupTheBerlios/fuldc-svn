@@ -421,6 +421,12 @@ public:
 		return buf;
 	}
 
+	static wstring toStringW( DWORD val ) {
+		wchar_t buf[16];
+		swprintf(buf, L"%d", val);
+		return buf;
+	}
+
 	static wstring toStringW( double val ) {
 		wchar_t buf[16];
 		swprintf(buf, L"%0.2f", val);

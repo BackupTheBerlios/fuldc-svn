@@ -582,6 +582,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		} 
 	}else if(Util::stricmp(cmd.c_str(), _T("fuldc")) == 0) {
 		message = _T("http://ful.dcportal.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
+	} else if(Util::stricmp(cmd.c_str(), _T("info")) == 0) {
+		message = WinUtil::UselessInfo();
 	} else if(Util::stricmp(cmd.c_str(), _T("fuptime")) == 0) {
 		message = TSTRING(FULDC_UPTIME) + _T(" ") + Util::formatTimeW(GET_TIME() - WinUtil::startTime, false);
 	} else if(Util::stricmp(cmd.c_str(), _T("uptime")) == 0) {
@@ -977,7 +979,7 @@ int WinUtil::getTextSpacing(HWND wnd, HFONT fnt) {
 	return tm.tmInternalLeading;
 }
 
-tstring WinUtil::DiskSpaceInfo() {
+tstring WinUtil::DiskSpaceInfo(bool onlyTotal /* = false */) {
 	ULONG drives = _getdrives();
 	TCHAR drive[3] = { _T('C'), _T(':'), _T('\0') };
 	tstring ret = Util::emptyStringT;
@@ -991,8 +993,10 @@ tstring WinUtil::DiskSpaceInfo() {
 				totalFree += free;
 				totalSize += size;
 				
-				ret.append(drive);
-				ret += _T("=") + Util::formatBytesW(size) + _T(" ");
+				if( !onlyTotal ){
+					ret.append(drive);
+					ret += _T("=") + Util::formatBytesW(size) + _T(" ");
+				}
 			}
 		}
 
@@ -1001,7 +1005,10 @@ tstring WinUtil::DiskSpaceInfo() {
 	}
 
 	if(totalSize != 0)
-		ret += _T("total=") + Util::formatBytesW(totalFree) + _T("/") + Util::formatBytesW(totalSize);
+		if( !onlyTotal )
+			ret += _T("total=") + Util::formatBytesW(totalFree) + _T("/") + Util::formatBytesW(totalSize);
+		else
+			ret += Util::formatBytesW(totalFree) + _T("/") + Util::formatBytesW(totalSize);
 
 	return ret;
 }
@@ -1096,6 +1103,83 @@ tstring WinUtil::Uptime() {
 	return ret;
 }
 
+tstring WinUtil::UselessInfo() {
+	tstring result = _T("\n");
+	TCHAR buf[255];
+	
+	MEMORYSTATUSEX mem;
+	mem.dwLength = sizeof(MEMORYSTATUSEX);
+	if( GlobalMemoryStatusEx(&mem) != 0){
+		result += _T("Memory\n");
+		result += _T("Physical memory (availible/total): ");
+		result += Util::formatBytesW( mem.ullAvailPhys ) + _T("/") + Util::formatBytesW( mem.ullTotalPhys );
+		result += _T("\n");
+		result += _T("Pagefile (availible/total): ");
+		result += Util::formatBytesW( mem.ullAvailPageFile ) + _T("/") + Util::formatBytesW( mem.ullTotalPageFile );
+		result += _T("\n");
+		result += _T("Virtual memory (availible/total): ");
+		result += Util::formatBytesW( mem.ullAvailVirtual ) + _T("/") + Util::formatBytesW( mem.ullTotalVirtual );
+		result += _T("\n");
+		result += _T("Memory load: ");
+		result += Util::toStringW(mem.dwMemoryLoad);
+		result += _T("%\n\n");
+	}
+
+	CRegKey key;
+	ULONG len = 255;
+
+	if(key.Open( HKEY_LOCAL_MACHINE, _T("Hardware\\Description\\System\\CentralProcessor\\0"), KEY_READ) == ERROR_SUCCESS) {
+		result += _T("CPU\n");
+        if(key.QueryStringValue(_T("ProcessorNameString"), buf, &len) == ERROR_SUCCESS){
+			result += _T("Name: ");
+			tstring tmp = buf;
+            result += tmp.substr( tmp.find_first_not_of(_T(" ")) );
+			result += _T("\n");
+		}
+		DWORD speed;
+		if(key.QueryDWORDValue(_T("~MHz"), speed) == ERROR_SUCCESS){
+			result += _T("Speed: ");
+			result += Util::toStringW(speed);
+			result += _T("MHz\n");
+		}
+		len = 255;
+		if(key.QueryStringValue(_T("Identifier"), buf, &len) == ERROR_SUCCESS) {
+			result += _T("Identifier: ");
+			result += buf;
+		}
+		result += _T("\n\n");
+	}
+
+	OSVERSIONINFOEX ver;
+	WinUtil::getVersionInfo(ver);
+
+	_stprintf(buf, _T("Major: %d\nMinor: %d\nBuild: %d\nSP: %d\nType: %d"),
+		(DWORD)ver.dwMajorVersion, (DWORD)ver.dwMinorVersion, (DWORD)ver.dwBuildNumber,
+		(DWORD)ver.wServicePackMajor, (DWORD)ver.wProductType);
+
+	result += _T("OS\n");
+	result += buf;
+	result += _T("\n\n");
+
+	result += _T("Uptime\n");
+	result += _T("System uptime: ");
+	result += WinUtil::Uptime();
+	result += _T('\n');
+	result += TSTRING(FULDC_UPTIME) + _T(" ") + Util::formatTimeW(GET_TIME() - WinUtil::startTime, false);
+	result += _T("\n\nDisk\n");
+	result += _T("Disk space(free/total): ");
+	result += DiskSpaceInfo(true);
+	result += _T("\n\nTransfer\n");
+	result += Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + Util::formatBytes(SETTING(TOTAL_DOWNLOAD)));
+	
+	if(SETTING(TOTAL_DOWNLOAD) > 0) {
+		_stprintf(buf, _T("Ratio (up/down): %.2f"), ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
+		result += _T('\n');
+		result += buf;
+	}
+
+	return result;
+}
 //returns 1 if it's a supposed to activate the switch
 //returns 0 if it's supposed to disable the switch
 //returns -1 if it's not a correct param

@@ -97,9 +97,11 @@ public:
 	static void search(tstring searchTerm, int searchMode, bool tth = false);
 	static void AppendSearchMenu(CMenu& menu);
 
-	static tstring DiskSpaceInfo();
+	static tstring DiskSpaceInfo(bool onlyTotal = false);
 	static tstring Help(const tstring& command);
 	static tstring Uptime();
+	static tstring UselessInfo();
+
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 
 	/**
