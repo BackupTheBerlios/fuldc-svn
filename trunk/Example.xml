@@ -220,12 +220,12 @@
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
 		<String Name="MenuReadme">Readme / Newbie help</String>
 		<String Name="MenuReconnect">&amp;Reconnect	Ctrl+R</String>
-		<String Name="MenuRefreshFileList">Refresh file list	Ctrl+E</String>
+		<String Name="MenuRefreshFileList">Refresh file list</String>
 		<String Name="MenuReportBug">Report a bug</String>
 		<String Name="MenuRequestFeature">Request a feature</String>
 		<String Name="MenuSearch">&amp;Search	Ctrl+S</String>
 		<String Name="MenuSearchSpy">Search Spy</String>
-		<String Name="MenuSettings">Settings...</String>
+		<String Name="MenuSettings">Settings...	Ctrl+E</String>
 		<String Name="MenuShow">Show</String>
 		<String Name="MenuStatusBar">&amp;Status bar	Ctrl+2</String>
 		<String Name="MenuToolbar">&amp;Toolbar	Ctrl+1</String>
