@@ -46,7 +46,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	WinUtil::splitTokens(columnSizes, SETTING(USERSFRAME_WIDTHS), COLUMN_LAST);
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
-		ctrlUsers.insertColumn(j, TSTRING_I(columnNames[j]), LVCFMT_LEFT, columnSizes[j], j);
+		ctrlUsers.InsertColumn(j, TSTRING_I(columnNames[j]), LVCFMT_LEFT, columnSizes[j], j);
 	}
 	
 	ctrlUsers.setColumnOrderArray(COLUMN_LAST, columnIndexes);

@@ -267,9 +267,9 @@ public:
 	iterator begin() { return iterator(this); }
 	iterator end() { return iterator(this, GetItemCount()); }
 
-	int insertColumn(int nCol, const tstring &columnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1 ){
+	int InsertColumn(int nCol, const tstring &columnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1 ){
 		columnList.push_back(new ColumnInfo(columnHeading, nCol, nFormat, nWidth));
-		return InsertColumn(nCol, columnHeading.c_str(), nFormat, nWidth, nSubItem);
+		return CListViewCtrl::InsertColumn(nCol, columnHeading.c_str(), nFormat, nWidth, nSubItem);
 	}
 
 	void showMenu(POINT &pt){

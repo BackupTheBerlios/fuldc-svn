@@ -282,20 +282,22 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 			return tstring::npos;
 		index = 0;
 	} else if( cs->getUsers() ) {
-		if(timeStamps)
+		if(timeStamps) {
 			index = line.find(_T("] <"));
-		else if( line[0] == _T('<'))
+			// /me might cause this to happen
+			if(index == tstring::npos)
+				return tstring::npos;
+			//compensate for "] "
+			index += 3;
+		} else if( line[0] == _T('<')) {
 			index = 0;
-		
-		// /me might cause this to happen
-		if(index == tstring::npos)
-			return tstring::npos;
+		}
 	}else{
 		if( cs->getCaseSensitive() ) {
 			index = line.find(searchString, pos);
 		}else {
-			//index = Util::findSubString(line, searchString, pos);	
-			index = Text::toLower(line).find(Text::toLower(searchString), pos);
+			index = Util::findSubString(line, searchString, pos);	
+			//index = Text::toLower(line).find(Text::toLower(searchString), pos);
 		}
 	}
 	//return if no matches where found

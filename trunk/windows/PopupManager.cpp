@@ -50,7 +50,7 @@ void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	p->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
 	//increase offset so we know where to place the next popup
-	offset += height;
+	offset = offset + height;
 
 	popups.push_back(p);
 }
