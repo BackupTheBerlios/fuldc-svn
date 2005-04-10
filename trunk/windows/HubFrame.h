@@ -234,7 +234,7 @@ private:
 			if(col == COLUMN_SHARED) {
 				return compare(a->user->getBytesShared(), b->user->getBytesShared());
 			}
-			return Util::lstricmp(a->columns[col], b->columns[col]);	
+			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
 		}
 
 		void update() { 

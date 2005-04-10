@@ -232,8 +232,9 @@ private:
 				case COLUMN_SPEED: return compare(a->speed, b->speed);
 				case COLUMN_SIZE: return compare(a->size, b->size);
 				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
-				default: return Util::lstricmp(a->columns[col], b->columns[col]);
+				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 			}
+			return 0;
 		}
 	};
 

@@ -316,30 +316,24 @@ private:
 		static int compareItems(SearchInfo* a, SearchInfo* b, int col) {
 
 			switch(col) {
-				case COLUMN_NICK: return Util::lstricmp(a->nick, b->nick);
 				case COLUMN_FILENAME: 
 					if(a->sr->getType() == b->sr->getType())
-						return Util::lstricmp(a->fileName, b->fileName);
+						return lstrcmpi(a->fileName.c_str(), b->fileName.c_str());
 					else 
 						return ( a->sr->getType() == SearchResult::TYPE_DIRECTORY ) ? -1 : 1;
 				case COLUMN_TYPE: 
 					if(a->sr->getType() == b->sr->getType())
-						return Util::lstricmp(a->type, b->type);
+						return lstrcmpi(a->type.c_str(), b->type.c_str());
 					else
 						return(a->sr->getType() == SearchResult::TYPE_DIRECTORY) ? -1 : 1;
-				case COLUMN_SIZE: return compare(a->sr->getSize(), b->sr->getSize());
-				case COLUMN_PATH: return Util::lstricmp(a->path, b->path);
 				case COLUMN_SLOTS: 
 					if(a->sr->getFreeSlots() == b->sr->getFreeSlots())
 						return compare(a->sr->getSlots(), b->sr->getSlots());
 					else
 						return compare(a->sr->getFreeSlots(), b->sr->getFreeSlots());
-				case COLUMN_CONNECTION: return Util::lstricmp(a->connection, b->connection);
-				case COLUMN_HUB: return Util::lstricmp(a->hubName, b->hubName);
+				case COLUMN_SIZE:
 				case COLUMN_EXACT_SIZE: return compare(a->sr->getSize(), b->sr->getSize());
-				case COLUMN_IP: return Util::lstricmp(a->getIP(), b->getIP());
-				case COLUMN_TTH: return Util::lstricmp(a->getTTH(), b->getTTH());
-				default: return 0;
+				default: return lstrcmpi(a->getText(col).c_str(), b->getText(col).c_str());
 			}
 		}
 
@@ -396,7 +390,7 @@ private:
 			return (col == 0) ? name : Util::emptyStringT;
 		}
 		static int compareItems(HubInfo* a, HubInfo* b, int col) {
-			return (col == 0) ? Util::lstricmp(a->name, b->name) : 0;
+			return (col == 0) ? lstrcmpi(a->name.c_str(), b->name.c_str()) : 0;
 		}
 		tstring ipPort;
 		tstring name;

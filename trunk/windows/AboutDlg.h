@@ -39,7 +39,8 @@ _T("sedulus, sandos, henrik engstr?m, dwomac, robert777, saurod, atomicjo, bzbet
 _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
-_T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji. ")
+_T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
+_T("krzysztof tyszecki. ")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 

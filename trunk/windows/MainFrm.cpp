@@ -59,6 +59,7 @@ closing(false), missedAutoConnect(false), hashProgress(false)
 	
 	links.homepage = _T("http://dcplusplus.sourceforge.net/");
 	links.downloads = links.homepage + _T("download/");
+	//links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
 	links.translations = _T("http://sourceforge.net/tracker/?atid=460289&group_id=40287");
 	links.faq = links.homepage + _T("faq/faq.php?list=all&prog=1&lang=en");
 	links.help = links.homepage + _T("forum/");
@@ -731,6 +732,10 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 					links.downloads = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
+				if(xml.findChild("GeoIP database update")) {
+					links.geoipfile = Text::toT(xml.getChildData());
+				}
+				xml.resetCurrentChild();
 				if(xml.findChild("Translations")) {
 					links.translations = Text::toT(xml.getChildData());
 				}
@@ -1007,6 +1012,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_README: site = Text::toT(Util::getAppPath() + "README.txt"); isFile = true; break;
 	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
 	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
+	//case IDC_HELP_GEOIPFILE: site = links.geoipfile; break;
 	case IDC_HELP_TRANSLATIONS: site = links.translations; break;
 	case IDC_HELP_FAQ: site = links.faq; break;
 	case IDC_HELP_HELP_FORUM: site = links.help; break;

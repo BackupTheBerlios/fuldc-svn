@@ -39,7 +39,6 @@ NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),
 	reconnect(true), lastUpdate(0)
 {
 	TimerManager::getInstance()->addListener(this);
-
 }
 
 NmdcHub::~NmdcHub() throw() {
