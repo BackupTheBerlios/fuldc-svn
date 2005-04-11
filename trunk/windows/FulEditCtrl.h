@@ -77,7 +77,7 @@ public:
 	//COMMAND ID HANDLERS
 	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 			
-	void	SetNick(const tstring& aNick) { nick = aNick; }
+	void	SetNick(const tstring& aNick);
 
 private:
 	void	AddInternalLine(const tstring &aLine);

@@ -688,7 +688,7 @@ int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 			if(equal) {
 				try {
 					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), 
-						QueueItem::Source::FLAG_FILE_NOT_AVAILABLE | QueueItem::Source::FLAG_REMOVED, curDl->getUtf8());
+						QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, curDl->getUtf8());
 					matches++;
 				} catch(const Exception&) {
 				}

@@ -23,6 +23,7 @@
 #include "PrivateFrame.h"
 #include "SearchFrm.h"
 #include "PopupManager.h"
+#include "TextFrame.h"
 
 #include "../client/Client.h"
 #include "../client/ClientManager.h"
@@ -87,19 +88,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	if(BOOLSETTING(STRIP_ISP_PM))
 		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
 
-	tstring nick = Text::toT(user->getClientNick());
-	if(BOOLSETTING(STRIP_ISP_PM)) {
-		tstring::size_type pos = nick.find(_T("["));
-		if( pos != tstring::npos ) {
-			tstring::size_type rpos = nick.rfind(_T("]"));
-			if( rpos == nick.length() -1 && rpos > 0 ) // this user has a stupid fucking nick bah ugly hate it
-				rpos = nick.rfind(_T("]"), rpos-1);
-			if(rpos != tstring::npos) 
-				nick = nick.substr(rpos+1);
-		}
-	}
-
-	ctrlClient.SetNick(nick);
+	ctrlClient.SetNick(Text::toT(user->getClientNick()));
 
 	bHandled = FALSE;
 	return 1;
@@ -366,6 +355,8 @@ void PrivateFrame::onEnter()
 					doPopups = false;
 					addClientLine(TSTRING(POPUPS_DEACTIVATED));
 				}
+			}else if(Util::stricmp(s.c_str(), _T("lastlog")) == 0) {
+				TextFrame::openWindow(ctrlClient.LastLog());
 			} else {
 				if(user->isOnline()) {
 					sendMessage(s);

@@ -740,3 +740,18 @@ BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 	
 	return menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, hWnd );
 }
+
+void CFulEditCtrl::SetNick(const tstring& aNick) {
+	if(isSet(STRIP_ISP)) {
+		tstring::size_type pos = aNick.find(_T("["));
+		if( pos != tstring::npos ) {
+			tstring::size_type rpos = aNick.rfind(_T("]"));
+			if( rpos == aNick.length() -1 && rpos > 0 ) // this user has a stupid fucking nick bah ugly hate it
+				rpos = aNick.rfind(_T("]"), rpos-1);
+			if(rpos != tstring::npos) 
+				nick = aNick.substr(rpos+1);
+		}
+	} else {
+		nick = aNick;
+	}
+}
