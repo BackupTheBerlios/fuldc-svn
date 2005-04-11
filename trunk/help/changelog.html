@@ -12,6 +12,23 @@
 <body>
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
+
+<h2>0.674 <span style="color: gray;">(2005-04-10)</span></h2>
+<ul>
+  <li><span style="color: red;">*** WARNING ***</span></li>
+  <li><span style="color: red;">This version fixes a security bug, upgrade unless you want to risk losing data</span></li>
+  <li><span style="color: red;">anywhere on your drive, this error affects all clients from 0.307 to date (thanks cologic for finding it)</span></li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
+  <li>Added stats window to autoopen (thanks paka)</li>
+  <li>Fixed context menu open for multi-screen setups (thanks trem)</li>
+  <li>Changed country database to the original format so that users can update by themselves (thanks paka)</li>
+  <li>Fixed some registry issues (thanks trem)</li>
+  <li>Fixed localised number encodings (thanks trem)</li>
+  <li>Updated sorting to use a more windows-like order (thanks trem)</li>
+  <li>Fixed an issue with restore all (thanks krzysztof tyszecki)</li>
+  <li>Added list view tooltips</li>
+</ul>
+
 <h2>0.673 <span style="color: gray;">(2005-03-22)</span></h2>
 <ul>
   <li>Added auto-prio by file size settings (thanks paka)</li>
@@ -590,7 +607,11 @@ See the version history of DC++ below.
 
 <h2>0.300 <span style="color: gray;">(2003-10-27)</span></h2>
 <ul>
-  <li>---- IMPORTANT ---- Security update, upgrade unless you want to risk losing files anywhere on your hd (this is for all versions prior to this one) (thanks fusbar for bringing it to my attention) ---- IMPORTANT ----</li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
+  <li><span style="color: red;">Security update, upgrade unless you want to risk losing files anywhere</span></li>
+  <li><span style="color: red;">on your hd (this is for all versions prior to this one) (thanks fusbar for bringing</span></li>
+  <li><span style="color: red;">it to my attention)</span></li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
   <li>Some code cleanup</li>
   <li>Added vertical tiling of windows</li>
   <li>Nick and password are now taken from favorite hubs on redirect (thanks saurod)</li>
@@ -894,7 +915,13 @@ See the version history of DC++ below.
 <ul>
   <li>The forums are up again! On a new address though, http://dcplusplus.sf.net/forum...</li>
   <li>Added nice installer. It's big because it comes with the debug info, if you just want a zip as in the old versions, you can find it on http://sf.net/projects/dcplusplus.</li>
-  <li>Fixed a bug with files being added to the queue without target directory. This caused quite a lot of strange behaviour ranging from hang at startup to empty queues and crashing deletes. Hopefully, I fixed it proper, but rereport the bugs if you still have problems... *WARNING - WARNING - WARNING* if you upgrade to 0.22, all old queue items that are missing a directory in the target file-name will be removed. Don't upgrade if your queue is precious to you, and you didn't have anything in the default download directory box in the settings (finish it with version 0.181 or edit your queue.xml file and add a directory to all targets without...). (thanks fusbar for finding it)</li>
+  <li>Fixed a bug with files being added to the queue without target directory. This caused quite a lot of strange behaviour ranging from hang at startup to empty queues and crashing deletes. Hopefully, I fixed it proper, but rereport the bugs if you still have problems...</li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
+  <li><span style="color: red;">If you upgrade to 0.22, all old queue items that are missing a directory in the</span></li>
+  <li><span style="color: red;">target file-name will be removed. Don't upgrade if your queue is precious to you, and you didn't have anything</span></li>
+  <li><span style="color: red;">in the default download directory box in the settings (finish it with version 0.181</span></li>
+  <li><span style="color: red;">or edit your queue.xml file and add a directory to all targets without...). (thanks fusbar for finding it)</span></li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
   <li>Added so that only files with the same extension are visible in the download to menus (this was actually done in 0.21 but I forgot to write it down...=)</li>
   <li>Fixed a bug where dc++ would stop listening to incoming connections, causing connection timeouts in active mode</li>
   <li>Right-click menu now works for all nicks (even outside &lt; and &gt;)</li>
@@ -951,7 +978,7 @@ See the version history of DC++ below.
 
 <h2>0.20 <span style="color: gray;">(2002-12-06)</span></h2>
 <ul>
-  <li>Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in � (euros) now, which is, of course, my preferred currency =)</li>
+  <li>Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in ? (euros) now, which is, of course, my preferred currency =)</li>
   <li>The forum and lichlord.org are currently down for maintenance, and the owner is waiting for new network equipment. I would open an alternative forum if I could get the old posts, but because all network connections to the server are broken it's difficult to get the old posts out of it for the moment (physical access to the server is somewhat limited). For the most desperate ones, I opened a new conference on sourceforge (where the old forums were) that you can use, or if you feel like it, try one of the forums that people have put up on their own (I won't read them though, don't have time). Anyway, lichlord should be up soon I hope...</li>
   <li>This release is completely untested (more or less, i'm in the third world (italy...amazing that this country made it to the G7, and is still actually there...)), and is most problably not very stable. If it crashes, I don't want to know about it unless you're using the debug version (that most probably doesn't work with w98), that generates an exceptioninfo.txt file. If you report a crash bug ("unhandled exception"), make sure you include this file in the report, otherwise it's a waste of your time writing and my time deleting. I do not recommend this version for those who are comfortable with 0.181...</li>
   <li>I've decided to clear the bug and feature request forum of all posts, regardless of whether they have been fixed/implemented or not, because of the ridiculous amount of duplicates. I apologize to those that made valid, new fresh and interesting requests, but because of all double-posting idiots, I can't keep up with things. I've tagged all the closed requests as "out of date", and I kindly ask the original authors to reopen their posts if they still consider them valid and non-duplicate. You can find them by browsing for closed posts. Also, before posting a feature request, check that the feature is not already implemented (by looking in the settings for instance). It is not exactly a sign of intelligence to suggest features that already exist...and there seems to be an alarming number of stupid people out there...</li>

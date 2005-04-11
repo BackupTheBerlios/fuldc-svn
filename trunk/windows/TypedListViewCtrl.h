@@ -291,6 +291,39 @@ public:
 		headerMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	}
 
+	void buildCopyMenu(CMenu &menu) {
+		int i = 0;
+		int size = static_cast<int>(columnList.size());
+
+		for(; i < size; ++i)
+			menu.AppendMenu(MF_STRING, IDC_COPY+i, columnList[i]->name.c_str());
+		menu.AppendMenu(MF_SEPARATOR);
+		menu.AppendMenu(MF_STRING, IDC_COPY+1+i, CTSTRING(ALL));
+	}
+
+	void copy(int col) {
+		tstring buf;
+		int i = -1;
+		//avoid an unsigned mismatch and save a few calls to size() =)
+		int size = static_cast<int>(columnList.size());
+
+		while(( i = GetNextItem(i, LVNI_SELECTED)) != -1) {
+			if(col >= size) {
+				for(int j = 0; j < size; ++j) {
+					buf += getItemData(i)->getText(j) + _T(" ");
+				}
+				buf.erase(buf.size()-1, 1);
+			} else {
+				buf += getItemData(i)->getText(col);
+			}
+
+			buf += _T("\r\n");
+		}
+
+		buf.erase(buf.size()-2, 2);
+		WinUtil::setClipboard(buf);
+	}
+
 	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		if(!ownerDraw) {
 			bHandled = FALSE;

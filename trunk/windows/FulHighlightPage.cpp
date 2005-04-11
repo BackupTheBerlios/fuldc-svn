@@ -68,6 +68,7 @@ LRESULT FulHighlightPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	ctrlStrings.Attach(GetDlgItem(IDC_ITEMS));
 	ctrlStrings.GetClientRect(rc);
 	ctrlStrings.InsertColumn(0, CTSTRING(HIGHLIGHTLIST_HEADER), LVCFMT_LEFT, rc.Width(), 0);
+	ctrlStrings.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	ColorList* cList = HighlightManager::getInstance()->getList();
 		

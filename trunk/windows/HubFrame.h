@@ -75,12 +75,11 @@ public:
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
-		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		COMMAND_ID_HANDLER(IDC_FIND, ctrlClient.onFind)
 		COMMAND_ID_HANDLER(IDC_SHOW_HUB_LOG, onShowHubLog)
 		COMMAND_ID_HANDLER(IDC_OPEN_LOG_DIR, onShowHubLog)
-		COMMAND_RANGE_HANDLER(IDC_COPY+1, IDC_COPY+1+COLUMN_LAST, onCopyUserList);
+		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+1+COLUMN_LAST, onCopyUserList);
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
 		CHAIN_MSG_MAP(baseClass)
@@ -105,7 +104,6 @@ public:
 	}
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);

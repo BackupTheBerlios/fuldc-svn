@@ -58,7 +58,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	ctrlQueue.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_QUEUE);
-	ctrlQueue.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+	ctrlQueue.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 	
 
 	ctrlDirs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
@@ -108,9 +108,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	readdQueueMenu.CreatePopupMenu();
 
 	copyMenu.CreatePopupMenu();
-	int i = 0;
-	for(; i <COLUMN_LAST; ++i)
-		copyMenu.AppendMenu(MF_STRING, IDC_COPY + i, CTSTRING_I(columnNames[i]));
+	ctrlQueue.buildCopyMenu(copyMenu);
 
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
@@ -127,6 +125,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	multiMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
 	multiMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
+	multiMenu.AppendMenu(MF_POPUP, (HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
 	multiMenu.AppendMenu(MF_SEPARATOR);
 	multiMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 	
@@ -142,8 +141,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	dirMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
 	dirMenu.AppendMenu(MF_STRING, IDC_NOTIFY, CTSTRING(NOTIFY_ME));
 	dirMenu.AppendMenu(MF_SEPARATOR);
-	dirMenu.AppendMenu(MF_STRING, IDC_COPY + i++, (TSTRING(COPY) + _T(" ") + TSTRING(FOLDER_NAME)).c_str());
-	dirMenu.AppendMenu(MF_STRING, IDC_COPY + i, (TSTRING(COPY) + _T(" ") + TSTRING(PATH)).c_str());
+	//bah this is ugly, should really change this to use menucommand instead, oh well next release...
+	dirMenu.AppendMenu(MF_STRING, IDC_COPY + COLUMN_LAST+5, (TSTRING(COPY) + _T(" ") + TSTRING(FOLDER_NAME)).c_str());
+	dirMenu.AppendMenu(MF_STRING, IDC_COPY + COLUMN_LAST+6, (TSTRING(COPY) + _T(" ") + TSTRING(PATH)).c_str());
 	dirMenu.AppendMenu(MF_SEPARATOR);
 	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
@@ -1349,13 +1349,10 @@ LRESULT QueueFrame::onSearchReleaseAlternates(WORD /*wNotifyCode*/, WORD /*wID*/
 }
 
 LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	QueueItemInfo *ii = (QueueItemInfo*)ctrlQueue.GetItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
-
 	int tmp = wID - IDC_COPY;
 
-	if(tmp < COLUMN_LAST)
-		WinUtil::setClipboard(ii->getText(tmp));	
-	else {
+	//fix later
+	if(tmp >= COLUMN_LAST+5) {
 		HTREEITEM ht = ctrlDirs.GetSelectedItem();
 		if(ht) {
 			tstring * name = (tstring*)ctrlDirs.GetItemData(ht);
@@ -1365,6 +1362,8 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 			else 
 				WinUtil::setClipboard( *name );
 		}
+	} else {
+		ctrlQueue.copy(tmp);
 	}
 	return 0;
 }

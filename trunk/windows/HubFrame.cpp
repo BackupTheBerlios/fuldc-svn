@@ -81,7 +81,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
-	ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+	ctrlUsers.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
 	SetSplitterPanes(ctrlClient.m_hWnd, ctrlUsers.m_hWnd, false);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -127,11 +127,12 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 	
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
+	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
 
 	copyMenu.CreatePopupMenu();
-	for(int i = 0; i < COLUMN_LAST; ++i)
-		copyMenu.AppendMenu(MF_STRING, IDC_COPY+1+i, CTSTRING_I(columnNames[i]));
+	ctrlUsers.buildCopyMenu(copyMenu);
+	
 
 	userMenu.CreatePopupMenu();
 	appendUserItems(userMenu);
@@ -413,24 +414,6 @@ void HubFrame::addAsFavorite() {
 	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
 }
 
-LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	if(client->isConnected()) {
-		string nicks;
-
-		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			nicks += (ctrlUsers.getItemData(i))->user->getNick();
-			nicks += ' ';
-		}
-		if(!nicks.empty()) {
-			// remove last space
-			nicks.erase(nicks.length() - 1);
-			WinUtil::setClipboard(Text::toT(nicks));
-		}
-	}
-	return 0;
-}
-
 LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	if(client->isConnected() && item->iItem != -1) {
@@ -608,7 +591,6 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		ctrlStatus.SetParts(5, w);
 
 		ctrlLastLines.SetMaxTipWidth(w[0]);
-		ctrlLastLines.SetWindowPos(HWND_TOPMOST, sr.left, sr.top, sr.Width(), sr.Height(), SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
 		// Strange, can't get the correct width of the last field...
 		ctrlStatus.GetRect(3, sr);
@@ -1394,10 +1376,8 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 }
 
 LRESULT HubFrame::onCopyUserList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int id = wID - IDC_COPY -1;
-	UserInfo *ui = ctrlUsers.getSelectedItem();
-	if(ui != NULL)
-		WinUtil::setClipboard(ui->getText(id));
+	int id = wID - IDC_COPY;
+	ctrlUsers.copy(id);
 	
 	return 0;
 }

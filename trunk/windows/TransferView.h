@@ -37,6 +37,8 @@ class TransferView : public CWindowImpl<TransferView>, private DownloadManagerLi
 	public UserInfoBaseHandler<TransferView>, public UCHandler<TransferView>
 {
 public:
+	DECLARE_WND_CLASS(_T("TransferView"))
+
 	TransferView() {
 		headerBuf = new TCHAR[128];
 		resolveBuffer = NULL;
@@ -68,7 +70,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_RESOLVE_IP, onResolveIP)
 		COMMAND_ID_HANDLER(IDC_REMOVE_FILE, onRemoveFile)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
-		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY + COLUMN_LAST, onCopy)
+		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY + COLUMN_LAST+2, onCopy)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
 	END_MSG_MAP()
@@ -234,7 +236,6 @@ private:
 				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
 				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 			}
-			return 0;
 		}
 	};
 

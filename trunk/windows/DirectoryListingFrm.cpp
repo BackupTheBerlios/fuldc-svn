@@ -124,7 +124,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
-	ctrlList.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+	ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 	
 	ctrlList.SetBkColor(WinUtil::bgColor);
 	ctrlList.SetTextBkColor(WinUtil::bgColor);
@@ -187,6 +187,8 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		copyMenu.AppendMenu(MF_STRING, IDC_COPY + i, CTSTRING_I(columnNames[i]));
 	}
 	copyMenu.AppendMenu(MF_STRING, IDC_COPY + COLUMN_LAST, CTSTRING(PATH));
+	copyMenu.AppendMenu(MF_SEPARATOR);
+	copyMenu.AppendMenu(MF_STRING, IDC_COPY+1+COLUMN_LAST, CTSTRING(ALL));
 			
 	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CTSTRING(DOWNLOAD));
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
@@ -953,22 +955,23 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 void DirectoryListingFrame::copy(UINT wID) {
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
-	tstring tmp;
-	if((wID - IDC_COPY) == COLUMN_LAST) {
+	int tmp = wID - IDC_COPY;
+	tstring buf;
+	if((tmp) == COLUMN_LAST) {
 		if(ii->type == ItemInfo::FILE) {
-			tmp = Text::toT(dl->getPath(ii->file) + ii->file->getName());
+			buf = Text::toT(dl->getPath(ii->file) + ii->file->getName());
 		} else {
-			tmp = Text::toT(dl->getPath(ii->dir));
-			if(tmp[tmp.length()-1] == _T('\\'))
-				tmp.erase(tmp.length()-1);
+			buf = Text::toT(dl->getPath(ii->dir));
+			if(buf[buf.length()-1] == _T('\\'))
+				buf.erase(buf.length()-1);
 		}
 	} else {
-		tmp = ii->getText(wID - IDC_COPY);
+		ctrlList.copy(tmp);
 	}
 	
 	
-	if(!tmp.empty())
-		WinUtil::setClipboard(tmp);
+	if(!buf.empty())
+		WinUtil::setClipboard(buf);
 }
 
 LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

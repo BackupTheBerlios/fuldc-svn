@@ -49,7 +49,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	arrows.CreateFromImage(_T("icons\\arrows.bmp"), 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
-	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
@@ -81,8 +81,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	pmMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
 
 	copyMenu.CreatePopupMenu();
-	for(int i = 0; i < COLUMN_LAST; ++i)
-		copyMenu.AppendMenu(MF_STRING, IDC_COPY+i, CTSTRING_I(columnNames[i]));
+	ctrlTransfers.buildCopyMenu(copyMenu);
 
 	userMenu.CreatePopupMenu();
 	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
@@ -796,9 +795,8 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 }
 
 LRESULT TransferView::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-	ItemInfo *ii = ctrlTransfers.getSelectedItem();
-	if(ii != NULL)
-		WinUtil::setClipboard(ii->getText(wID - IDC_COPY));
+	int tmp = wID - IDC_COPY;
+	ctrlTransfers.copy(tmp);
 
 	return 0;
 }

@@ -57,7 +57,6 @@
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
 namespace {
-	const char* badChars = "$|.[]()-_+";
 
 	string getTempName(const string& aFileName, const TTHValue* aRoot) {
 		string tmp(aFileName);

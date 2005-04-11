@@ -38,6 +38,7 @@ LRESULT FulIgnorePage::onInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
 	IgnoreManager::getInstance()->copyPatterns(patterns);
 
 	patternList.Attach(GetDlgItem(IDC_PATTERNS));
+	patternList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 	CRect rc;
 	patternList.GetClientRect(rc);
 	patternList.InsertColumn(0, _T("Dummy"), LVCFMT_LEFT, rc.Width(), 0);

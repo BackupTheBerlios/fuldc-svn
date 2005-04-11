@@ -57,7 +57,7 @@ LRESULT FulDownloadPage::onInitDialog(UINT, WPARAM, LPARAM, BOOL&){
 	ctrlDownload.GetClientRect(rc);
 	ctrlDownload.InsertColumn( 0, CTSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width() / 3, 0 );
 	ctrlDownload.InsertColumn( 1, CTSTRING(PATH), LVCFMT_LEFT, (rc. Width() / 3) * 2, 1);
-	ctrlDownload.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	ctrlDownload.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	TStringList t;
 	for(StringPairIter i = download.begin(); i != download.end(); ++i){
