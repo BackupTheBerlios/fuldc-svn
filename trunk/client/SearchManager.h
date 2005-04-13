@@ -57,19 +57,19 @@ public:
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
 		const string& aHubIpPort, const string& aIp, bool aUtf8) :
-	file(aFile), hubName(aUser->getClientName()), hubIpPort(aHubIpPort), user(aUser), 
+	file(aFile), hubName(/* @todo aUser->getClientName()*/ Util::emptyString), hubIpPort(aHubIpPort), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 
 		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), utf8(aUtf8), ref(1) { }
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, 
 		const string& aHubIpPort, TTHValue* aTTH, bool aUtf8) :
-	file(aFile), hubName(aUser->getClientName()), hubIpPort(aHubIpPort), user(aUser), 
+	file(aFile), hubName(/* @todo aUser->getClientName()*/ Util::emptyString), hubIpPort(aHubIpPort), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
 		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), utf8(aUtf8), ref(1) { }
 
 	string getFileName() const;
-	string toSR() const;
+	string toSR(const Client& client) const;
 	AdcCommand toRES(char type) const;
 
 	User::Ptr& getUser() { return user; }
@@ -77,7 +77,8 @@ public:
 
 	const string& getFile() const { return file; }
 	const string& getHubIpPort() const { return hubIpPort; }
-	const string& getHubName() const { return hubName.empty() ? user->getClientName() : hubName; }
+	/** @todo Return a hub where the user is online? */
+	const string& getHubName() const { return hubName; }
 	int64_t getSize() const { return size; }
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }

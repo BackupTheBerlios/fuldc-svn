@@ -155,9 +155,9 @@ public:
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const tstring& msg) {
 		if(user && user->isOnline()) {
-			user->privateMessage(Text::fromT(msg));
-			string s = "<" + user->getClientNick() + "> " + Text::fromT(msg);
-			addLine(Text::toT(s));
+			/// @todo user->privateMessage(Text::fromT(msg));
+			/// @todo string s = "<" + user->getClientNick() + "> " + Text::fromT(msg);
+			/// @todo addLine(Text::toT(s));
 		}
 	}
 	
@@ -207,18 +207,18 @@ private:
 	
 	void updateTitle() {
 		if(user->isOnline()) {
-			SetWindowText(Text::toT(user->getFullNick()).c_str());
+			//@todo SetWindowText(Text::toT(user->getFullNick()).c_str());
 			setDisconnected(false);
 			if(offline){
 				addLine(_T("*** ") + TSTRING(USER_CAME_ONLINE), false);
 				offline = false;
 			}
 		} else {
-			if(user->getClientName() == STRING(OFFLINE)) {
+			/* @todo if(user->getClientName() == STRING(OFFLINE)) {
 				SetWindowText(Text::toT(user->getFullNick()).c_str());
 			} else {
 				SetWindowText((Text::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
-			}
+			}*/
 			addLine(_T("*** ") + TSTRING(USER_WENT_OFFLINE), false);
             setDisconnected(true);
 			offline = true;

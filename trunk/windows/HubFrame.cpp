@@ -31,7 +31,7 @@
 #include "../client/ShareManager.h"
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/LogManager.h"
 #include "../client/AdcCommand.h"
 #include "../client/version.h"
@@ -93,7 +93,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.SetCheck(showUserList ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
-	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 
 	if(fhe) {
 		WinUtil::splitTokens(columnIndexes, fhe->getHeaderOrder(), COLUMN_LAST);
@@ -380,7 +380,7 @@ struct CompareItems {
 
 int HubFrame::findUser(const User::Ptr& aUser) {
 	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
-		if(Util::stricmp(aUser->getNick(), i->second->user->getNick()) == 0)
+		//@todo if(Util::stricmp(aUser->getNick(), i->second->user->getNick()) == 0)
 			break;
 	}
 	
@@ -410,7 +410,7 @@ void HubFrame::addAsFavorite() {
 	aEntry.setStripIsp(stripIsp);
 	aEntry.setLogMainChat(logMainChat);
 
-	HubManager::getInstance()->addFavorite(aEntry);
+	FavoriteManager::getInstance()->addFavorite(aEntry);
 	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
 }
 
@@ -423,7 +423,7 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 }
 
 
-bool HubFrame::updateUser(const User::Ptr& u) {
+bool HubFrame::updateUser(const UpdateInfo& u) {
 	int i = -1;
 	tstring nick = stripIsp ? Text::toT(u->getShortNick()) : Text::toT(u->getNick());
 	
@@ -552,7 +552,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->user)) {
 				PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
@@ -560,7 +560,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
 				PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
 		}
 		delete i;
@@ -651,12 +651,12 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	} else {
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
-		HubManager::getInstance()->removeUserCommand(Text::fromT(server));
+		FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
 		string tmp, tmp2, tmp3;
 		ctrlUsers.saveHeaderOrder(tmp, tmp2, tmp3);
 
-		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 		if(fhe != NULL){
 			CRect rc;
 			
@@ -683,7 +683,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			fhe->setHeaderVisible(tmp3);
 			
 
-			HubManager::getInstance()->setDirty();
+			FavoriteManager::getInstance()->setDirty();
 		} else {
 			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, tmp);
 			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, tmp2);
@@ -892,9 +892,9 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
 			StringMap tmp = ucParams;
-			u->user->getParams(tmp);
+			/**@todo u->user->getParams(tmp);
 			client->escapeParams(tmp);
-			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
 		}
 	}
 	return;
@@ -1293,16 +1293,16 @@ void HubFrame::on(Connected, Client*) throw() {
 void HubFrame::on(BadPassword, Client*) throw() { 
 	client->setPassword(Util::emptyString);
 }
-void HubFrame::on(UserUpdated, Client*, const User::Ptr& user) throw() { 
-	if(!user->isSet(User::HIDDEN)) 
+void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() { 
+	///@todo if(getUserInfo() && !user->isSet(User::HIDDEN)) 
 		speak(UPDATE_USER, user);
 }
-void HubFrame::on(UsersUpdated, Client*, const User::List& aList) throw() {
+void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
 	Lock l(updateCS);
 	updateList.reserve(aList.size());
-	for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-		if(!(*i)->isSet(User::HIDDEN))
-			updateList.push_back(make_pair(*i, UPDATE_USERS));
+	for(OnlineUser::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+		if(!(*i)->getIdentity().isHidden())
+			updateList.push_back(make_pair(UpdateInfo(*(*i)), UPDATE_USERS));
 	}
 	if(!updateList.empty()) {
 		PostMessage(WM_SPEAKER, UPDATE_USERS);
@@ -1321,7 +1321,7 @@ void HubFrame::on(UserIp, Client*, const User::List& aList) throw() {
 	}
 }
 
-void HubFrame::on(UserRemoved, Client*, const User::Ptr& user) throw() {
+void HubFrame::on(UserRemoved, Client*, const OnlineUser& user) throw() {
 	speak(REMOVE_USER, user);
 }
 
@@ -1364,7 +1364,7 @@ void HubFrame::on(Message, Client*, const string& line) throw() {
 		speak(ADD_CHAT_LINE, line);
 	}
 }
-void HubFrame::on(PrivateMessage, Client*, const User::Ptr& user, const string& line) throw() { 
+void HubFrame::on(PrivateMessage, Client*, const OnlineUser& user, const string& line) throw() { 
 	speak(PRIVATE_MESSAGE, user, line);
 }
 void HubFrame::on(NickTaken, Client*) throw() { 

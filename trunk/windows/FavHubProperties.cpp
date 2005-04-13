@@ -23,7 +23,7 @@
 
 #include "FavHubProperties.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/ResourceManager.h"
 
 LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
@@ -89,7 +89,7 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		entry->setStripIsp(IsDlgButtonChecked(IDC_STRIPISP) == BST_CHECKED);
 		entry->setLogMainChat(IsDlgButtonChecked(IDC_LOGMAINCHAT) == BST_CHECKED);
 
-		HubManager::getInstance()->save();
+		FavoriteManager::getInstance()->save();
 	}
 	EndDialog(wID);
 	return 0;

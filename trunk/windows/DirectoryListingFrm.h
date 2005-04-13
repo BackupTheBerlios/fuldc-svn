@@ -33,7 +33,7 @@
 
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
-#include "../client/ShareManager.h"
+#include "../client/FavoriteManager.h"
 
 #define STATUS_MESSAGE_MAP 9
 #define VIEW_MESSAGE_MAP   10
@@ -162,10 +162,10 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	}
 	
 	void setWindowTitle() {
-		if(error.empty())
+/**@todo		if(error.empty())
 			SetWindowText(Text::toT(dl->getUser()->getFullNick()).c_str());
 		else
-			SetWindowText(error.c_str());		
+			SetWindowText(error.c_str());		*/
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {

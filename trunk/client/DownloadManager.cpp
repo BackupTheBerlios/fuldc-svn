@@ -720,10 +720,10 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t c
 void DownloadManager::logDownload(UserConnection* aSource, Download* d) {
 	StringMap params;
 	params["target"] = d->getTarget();
-	params["user"] = aSource->getUser()->getNick();
+	params["user"] = aSource->getUser()->getFirstNick();
 	params["userip"] = aSource->getRemoteIp();
-	params["hub"] = aSource->getUser()->getLastHubName();
-	params["hubip"] = aSource->getUser()->getLastHubAddress();
+	/// @todo params["hub"] = aSource->getUser()->getLastHubName();
+	/// @todo params["hubip"] = aSource->getUser()->getLastHubAddress();
 	params["size"] = Util::toString(d->getSize());
 	params["sizeshort"] = Util::formatBytes(d->getSize());
 	params["chunksize"] = Util::toString(d->getTotal());

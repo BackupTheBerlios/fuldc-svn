@@ -123,14 +123,14 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlFilterDesc.SetWindowText(CTSTRING(FILTER));
 	ctrlFilterDesc.SetFont(WinUtil::systemFont);
 
-	HubManager::getInstance()->addListener(this);
+	FavoriteManager::getInstance()->addListener(this);
 
-	hubs = HubManager::getInstance()->getPublicHubs();
-	if(HubManager::getInstance()->isDownloading()) 
+	hubs = FavoriteManager::getInstance()->getPublicHubs();
+	if(FavoriteManager::getInstance()->isDownloading()) 
 		ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
 	else {
 		if(hubs.empty())
-			HubManager::getInstance()->refresh();
+			FavoriteManager::getInstance()->refresh();
 	}
 
 	updateList();
@@ -203,7 +203,7 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	users = 0;
 	visibleHubs = 0;
 	ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
-	HubManager::getInstance()->refresh();
+	FavoriteManager::getInstance()->refresh();
 
 	return 0;
 }
@@ -251,14 +251,14 @@ LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		e.setDescription(Text::fromT(buf));
 		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
 		e.setServer(Text::fromT(buf));
-		HubManager::getInstance()->addFavorite(e);
+		FavoriteManager::getInstance()->addFavorite(e);
 	}
 	return 0;
 }
 
 LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
-		HubManager::getInstance()->removeListener(this);
+		FavoriteManager::getInstance()->removeListener(this);
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
@@ -274,8 +274,8 @@ LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 }
 
 LRESULT PublicHubsFrame::onListSelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
-	HubManager::getInstance()->setHubList(ctrlPubLists.GetCurSel());
-	hubs = HubManager::getInstance()->getPublicHubs();
+	FavoriteManager::getInstance()->setHubList(ctrlPubLists.GetCurSel());
+	hubs = FavoriteManager::getInstance()->getPublicHubs();
 	updateList();
 	bHandled = FALSE;
 	return 0;
@@ -404,7 +404,7 @@ void PublicHubsFrame::updateStatus() {
 
 LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == FINISHED) {
-		hubs = HubManager::getInstance()->getPublicHubs();
+		hubs = FavoriteManager::getInstance()->getPublicHubs();
 		updateList();
 		tstring* x = (tstring*)lParam;
 		ctrlStatus.SetText(0, (TSTRING(HUB_LIST_DOWNLOADED) + _T(" (") + (*x) + _T(")")).c_str());
@@ -461,11 +461,11 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 void PublicHubsFrame::updateDropDown() {
 	ctrlPubLists.ResetContent();
-	StringList lists(HubManager::getInstance()->getHubLists());
+	StringList lists(FavoriteManager::getInstance()->getHubLists());
 	for(StringList::iterator idx = lists.begin(); idx != lists.end(); ++idx) {
 		ctrlPubLists.AddString(Text::toT(*idx).c_str());
 	}
-	ctrlPubLists.SetCurSel(HubManager::getInstance()->getSelectedHubList());
+	ctrlPubLists.SetCurSel(FavoriteManager::getInstance()->getSelectedHubList());
 }
 
 /**

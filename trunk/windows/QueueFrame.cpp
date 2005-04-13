@@ -197,7 +197,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(j->getUser()->isOnline())
 					online++;
 
-				tmp += Text::toT(j->getUser()->getFullNick());
+				/// @todo tmp += Text::toT(j->getUser()->getFullNick());
 			}
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
@@ -265,7 +265,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");
-					tmp += Text::toT(j->getUser()->getNick());
+					/// @todo tmp += Text::toT(j->getUser()->getNick());
 					tmp += _T(" (");
 					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
 						tmp += TSTRING(FILE_NOT_AVAILABLE);
@@ -810,7 +810,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					if(!i->getUser()) {
 						continue;
 					}
-					tstring nick = Text::toT(i->getUser()->getNick());
+					//@todo tstring nick = Text::toT(i->getUser()->getNick());
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -834,7 +834,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					if(!i->getUser()) {
 						continue;
 					}
-					tstring nick = Text::toT(i->getUser()->getNick());
+					/* @todo tstring nick = Text::toT(i->getUser()->getNick());
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -844,6 +844,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					mi.wID = IDC_READD_QUEUE + 1 + readdItems; // "All" is before sources
 					readdQueueMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);
 					readdItems++;
+					*/
 				}
 			}
 
@@ -1017,7 +1018,7 @@ LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 	mi.fMask = MIIM_DATA;
 	removeAllMenu.GetMenuItemInfo(id, TRUE, &mi);
 	QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-	QueueManager::getInstance()->removeSources(s->getUser(), QueueItem::Source::FLAG_REMOVED);
+	QueueManager::getInstance()->removeSource(s->getUser(), QueueItem::Source::FLAG_REMOVED);
 	return 0;
 }
 

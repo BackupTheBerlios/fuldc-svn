@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
-#define AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_
+#ifndef FAVORITE_MANAGER_H
+#define FAVORITE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,7 +31,6 @@
 #include "UserCommand.h"
 #include "FavoriteUser.h"
 #include "Singleton.h"
-#include "TimerManager.h"
 
 class HubEntry {
 public:
@@ -82,12 +81,12 @@ public:
 	{ 
 		logMainChat = BOOLSETTING(LOG_MAIN_CHAT);
 	};
-	
+
 	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0), showUserlist(true), showJoins(false), stripIsp(false)
 	{ 
 		logMainChat = BOOLSETTING(LOG_MAIN_CHAT);
 	};
-	
+
 	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), 
 		password(rhs.getPassword()), connect(rhs.getConnect()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), nick(rhs.nick), 
 		showUserlist(rhs.getShowUserlist()), showJoins(rhs.getShowJoins()), stripIsp(rhs.getStripIsp()), logMainChat(rhs.logMainChat) { };
@@ -124,7 +123,7 @@ private:
 	string nick;
 };
 
-class HubManagerListener {
+class FavoriteManagerListener {
 public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
@@ -150,8 +149,8 @@ class SimpleXML;
 /**
  * Public hub list, favorites (hub&user). Assumed to be called only by UI thread.
  */
-class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>,
-	private SettingsManagerListener, private TimerManagerListener
+class FavoriteManager : public Speaker<FavoriteManagerListener>, private HttpConnectionListener, public Singleton<FavoriteManager>,
+	private SettingsManagerListener
 {
 public:
 // Public Hubs
@@ -171,17 +170,26 @@ public:
 	bool isDownloading() { return running; };
 
 // Favorite Users
-	User::List& getFavoriteUsers() { return users; };
+	FavoriteUser::List& getFavoriteUsers() { return users; };
 	
 	void addFavoriteUser(User::Ptr& aUser);
 	void removeFavoriteUser(User::Ptr& aUser);
+
+	/// @todo
+	bool hasSlot(User::Ptr& ptr) { return false; }
 
 // Favorite Hubs
 	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
 
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
-	
+
+// Favorite Directories
+	bool addFavoriteDir(const string& aDirectory, const string& aName);
+	bool removeFavoriteDir(const string& aName);
+	bool renameFavoriteDir(const string& aName, const string& anotherName);
+	StringPairList getFavoriteDirs() { return favoriteDirs; }
+
 	FavoriteHubEntry* getFavoriteHubEntry(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
 			FavoriteHubEntry* hub = *i;
@@ -206,15 +214,14 @@ public:
 
 	void load();
 	void save();
-
-	void setDirty() { dirty = true; }
 	
 private:
 	FavoriteHubEntry::List favoriteHubs;
+	StringPairList favoriteDirs;
 	UserCommand::List userCommands;
 	int lastId;
 
-	User::List users;
+	FavoriteUser::List users;
 
 	CriticalSection cs;
 
@@ -231,22 +238,13 @@ private:
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
-	bool dirty;
-	u_int32_t lastSave;
-
-
-	friend class Singleton<HubManager>;
+	friend class Singleton<FavoriteManager>;
 	
-	HubManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false),
-		dirty(false), lastSave(0) {
-
+	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
 	}
 
-	virtual ~HubManager() throw(){
-		if(dirty)
-			save();
-
+	virtual ~FavoriteManager() throw() {
 		SettingsManager::getInstance()->removeListener(this);
 		if(c) {
 			c->removeListener(this);
@@ -283,18 +281,14 @@ private:
 		load(xml);
 	}
 
-	//TimerManagerListener
-	virtual void on(TimerManagerListener::Minute, u_int32_t ticks) throw();
-	
-
 	void load(SimpleXML* aXml);
 	
 };
 
-#endif // !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
+#endif // FAVORITE_MANAGER_H
 
 /**
  * @file
- * $Id: HubManager.h,v 1.3 2003/12/30 13:30:12 trem Exp $
+ * $Id: FavoriteManager.h,v 1.1 2005/04/12 23:24:12 arnetheduck Exp $
  */
 

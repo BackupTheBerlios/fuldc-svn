@@ -550,7 +550,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		delete &str;
 	} else if(wParam == AUTO_CONNECT) {
-		autoConnect(HubManager::getInstance()->getFavoriteHubs());
+		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
 	} else if(wParam == STATUS_MESSAGE) {
@@ -677,7 +677,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 
 		xml.resetCurrentChild();
 		if(xml.findChild("Version")) {
-			if(atof(xml.getChildData().c_str()) > VERSIONFLOAT) {
+			if(Util::toDouble(xml.getChildData()) > VERSIONFLOAT) {
 				xml.resetCurrentChild();
 				xml.resetCurrentChild();
 				if(xml.findChild("Title")) {
@@ -698,7 +698,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 			} else {
 				xml.resetCurrentChild();
 				if(xml.findChild("VeryOldVersion")) {
-					if(atof(xml.getChildData().c_str()) >= VERSIONFLOAT) {
+					if(Util::toDouble(xml.getChildData()) >= VERSIONFLOAT) {
 						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
 						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str());
 						oldshutdown = true;
@@ -711,7 +711,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 			if(xml.findChild("BadVersions")) {
 				xml.stepIn();
 				while(xml.findChild("BadVersion")) {
-					double v = atof(xml.getChildAttrib("Version").c_str());
+					double v = Util::toDouble(xml.getChildAttrib("Version"));
 					if(v == VERSIONFLOAT) {
 						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
 						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str(), _T("Bad DC++ version"), MB_OK | MB_ICONEXCLAMATION);
@@ -1074,7 +1074,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			}
 			if(username.length() > 4 && Util::stricmp(username.c_str() + username.length() - 4, _T(".xml")) == 0)
 				username.erase(username.length()-4);
-			DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(Text::fromT(username)));
+			/// @todo DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(Text::fromT(username)));
 		}
 	}
 	return 0;
@@ -1083,7 +1083,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT MainFrame::onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ShareManager::getInstance()->generateXmlList(true);
 	if(!ShareManager::getInstance()->getOwnListFile().empty()){
-		DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getUser(SETTING(NICK)));
+		/// @todo DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getUser(SETTING(NICK)));
 	}
 	return 0;
 }

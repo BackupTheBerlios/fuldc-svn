@@ -21,7 +21,7 @@
 #include "UserInfoBase.h"
 #include "PrivateFrame.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
 #include "../client/User.h"
@@ -59,10 +59,10 @@ void UserInfoBase::removeAll() {
 }
 
 void UserInfoBase::ignore() {
-	IgnoreManager::getInstance()->ignore(user->getNick());
+	//@todo IgnoreManager::getInstance()->ignore(user->getNick());
 }
 void UserInfoBase::unignore() {
-	IgnoreManager::getInstance()->unignore(user->getNick());
+	//@todo IgnoreManager::getInstance()->unignore(user->getNick());
 }
 
 void UserInfoBase::browseList() {
@@ -76,12 +76,12 @@ void UserInfoBase::browseList() {
 
 void UserInfoBase::showLog() {
 	StringMap params;
-	params["user"] = user->getNick();
-	params["hub"] = user->getClientName();
-	params["hubaddr"] = user->getClientAddressPort();
-	params["mynick"] = user->getClientNick(); 
-	params["mycid"] = user->getClientCID().toBase32(); 
-	params["cid"] = user->getCID().toBase32(); 
+	//@todo params["user"] = user->getNick();
+	//@todo params["hub"] = user->getClientName();
+	//@todo params["hubaddr"] = user->getClientAddressPort();
+	//@todo params["mynick"] = user->getClientNick(); 
+	//@todo params["mycid"] = user->getClientCID().toBase32(); 
+	//@todo params["cid"] = user->getCID().toBase32(); 
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())

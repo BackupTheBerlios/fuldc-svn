@@ -24,7 +24,7 @@
 #include "CommandDlg.h"
 
 #include "../client/SettingsManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "WinUtil.h"
 
 PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };

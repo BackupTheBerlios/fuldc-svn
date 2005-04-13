@@ -23,6 +23,7 @@
 #include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/ConnectionManager.h"
+#include "../client/ClientManager.h"
 #include "../client/Socket.h"
 #include "../client/IgnoreManager.h"
 
@@ -49,7 +50,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	arrows.CreateFromImage(_T("icons\\arrows.bmp"), 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
-	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
@@ -155,7 +156,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			itemI = ctrlTransfers.getItemData(i);
 			bCustomMenu = true;
 
-			prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
+			///@todo prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
 			//userMenu.AppendMenu(MF_SEPARATOR);
 		}
 
@@ -163,14 +164,15 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			int pos = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
 			if(pos != -1) {
 				ItemInfo* ii = (ItemInfo*)ctrlTransfers.getItemData(pos);
+				/* @todo 
 				if(IgnoreManager::getInstance()->isUserIgnored(ii->user->getNick())) {
 					userMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
 					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 				} else {
 					userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
 					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
-				}
-
+				}*/
+				
 				
 				//check that we have a filename and that it's not a file list
 				if(!ii->getText(COLUMN_FILE).empty() && !ii->fileList) {
@@ -208,14 +210,14 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		if(!itemI->user->isOnline())
 			return;
 
-		ucParams["mynick"] = itemI->user->getClientNick();
-		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
+		/** @todo ucParams["mynick"] = itemI->user->getClientNick();
+		ucParams["mycid"] = itemI->user->getClientCID().toBase32(); 
 		ucParams["file"] = Text::fromT(itemI->path) + Text::fromT(itemI->file);
 
 		StringMap tmp = ucParams;
 		itemI->user->getParams(tmp);
 		itemI->user->clientEscapeParams(tmp);
-		itemI->user->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+		itemI->user->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
 	}
 	return;
 };
@@ -229,7 +231,7 @@ LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 		ii->updateMask |= ItemInfo::MASK_STATUS;
 		ii->update();
 		ctrlTransfers.updateItem( ii );
-		ii->user->connect();
+		//@todo ii->user->connect();
 	}
 	return 0;
 }
@@ -437,10 +439,10 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		columns[COLUMN_USER] = Text::toT(user->getNick());
+		/// @todo columns[COLUMN_USER] = Text::toT(user->getNick());
 	}
 	if(colMask & MASK_HUB) {
-		columns[COLUMN_HUB] = Text::toT(user->getClientName());
+		/// @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;
@@ -466,7 +468,7 @@ void TransferView::ItemInfo::update() {
 		}
 	}
 	if(colMask & MASK_FILE) {
-		fileList = (Util::stricmp(Text::toT(user->getNick()), file) == 0);
+		//@todo fileList = (Util::stricmp(Text::toT(user->getNick()), file) == 0);
 		columns[COLUMN_FILE] = file;
 	}
 	if(colMask & MASK_SIZE) {

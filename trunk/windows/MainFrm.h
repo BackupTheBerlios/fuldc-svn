@@ -25,7 +25,7 @@
 
 #include "../client/TimerManager.h"
 #include "../client/HttpConnection.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
 #include "../client/LogManager.h"

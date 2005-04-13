@@ -31,7 +31,7 @@
 #include "../client/ShareManager.h"
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
@@ -827,7 +827,8 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 		if(file[0] == '/') // Remove any '/' in from of the file
 			file = file.substr(1);
 		try {
-			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(file), QueueItem::FLAG_CLIENT_VIEW);
+			/// @todo check this...
+			QueueManager::getInstance()->addList(ClientManager::getInstance()->getLegacyUser(file), QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception&) {
 			// ...
 		}

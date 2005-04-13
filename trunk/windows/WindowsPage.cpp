@@ -23,7 +23,7 @@
 #include "WindowsPage.h"
 
 #include "../client/SettingsManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "WinUtil.h"
 
 PropPage::Item WindowsPage::items[] = { { 0, 0, PropPage::T_END } };

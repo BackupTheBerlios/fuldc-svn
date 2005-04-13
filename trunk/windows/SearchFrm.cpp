@@ -473,9 +473,9 @@ LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), 
-				Util::getTempPath() + Text::fromT(fileName), sr->getTTH(), 
-				(QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT | (sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0)), QueueItem::HIGHEST);
+			QueueManager::getInstance()->add(Util::getTempPath() + Text::fromT(fileName), 
+				sr->getSize(), sr->getTTH(), sr->getUser(), sr->getFile(), 
+				sr->getUtf8(), QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
 		}
 	} catch(const Exception&) {
 	}
@@ -484,9 +484,13 @@ void SearchFrame::SearchInfo::view() {
 void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				Text::fromT(tgt + si->fileName), si->sr->getTTH(), QueueItem::FLAG_RESUME | (si->sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0),
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+			string target = Text::fromT(tgt + si->fileName);
+			QueueManager::getInstance()->add(target, si->sr->getSize(), 
+				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile(), 
+				si->sr->getUtf8());
+
+			if((GetKeyState(VK_SHIFT) & 0x8000) > 0)
+				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
 				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
@@ -511,9 +515,13 @@ void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				Text::fromT(tgt), si->sr->getTTH(), QueueItem::FLAG_RESUME | (si->sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0),
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+			string target = Text::fromT(tgt);
+			QueueManager::getInstance()->add(target, si->sr->getSize(), 
+				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile(), 
+				si->sr->getUtf8());
+
+			if((GetKeyState(VK_SHIFT) & 0x8000) > 0)
+				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
 				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
@@ -567,6 +575,7 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	} else {
 		size = -1;
 	}
+	/** @todo 
 	if(oneHub && hub.empty()) {
 		hub = Text::toT(si->sr->getUser()->getClientAddressPort());
 	} else if(hub != Text::toT(si->sr->getUser()->getClientAddressPort())) {
@@ -575,6 +584,7 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	}
 	if(op)
 		op = si->sr->getUser()->isClientOp();
+		*/
 }
 
 LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -847,8 +857,10 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		}
 		if(!sr->getUser()->isOnline())
 			return;
+		/** @todo
 		ucParams["mynick"] = sr->getUser()->getClientNick();
 		ucParams["mycid"] = sr->getUser()->getClientCID().toBase32();
+		*/
 		ucParams["file"] = sr->getFile();
 		ucParams["filesize"] = Util::toString(sr->getSize());
 		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());
@@ -856,10 +868,10 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 			ucParams["tth"] = sr->getTTH()->toBase32();
 		}
 
-		StringMap tmp = ucParams;
+/**		StringMap tmp = ucParams;
 		sr->getUser()->getParams(tmp);
 		sr->getUser()->clientEscapeParams(tmp);
-		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
 	}
 	return;
 };
@@ -950,10 +962,10 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			for(int i = 0, j = ctrlResults.GetItemCount(); i < j; ++i) {
 				SearchInfo* si2 = ctrlResults.getItemData(i);
 				SearchResult* sr2 = si2->sr;
-				if((sr->getUser()->getNick() == sr2->getUser()->getNick()) && (sr->getFile() == sr2->getFile())) {
+/**@todo				if((sr->getUser()->getNick() == sr2->getUser()->getNick()) && (sr->getFile() == sr2->getFile())) {
 					delete si;
 					return 0;
-				}
+				} */
 			}
 
 			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(Text::toT(sr->getFile())) : WinUtil::getDirIconIndex();

@@ -25,7 +25,7 @@
 #include "WebShortcutsProperties.h"
 
 #include "../client/SettingsManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 
 PropPage::TextItem FulAdvancedPage::texts[] = {
 	{ IDC_WEB_SHORTCUTS_ADD,		ResourceManager::ADD						},

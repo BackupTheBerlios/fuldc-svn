@@ -79,8 +79,6 @@ public:
 		FLAG_EXISTS = 0x40,
 		/** Match the queue against this list */
 		FLAG_MATCH_QUEUE = 0x80,
-		/** The source being added has its filename in utf-8 */
-		FLAG_SOURCE_UTF8 = 0x100,
 		/** The file list downloaded was actually an .xml.bz2 list */
 		FLAG_XML_BZLIST = 0x200
 	};
@@ -104,9 +102,7 @@ public:
 			FLAG_NO_TREE = 0x100,
 			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY 
 				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 
-				| FLAG_BAD_TREE | FLAG_NO_TREE,
-			FLAG_ERROR_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY |
-							FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_BAD_TREE 
+				| FLAG_BAD_TREE | FLAG_NO_TREE
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
@@ -184,12 +180,12 @@ public:
 	bool isSource(const User::Ptr& aUser) { return (getSource(aUser, sources) != sources.end()); };
 	bool isBadSource(const User::Ptr& aUser) { return (getSource(aUser, badSources) != badSources.end()); };
 
-	bool isSource(const User::Ptr& aUser, const string& aFile) const { return isSource(aUser, aFile, sources); };
-	bool isBadSource(const User::Ptr& aUser, const string& aFile) const { return isSource(aUser, aFile, badSources); };
-	bool isBadSourceExcept(const User::Ptr& aUser, const string& aFile, Flags::MaskType exceptions) const {
-		Source::ConstIter i = getSource(aUser, aFile, badSources);
+	bool isSource(const User::Ptr& aUser) const { return isSource(aUser, sources); };
+	bool isBadSource(const User::Ptr& aUser) const { return isSource(aUser, badSources); };
+	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
+		Source::ConstIter i = getSource(aUser, badSources);
 		if(i != badSources.end())
-			return (*i)->isAnySet(exceptions^Source::FLAG_ERROR_MASK); 
+			return (*i)->isAnySet(exceptions^Source::FLAG_MASK); 
 		return false;
 	};
 
@@ -255,26 +251,25 @@ private:
 	}
 
 	static Source::Iter getSource(const User::Ptr& aUser, Source::List& lst) { 
-		for(Source::Iter i = lst.begin(); i != lst.end(); ++i)
+		for(Source::Iter i = lst.begin(); i != lst.end(); ++i) {
 			if((*i)->getUser() == aUser)
 				return i;
+		}
 		return lst.end();
 	}
-	static Source::ConstIter getSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) { 
+	static Source::ConstIter getSource(const User::Ptr& aUser, const Source::List& lst) { 
 		for(Source::ConstIter i = lst.begin(); i != lst.end(); ++i) {
 			const Source* s = *i;
-			if( (s->getUser() == aUser) ||
-				((s->getUser()->getNick() == aUser->getNick()) && (s->getPath() == aFile)) )
+			if( (s->getUser() == aUser) )
 				return i;
 		}
 
 		return lst.end();
 	}
-	static bool isSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) {
+	static bool isSource(const User::Ptr& aUser, const Source::List& lst) {
 		for(Source::List::const_iterator i = lst.begin(); i != lst.end(); ++i) {
-			Source* s = *i;
-			if( (s->getUser() == aUser) ||
-				((s->getUser()->getNick() == aUser->getNick()) && (s->getPath() == aFile)) )
+			const Source* s = *i;
+			if( (s->getUser() == aUser)  )
 				return true;
 		}
 		return false;

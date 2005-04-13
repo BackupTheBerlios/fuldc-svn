@@ -108,16 +108,17 @@ public:
 
 	static void addInitalDir(const User::Ptr& user, string dir) {
 		// Clear out previos initial dirs, just in case
+		/// @todo clean up
 		getInitialDir(user);
 		while(initialDirs.size() > 30) {
 			initialDirs.erase(initialDirs.begin());
 		}
-		initialDirs.push_back(make_pair(user->getNick(), dir));
+		initialDirs.push_back(make_pair(user->getCID().toBase32(), dir));
 	}
 
 	static string getInitialDir(const User::Ptr& user) {
 		for(StringPairIter i = initialDirs.begin(); i != initialDirs.end(); ++i) {
-			if(i->first == user->getNick()) {
+			if(i->first == user->getCID().toBase32()) {
 				string dir = i->second;
 				initialDirs.erase(i);
 				return dir;

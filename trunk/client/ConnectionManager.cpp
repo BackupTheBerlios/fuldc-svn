@@ -101,7 +101,7 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 	dcassert(cqi);
 
 	if(reuse) {
-		dcdebug("ConnectionManager::putDownloadConnection Pooling reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
+		dcdebug("ConnectionManager::putDownloadConnection Pooling reusable connection %p to %s\n", aSource, aSource->getUser()->getFirstNick().c_str());
 		// Pool it for later usage...
 		aSource->addListener(this);
 		{
@@ -240,7 +240,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					if(cqi->getState() == ConnectionQueueItem::WAITING) {
 						if(startDown) {
 							cqi->setState(ConnectionQueueItem::CONNECTING);
-							cqi->getUser()->connect();
+							ClientManager::getInstance()->connect(cqi->getUser());
 							fire(ConnectionManagerListener::StatusChanged(), cqi);
 							attempts++;
 						} else {
@@ -271,7 +271,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	for_each(penDel.begin(), penDel.end(), DeleteFunction<UserConnection*>());
 
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
-		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);
+		QueueManager::getInstance()->removeSource(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
 
 	for(UserConnection::Iter i = added.begin(); i != added.end(); ++i) {
@@ -414,6 +414,8 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	dcassert(!aSource->getUser());
 
 	// First, we try looking in the pending downloads...hopefully it's one of them...
+/// @todo onMyNick
+#if 0
 	{
 		Lock l(cs);
 		for(ConnectionQueueItem::Iter i = downloads.begin(); i != downloads.end(); ++i) {
@@ -463,6 +465,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	}
 
 	aSource->setState(UserConnection::STATE_LOCK);
+#endif
 }
 
 void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSource, const string& aLock, const string& aPk) throw() {
@@ -475,7 +478,7 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser() && !aSource->getUser()->isSet(User::DCPLUSPLUS)) {
 			aSource->getUser()->setFlag(User::DCPLUSPLUS);
-			User::updated(aSource->getUser());
+			/// @todo User::updated(aSource->getUser());
 		}
 		StringList defFeatures = features;
 		if(BOOLSETTING(COMPRESS_TRANSFERS)) {
@@ -620,7 +623,7 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 		return;
 	}
 
-	aSource->setUser(ClientManager::getInstance()->getUser(cmd.getFrom(), false));
+	aSource->setUser(ClientManager::getInstance()->findUser(cmd.getFrom()));
 
 	if(!aSource->getUser()) {
 		dcdebug("CM::onINF: User not found");

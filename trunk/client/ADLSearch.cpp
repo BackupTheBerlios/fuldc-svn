@@ -207,7 +207,8 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 			destDirVector[is->ddIndex].fileAdded = true;
 
 			if(is->isAutoQueue){
-				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), SETTING(DOWNLOAD_DIRECTORY) + currentFile->getName(), currentFile->getTTH());
+				QueueManager::getInstance()->add(SETTING(DOWNLOAD_DIRECTORY) + currentFile->getName(),
+					currentFile->getSize(), currentFile->getTTH(), getUser(), currentFile->getName());
 			}
 
 			if(breakOnFirst) {
@@ -295,7 +296,7 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 void ADLSearchManager::matchListing(DirectoryListing* aDirList) throw() {
 	StringMap params;
-	params["nick"] = aDirList->getUser()->getNick();
+	/// @todo params["nick"] = aDirList->getUser()->getNick();
 	setUser(aDirList->getUser());
 
 	DestDirList destDirs;
