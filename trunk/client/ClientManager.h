@@ -89,7 +89,10 @@ public:
 	
 	void connect(const User::Ptr& p);
 	void send(AdcCommand& c);
+	void privateMessage(const User::Ptr& p, const string& msg);
 
+	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
+	
 	void lock() throw() { cs.enter(); }
 	void unlock() throw() { cs.leave(); }
 

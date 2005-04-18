@@ -153,13 +153,7 @@ public:
 	}
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
-	void sendMessage(const tstring& msg) {
-		if(user && user->isOnline()) {
-			/// @todo user->privateMessage(Text::fromT(msg));
-			/// @todo string s = "<" + user->getClientNick() + "> " + Text::fromT(msg);
-			/// @todo addLine(Text::toT(s));
-		}
-	}
+	void sendMessage(const tstring& msg);
 	
 	User::Ptr& getUser() { return user; };
 

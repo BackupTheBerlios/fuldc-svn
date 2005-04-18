@@ -42,7 +42,7 @@ void UserInfoBase::getList() {
 	}
 }
 void UserInfoBase::addFav() {
-	HubManager::getInstance()->addFavoriteUser(user);
+	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 void UserInfoBase::pm() {
 	PrivateFrame::openWindow(user);
@@ -55,7 +55,7 @@ void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
 }
 void UserInfoBase::removeAll() {
-	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 void UserInfoBase::ignore() {

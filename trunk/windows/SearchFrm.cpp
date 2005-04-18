@@ -1094,7 +1094,7 @@ void SearchFrame::initHubs() {
 		if (!client->isConnected())
 			continue;
 
-		onHubAdded(new HubInfo(Text::toT(client->getIpPort()), Text::toT(client->getName()), client->getOp()));
+		onHubAdded(new HubInfo(Text::toT(client->getIpPort()), Text::toT(client->getHubName()), client->getMyIdentity().isOp()));
 	}
 
 	clientMgr->unlock();

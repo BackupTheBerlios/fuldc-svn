@@ -215,7 +215,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					continue;
 				} 
 				
-				if(cqi->getUser()->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)) {
+				if(cqi->getUser()->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
 					passiveUsers.push_back(cqi->getUser());
 					removed.push_back(cqi);
 					continue;

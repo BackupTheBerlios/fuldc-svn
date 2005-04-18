@@ -93,6 +93,7 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_KEYUP, onFilterChar)
+		MESSAGE_HANDLER(WM_TIMER, onTimer)
 		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
 	END_MSG_MAP()
 
@@ -121,6 +122,15 @@ public:
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	LRESULT onTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+		if(wParam == 4) {
+			ctrlLastLines.Pop();
+			return 0;
+		}
+		bHandled = FALSE;
+		return 1;
+	}
 	
 	
 	
@@ -274,9 +284,10 @@ private:
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
-		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
+		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP),
+		ctrlLastLinesContainer(TOOLTIPS_CLASS, this, FILTER_MESSAGE_MAP)
 	{
-		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(aServer));
+		FavoriteHubEntry* fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(aServer));
 		if(fhe != NULL) {
 			stripIsp     = fhe->getStripIsp();
 			showJoins    = fhe->getShowJoins();
@@ -369,6 +380,7 @@ private:
 	CContainedWindow showUsersContainer;
 	CContainedWindow ctrlFilterContainer;
 	CContainedWindow ctrlFilterSelContainer;
+	CContainedWindow ctrlLastLinesContainer;
 	
 	CMenu userMenu;
 	CMenu tabMenu;

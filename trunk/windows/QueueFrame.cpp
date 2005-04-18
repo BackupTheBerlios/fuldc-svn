@@ -810,7 +810,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					if(!i->getUser()) {
 						continue;
 					}
-					//@todo tstring nick = Text::toT(i->getUser()->getNick());
+					tstring nick = Text::toT(i->getUser()->getFirstNick());
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.dwTypeData = (LPTSTR)nick.c_str();

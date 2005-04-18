@@ -559,6 +559,22 @@
 #define IDC_SET_MINISLOT_SIZE           1330
 #define IDC_SETTINGS_TEXT_MINISLOT      1331
 #define IDC_SETTINGS_KB2                1332
+#define IDC_DIRECT                      1333
+#define IDC_DIRECT_OUT                  1334
+#define IDC_EXTERNAL_IP                 1335
+#define IDC_FIREWALL_NAT                1336
+#define IDC_FIREWALL_PASSIVE            1337
+#define IDC_FIREWALL_UPNP               1338
+#define IDC_OVERRIDE                    1339
+#define IDC_PORT_TCP                    1340
+#define IDC_PORT_UDP                    1341
+#define IDC_SETTINGS_INCOMING           1342
+#define IDC_SETTINGS_OUTGOING           1343
+#define IDC_SETTINGS_PORT_TCP           1344
+#define IDC_SETTINGS_PORT_UDP           1345
+#define IDC_SETTINGS_PORTS              1346
+#define IDC_SETTINGS_UPLOAD_SPEED       1347
+
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

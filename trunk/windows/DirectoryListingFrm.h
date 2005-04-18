@@ -34,6 +34,7 @@
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
 #include "../client/FavoriteManager.h"
+#include "../client/ShareManager.h"
 
 #define STATUS_MESSAGE_MAP 9
 #define VIEW_MESSAGE_MAP   10

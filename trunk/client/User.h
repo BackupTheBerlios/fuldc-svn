@@ -102,8 +102,10 @@ public:
 	GS(UdpPort, "U4")
 	GS(Email, "EM")
 
-	void setBytesShared(const string& bs) { set("BS", bs); }
+	void setBytesShared(const string& bs) { set("SS", bs); }
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
+	
+	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 
 	/// @todo
 	string getTag() const { return Util::emptyString; }
@@ -126,6 +128,9 @@ public:
 	
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubURL, HubURL);
+	GETSET(string, shortNick, ShortNick);
+	//oops same as a macro, well it works for now since they're equal
+	GETSET(string, isp, ISP);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;

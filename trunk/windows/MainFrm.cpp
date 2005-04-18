@@ -262,8 +262,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// Initialize (no more need for all these elses)
 	UPnP_TCPConnection = UPnP_UDPConnection = NULL;
 	
-	if( BOOLSETTING( SETTINGS_USE_UPNP ) )
-	{
+	if( SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_UPNP ) {
 		 if (
 			 ( WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 ) //WinXP & WinSvr2003
 			 || WinUtil::getOsMajor() >= 6 )  //Longhorn
@@ -276,9 +275,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 				LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
 				MessageBox(CTSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
 				
-				// fall-back to passive mode
-				SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, SettingsManager::CONNECTION_PASSIVE);
-
 				// We failed! thus reset the objects
 				delete UPnP_TCPConnection;
 				delete UPnP_UDPConnection;
@@ -286,20 +282,18 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			}
 			else
 			{
-				// now lets configure the external IP (connect to me) address
-				string ExternalIP = UPnP_TCPConnection->GetExternalIP();
-				if ( ExternalIP.empty() == false )
-				{
-					// woohoo, we got the external IP from the UPnP framework
-					SettingsManager::getInstance()->set(SettingsManager::SERVER, ExternalIP );
-					SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, SettingsManager::CONNECTION_ACTIVE);
-				}
-				else
-				{
-					//:-(  Looks like we have to rely on the user setting the external IP manually
-					// no need to do cleanup here because the mappings work
-					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
-					MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+				if(!BOOLSETTING(NO_IP_OVERRIDE)) {
+					// now lets configure the external IP (connect to me) address
+					string ExternalIP = UPnP_TCPConnection->GetExternalIP();
+					if ( !ExternalIP.empty() ) {
+						// woohoo, we got the external IP from the UPnP framework
+						SettingsManager::getInstance()->set(SettingsManager::EXTERNAL_IP, ExternalIP );
+					} else {
+						//:-(  Looks like we have to rely on the user setting the external IP manually
+						// no need to do cleanup here because the mappings work
+						LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
+						MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+					}
 				}
 			}
 		}
@@ -327,9 +321,9 @@ void MainFrame::startSocket() {
 	SearchManager::getInstance()->disconnect();
 	ConnectionManager::getInstance()->disconnect();
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+	if(ClientManager::getInstance()->isActive()) {
 
-		short lastPort = (short)SETTING(IN_PORT);
+		short lastPort = (short)SETTING(TCP_PORT);
 		short firstPort = lastPort;
 
 		while(true) {
@@ -340,12 +334,12 @@ void MainFrame::startSocket() {
 			} catch(const Exception& e) {
 				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
 				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-				SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
-				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
+				SettingsManager::getInstance()->setDefault(SettingsManager::TCP_PORT, newPort);
+				if(SETTING(TCP_PORT) == lastPort || (firstPort == newPort)) {
 					// Changing default didn't change port, a fixed port must be in use...(or we
 					// tried all ports
 					AutoArray<TCHAR> buf(STRING(PORT_IS_BUSY).size() + 8);
-					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
+					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(TCP_PORT));
 					MessageBox(buf, _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONSTOP | MB_OK);
 					break;
 				}
@@ -635,9 +629,9 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	PropertiesDlg dlg(SettingsManager::getInstance());
 
-	short lastPort = (short)SETTING(IN_PORT);
+	short lastPort = (short)SETTING(TCP_PORT);
 	short lastUDP = (short)SETTING(UDP_PORT);
-	int lastConn = SETTING(CONNECTION_TYPE);
+	int lastConn = SETTING(INCOMING_CONNECTIONS);
 
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
@@ -645,7 +639,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		if(missedAutoConnect && !SETTING(NICK).empty()) {
 			PostMessage(WM_SPEAKER, AUTO_CONNECT);
 		}
-		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort || SETTING(UDP_PORT) != lastUDP) {
+		if(SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastPort || SETTING(UDP_PORT) != lastUDP) {
 			startSocket();
 		}
 		ClientManager::getInstance()->infoUpdated();

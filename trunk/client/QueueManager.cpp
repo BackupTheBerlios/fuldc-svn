@@ -462,12 +462,12 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 
 	
 	if( !SETTING(SKIPLIST_DOWNLOAD).empty() ){
-		int pos = aFile.rfind("\\")+1;
+		int pos = aTarget.rfind("\\")+1;
 		string tmp;
 		if(utf8)
-			tmp = aFile.substr(pos);
+			tmp = aTarget.substr(pos);
 		else
-			tmp = Text::acpToUtf8(aFile.substr(pos));
+			tmp = Text::acpToUtf8(aTarget.substr(pos));
 
 		if(Wildcard::patternMatch(tmp, SETTING(SKIPLIST_DOWNLOAD), '|') )
 			return;
@@ -592,7 +592,7 @@ bool QueueManager::addSource(QueueItem* qi, const string& aFile, User::Ptr aUser
 	if(utf8)
 		s->setFlag(QueueItem::Source::FLAG_UTF8);
 
-	if(aUser->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) ) {
+	if(aUser->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive() ) {
 		qi->removeSource(aUser, QueueItem::Source::FLAG_PASSIVE);
 		wantConnection = false;
 	} else if(qi->getStatus() != QueueItem::STATUS_RUNNING) {
