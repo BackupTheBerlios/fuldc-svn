@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef USER_H
+#if !defined(USER_H)
 #define USER_H
 
 #if _MSC_VER > 1000
@@ -38,7 +38,10 @@ public:
 		DCPLUSPLUS_BIT,
 		PASSIVE_BIT,
 		NMDC_BIT,
-		BOT_BIT
+		BOT_BIT,
+		HUB_BIT,
+		TTH_GET_BIT,
+		SAVE_NICK_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -48,8 +51,10 @@ public:
 		DCPLUSPLUS = 1<<DCPLUSPLUS_BIT,
 		PASSIVE = 1<<PASSIVE_BIT,
 		NMDC = 1<<NMDC_BIT,
-		BOT = 1<<BOT_BIT
-
+		BOT = 1<<BOT_BIT,
+		HUB = 1<<HUB_BIT,
+		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
+		SAVE_NICK = 1<<SAVE_NICK_BIT	//< Save cid->nick association
 	};
 
 	typedef Pointer<User> Ptr;
@@ -91,9 +96,9 @@ public:
 	};
 
 	Identity() { }
-	Identity(const User::Ptr& ptr) : user(ptr) { }
-	Identity(const Identity& rhs) : user(rhs.user), hubURL(rhs.hubURL), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubURL = rhs.hubURL; info = rhs.info; return *this; }
+	Identity(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), hubUrl(aHubUrl) { }
+	Identity(const Identity& rhs) : user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
@@ -107,8 +112,14 @@ public:
 	
 	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 
-	/// @todo
-	string getTag() const { return Util::emptyString; }
+	string getTag() const { 
+		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
+			return Util::emptyString;
+		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" + 
+			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
+	}
+
+	const bool isHub() const { return !get("HU").empty(); }
 	const bool isOp() const { return !get("OP").empty(); }
 	const bool isHidden() const { return !get("HI").empty(); }
 	const bool isTcpActive() const { return !getIp().empty(); }
@@ -127,15 +138,33 @@ public:
 	}
 	
 	GETSET(User::Ptr, user, User);
-	GETSET(string, hubURL, HubURL);
-	GETSET(string, shortNick, ShortNick);
+	GETSET(string, hubUrl, HubUrl);
 	//oops same as a macro, well it works for now since they're equal
 	GETSET(string, isp, ISP);
+	
+	void setShortNick(const string& aNick) {
+		string::size_type pos = aNick.find("[");
+		if( pos != string::npos ) {
+			string::size_type rpos = aNick.rfind("]");
+			if( rpos == aNick.length() -1 && rpos > 0 )
+				rpos = aNick.rfind("]", rpos-1);
+			if(rpos != tstring::npos) 
+				shortNick = aNick.substr(rpos+1);
+			else
+				shortNick = aNick;
+		} else {
+			shortNick = aNick;
+		}
+	}
+
+	string getShortNick() const { return shortNick; }
+	
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
 
 	InfMap info;
+	string shortNick;
 };
 
 class Client;
@@ -147,7 +176,7 @@ public:
 	typedef List::iterator Iter;
 
 	OnlineUser() : client(NULL) { }
-	OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), identity(ptr), client(&client_) { }
+	OnlineUser(const User::Ptr& ptr, Client& client_);
 
 	operator User::Ptr&() { return user; }
 	operator const User::Ptr&() const { return user; }
@@ -169,7 +198,7 @@ private:
 	Client* client;
 };
 
-#endif // USER_H
+#endif // !defined(USER_H)
 
 /**
  * @file

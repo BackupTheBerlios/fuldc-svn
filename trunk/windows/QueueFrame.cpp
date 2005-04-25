@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -197,7 +197,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(j->getUser()->isOnline())
 					online++;
 
-				/// @todo tmp += Text::toT(j->getUser()->getFullNick());
+				tmp += Text::toT(j->getUser()->getFirstNick());
 			}
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
@@ -265,7 +265,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");
-					/// @todo tmp += Text::toT(j->getUser()->getNick());
+						tmp += Text::toT(j->getUser()->getFirstNick());
 					tmp += _T(" (");
 					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
 						tmp += TSTRING(FILE_NOT_AVAILABLE);
@@ -1392,5 +1392,3 @@ void QueueFrame::on(QueueManagerListener::SearchAlternates, string aMsg, int nr)
  * @file
  * $Id: QueueFrame.cpp,v 1.8 2004/01/06 01:52:14 trem Exp $
  */
-
-

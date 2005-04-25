@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
-#define AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_
+#if !defined(CLIENT_MANAGER_H)
+#define CLIENT_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -74,13 +74,15 @@ public:
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void infoUpdated();
 
-	/** Construct a synthetic CID and return the user */
 	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
 	User::Ptr getLegacyUser(const string& aNick) throw();
 	User::Ptr getUser(const CID& cid) throw();
 
+	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
-	User::Ptr findUser(const string& aNick) throw();
+
+	/** Constructs a synthetic, hopefully unique CID */
+	CID makeCid(const string& nick, const string& hubUrl) throw();
 
 	void putOnline(OnlineUser& ou) throw();
 	void putOffline(OnlineUser& ou) throw();
@@ -141,10 +143,11 @@ private:
 		TimerManager::getInstance()->removeListener(this); 
 	}
 
+	string getUsersFile() { return Util::getAppPath() + "Users.xml"; }
+
 	// SettingsManagerListener
-	virtual void on(Load, SimpleXML*) throw() {
-		me = new User(SETTING(CLIENT_ID));
-	}
+	virtual void on(Load, SimpleXML*) throw();
+	virtual void on(Save, SimpleXML*) throw();
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }

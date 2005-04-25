@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -78,4 +78,3 @@ LRESULT WindowsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
  * @file
  * $Id: WindowsPage.cpp,v 1.2 2005/03/19 13:38:12 arnetheduck Exp $
  */
-

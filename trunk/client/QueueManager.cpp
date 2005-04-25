@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1188,13 +1188,15 @@ void QueueManager::saveQueue() throw() {
 
 				for(QueueItem::Source::List::const_iterator j = qi->sources.begin(); j != qi->sources.end(); ++j) {
 					QueueItem::Source* s = *j;
-					f.write(STRINGLEN("\t\t<Source Nick=\""));
-					f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
 					if(!s->getUser()->getCID().isZero()) {
-						f.write(STRINGLEN("\" CID=\""));
+						s->getUser()->setFlag(User::SAVE_NICK);
+						f.write(STRINGLEN("\t\t<Source CID=\""));
 						f.write(s->getUser()->getCID().toBase32());
+					} else {
+						f.write(STRINGLEN("\t\t<Source Nick=\""));
+						f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
 					}
-					if(!s->getPath().empty()) {
+					if(!s->getPath().empty() || (!s->getUser()->isSet(User::TTH_GET) && qi->getTTH())) {
 						f.write(STRINGLEN("\" Path=\""));
 						f.write(CHECKESCAPE(s->getPath()));
 						f.write(STRINGLEN("\" Utf8=\""));
@@ -1460,7 +1462,7 @@ bool QueueManager::addAlternates(string aFile, User::Ptr aUser, bool utf8) {
 		for(i = queue.begin(); i != queue.end(); ++i) {
 			if( i->first->find(file) != string::npos) {
 				string file = path + i->first->substr(i->first->find_last_of("\\"));
-				if(!i->second->isSource(aUser, file)) {
+				if(!i->second->isSource(aUser)) {
 					wantConnection = addSource(i->second, file, aUser, 0, utf8);
 				}	
 			}

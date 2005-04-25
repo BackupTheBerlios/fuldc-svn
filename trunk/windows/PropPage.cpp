@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -127,7 +127,7 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 	}
 }
 
-void PropPage::translate(HWND page, TextItem* textItems) 
+void PropPage::translate(HWND page, TextItem* textItems)
 {
 	if (textItems != NULL) {
 		for(int i = 0; textItems[i].itemID != 0; i++) {
@@ -141,4 +141,3 @@ void PropPage::translate(HWND page, TextItem* textItems)
  * @file
  * $Id: PropPage.cpp,v 1.2 2004/02/12 22:44:43 trem Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
-#define AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_
+#if !defined(SHARE_MANAGER_H)
+#define SHARE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -260,6 +260,9 @@ private:
 
 	int64_t listLen;
 	int64_t bzXmlListLen;
+	TTHValue xmlbzRoot;
+	TTHValue xmlRoot;
+
 	bool xmlDirty;
 	bool nmdcDirty;
 	bool shareXmlDirty;
@@ -339,10 +342,9 @@ private:
 	Directory* addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName, string & aPath);
 };
 
-#endif // !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
+#endif // !defined(SHARE_MANAGER_H)
 
 /**
  * @file
  * $Id: ShareManager.h,v 1.6 2004/02/21 10:47:46 trem Exp $
  */
-

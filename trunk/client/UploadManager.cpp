@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -299,7 +299,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 	if(BOOLSETTING(LOG_UPLOADS) && !u->isSet(Upload::FLAG_TTH_LEAVES) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
 		StringMap params;
 		params["source"] = u->getFileName();
-		/// @todo params["user"] = aSource->getUser()->getNick();
+		params["user"] = aSource->getUser()->getFirstNick();
 		params["userip"] = aSource->getRemoteIp();
 		/// @todo params["hub"] = aSource->getUser()->getLastHubName();
 		/// @todo params["hubip"] = aSource->getUser()->getLastHubAddress();
@@ -391,7 +391,6 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 	}
 }
 
-/** @todo fixme */
 void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcCommand& c) throw() {
 	if(c.getParameters().size() < 2) {
 		aSource->sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Missing parameters");
@@ -448,7 +447,7 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
-				/// @todo LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFullNick());
+				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFirstNick());
 			}
 		}
 	}

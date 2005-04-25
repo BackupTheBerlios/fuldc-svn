@@ -22,6 +22,7 @@
 
 #include "FulIgnorePage.h"
 #include "LineDlg.h"
+#include "WinUtil.h"
 
 #include "../client/IgnoreManager.h"
 #include "../client/version.h"

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include "CryptoManager.h"
 #include "ConnectionManager.h"
 #include "FavoriteManager.h"
+#include "SimpleXML.h"
 
 #include "AdcHub.h"
 #include "NmdcHub.h"
@@ -70,23 +71,34 @@ void ClientManager::putClient(Client* aClient) {
 	aClient->scheduleDestruction();
 }
 
-User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
-	string n = Text::toLower(aNick);
-	TigerHash th;
-	th.update(n.c_str(), n.length());
-	th.update(Text::toLower(aHubUrl).c_str(), aHubUrl.length());
-	// Construct hybrid CID from the first 64 bits of the tiger hash - should be
-	// fairly random, and hopefully low-collision
-	CID cid(*(u_int64_t*)th.finalize());
+User::Ptr ClientManager::getLegacyUser(const string& aNick) {
+	Lock l(cs);
+	dcassert(aNick.size() > 0);
 
+	LegacyIter i = legacyUsers.find(aNick);
+	if(i != legacyUsers.end())
+		return i->second;
+
+	for(UserIter i = users.begin(); i != users.end(); ++i) {
+		User::Ptr& p = i->second;
+		if(p->isSet(User::NMDC) && p->getFirstNick() == aNick)
+			return p;
+	}
+
+	return users.insert(make_pair(aNick, new User(aNick))).first->second;
+}
+
+User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
+	CID cid = makeCid(aNick, aHubUrl);
 	Lock l(cs);
 
 	UserIter ui = users.find(cid);
 	if(ui != users.end()) {
+		ui->second->setFlag(User::NMDC);
 		return ui->second;
 	}
 
-	LegacyIter li = legacyUsers.find(n);
+	LegacyIter li = legacyUsers.find(Text::toLower(aNick));
 	if(li != legacyUsers.end()) {
 		User::Ptr p = li->second;
 		p->setCID(cid);
@@ -124,6 +136,16 @@ User::Ptr ClientManager::findUser(const CID& cid) throw() {
 	return NULL;
 }
 
+CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {
+	string n = Text::toLower(aNick);
+	TigerHash th;
+	th.update(n.c_str(), n.length());
+	th.update(Text::toLower(aHubUrl).c_str(), aHubUrl.length());
+	// Construct hybrid CID from the first 64 bits of the tiger hash - should be
+	// fairly random, and hopefully low-collision
+	return CID(*(u_int64_t*)th.finalize());
+}
+
 void ClientManager::putOnline(OnlineUser& ou) throw() {
 	{
 		Lock l(cs);
@@ -147,8 +169,9 @@ void ClientManager::putOffline(OnlineUser& ou) throw() {
 			OnlineUser* ou2 = i->second;
 			/// @todo something nicer to compare with...
 			if(&ou.getClient() == &ou2->getClient()) {
-				onlineUsers.erase(i);
 				lastUser = (distance(op.first, op.second) == 1);
+				onlineUsers.erase(i);
+				break;
 			}
 		}
 	}
@@ -261,23 +284,6 @@ void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc) throw() {
 	SearchManager::getInstance()->respond(adc);
 }
 
-User::Ptr ClientManager::getLegacyUser(const string& aNick) {
-	Lock l(cs);
-	dcassert(aNick.size() > 0);
-
-	LegacyIter i = legacyUsers.find(aNick);
-	if(i != legacyUsers.end())
-		return i->second;
-
-	for(UserIter i = users.begin(); i != users.end(); ++i) {
-		User::Ptr& p = i->second;
-		if(p->isSet(User::NMDC) && p->getFirstNick() == aNick)
-			return p;
-	}
-
-	return users.insert(make_pair(aNick, new User(aNick))).first->second;
-}
-
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 
@@ -317,6 +323,66 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 
 	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
 		(*j)->info(false);
+	}
+}
+
+void ClientManager::on(Save, SimpleXML*) {
+	Lock l(cs);
+
+	try {
+
+#define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
+
+		File ff(getUsersFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedOutputStream<false> f(&ff);
+
+		f.write(SimpleXML::utf8Header);
+		f.write(LIT("<Users Version=\"1\">\r\n"));
+		for(UserIter i = users.begin(); i != users.end(); ++i) {
+			User::Ptr& p = i->second;
+			if(p->isSet(User::SAVE_NICK) && !p->getCID().isZero() && !p->getFirstNick().empty()) {
+				f.write(LIT("\t<User CID=\""));
+				f.write(p->getCID().toBase32());
+				f.write(LIT("\">\r\n\t\t<Nick>"));
+				f.write(p->getFirstNick());
+				f.write(LIT("</Nick>\r\n\t</User>\r\n"));
+			}
+		}
+
+		f.write("</Users>\r\n");
+		f.flush();
+		ff.close();
+		File::deleteFile(getUsersFile());
+		File::renameFile(getUsersFile() + ".tmp", getUsersFile());
+
+	} catch(const FileException&) {
+		// ...
+	}
+}
+/// @todo save more often perhaps?
+void ClientManager::on(Load, SimpleXML*) {
+	me = new User(SETTING(CLIENT_ID));
+
+	try {
+		SimpleXML xml;
+		xml.fromXML(File(getUsersFile(), File::READ, File::OPEN).read());
+		if(xml.findChild("Users") && xml.getChildAttrib("Version") == "1") {
+			xml.stepIn();
+			while(xml.findChild("User")) {
+				string c = xml.getChildAttrib("CID");
+				if(c.empty())
+					continue;
+
+				xml.stepIn();
+				if(xml.findChild("Nick")) {
+					User::Ptr p(new User(CID(c)));
+					p->setFirstNick(xml.getChildData());
+					users.insert(make_pair(p->getCID(), p));
+				}
+			}
+		}
+	} catch(const Exception& e) {
+		dcdebug("Error loading Users.xml: %s\n", e.getError().c_str());
 	}
 }
 

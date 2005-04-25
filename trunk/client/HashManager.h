@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _HASH_MANAGER
-#define _HASH_MANAGER
+#if !defined(HASH_MANAGER_H)
+#define HASH_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -275,7 +275,7 @@ private:
 	}
 };
 
-#endif // _HASH_MANAGER
+#endif // !defined(HASH_MANAGER_H)
 
 /**
  * @file

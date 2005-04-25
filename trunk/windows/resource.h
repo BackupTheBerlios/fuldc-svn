@@ -574,7 +574,7 @@
 #define IDC_SETTINGS_PORT_UDP           1345
 #define IDC_SETTINGS_PORTS              1346
 #define IDC_SETTINGS_UPLOAD_SPEED       1347
-
+#define IDC_SETTINGS_MEBIBYES           1348
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

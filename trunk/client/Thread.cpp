@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,15 +34,15 @@ void Thread::start() throw(ThreadException) {
 }
 
 #else
-void Thread::start() throw(ThreadException) { 
+void Thread::start() throw(ThreadException) {
 	join();
 	if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
 		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 	}
 }
 #endif
+
 /**
  * @file
  * $Id: Thread.cpp,v 1.2 2003/12/30 13:31:44 trem Exp $
  */
-

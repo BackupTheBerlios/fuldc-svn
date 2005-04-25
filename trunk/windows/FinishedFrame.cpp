@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -252,7 +252,6 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 	int loc = ctrlList.insert(l, image, (LPARAM)entry);
 	ctrlList.EnsureVisible(loc, FALSE);
 }
-
 
 /**
  * @file

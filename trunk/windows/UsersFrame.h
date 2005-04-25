@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
-#define AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_
+#if !defined(USERS_FRAME_H)
+#define USERS_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -27,11 +27,10 @@
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
-#include "../client/ClientManager.h"
 #include "../client/FavoriteManager.h"
 
 class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS, IDC_FAVUSERS>,
-	private FavoriteManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
+	private FavoriteManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
 	UsersFrame() : closed(false), startup(true) { };
@@ -73,7 +72,7 @@ public:
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		if(wParam == USER_UPDATED) {
-			updateUser(((UserInfoBase*)lParam)->user);
+			///updateUser(((UserInfoBase*)lParam)->user);
 			delete (UserInfoBase*)lParam;
 		}
 		return 0;
@@ -105,9 +104,8 @@ private:
 
 	class UserInfo : public UserInfoBase {
 	public:
-		UserInfo(const User::Ptr& u) : UserInfoBase(u) { 
-			/// @todo columns[COLUMN_NICK] = Text::toT(u->getNick());
-			update();
+		UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) { 
+			update(u);
 		};
 
 		const tstring& getText(int col) const {
@@ -120,14 +118,15 @@ private:
 
 		void remove() { FavoriteManager::getInstance()->removeFavoriteUser(user); }
 
-		void update() {
-			columns[COLUMN_STATUS] = user->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
+		void update(const FavoriteUser& u) {
+			columns[COLUMN_NICK] = Text::toT(u.getLastIdentity().getNick());
+			columns[COLUMN_STATUS] = u.getUser()->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
 			/** @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
 			if(!user->getLastHubAddress().empty()) {
 				columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
 			}
-			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));
-			columns[COLUMN_DESCRIPTION] = Text::toT(user->getUserDescription()); */
+			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));*/
+			columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
 		}
 
 		tstring columns[COLUMN_LAST];
@@ -145,19 +144,12 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 
 	// FavoriteManagerListener
-	virtual void on(UserAdded, const User::Ptr& aUser) throw() { addUser(aUser); }
-	virtual void on(UserRemoved, const User::Ptr& aUser) throw() { removeUser(aUser); }
+	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
+	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
 
-	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-		/// @todo if(aUser->isFavoriteUser()) {
-			// PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
-		// }
-	}
-
-	void addUser(const User::Ptr& aUser);
-	void updateUser(const User::Ptr& aUser);
-	void removeUser(const User::Ptr& aUser);
+	void addUser(const FavoriteUser& aUser);
+	void updateUser(const FavoriteUser& aUser);
+	void removeUser(const FavoriteUser& aUser);
 };
 
 #endif // !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)

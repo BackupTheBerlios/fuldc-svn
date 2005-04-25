@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -150,4 +150,3 @@ void shutdown() {
  * @file
  * $Id: DCPlusPlus.cpp,v 1.5 2004/02/15 01:20:30 trem Exp $
  */
-

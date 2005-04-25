@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	//needs to be set before calling create otherwise the menu won't be created correctly
 	ctrlPad.setFlag( CFulEditCtrl::MENU_PASTE );
 
-	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
 	
 	ctrlPad.LimitText(0);
@@ -117,5 +117,3 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
  * @file
  * $Id: NotepadFrame.cpp,v 1.2 2004/01/06 01:52:12 trem Exp $
  */
-
-

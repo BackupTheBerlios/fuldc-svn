@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
-#define AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_
+#if !defined(CONNECTION_MANAGER_H)
+#define CONNECTION_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -70,7 +70,11 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 	public Singleton<ConnectionManager>
 {
 public:
-	void nmdcConnect(const string& aServer, short aPort, const string& aNick);
+	void nmdcExpect(const string& aNick, const string& aMyNick, const string& aHubUrl) {
+		expectedConnections.insert(make_pair(aNick, make_pair(aMyNick, aHubUrl)));
+	}
+
+	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
 	void adcConnect(const string& aServer, short aPort, const string& aToken);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
@@ -114,6 +118,10 @@ private:
 	StringList features;
 	StringList adcFeatures;
 
+	/** Nick -> myNick, hubUrl for expected NMDC incoming connections */
+	typedef map<string, pair<string, string> > ExpectMap;
+	ExpectMap expectedConnections;
+
 	u_int32_t floodCounter;
 
 	bool shuttingDown;
@@ -155,7 +163,7 @@ private:
 
 };
 
-#endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
+#endif // !defined(CONNECTION_MANAGER_H)
 
 /**
  * @file

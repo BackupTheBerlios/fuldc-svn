@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,4 +33,3 @@
  * @file
  * $Id: stdafx.cpp,v 1.3 2003/12/30 22:08:11 trem Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_FAVORITEUSER_H__64E4A69E_BB58_425D_830C_ADD1760E29A4__INCLUDED_)
-#define AFX_FAVORITEUSER_H__64E4A69E_BB58_425D_830C_ADD1760E29A4__INCLUDED_
+#if !defined(FAVORITE_USER_H)
+#define FAVORITE_USER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,9 +31,9 @@ public:
 	typedef vector<FavoriteUser> List;
 	typedef List::iterator Iter;
     
-	FavoriteUser(const User::Ptr& ptr) : user(ptr), lastIdentity(ptr), lastSeen(0) { }
+	FavoriteUser(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), lastIdentity(ptr, aHubUrl), lastSeen(0) { }
 
-	bool operator==(const User::Ptr& rhs) { return user == rhs; }
+	bool operator==(const User::Ptr& rhs) const { return user == rhs; }
 	operator User::Ptr() { return user; }
 
 	enum Flags {
@@ -46,7 +46,7 @@ public:
 	GETSET(string, description, Description);
 };
 
-#endif // !defined(AFX_FAVORITEUSER_H__64E4A69E_BB58_425D_830C_ADD1760E29A4__INCLUDED_)
+#endif // !defined(FAVORITE_USER_H)
 
 /**
  * @file

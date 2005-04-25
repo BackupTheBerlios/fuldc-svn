@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 #include "SearchFrm.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
+#include "../client/MerkleTree.h"
 
 DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
@@ -94,7 +95,7 @@ void DirectoryListingFrame::loadFile(const tstring& name) {
 		ADLSearchManager::getInstance()->matchListing(dl);
 		refreshTree(Text::toT(WinUtil::getInitialDir(dl->getUser())));
 	} catch(const Exception& e) {
-		/// @todo error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
+		error = Text::toT(dl->getUser()->getFirstNick() + ": " + e.getError());
 	}
 
 	tstring filename = Util::getFileName(name);
@@ -110,7 +111,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 	try {
 		refreshTree(Text::toT(Util::toNmdcFile(dl->loadXML(txt, true))));
 	} catch(const Exception& e) {
-		/// @todo error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
+		error = Text::toT(dl->getUser()->getFirstNick() + ": " + e.getError());
 	}
 
 	initStatus();

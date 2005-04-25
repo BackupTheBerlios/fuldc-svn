@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -125,7 +125,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	if(aFile == "MyList.DcLst") {
 		generateNmdcList();
 		return getListFile();
-	} else if(aFile == "files.xml.bz2") {
+	} else if(aFile == "files.xml.bz2" || "files.xml") {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {
@@ -181,8 +181,24 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	}
 }
 
-/** @todo Fix for file list */
 AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) {
+	if(aFile == "files.xml") {
+		generateXmlList();
+		/** todo fix size... */
+		AdcCommand cmd(AdcCommand::CMD_RES);
+		cmd.addParam("FN", "files.xml");
+		cmd.addParam("TR", xmlRoot.toBase32());
+		return cmd;
+	} else if(aFile == "files.xml.bz2") {
+		generateXmlList();
+
+		AdcCommand cmd(AdcCommand::CMD_RES);
+		cmd.addParam("FN", "files.xml.bz2");
+		cmd.addParam("SI", Util::toString(File::getSize(getBZXmlFile())));
+		cmd.addParam("TR", xmlbzRoot.toBase32());
+		return cmd;
+	}
+
 	if(aFile.compare(0, 4, "TTH/") != 0)
 		throw ShareException("File Not Available");
 
@@ -806,16 +822,25 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 			
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
-				FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
-				xml->stepOut();
+				File f(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE);
+				// We don't care about the leaves...
+				CalcOutputStream<TTFilter<1024*1024*1024>, false> bzTree(&f);
+				FilteredOutputStream<BZFilter, false> bzipper(&bzTree);
+				CalcOutputStream<TTFilter<1024*1024*1024>, false> newXmlFile(&bzipper);
+
 				newXmlFile.write(SimpleXML::utf8Header);
 				xml->toXML(&newXmlFile);
 				newXmlFile.flush();
+
+				newXmlFile.getFilter().getTree().finalize();
+				bzTree.getFilter().getTree().finalize();
+
+				xmlRoot = newXmlFile.getFilter().getTree().getRoot();
+				xmlbzRoot = bzTree.getFilter().getTree().getRoot();
 			}
 			
 			delete xml;
 
-			
 			if(xFile != NULL) {
 				delete xFile;
 				xFile = NULL;
@@ -1790,4 +1815,3 @@ StringList ShareManager::getVirtualDirectories() {
  * @file
  * $Id: ShareManager.cpp,v 1.9 2004/02/21 10:47:46 trem Exp $
  */
-

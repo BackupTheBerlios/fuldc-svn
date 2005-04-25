@@ -1,4 +1,4 @@
-﻿/* 
+﻿/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
-#define AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_
+#if !defined(ABOUT_DLG_H)
+#define ABOUT_DLG_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -79,7 +79,7 @@ public:
 
 		SetDlgItemText(IDC_TTH, WinUtil::tth.c_str());
 		SetDlgItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
-		SetDlgItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
+		SetDlgItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " +
 			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
 
 		if(SETTING(TOTAL_DOWNLOAD) > 0) {
@@ -142,10 +142,9 @@ private:
 	string downBuf;
 };
 
-#endif // !defined(AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
+#endif // !defined(ABOUT_DLG_H)
 
 /**
  * @file
  * $Id: AboutDlg.h,v 1.3 2003/12/31 18:46:04 trem Exp $
  */
-

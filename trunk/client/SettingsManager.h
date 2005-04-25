@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SETTINGSMANAGER_H)
-#define SETTINGSMANAGER_H
+#if !defined(SETTINGS_MANAGER_H)
+#define SETTINGS_MANAGER_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "Util.h"
 #include "Speaker.h"
@@ -227,10 +231,9 @@ private:
 #define SETTING(k) (SettingsManager::getInstance()->get(SettingsManager::k, true))
 #define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
 
-#endif // SETTINGSMANAGER_H
+#endif // !defined(SETTINGS_MANAGER_H)
 
 /**
  * @file
  * $Id: SettingsManager.h,v 1.12 2004/02/23 16:02:19 trem Exp $
  */
-

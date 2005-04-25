@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -191,9 +191,9 @@ LRESULT FinishedULFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 LRESULT FinishedULFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		User::Ptr u = ClientManager::getInstance()->getUser(entry->getUser());
-		QueueManager::getInstance()->addList(u, QueueItem::FLAG_CLIENT_VIEW);
+		// @todo FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
+		// @todo User::Ptr u = ClientManager::getInstance()->getUser(entry->getUser());
+		// @todo QueueManager::getInstance()->addList(u, QueueItem::FLAG_CLIENT_VIEW);
 	}
 	return 0;
 }
@@ -201,9 +201,9 @@ LRESULT FinishedULFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT FinishedULFrame::onGrant(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		User::Ptr u = ClientManager::getInstance()->getUser(entry->getUser());
-		UploadManager::getInstance()->reserveSlot(u);
+		// @todo FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
+		// @todo User::Ptr u = ClientManager::getInstance()->getUser(entry->getUser());
+		// @todo UploadManager::getInstance()->reserveSlot(u);
 	}
 	return 0;
 }
@@ -277,7 +277,6 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 	int loc = ctrlList.insert(l, image, (LPARAM)entry);
 	ctrlList.EnsureVisible(loc, FALSE);
 }
-
 
 /**
  * @file

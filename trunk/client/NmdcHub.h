@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef NMDC_HUB_H
+#if !defined(NMDC_HUB_H)
 #define NMDC_HUB_H
 
 #if _MSC_VER > 1000
@@ -32,6 +32,7 @@
 #include "User.h"
 #include "CriticalSection.h"
 #include "Text.h"
+#include "Client.h"
 
 class NmdcHub : public Client, private TimerManagerListener, private Flags
 {
@@ -133,6 +134,8 @@ private:
 	string fromNmdc(const string& str) const { return Text::acpToUtf8(str); }
 	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
 
+	void updateFromTag(Identity& id, const string& tag);
+
 	virtual string checkNick(const string& aNick);
 
 	// TimerManagerListener
@@ -143,10 +146,9 @@ private:
 
 };
 
-#endif // !defined(AFX_NmdcHub_H__089CBD05_4833_4E30_9A57_BB636231D78E__INCLUDED_)
+#endif // !defined(NMDC_HUB_H)
 
 /**
  * @file
  * $Id: NmdcHub.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FINISHEDMANAGER_H
-#define FINISHEDMANAGER_H
+#if !defined(FINISHED_MANAGER_H)
+#define FINISHED_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -104,7 +104,7 @@ private:
 	FinishedItem::List downloads, uploads;
 };
 
-#endif // FINISHEDMANAGER_H
+#endif // !defined(FINISHED_MANAGER_H)
 
 /**
  * @file

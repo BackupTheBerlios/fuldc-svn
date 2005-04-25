@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_FAVHUBPROPERTIES_H__12B4C4DD_D28F_47FB_AFE8_8C75E5C4FF96__INCLUDED_)
-#define AFX_FAVHUBPROPERTIES_H__12B4C4DD_D28F_47FB_AFE8_8C75E5C4FF96__INCLUDED_
+#if !defined(FAV_HUB_PROPERTIES_H)
+#define FAV_HUB_PROPERTIES_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,7 +25,7 @@
 
 class FavoriteHubEntry;
 
-class FavHubProperties : public CDialogImpl<FavHubProperties>  
+class FavHubProperties : public CDialogImpl<FavHubProperties>
 {
 public:
 	FavHubProperties::FavHubProperties(FavoriteHubEntry *_entry) : entry(_entry) { };
@@ -50,7 +50,7 @@ protected:
 	FavoriteHubEntry *entry;
 };
 
-#endif // !defined(AFX_FAVHUBPROPERTIES_H__12B4C4DD_D28F_47FB_AFE8_8C75E5C4FF96__INCLUDED_)
+#endif // !defined(FAV_HUB_PROPERTIES_H)
 
 /**
  * @file

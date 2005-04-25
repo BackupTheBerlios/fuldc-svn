@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
@@ -24,6 +25,7 @@
 #include "SettingsManager.h"
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
+#include "SettingsManager.h"
 #include "version.h"
 
 #ifndef _WIN32
@@ -1000,4 +1002,3 @@ tstring Util::replace(const tstring& aString, const tstring& fStr, const tstring
  * @file
  * $Id: Util.cpp,v 1.4 2004/02/14 13:26:28 trem Exp $
  */
-

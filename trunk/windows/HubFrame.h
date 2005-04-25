@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
-#define AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_
+#if !defined(HUB_FRAME_H)
+#define HUB_FRAME_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -233,8 +233,8 @@ private:
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const UpdateInfo& u, bool aStripIsp) : UserInfoBase(u.user), op(false), stripIsp(aStripIsp) { 
-			update(u.identity); 
+		UserInfo(const UpdateInfo& u, bool aStripIsp) : UserInfoBase(u.user), op(false), hidden(false), stripIsp(aStripIsp) { 
+			update(u.identity, -1); 
 		};
 
 		const tstring& getText(int col) const {
@@ -250,23 +250,17 @@ private:
 				}
 			}
 			if(col == COLUMN_SHARED) {
-				/// @todo return compare(a->user->getBytesShared(), b->user->getBytesShared());
+				return compare(a->getBytes(), b->getBytes());
 			}
 			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
 		}
 
-		void update(const Identity& identity) { 
-			columns[COLUMN_NICK] = Text::toT(identity.getNick());
-			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
-			columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
-			columns[COLUMN_TAG] = Text::toT(identity.getTag());
-			/// @todo columns[COLUMN_CONNECTION] = Text::toT(i->getConnection());
-			columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
-			op = user->isSet(User::OP); 
-		}
+		bool update(const Identity& identity, int sortCol);
 
 		tstring columns[COLUMN_LAST];
+		GETSET(int64_t, bytes, Bytes);
 		GETSET(bool, op, Op);
+		GETSET(bool, hidden, Hidden);
 		bool stripIsp;
 	};
 
@@ -418,6 +412,7 @@ private:
 	UpdateList updateList;
 	CriticalSection updateCS;
 	bool updateUsers;
+	bool resort;
 
 	enum { MAX_CLIENT_LINES = 5 };
 	TStringList lastLinesList;
@@ -434,24 +429,13 @@ private:
 	UserInfo* findUser(tstring & nick);
 
 	bool updateUser(const UpdateInfo& u);
-	void removeUser(const User::Ptr& u);
+	void removeUser(const UpdateInfo& u);
+
 	void updateUserList();
 	bool parseFilter(int& mode, int64_t& size);
 	void addAsFavorite();
 
-	void clearUserList() {
-		{
-			Lock l(updateCS);
-			updateList.clear();
-		}
-
-		for(UserIter i = usermap.begin(); i != usermap.end(); ++i)
-			delete i->second;
-
-		usermap.clear();
-
-		ctrlUsers.DeleteAllItems();
-	}
+	void clearUserList();
 
 	int getImage(const User::Ptr& u) {
 		int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
@@ -487,7 +471,7 @@ private:
 	virtual void on(PrivateMessage, Client*, const OnlineUser&, const string&) throw();
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
-	virtual void on(UserIp, Client*, const User::List&) throw();
+	virtual void on(UserIp, Client*, const OnlineUser::List&) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); };
@@ -501,15 +485,10 @@ private:
 	void openLinksInTopic();
 	bool resolve(const wstring& aDns);
 };
-/////////////////////////////////////////////////////////////////////////////
 
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
+#endif // !defined(HUB_FRAME_H)
 
 /**
  * @file
  * $Id: HubFrame.h,v 1.15 2004/02/21 15:15:28 trem Exp $
  */
-

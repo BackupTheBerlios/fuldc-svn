@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_EMAIL, ResourceManager::EMAIL },
 	{ IDC_SETTINGS_DESCRIPTION, ResourceManager::DESCRIPTION },
 	{ IDC_SETTINGS_UPLOAD_SPEED, ResourceManager::SETTINGS_UPLOAD_SPEED },
+	{ IDC_SETTINGS_MEBIBYES, ResourceManager::MiBPS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -115,4 +116,3 @@ LRESULT GeneralPage::onHelpInfo(LPNMHDR /*pnmh*/) {
  * @file
  * $Id: GeneralPage.cpp,v 1.1 2003/12/15 16:52:01 trem Exp $
  */
-

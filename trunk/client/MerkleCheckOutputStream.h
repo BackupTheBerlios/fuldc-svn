@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#if !defined(MERKLE_CHECK_OUTPUT_STREAM_H)
+#define MERKLE_CHECK_OUTPUT_STREAM_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "Streams.h"
 #include "MerkleTree.h"
@@ -98,14 +105,14 @@ private:
 			if(cur.getLeaves().size() > real.getLeaves().size() ||
 				!(cur.getLeaves()[verified] == real.getLeaves()[verified])) 
 			{
-				if(!(BOOLSETTING(IGNORE_TTH_INCONSISTENCY) && !BOOLSETTING(ADD_FINISHED_INSTANTLY))) {
-					throw FileException(STRING(TTH_INCONSISTENCY));
-				}
+				throw FileException(STRING(TTH_INCONSISTENCY));
 			}
 			verified++;
 		}
 	}
 };
+
+#endif // !defined(MERKLE_CHECK_OUTPUT_STREAM_H)
 
 /**
  * @file

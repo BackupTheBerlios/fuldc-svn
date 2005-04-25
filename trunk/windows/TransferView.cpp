@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -439,7 +439,7 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		/// @todo columns[COLUMN_USER] = Text::toT(user->getNick());
+		columns[COLUMN_USER] = Text::toT(user->getFirstNick());
 	}
 	if(colMask & MASK_HUB) {
 		/// @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());

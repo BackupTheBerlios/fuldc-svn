@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -163,7 +163,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				MessageBeep(MB_OK);
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
-			PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, i->second->m_hWnd);
+			PopupManager::getInstance()->ShowPm(Text::toT(aUser->getFirstNick()), aMessage, i->second->m_hWnd);
 		}
 
 		if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
@@ -437,7 +437,7 @@ LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	/// @todo prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
 	
-	if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
+	if(IgnoreManager::getInstance()->isUserIgnored(user->getFirstNick())) {
 		tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
 		tabMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 	} else {
@@ -545,7 +545,7 @@ LRESULT PrivateFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		tstring::size_type end = tmp.find_first_of(_T(" >\t"), start+1);
 		if (end != tstring::npos && end != start+1 && tmp[start-1] == _T('<')) {
 			
-			if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
+			if(IgnoreManager::getInstance()->isUserIgnored(user->getFirstNick())) {
 				tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
 				tabMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 			} else {
@@ -564,7 +564,7 @@ LRESULT PrivateFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	WinUtil::setClipboard(Text::toT(user->getNick()));
+	WinUtil::setClipboard(Text::toT(user->getFirstNick()));
 
 	return 0;
 }
@@ -585,12 +585,12 @@ LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 }
 
 LRESULT PrivateFrame::onIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	IgnoreManager::getInstance()->ignore(user->getNick());
+	IgnoreManager::getInstance()->ignore(user->getFirstNick());
 
 	return 0;
 }
 LRESULT PrivateFrame::onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	IgnoreManager::getInstance()->unignore(user->getNick());
+	IgnoreManager::getInstance()->unignore(user->getFirstNick());
 
 	return 0;
 }
@@ -653,5 +653,3 @@ void PrivateFrame::readLog() {
  * @file
  * $Id: PrivateFrame.cpp,v 1.14 2004/02/21 15:15:02 trem Exp $
  */
-
-

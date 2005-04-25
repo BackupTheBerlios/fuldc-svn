@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SEARCHFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
-#define AFX_SEARCHFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_
+#if !defined(SEARCH_FRM_H)
+#define SEARCH_FRM_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -356,7 +356,7 @@ private:
 				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 				type = TSTRING(DIRECTORY);
 			}
-			/// @todo nick = Text::toT(sr->getUser()->getNick());
+			nick = Text::toT(sr->getUser()->getFirstNick());
 			/// @todo connection = Text::toT(sr->getUser()->getConnection());
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
@@ -521,15 +521,9 @@ private:
 	};
 };
 
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
+#endif // !defined(SEARCH_FRM_H)
 
 /**
  * @file
  * $Id: SearchFrm.h,v 1.6 2004/01/06 01:52:15 trem Exp $
  */
-

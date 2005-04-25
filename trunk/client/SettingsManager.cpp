@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ const string SettingsManager::settingTags[] =
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
-	"NoIPOverride", 
+	"NoIpOverride",
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
@@ -470,4 +470,3 @@ void SettingsManager::save(string const& aFileName) {
  * @file
  * $Id: SettingsManager.cpp,v 1.13 2004/02/23 16:02:19 trem Exp $
  */
-

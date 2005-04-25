@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -114,11 +114,10 @@ void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 	}
 }
 
-
 void FavoriteManager::addFavoriteUser(User::Ptr& aUser) { 
 	if(find(users.begin(), users.end(), aUser) == users.end()) {
-		users.push_back(aUser);
-		fire(FavoriteManagerListener::UserAdded(), aUser);
+		users.push_back(FavoriteUser(aUser, Util::emptyString));
+		fire(FavoriteManagerListener::UserAdded(), users.back());
 		save();
 	}
 }
@@ -126,7 +125,7 @@ void FavoriteManager::addFavoriteUser(User::Ptr& aUser) {
 void FavoriteManager::removeFavoriteUser(User::Ptr& aUser) {
 	FavoriteUser::Iter i = find(users.begin(), users.end(), aUser);
 	if(i != users.end()) {
-		fire(FavoriteManagerListener::UserRemoved(), aUser);
+		fire(FavoriteManagerListener::UserRemoved(), *i);
 		users.erase(i);
 		save();
 	}
@@ -327,7 +326,7 @@ void FavoriteManager::save() {
 		for(FavoriteUser::Iter j = users.begin(); j != users.end(); ++j) {
 			xml.addTag("User");
 			xml.addChildAttrib("Nick", j->getLastIdentity().getNick());
-			xml.addChildAttrib("LastHubAddress", j->getLastIdentity().getHubURL());
+			xml.addChildAttrib("LastHubAddress", j->getLastIdentity().getHubUrl());
 			xml.addChildAttrib("LastSeen", j->getLastSeen());
 			xml.addChildAttrib("GrantSlot", j->isSet(FavoriteUser::FLAG_GRANTSLOT));
 			xml.addChildAttrib("UserDescription", j->getDescription());
@@ -489,7 +488,19 @@ void FavoriteManager::load(SimpleXML* aXml) {
 	if(aXml->findChild("Users")) {
 		aXml->stepIn();
 		while(aXml->findChild("User")) {
-			User::Ptr u = ClientManager::getInstance()->getUser(aXml->getChildAttrib("Nick"), aXml->getChildAttrib("LastHubAddress"));
+			User::Ptr u;
+			const string& cid = aXml->getChildAttrib("CID");
+			const string& nick = aXml->getChildAttrib("Nick");
+			const string& hubUrl = aXml->getChildAttrib("LastHubAddress");
+
+			if(cid.empty()) {
+				if(nick.empty() || hubUrl.empty())
+					continue;
+				u = ClientManager::getInstance()->getUser(nick, hubUrl);
+			} else {
+				u = ClientManager::getInstance()->getUser(CID(cid));
+				u->setFirstNick(nick);
+			}
 			if(!u->isOnline()) {
 				/// @todo u->setLastHubAddress(aXml->getChildAttrib("LastHubAddress"));
 				/// @todo u->setLastHubName(aXml->getChildAttrib("LastHubName"));

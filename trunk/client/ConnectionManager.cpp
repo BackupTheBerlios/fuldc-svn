@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -330,14 +330,17 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	}
 }
 
-void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick) {
+
+
+void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick, const string& hubUrl) {
 	if(shuttingDown)
 		return;
 
 	UserConnection* uc = NULL;
 	try {
 		uc = getConnection(true);
-		uc->setNick(aNick);
+		uc->setToken(aNick);
+		uc->setHubUrl(hubUrl);
 		uc->setState(UserConnection::STATE_CONNECT);
 		uc->setFlag(UserConnection::FLAG_NMDC);
 		uc->connect(aServer, aPort);
@@ -390,7 +393,7 @@ void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) 
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
-		aSource->myNick(aSource->getNick());
+		aSource->myNick(aSource->getToken());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} else {
 		aSource->sup(adcFeatures);
@@ -402,7 +405,6 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
 void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSource, const string& aNick) throw() {
-
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
@@ -413,14 +415,26 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
 	dcassert(!aSource->getUser());
 
+	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
+		// Try to guess where this came from...
+		ExpectMap::iterator i = expectedConnections.find(aNick);
+		if(i == expectedConnections.end()) {
+			dcdebug("Unkown incoming connection from %s\n", aNick.c_str());
+			putConnection(aSource);
+			return;
+		}
+        aSource->setToken(i->second.first);	
+		aSource->setHubUrl(i->second.second);	
+		expectedConnections.erase(i);
+	}
+	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
+
 	// First, we try looking in the pending downloads...hopefully it's one of them...
-/// @todo onMyNick
-#if 0
 	{
 		Lock l(cs);
 		for(ConnectionQueueItem::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 			ConnectionQueueItem* cqi = *i;
-			if((cqi->getState() == ConnectionQueueItem::CONNECTING || cqi->getState() == ConnectionQueueItem::WAITING) && cqi->getUser()->getNick() == aNick) {
+			if((cqi->getState() == ConnectionQueueItem::CONNECTING || cqi->getState() == ConnectionQueueItem::WAITING) && cqi->getUser()->getCID() == cid) {
 				aSource->setUser(cqi->getUser());
 				// Indicate that we're interested in this file...
 				aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
@@ -431,41 +445,40 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 	if(!aSource->getUser()) {
 		// Make sure we know who it is, i e that he/she is connected...
-		if(!ClientManager::getInstance()->isOnline(aNick)) {
+
+		aSource->setUser(ClientManager::getInstance()->findUser(cid));
+		if(!aSource->getUser()) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
 			putConnection(aSource);
 			return;
 		}
 
-		aSource->setUser(ClientManager::getInstance()->getUser(aNick));
-
-		if( BOOLSETTING(DROP_STUPID_CONNECTION) ) {
+		/* @todo if( BOOLSETTING(DROP_STUPID_CONNECTION) ) {
 			if(Util::stricmp(aSource->getUser()->getNick(), aSource->getUser()->getClientNick()) == 0){
 				dcdebug("CM::onMyNick Incoming connection from stupid user %s\n", aSource->getUser()->getNick());
 				LogManager::getInstance()->message(STRING(DROP_STUPID_CONNECTION_LOG) + aSource->getRemoteIp());
 				putConnection(aSource);
 				return;
 			}
-		}
+		}*/
 
 		// We don't need this connection for downloading...make it an upload connection instead...
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 	}
 
-	if(aSource->getUser()->getIp().empty()) {
+	/* @todo if(aSource->getUser()->getIp().empty()) {
 		if(Util::stricmp(aSource->getUser()->getNick(), aSource->getUser()->getClientNick()) != 0) {
 			aSource->getUser()->setIp(aSource->getRemoteIp());
 			User::updated(aSource->getUser());
 		}
-	}
+	}*/
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
-		aSource->myNick(aSource->getUser()->getClientNick()); 
+		aSource->myNick(aSource->getToken()); 
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	}
 
 	aSource->setState(UserConnection::STATE_LOCK);
-#endif
 }
 
 void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSource, const string& aLock, const string& aPk) throw() {
@@ -693,20 +706,22 @@ void ConnectionManager::shutdown() {
 // UserConnectionListener
 void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
 	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-		if(*i == UserConnection::FEATURE_GET_ZBLOCK)
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
-		else if(*i == UserConnection::FEATURE_MINISLOTS)
+		if(*i == UserConnection::FEATURE_GET_ZBLOCK) {
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK); 
+		} else if(*i == UserConnection::FEATURE_MINISLOTS) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
-		else if(*i == UserConnection::FEATURE_XML_BZLIST)
+		} else if(*i == UserConnection::FEATURE_XML_BZLIST) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
-		else if(*i == UserConnection::FEATURE_ADCGET)
+		} else if(*i == UserConnection::FEATURE_ADCGET) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_ADCGET);
-		else if(*i == UserConnection::FEATURE_ZLIB_GET)
+		} else if(*i == UserConnection::FEATURE_ZLIB_GET) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
-		else if(*i == UserConnection::FEATURE_TTHL)
+		} else if(*i == UserConnection::FEATURE_TTHL) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHL);
-		else if(*i == UserConnection::FEATURE_TTHF)
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF);
+		} else if(*i == UserConnection::FEATURE_TTHF) {
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF); 
+			conn->getUser()->setFlag(User::TTH_GET);
+		}
 	}
 }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 	disconnect();
 	
 	sockaddr_in tcpaddr;
-    sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(sock == -1) {
 		throw SocketException(errno);
 	}
@@ -56,4 +56,3 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
  * @file
  * $Id: ServerSocket.cpp,v 1.1 2003/12/15 16:51:44 trem Exp $
  */
-

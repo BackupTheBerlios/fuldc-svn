@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -306,7 +306,8 @@ void HubFrame::onEnter() {
 						if (BOOLSETTING(POPUP_PMS) ) {
 							PrivateFrame::openWindow(ui->user, msg);
 						} else {
-							ui->user->privateMessage("<" + client->getMyNick() + "> " + Text::fromT(msg));
+							//ui->user->privateMessage("<" + client->getMyNick() + "> " + Text::fromT(msg));
+							ClientManager::getInstance()->privateMessage(ui->user, Text::fromT(msg));
 						}
 					} else
 						PrivateFrame::openWindow(ui->user);
@@ -426,17 +427,14 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 bool HubFrame::updateUser(const UpdateInfo& u) {
 	int i = -1;
-	tstring nick = stripIsp ? Text::toT(u->identity.getShortNick()) : Text::toT(u->identity.getNick());
+	tstring nick = stripIsp ? Text::toT(u.identity.getShortNick()) : Text::toT(u.identity.getNick());
 	
 	while( ( i = ctrlUsers.findItem(nick, i) ) != -1 ) {
 		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
-		if( Util::stricmp(u->identity.getNick(), ui->user->getFirstNick()) == 0) {
-			bool resort = (ui->getOp() != u->isSet(User::OP));
-			ui->update();
+		if( Util::stricmp(u.identity.getNick(), ui->user->getFirstNick()) == 0) {
+			resort = ui->update(u.identity, ctrlUsers.getSortColumn()) || resort;
 			ctrlUsers.updateItem(i);
-			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-			if(resort)
-				ctrlUsers.resort();
+			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
 			return false;
 		}
 	
@@ -444,15 +442,15 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 
 	UserIter j = usermap.begin();
 	for(; j != usermap.end(); ++j) {
-		if(Util::stricmp(u->getNick(), j->second->user->getNick()) == 0) {
-			j->second->update();
+		if(Util::stricmp(u.identity.getNick(), j->second->user->getFirstNick()) == 0) {
+			j->second->update(u.identity, ctrlUsers.getSortColumn());
 			return false;
 		}
 
 	}
 	
 	UserInfo *ui = new UserInfo(u, stripIsp);
-	usermap.insert( UserPair(Text::toT(Text::toLower(u->getShortNick())), ui) );
+	usermap.insert( UserPair(Text::toT(Text::toLower(u.identity.getShortNick())), ui) );
 	bool add = false;
 	
 	if(filter.empty()){
@@ -464,46 +462,71 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 	}
 	
 	if( add ){
-		ctrlUsers.insertItem(ui, getImage(u));
+		ctrlUsers.insertItem(ui, getImage(u.user));
 	}
 
 	return true;
 }
 
+bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
+	bool needsSort = (op != identity.isOp());
+	tstring old;
+	if(sortCol != -1)
+		old = columns[sortCol];
+
+	columns[COLUMN_NICK] = Text::toT(stripIsp ? identity.getShortNick() : identity.getNick());
+	columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
+	columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
+	columns[COLUMN_TAG] = Text::toT(identity.getTag());
+	columns[COLUMN_ISP] = Text::toT(identity.getISP());
+	columns[COLUMN_IP] = Text::toT(identity.getIp());
+	/// @todo columns[COLUMN_CONNECTION] = Text::toT(i->getConnection());
+	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
+
+	op = identity.isOp();
+	hidden = identity.isHidden();
+
+	if(sortCol != -1) {
+		needsSort = needsSort || (old != columns[sortCol]);
+	}
+	return needsSort;
+}
+
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPDATE_USERS) {
 		ctrlUsers.SetRedraw(FALSE);
-		bool resort = false;
 		{
 			Lock l(updateCS);
 			for(UpdateIter i = updateList.begin(); i != updateList.end(); ++i) {
-				User::Ptr& u = i->first;
+				UpdateInfo& u = i->first;
 				switch(i->second) {
 				case UPDATE_USER:
 					if(updateUser(u)) {
-						if(showJoins) {
-							if (!favShowJoins | u->isFavoriteUser()) {
-								addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(stripIsp ? u->getShortNick() : u->getNick()), BOOLSETTING(HUB_BOLD_TABS));
-							}
-						}
-					} else {
-						resort = true;
+						if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
+							addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(stripIsp ? u.identity.getShortNick() : u.identity.getNick()), BOOLSETTING(HUB_BOLD_TABS));
+						} 
 					}
 					break;
 				case UPDATE_USERS:
-					if(!updateUser(u))
-						resort = true;
-					
+					updateUser(u);
 					break;
 				case REMOVE_USER:
 					removeUser(u);
+					if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
+						addLine(_T("*** ") + TSTRING(PARTS) + Text::toT(stripIsp ? u.identity.getShortNick() : u.identity.getNick()), BOOLSETTING(HUB_BOLD_TABS));
+					}
+
 					break;
 				}
 			}
 			updateList.clear();
 		}
-		if(ctrlUsers.getSortColumn() != COLUMN_NICK)
+
+		if(resort) {
 			ctrlUsers.resort();
+			resort = false;
+		}
+
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
 		clearUserList();
@@ -655,6 +678,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
 		FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
+		clearUserList();
 		string tmp, tmp2, tmp3;
 		ctrlUsers.saveHeaderOrder(tmp, tmp2, tmp3);
 
@@ -696,6 +720,20 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	}
 }
+
+void HubFrame::clearUserList() {
+	{
+		Lock l(updateCS);
+		updateList.clear();
+	}
+
+	for(UserIter i = usermap.begin(); i != usermap.end(); ++i) {
+		delete i->second;
+	}
+	ctrlUsers.DeleteAllItems();
+	usermap.clear();
+}
+
 
 LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
@@ -818,7 +856,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			}
 
 			UserInfo* ui = (UserInfo*)ctrlUsers.getItemData(pos);
-			if(IgnoreManager::getInstance()->isUserIgnored(ui->user->getNick())) {
+			if(IgnoreManager::getInstance()->isUserIgnored(ui->user->getFirstNick())) {
 				userMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
 				userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 			} else {
@@ -848,7 +886,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			int pos = ctrlUsers.GetNextItem(-1, LVNI_SELECTED);
 			if(pos != -1) {
 				UserInfo* ui = (UserInfo*)ctrlUsers.getItemData(pos);
-				if(IgnoreManager::getInstance()->isUserIgnored(ui->user->getNick())) {
+				if(IgnoreManager::getInstance()->isUserIgnored(ui->user->getFirstNick())) {
 					userMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
 					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 				} else {
@@ -1005,7 +1043,7 @@ void HubFrame::onTab() {
 
 	UserIter curUser = usermap.begin();
 	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
-		if(Util::stricmp(curNick, Text::toT(i->second->user->getNick())) == 0){
+		if(Util::stricmp(curNick, Text::toT(i->second->user->getFirstNick())) == 0){
 			curUser = i;
 			break;
 		}
@@ -1034,17 +1072,17 @@ void HubFrame::onTab() {
 	if(found) {
 		UserInfo* u = curUser->second;
 		int pos = -1;
-		while((pos = ctrlUsers.findItem(stripIsp ? Text::toT(u->user->getShortNick()): Text::toT(u->user->getNick()), pos)) != -1){
+		while((pos = ctrlUsers.findItem(u->getText(COLUMN_NICK), pos)) != -1){
 			UserInfo* ui = ctrlUsers.getItemData(pos);
-			if(Util::stricmp(u->user->getNick(), ui->user->getNick()) == 0){
+			if(Util::stricmp(u->user->getFirstNick(), ui->user->getFirstNick()) == 0){
 				ctrlUsers.SetItemState(pos, LVNI_FOCUSED | LVNI_SELECTED, LVNI_FOCUSED | LVNI_SELECTED);
 				ctrlUsers.EnsureVisible(pos, false);
 			}
 		}
 		ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
-		tstring tmp = Text::toT(u->user->getShortNick());
+		tstring tmp = curUser->first;
 		ctrlMessage.ReplaceSel(tmp.c_str());
-		curNick = Text::toT(u->user->getNick());
+		curNick = Text::toT(u->user->getFirstNick());
 		return;
 	}
 	
@@ -1295,8 +1333,7 @@ void HubFrame::on(BadPassword, Client*) throw() {
 	client->setPassword(Util::emptyString);
 }
 void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() { 
-	///@todo if(getUserInfo() && !user->isSet(User::HIDDEN)) 
-		speak(UPDATE_USER, user);
+	speak(UPDATE_USER, user);
 }
 void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
 	Lock l(updateCS);
@@ -1310,12 +1347,12 @@ void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() 
 	}
 }
 
-void HubFrame::on(UserIp, Client*, const User::List& aList) throw() {
+void HubFrame::on(UserIp, Client*, const OnlineUser::List& aList) throw() {
 	Lock l(updateCS);
 	updateList.reserve(aList.size());
-	for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-		if(!(*i)->isSet(User::HIDDEN))
-			updateList.push_back(make_pair(*i, UPDATE_USERS));
+	for(OnlineUser::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+		// @todo if(!(*i)->isSet(User::HIDDEN))
+			updateList.push_back(make_pair(UpdateInfo(*(*i)), UPDATE_USERS));
 	}
 	if(!updateList.empty()) {
 		PostMessage(WM_SPEAKER, UPDATE_USERS);
@@ -1411,30 +1448,24 @@ void HubFrame::openLinksInTopic() {
 	}
 }
 
-void HubFrame::removeUser(const User::Ptr& u) {
+void HubFrame::removeUser(const UpdateInfo& u) {
 	int j = -1;
-	tstring nick = (stripIsp ? Text::toT(u->getShortNick()) : Text::toT(u->getNick()));
+	tstring nick = Text::toT(stripIsp ? u.identity.getShortNick() : u.identity.getNick());
 	while( ( j = ctrlUsers.findItem(nick, j) ) != -1 ) {
 		UserInfo* ui = ctrlUsers.getItemData(j);
-		if(Util::stricmp(u->getNick(), ui->user->getNick()) == 0 ) {
+		if(Util::stricmp(u.user->getFirstNick(), ui->user->getFirstNick()) == 0 ) {
 			ctrlUsers.DeleteItem(j);
 			break;
 		}
 	}
 
 	for(UserIter i = usermap.begin(); i != usermap.end(); ++i) {
-		if(Util::stricmp(i->second->user->getNick(), u->getNick()) == 0){
+		if(Util::stricmp(i->second->user->getFirstNick(), u.user->getFirstNick()) == 0){
 			delete i->second;
 			i->second = NULL;
 			usermap.erase(i);
 			
 			break;
-		}
-	}
-
-	if(showJoins) {
-		if (!favShowJoins || u->isFavoriteUser()) {
-			addLine(_T("*** ") + TSTRING(PARTS) + nick, BOOLSETTING(HUB_BOLD_TABS));
 		}
 	}
 }
@@ -1566,12 +1597,12 @@ void HubFrame::updateUserList() {
 
 			if(doSizeCompare) {
 				switch(mode) {
-					case 0: insert = (size == i->second->user->getBytesShared()); break;
-					case 1: insert = (size <=  i->second->user->getBytesShared()); break;
-					case 2: insert = (size >=  i->second->user->getBytesShared()); break;
-					case 3: insert = (size < i->second->user->getBytesShared()); break;
-					case 4: insert = (size > i->second->user->getBytesShared()); break;
-					case 5: insert = (size != i->second->user->getBytesShared()); break;
+					case 0: insert = (size == i->second->getBytes()); break;
+					case 1: insert = (size <=  i->second->getBytes()); break;
+					case 2: insert = (size >=  i->second->getBytes()); break;
+					case 3: insert = (size < i->second->getBytes()); break;
+					case 4: insert = (size > i->second->getBytes()); break;
+					case 5: insert = (size != i->second->getBytes()); break;
 				}
 			} else {
 				if(Util::findSubString(i->second->getText(sel), filter) != string::npos)
@@ -1590,9 +1621,9 @@ void HubFrame::updateUserList() {
 LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	StringMap params;
-	params["hub"] = client->getName();
-	params["hubaddr"] = client->getAddressPort();
-	params["mynick"] = client->getNick(); 
+	// @todo params["hub"] = client->getName();
+	// @todo params["hubaddr"] = client->getAddressPort();
+	// @todo params["mynick"] = client->getNick(); 
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::CHAT, params));
 	if(!path.empty()) {

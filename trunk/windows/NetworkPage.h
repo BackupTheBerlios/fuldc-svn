@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef NetworkPage_H
-#define NetworkPage_H
+#if !defined(NETWORK_PAGE_H)
+#define NETWORK_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -29,7 +29,7 @@
 class NetworkPage : public CPropertyPage<IDD_NETWORKPAGE>, public PropPage
 {
 public:
-	NetworkPage(SettingsManager *s) : PropPage(s) { 
+	NetworkPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_NETWORK));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -38,8 +38,11 @@ public:
 	BEGIN_MSG_MAP(NetworkPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_ACTIVE, onClickedActive)
-		COMMAND_ID_HANDLER(IDC_PASSIVE, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_DIRECT, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_FIREWALL_UPNP, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_FIREWALL_NAT, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_FIREWALL_PASSIVE, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_DIRECT_OUT, onClickedActive)
 		COMMAND_ID_HANDLER(IDC_SOCKS5, onClickedActive)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
@@ -61,4 +64,9 @@ private:
 	void fixControls();
 };
 
-#endif // NetworkPage_H
+#endif // !defined(NETWORK_PAGE_H)
+
+/**
+ * @file
+ * $Id: NetworkPage.h,v 1.5 2005/04/24 08:13:03 arnetheduck Exp $
+ */

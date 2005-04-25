@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FAVORITE_MANAGER_H
+#if !defined(FAVORITE_MANAGER_H)
 #define FAVORITE_MANAGER_H
 
 #if _MSC_VER > 1000
@@ -140,8 +140,8 @@ public:
 	virtual void on(DownloadFinished, const string&) throw() { }
 	virtual void on(FavoriteAdded, const FavoriteHubEntry*) throw() { }
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry*) throw() { }
-	virtual void on(UserAdded, const User::Ptr&) throw() { }
-	virtual void on(UserRemoved, const User::Ptr&) throw() { }
+	virtual void on(UserAdded, const FavoriteUser&) throw() { }
+	virtual void on(UserRemoved, const FavoriteUser&) throw() { }
 };
 
 class SimpleXML;
@@ -173,10 +173,17 @@ public:
 	FavoriteUser::List& getFavoriteUsers() { return users; };
 	
 	void addFavoriteUser(User::Ptr& aUser);
+	bool isFavoriteUser(const User::Ptr& aUser) const {
+		return find(users.begin(), users.end(), aUser) != users.end();
+	}
 	void removeFavoriteUser(User::Ptr& aUser);
 
-	/// @todo
-	bool hasSlot(User::Ptr& ptr) { return false; }
+	bool hasSlot(const User::Ptr& aUser) const { 
+		FavoriteUser::List::const_iterator i = find(users.begin(), users.end(), aUser);
+		if(i == users.end())
+			return false;
+		return i->isSet(FavoriteUser::FLAG_GRANTSLOT);
+	}
 
 // Favorite Hubs
 	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
@@ -285,10 +292,9 @@ private:
 	
 };
 
-#endif // FAVORITE_MANAGER_H
+#endif // !defined(FAVORITE_MANAGER_H)
 
 /**
  * @file
  * $Id: FavoriteManager.h,v 1.1 2005/04/12 23:24:12 arnetheduck Exp $
  */
-

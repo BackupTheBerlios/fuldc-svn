@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FINISHEDULFRAME_H
-#define FINISHEDULFRAME_H
+#if !defined(FINISHED_UL_FRAME_H)
+#define FINISHED_UL_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -170,7 +170,7 @@ private:
 	}
 };
 
-#endif // FINISHEDULFRAME_H
+#endif // !defined(FINISHED_UL_FRAME_H)
 
 /**
  * @file
