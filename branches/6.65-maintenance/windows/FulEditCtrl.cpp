@@ -397,26 +397,8 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 	SetSel(GetTextLength()-1, GetTextLength()-1);
 	SetSelectionCharFormat(selFormat);
 
-	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
-		matchedPopup = true;
-		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
-	}
-	if(cs->getTab() && isSet(TAB))
-		matchedTab = true;
+	CheckAction(cs, line);
 
-	if(cs->getLog() && !logged && !skipLog){
-		logged = true;
-		AddLogLine(line);
-	}
-
-	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
-		matchedSound = true;
-		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-	}
-
-	if(cs->getFlashWindow())
-		WinUtil::flashWindow();
-					
 	if( cs->getTimestamps() || cs->getUsers() )
 		return tstring::npos;
 	
@@ -466,26 +448,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 	SetSel(GetTextLength()-1, GetTextLength()-1);
 	SetSelectionCharFormat(selFormat);
 
-	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
-		matchedPopup = true;
-		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
-	}
-
-	if(cs->getTab() && isSet(TAB))
-		matchedTab = true;
-
-	if(cs->getLog() && !logged && !skipLog){
-		logged = true;
-		AddLogLine(line);
-	}
-
-	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
-		matchedSound = true;
-		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-	}
-
-	if(cs->getFlashWindow())
-		WinUtil::flashWindow();
+	CheckAction(cs, line);
 	
 	return tstring::npos;
 }
@@ -754,4 +717,28 @@ void CFulEditCtrl::SetNick(const tstring& aNick) {
 	} else {
 		nick = aNick;
 	}
+}
+
+void CFulEditCtrl::CheckAction(ColorSettings* cs, const tstring& line) {
+	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
+		matchedPopup = true;
+		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
+	}
+	if(cs->getTab() && isSet(TAB))
+		matchedTab = true;
+
+	if(cs->getLog() && !logged && !skipLog){
+		logged = true;
+		AddLogLine(line);
+	}
+
+	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
+		if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+			matchedSound = true;
+			PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+		}
+	}
+
+	if(cs->getFlashWindow())
+		WinUtil::flashWindow();
 }

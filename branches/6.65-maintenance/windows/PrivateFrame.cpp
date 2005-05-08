@@ -112,10 +112,12 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				p->setUser(aUser);
 				p->addLine(aMessage);
 				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !p->muted) {
-					if(BOOLSETTING(CUSTOM_SOUND))
-						PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-					else
-						MessageBeep(MB_OK);
+					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+						if(BOOLSETTING(CUSTOM_SOUND))
+							PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+						else
+							MessageBeep(MB_OK);
+					}
 				}
 				if(BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
 					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
@@ -140,27 +142,31 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				}
 
 				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-					if(BOOLSETTING(CUSTOM_SOUND))
-						PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-					else
-						MessageBeep(MB_OK);
+					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+						if(BOOLSETTING(CUSTOM_SOUND))
+							PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+						else
+							MessageBeep(MB_OK);
+					}
 				}
 
 				if(BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
 					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
 				}
 
-				if(BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)){
+				if(BOOLSETTING(FLASH_WINDOW_ON_PM) || BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)){
 					WinUtil::flashWindow();
 				}
 			}
 		}
 	} else {
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !i->second->muted) {
-			if(BOOLSETTING(CUSTOM_SOUND))
-				PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-			else
-				MessageBeep(MB_OK);
+			if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+				if(BOOLSETTING(CUSTOM_SOUND))
+					PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+				else
+					MessageBeep(MB_OK);
+			}
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
 			PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, i->second->m_hWnd);

@@ -733,5 +733,6 @@
 		<String Name="PresetParts">Parts</String>
 		<String Name="PresetReleases">Releases</String>
 		<String Name="ReaddSourceToQueue">Re-add user to queue</String>
+		<String Name="MuteOnAway">Mute sounds when away mode is enabled</String>
 	</Strings>
 </Language>

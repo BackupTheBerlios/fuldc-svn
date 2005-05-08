@@ -85,6 +85,7 @@ private:
 	int		FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int pos, int &lineIndex);
 	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int &lineIndex);
 	void	AddLogLine(const tstring &aLine);
+	void	CheckAction(ColorSettings* cs, const tstring& line);
 
 	bool		matchedSound;
 	bool		matchedPopup;

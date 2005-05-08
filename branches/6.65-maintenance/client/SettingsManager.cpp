@@ -80,7 +80,7 @@ const string SettingsManager::settingTags[] =
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
-	"RefreshShareBegin", "RefreshShareEnd", 
+    "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -272,6 +272,7 @@ SettingsManager::SettingsManager()
 	setDefault(REFRESH_INCOMING_END, 0);
 	setDefault(REFRESH_SHARE_BEGIN, 0);
 	setDefault(REFRESH_SHARE_END, 0);
+	setDefault(MUTE_ON_AWAY, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

@@ -734,6 +734,7 @@ string ResourceManager::strings[] = {
 "Parts", 
 "Releases", 
 "Re-add user to queue", 
+"Mute sounds when away mode is enabled", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1468,4 +1469,5 @@ string ResourceManager::names[] = {
 "PresetParts", 
 "PresetReleases", 
 "ReaddSourceToQueue", 
+"MuteOnAway", 
 };

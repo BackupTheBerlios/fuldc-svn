@@ -737,5 +737,6 @@ enum Strings { // @DontAdd
 	PRESET_PARTS, // "Parts"
 	PRESET_RELEASES, // "Releases"
 	READD_SOURCE_TO_QUEUE, // "Re-add user to queue"
+	MUTE_ON_AWAY, // "Mute sounds when away mode is enabled"
 	LAST // @DontAdd
 };
