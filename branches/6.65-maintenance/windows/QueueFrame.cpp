@@ -153,6 +153,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	readdMenu.AppendMenu(MF_STRING, IDC_READD, CTSTRING(ALL));
 	readdMenu.AppendMenu(MF_SEPARATOR);
 
+	readdQueueMenu.AppendMenu(MF_STRING, IDC_READD_QUEUE, CTSTRING(ALL));
+	readdQueueMenu.AppendMenu(MF_SEPARATOR);
+
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
@@ -1357,7 +1360,7 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 		if(ht) {
 			tstring * name = (tstring*)ctrlDirs.GetItemData(ht);
 
-			if(tmp == COLUMN_LAST)
+			if(tmp == COLUMN_LAST+5)
 				WinUtil::setClipboard( Util::getLastDir(*name) );
 			else 
 				WinUtil::setClipboard( *name );

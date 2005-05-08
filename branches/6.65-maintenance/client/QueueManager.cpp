@@ -521,8 +521,9 @@ void QueueManager::readd(const string& target, User::Ptr& aUser) throw(QueueExce
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::readdUser(User::Ptr& aUser) throw() {
+int QueueManager::readdUser(User::Ptr& aUser) throw() {
 	bool wantConnection = false;
+	int matches = 0;
 	{
 		Lock l(cs);
 		QueueItem::StringMap queue = fileQueue.getQueue();
@@ -532,7 +533,8 @@ void QueueManager::readdUser(User::Ptr& aUser) throw() {
 			if(q != NULL && q->isBadSource(aUser)) {
 				try{
 					QueueItem::Source* s = *q->getBadSource(aUser);
-					wantConnection = addSource(q, s->getPath(), aUser, QueueItem::Source::FLAG_MASK, s->isSet(QueueItem::Source::FLAG_UTF8));
+					wantConnection = addSource(q, s->getPath(), aUser, QueueItem::Source::FLAG_ERROR_MASK, s->isSet(QueueItem::Source::FLAG_UTF8));
+					++matches;
 				} catch(const QueueException& /* e*/){
 				}
 			}
@@ -540,6 +542,8 @@ void QueueManager::readdUser(User::Ptr& aUser) throw() {
 	}
 	if(wantConnection && aUser->isOnline())
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
+
+	return matches;
 }
 
 string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
@@ -1076,7 +1080,7 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 	}
 }
 
-void QueueManager::removeSources(User::Ptr& aUser, int reason) throw() {
+void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
 	string x;
 	
 	//this is so damn ugly i should probably shoot myself but

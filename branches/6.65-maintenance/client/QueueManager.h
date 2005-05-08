@@ -102,7 +102,7 @@ public:
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 
 	/** Readd a source that was removed to all queueitems it was removed from */
-	void readdUser(User::Ptr& aUser) throw();
+	int readdUser(User::Ptr& aUser) throw();
 
 	/** Add a directory to the queue (downloads filelist and matches the directory). */
 	void addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
@@ -114,7 +114,7 @@ public:
 
 	void remove(const string& aTarget) throw();
 	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true) throw();
-	void removeSources(User::Ptr& aUser, int reason) throw();
+	void removeSources(User::Ptr aUser, int reason) throw();
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	

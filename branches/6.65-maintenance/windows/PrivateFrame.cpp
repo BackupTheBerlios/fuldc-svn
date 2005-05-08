@@ -626,13 +626,17 @@ void PrivateFrame::readLog() {
 
 			int linesCount = lines.size();
 
+			dcassert(buf[buf.size()-1] != ' ');
+
 			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG)) : 0;
 
 			for(; i < linesCount; ++i){
 				if(!lines[i].empty())
-					addLine(_T("- ") + Text::toT(lines[i]));
+					addLine(Text::toT(lines[i]));
 			}
-
+			ctrlClient.AddLine(tstring(_T(" ")), false);
+			//keep this here, holding the handle open keeps
+			//LogManager from being able to write back to the log
 			f.close();
 		}
 	} catch(FileException & /*e*/){

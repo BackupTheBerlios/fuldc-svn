@@ -500,15 +500,20 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 	if(ii->type == ItemInfo::FILE) {
 		if(!ii->file->getAdls())
 			return 0;
-		DirectoryListing::Directory* pd = ii->file->getParent();
-		while(pd != NULL && pd != dl->getRoot()) {
-			fullPath = _T("\\") + Text::toT(pd->getName()) + fullPath;
-			pd = pd->getParent();
-		}
+		fullPath = Text::toT(dl->getPath(ii->file));
+		//DirectoryListing::Directory* pd = ii->file->getParent();
+		//while(pd != NULL && pd != dl->getRoot()) {
+		//	fullPath = _T("\\") + Text::toT(pd->getName()) + fullPath;
+		//	pd = pd->getParent();
+		//}
+		//fullPath.erase(0, 1);
 	} else if(ii->type == ItemInfo::DIRECTORY) {
 		if(!(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()))
 			return 0;
 		fullPath = Text::toT(((DirectoryListing::AdlDirectory*)ii->dir)->getFullPath());
+		if(fullPath[0] == _T('\\')) {
+			fullPath.erase(0,1);
+		}
 	}
 
 	selectItem(fullPath);
@@ -549,6 +554,8 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 		}
 
 		int n = 0;
+
+		WinUtil::AppendSearchMenu(searchMenu);
 
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
