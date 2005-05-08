@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>Tabs</title>
+		<meta content="text/html; charset=us-ascii" http-equiv="content-type">
+		<link type="text/css" rel="stylesheet" href="office11.css">
+	</head>
+	<body>
+	<h1>Highlight</h1>
+	<div style="margin-left: 40px;">
+		<dl>
+			<dt>Add</dt>
+			<dd>
+				Adds the current values to the list.</dd>
+			<dt>Remove</dt>
+			<dd>
+				Removes the selected item from the list.</dd>
+			<dt>Update</dt>
+			<dd>
+				Updates the selected item with the current values.</dd>
+			<dt>Move Up</dt>
+			<dd>
+				Moves the selected item up one step in the list. Highlights are run in the order they're 
+				stored in the list so highlights at the bottom might write over colors added by 
+				highlights at the top of the list.</dd>
+			<dt>Move Down</dt>
+			<dd>
+				Moves the selected item down one step in the list.</dd>
+		</dl>
+	</div>
+	<h2>Settings</h2>
+	<div style="margin-left: 40px;">
+		<dl>
+			<dt>Bold</dt>
+			<dd>
+				Bolds the text.</dd>
+			<dt>Italic</dt>
+			<dd>
+				Makes the text italic</dd>
+			<dt>Underline</dt>
+			<dd>
+				Underlines the text</dd>
+			<dt>Strikeout</dt>
+			<dd>
+				Adds a line through the text.</dd>
+			<dt>Display popup</dt>
+			<dd>
+				Displays a popup, check <a href="settings_fuldc_popups.html">popups</a> page for options.</dd>
+			<dt>Lastlog</dt>
+			<dd>
+				Adds the line to a log, write /lastlog in hub or pm windows to view the last 100 
+				lines.</dd>
+			<dt>Flash Window</dt>
+			<dd>
+				Will flash the the taskbar entry if it matches, only if the windows isn't active.</dd>
+			<dt>Include Nick</dt>
+			<dd>
+				Means that it should start searching from the beginning of the line. Normally 
+				a search is started after the nick of the user.</dd>
+			<dt>Whole Line</dt>
+			<dd>
+				Means that any color or text options should be applied to the whole line.</dd>
+			<dt>Case Sensitive</dt>
+			<dd>
+				Means that it should be case sensitive when searching for a match.</dd>
+			<dt>Entire Word</dt>
+			<dd>
+				Means that any color or text options should be applied to the entire word, 
+				if the highlight just matched a part of the word.</dd>
+			<dt>Change Tabcolor</dt>
+			<dd>
+				Will change the tabcolor, check <a href="settings_fuldc_tabs.html">tabs</a> page to 
+				see how to specify the color</dd>
+			<dt>Play Sound</dt>
+			<dd>
+				Plays a sound specified by pressing the "Select Sound File" button and choosing a 
+				.wav file.</dd>
+			<dt>Match Type</dt>
+			<dd>
+				Begins means that the word specified should match the beginning of a word in the text.<br>
+				Contains means that the word specified should match anything.<br>
+				Ends means that the word specified should match the end of a word in the text.<br>
+				Equals means that the word specified should be an exact match to a word in the text.</dd>
+			<dt>Background Color</dt>
+			<dd>
+				Check the box and select a color to be used to highlight the background around the text.</dd>
+			<dt>Text Color</dt>
+			<dd>
+				Check the box and select a color to be used to highlight the text.</dd>
+		</dl>
+	</div>
+	<p>
+		Specify which word should be searched for, can be a letter, part of a word or a whole 
+		sentence if you like.</p>
+	<h3>Regexps</h3>
+	<p>
+		It is possible to start the line with $Re: to tell fulDC that
+		the text is a regexp. Do not use regexps if you don't know how to use them, most stuff 
+		is possible to do without them. starting the line with $Re: disables a few of the controls 
+		such as include nick, whole line, entire word and case sensitive.</p>
+	<h3>Predefined variables</h3>
+	<div style="margin-left: 40px;">
+		<dl>
+			<dt>$users$</dt>
+			<dd>
+				Use this to highlight all nicks in the chat</dd>
+			<dt>$ts$</dt>
+			<dd>
+				Use this to highlight timestamps.</dd>
+			<dt>$mynick$</dt>
+			<dd>
+				Use this if you wan't to highlight your nick but you're using different
+				nicks in different hubs.</dd>
+		</dl>
+	</div>
+	<h3>Presets</h3>
+	<div style="margin-left: 40px;">
+		<p>These are a set of preconfigured highlights for common words/phrases. Note they are configured to
+		match the default background and text color, which is white background and black text.<br>
+		When a preset is selected it won't be added to the list of highlights until you click add, this is
+		to make it easier to personalize it before adding it.</p>
+		<dl>
+			<dt>Add All</dt>
+			<dd>This adds all of the presets to the list of highlights without giving you the ability to personalize any of them first</dd>
+			<dt>The rest of them should be fairly self explaining</dt>
+		</dl>
+	</div>
+	</body>
+</html>
