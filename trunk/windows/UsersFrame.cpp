@@ -198,4 +198,3 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
  * @file
  * $Id: UsersFrame.cpp,v 1.3 2004/01/06 01:52:18 trem Exp $
  */
-

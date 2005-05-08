@@ -361,6 +361,9 @@ private:
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
 			ip = Text::toT(sr->getIP());
+			tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+			if(!tmpCountry.empty())
+				ip = tmpCountry + _T(" (") + ip + _T(")");
 			if(sr->getTTH() != NULL)
 				setTTH(Text::toT(sr->getTTH()->toBase32()));
 		}

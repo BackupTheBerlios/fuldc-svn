@@ -163,6 +163,7 @@ LRESULT Appearance2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCE2PAGE);
 	return 0;
 }
+
 /**
  * @file
  * $Id: Appearance2Page.cpp,v 1.3 2005/04/24 08:13:07 arnetheduck Exp $

@@ -152,10 +152,9 @@ private:
 	void removeUser(const FavoriteUser& aUser);
 };
 
-#endif // !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
+#endif // !defined(USERS_FRAME_H)
 
 /**
  * @file
  * $Id: UsersFrame.h,v 1.4 2004/01/06 01:52:18 trem Exp $
  */
-

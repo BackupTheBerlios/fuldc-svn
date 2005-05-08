@@ -208,6 +208,14 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					pendingAdd.erase(it);
 				}
 			} else {
+				if(cqi->getState() == ConnectionQueueItem::WAITING) {
+					UserConnection::List::iterator it = find(pendingDelete.begin(), pendingDelete.end(), cqi->getConnection());
+					if(it != pendingDelete.end()) {
+						cqi->setConnection(NULL);
+						removed.push_back(cqi);
+						continue;
+					}
+				} 
 				
 				if(!cqi->getUser()->isOnline()) {
 					// Not online anymore...remove it from the pending...
@@ -663,7 +671,7 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 			dcassert(cqi->getState() == ConnectionQueueItem::IDLE);
 			cqi->setState(ConnectionQueueItem::WAITING);
 			cqi->setLastAttempt(GET_TICK());
-			cqi->setConnection(NULL);
+			//cqi->setConnection(NULL);
 			aSource->setCQI(NULL);
 		}
 	}

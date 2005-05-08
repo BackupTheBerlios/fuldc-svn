@@ -31,4 +31,3 @@ OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), ident
  * @file
  * $Id: User.cpp,v 1.4 2004/02/14 13:26:15 trem Exp $
  */
-

@@ -73,7 +73,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	try {
 		if(aType == "file") {
 			file = ShareManager::getInstance()->translateFileName(aFile);
-			userlist = (Util::stricmp(aFile.c_str(), "files.xml.bz2") == 0);
+			userlist = (aFile == "files.xml.bz2");
 
 			try {
 				File* f = new File(file, File::READ, File::OPEN);

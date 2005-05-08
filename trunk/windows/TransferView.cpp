@@ -478,10 +478,10 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_PATH] = path;
 	}
 	if(colMask & MASK_IP) {
-		if (country == _T("")) 
-			columns[COLUMN_IP] = IP;
-		else 
+		if(!country.empty())
 			columns[COLUMN_IP] = country + _T(" (") + IP + _T(")");
+		else
+			columns[COLUMN_IP] = IP;
 	}
 	if(colMask & MASK_RATIO) {
 		columns[COLUMN_RATIO] = Text::toT(Util::toString(getRatio()));

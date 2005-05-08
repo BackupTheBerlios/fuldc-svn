@@ -136,6 +136,14 @@ User::Ptr ClientManager::findUser(const CID& cid) throw() {
 	return NULL;
 }
 
+string ClientManager::getHubUrl(const User::Ptr& user) {
+	Lock l(cs);
+	OnlineIter i = onlineUsers.find(user->getCID());
+	if(i != onlineUsers.end())
+		return i->second->getHubUrl();
+	return Util::emptyString;
+}
+
 CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {
 	string n = Text::toLower(aNick);
 	TigerHash th;

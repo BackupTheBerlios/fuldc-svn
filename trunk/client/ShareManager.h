@@ -50,7 +50,7 @@ class ShareManager : public Singleton<ShareManager>, private SettingsManagerList
 {
 public:
 	/**
-	 * @param aDirectory Physical directory localtion
+	 * @param aDirectory Physical directory location
 	 * @param aName Virtual name
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);

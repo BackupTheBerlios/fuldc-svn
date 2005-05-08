@@ -404,12 +404,11 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	OPENFILENAME ofn;       // common dialog box structure
+	OPENFILENAME ofn = { 0 };       // common dialog box structure
 	target = Text::toT(Util::validateFileName(Text::fromT(target)));
 	_tcscpy(buf, target.c_str());
 	// Initialize OPENFILENAME
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400;
 	ofn.hwndOwner = owner;
 	ofn.lpstrFile = buf;
 	ofn.lpstrFilter = types;
