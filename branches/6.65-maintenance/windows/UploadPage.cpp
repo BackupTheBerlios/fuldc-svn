@@ -120,9 +120,6 @@ void UploadPage::write()
 		ShareManager::getInstance()->setIncoming( tmp, ctrlDirectories.GetCheckState(i) ? true : false );
 		
 	}
-
-	// Do specialized writing here
-	ShareManager::getInstance()->refresh();
 }
 
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -163,7 +160,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		ctrlDirectories.DeleteItem(i);
 	}
-	
+
 	return 0;
 }
 

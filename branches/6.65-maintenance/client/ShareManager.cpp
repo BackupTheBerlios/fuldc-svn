@@ -664,7 +664,8 @@ void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& i
 }
 
 void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, 
-						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) {
+						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) 
+{
 	update = aUpdate;
 	refreshDirs = dirs;
 	refreshIncoming = incoming;
@@ -774,9 +775,6 @@ int ShareManager::run() {
 			refreshDirs = false;
 		}
 	}
-
-	generateXmlList(true);
-	generateNmdcList(true);
 
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 	if(update) {

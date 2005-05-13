@@ -1686,20 +1686,20 @@ void HubFrame::handleTab(bool reverse) {
 		if(focus == ctrlFilterSel.m_hWnd) {
 			ctrlFilter.SetFocus();
 		} else if(focus == ctrlFilter.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlMessage.m_hWnd) {
 			ctrlUsers.SetFocus();
 		} else if(focus == ctrlUsers.m_hWnd) {
 			ctrlMessage.SetFocus();
-		} else if(focus == ctrlMessage.m_hWnd) {
-			ctrlClient.SetFocus();
 		} else if(focus == ctrlClient.m_hWnd) {
 			ctrlFilterSel.SetFocus();
 		}
 	} else {
 		if(focus == ctrlClient.m_hWnd) {
 			ctrlMessage.SetFocus();
-		} else if(focus == ctrlMessage.m_hWnd) {
-			ctrlUsers.SetFocus();
 		} else if(focus == ctrlUsers.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlMessage.m_hWnd) {
 			ctrlFilter.SetFocus();
 		} else if(focus == ctrlFilter.m_hWnd) {
 			ctrlFilterSel.SetFocus();
