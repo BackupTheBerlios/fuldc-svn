@@ -179,6 +179,13 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 		if(cand->getStatus() != QueueItem::STATUS_RUNNING)
 			break;
 	}
+
+	//check this again, if the first item we pick is running and there are no
+	//other suitable items this will be true
+	if((cand != NULL) && (cand->getStatus() == QueueItem::STATUS_RUNNING)) {
+		cand = NULL;
+	}
+
 	return cand;
 }
 

@@ -233,9 +233,10 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 				if (curCommandPosition > 0 && !prevCommands.empty()) {
 					//check whether current command needs to be saved
 					if (curCommandPosition == prevCommands.size()) {
-						auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-						currentCommand = tstring(messageContents.get());
+						TCHAR *messageContents = new TCHAR[ctrlMessage.GetWindowTextLength()+2];
+						ctrlMessage.GetWindowText(messageContents, ctrlMessage.GetWindowTextLength()+1);
+						currentCommand = tstring(messageContents);
+						delete[] messageContents;
 					}
 
 					//replace current chat buffer with current command
@@ -269,9 +270,10 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				curCommandPosition = 0;
 
-				auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-				currentCommand = tstring(messageContents.get());
+				TCHAR *messageContents = new TCHAR[ctrlMessage.GetWindowTextLength()+2];
+				ctrlMessage.GetWindowText(messageContents, ctrlMessage.GetWindowTextLength()+1);
+				currentCommand = tstring(messageContents);
+				delete[] messageContents;
 
 				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
 			} else {
