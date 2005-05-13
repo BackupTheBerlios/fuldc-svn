@@ -442,7 +442,6 @@ enum Strings { // @DontAdd
 	SETTINGS_SOUNDS, // "Sounds"
 	SETTINGS_SPEEDS_NOT_ACCURATE, // "Note; because of changing download speeds, this is not 100% accurate..."
 	SETTINGS_STATUS_IN_CHAT, // "View status messages in main chat"
-	SETTINGS_TAB_COMPLETION, // "Tab completion of nicks in chat"
 	SETTINGS_TAB_DIRTY, // "Set hub/PM/Search tab bold when contents change"
 	SETTINGS_TCP_PORT, // "TCP Port"
 	SETTINGS_TEXT_MINISLOT, // "Mini slot size"

@@ -901,22 +901,13 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 };
 
 void HubFrame::onTab() {
-	if(!BOOLSETTING(TAB_COMPLETION)) {
-		HWND focus = GetFocus();
+	bool up = ((GetKeyState(VK_SHIFT) & 0x8000) != 0);
 
-		if(focus == ctrlClient.m_hWnd) {
-			ctrlMessage.SetFocus();
-		} else if(focus == ctrlMessage.m_hWnd) {
-			ctrlUsers.SetFocus();
-		} else if(focus == ctrlUsers.m_hWnd) {
-			ctrlClient.SetFocus();
-		} 
-
+	if(ctrlMessage.GetWindowTextLength() == 0) {
+		handleTab(up);
 		return;
 	}
 		
-	bool up = ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
-
 	int n = ctrlMessage.GetWindowTextLength();
 	AutoArray<TCHAR> buf(n+1);
 	ctrlMessage.GetWindowText(buf, n+1);
@@ -1440,7 +1431,12 @@ void HubFrame::removeUser(const User::Ptr& u) {
 	}
 }
 
-LRESULT HubFrame::onFilterChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(uMsg == WM_CHAR && wParam == VK_TAB) {
+		handleTab((GetKeyState(VK_SHIFT) & 0x8000) != 0);
+		return 0;
+	}
+
 	TCHAR *buf = new TCHAR[ctrlFilter.GetWindowTextLength()+1];
 	ctrlFilter.GetWindowText(buf, ctrlFilter.GetWindowTextLength()+1);
 	filter = buf;
@@ -1681,6 +1677,36 @@ LRESULT HubFrame::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 		resolveBuffer = NULL;
 	}
 	return 0;
+}
+
+void HubFrame::handleTab(bool reverse) {
+	HWND focus = GetFocus();
+
+	if(reverse) {
+		if(focus == ctrlFilterSel.m_hWnd) {
+			ctrlFilter.SetFocus();
+		} else if(focus == ctrlFilter.m_hWnd) {
+			ctrlUsers.SetFocus();
+		} else if(focus == ctrlUsers.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlMessage.m_hWnd) {
+			ctrlClient.SetFocus();
+		} else if(focus == ctrlClient.m_hWnd) {
+			ctrlFilterSel.SetFocus();
+		}
+	} else {
+		if(focus == ctrlClient.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlMessage.m_hWnd) {
+			ctrlUsers.SetFocus();
+		} else if(focus == ctrlUsers.m_hWnd) {
+			ctrlFilter.SetFocus();
+		} else if(focus == ctrlFilter.m_hWnd) {
+			ctrlFilterSel.SetFocus();
+		} else if(focus == ctrlFilterSel.m_hWnd) {
+			ctrlClient.SetFocus();
+		}
+	}
 }
 
 

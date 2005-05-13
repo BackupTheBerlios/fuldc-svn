@@ -92,6 +92,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
 		MESSAGE_HANDLER(WM_KEYUP, onFilterChar)
 		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
 	END_MSG_MAP()
@@ -129,6 +130,7 @@ public:
 	void addClientLine(const tstring& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
+	void handleTab(bool reverse);
 	void runUserCommand(::UserCommand& uc);
 
 	static void openWindow(const tstring& server);

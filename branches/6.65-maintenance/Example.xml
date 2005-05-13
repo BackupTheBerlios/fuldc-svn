@@ -438,7 +438,6 @@
 		<String Name="SettingsSounds">Sounds</String>
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
-		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
 		<String Name="SettingsTabDirty">Set hub/PM/Search tab bold when contents change</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
