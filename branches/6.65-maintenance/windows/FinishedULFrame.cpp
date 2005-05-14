@@ -278,6 +278,15 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 	ctrlList.EnsureVisible(loc, FALSE);
 }
 
+LRESULT FinishedULFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
+
+	if(kd->wVKey == VK_DELETE) {
+		PostMessage(WM_COMMAND, IDC_REMOVE);
+	} 
+	return 0;
+}
+
 
 /**
  * @file

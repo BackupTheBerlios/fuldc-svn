@@ -28,13 +28,11 @@
 
 #include "../client/HubManager.h"
 
-#define SERVER_MESSAGE_MAP 7
-
 class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, public StaticFrame<FavoriteHubsFrame, ResourceManager::FAVORITE_HUBS, IDC_FAVORITES>,
 	private HubManagerListener
 {
 public:
-	FavoriteHubsFrame() : nosave(true) { };
+	FavoriteHubsFrame() : nosave(true)	{ };
 	~FavoriteHubsFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FavoriteHubsFrame"), IDR_FAVORITES, 0, COLOR_3DFACE);
@@ -58,6 +56,7 @@ public:
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, onItemChanged)
+		NOTIFY_HANDLER(IDC_HUBLIST, LVN_KEYDOWN, onKeyDown)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<FavoriteHubsFrame>)
 	END_MSG_MAP()
 		
@@ -68,6 +67,7 @@ public:
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -111,7 +111,7 @@ private:
 	CButton ctrlUp;
 	CButton ctrlDown;
 	CMenu hubsMenu;
-	
+
 	ExListViewCtrl ctrlHubs;
 
 	bool nosave;

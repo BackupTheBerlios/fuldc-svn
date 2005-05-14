@@ -72,6 +72,7 @@ public:
 	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGrant(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -92,17 +93,6 @@ public:
 		FinishedItem* c = (FinishedItem*)a;
 		FinishedItem* d = (FinishedItem*)b;
 		return compare(c->getAvgSpeed(), d->getAvgSpeed());
-	}
-
-	
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		
-		if(kd->wVKey == VK_DELETE) {
-			BOOL dummy;
-			onRemove(0, IDC_REMOVE, 0, dummy);
-		} 
-		return 0;
 	}
 
 private:
