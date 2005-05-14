@@ -125,7 +125,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	if(aFile == "MyList.DcLst") {
 		generateNmdcList();
 		return getListFile();
-	} else if(aFile == "files.xml.bz2" || "files.xml") {
+	} else if(aFile == "files.xml.bz2" || aFile == "files.xml") {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {

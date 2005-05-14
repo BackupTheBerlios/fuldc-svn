@@ -185,6 +185,9 @@
 			<File
 				RelativePath=".\settings_usercommands.html">
 			</File>
+			<File
+				RelativePath=".\settings_windows.html">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

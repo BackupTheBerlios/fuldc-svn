@@ -140,7 +140,7 @@ string ClientManager::getHubUrl(const User::Ptr& user) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(user->getCID());
 	if(i != onlineUsers.end())
-		return i->second->getHubUrl();
+		return i->second->getClient().getHubUrl();
 	return Util::emptyString;
 }
 

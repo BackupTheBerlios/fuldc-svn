@@ -161,12 +161,12 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		bHandled = FALSE;
 		return 0;
 	}
-	
+
 	void setWindowTitle() {
-/**@todo		if(error.empty())
-			SetWindowText(Text::toT(dl->getUser()->getFullNick()).c_str());
+		if(error.empty())
+			SetWindowText(Text::toT(dl->getUser()->getFirstNick()).c_str());
 		else
-			SetWindowText(error.c_str());		*/
+			SetWindowText(error.c_str());
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {

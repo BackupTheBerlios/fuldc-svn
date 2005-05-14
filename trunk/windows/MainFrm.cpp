@@ -304,7 +304,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 
 	if(SETTING(NICK).empty()) {
-		PostMessage(WM_COMMAND, IDC_HELP_README);
+		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
 	}
 
