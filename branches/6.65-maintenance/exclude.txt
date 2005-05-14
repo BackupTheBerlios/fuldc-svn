@@ -1,0 +1,16 @@
+.svn
+bzip2\.svn
+client\.svn
+help\.svn
+regex\.svn
+regex\doc\.svn
+res\.svn
+windows\.svn
+zlib\.svn
+fulDC.rar
+fulDC-src.rar
+DCPlusPlus.ncb
+DCPlusPlus.suo
+vc7
+App
+Temp
