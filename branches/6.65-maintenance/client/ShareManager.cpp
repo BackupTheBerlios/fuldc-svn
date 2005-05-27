@@ -1732,17 +1732,21 @@ void ShareManager::setIncoming( const string& aDir, bool incoming /*= true*/ ) {
 
 bool ShareManager::refresh( const string& aDir ){
 	bool result = false;
-	string path = aDir;
+	string path = Text::toLower(aDir);
 
 	if(path[ path.length() -1 ] != PATH_SEPARATOR)
 		path += PATH_SEPARATOR;
 
 	RLock<> l(cs);
 
-	Directory::MapIter i = directories.find( path );
+	//Directory::MapIter i = directories.find( path );
+	Directory::MapIter i = directories.begin();
+	for(; i != directories.end(); ++i) {
+		if(Util::stricmp(i->first, path) == 0)
+			break;
+	}
 
 	if( i == directories.end() ) {
-		
 		for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
 			if( Util::stricmp( j->first, aDir ) == 0 ) {
 				refreshPaths.push_back( j->second );

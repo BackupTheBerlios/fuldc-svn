@@ -82,7 +82,6 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -166,10 +165,6 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 			SetWindowText(Text::toT(dl->getUser()->getFullNick()).c_str());
 		else
 			SetWindowText(error.c_str());		
-	}
-
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 1;
 	}
 
 	void clearList() {
