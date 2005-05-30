@@ -36,10 +36,13 @@
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
 CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyStringT), findBufferSize(100),
-								logged(false), matchedSound(false), skipLog(false)
+								logged(false), matchedSound(false), skipLog(false), handCursor(NULL),
+								showHandCursor(false)
 {
 	findBuffer = new TCHAR[findBufferSize];
 	findBuffer[0] = _T('\0');
+
+	fontHeight = static_cast<int>(WinUtil::getTextHeight(m_hWnd, WinUtil::font) * 1.5);
 
 	urls.push_back(_T("http://"));
 	urls.push_back(_T("https://"));
@@ -85,8 +88,11 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	inf.dwStyle = MNS_NOTIFYBYPOS;
 	menu.SetMenuInfo(&inf);
 
-	bHandled = FALSE;
+	handCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND));
 
+	SetAutoURLDetect(TRUE);
+	
+	bHandled = FALSE;
 	return 1;
 }
 
@@ -265,7 +271,7 @@ void CFulEditCtrl::AddInternalLine(const tstring & aLine) {
 	HideSelection(TRUE, FALSE);
 
 	Colorize(aLine, length);
-	
+	CheckUrls(aLine, length);
 	
 	SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 	ScrollCaret();
@@ -405,6 +411,36 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 	return pos;
 }
 
+void CFulEditCtrl::CheckUrls(const tstring &line, const int &lineIndex) {
+	int begin = 0, end = 0;
+	CHARFORMAT2 cf;
+	cf.cbSize = sizeof(CHARFORMAT2);
+	PME regexp(_T("\\s(https?://\\S+|ftps?://\\S+|mms://\\S+|www\\.\\S+)"), _T("gims"));
+	while( regexp.match(line) > 0 ){
+		if( regexp.NumBackRefs() == 1){
+			begin = lineIndex + regexp.GetStartPos(0);
+			end = begin + regexp.GetLength(0);
+
+			SetSel(begin, end);
+			cf.dwMask = CFM_BOLD | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_ITALIC | CFM_BACKCOLOR | CFM_COLOR;
+			GetSelectionCharFormat(cf);
+			cf.dwEffects |= CFE_PROTECTED;
+			SetSelectionCharFormat(cf);
+		} else {
+			for(int j = 1; j < regexp.NumBackRefs(); ++j) {
+				begin = lineIndex + regexp.GetStartPos(j);
+				end = begin + regexp.GetLength(j);
+
+				SetSel(begin, end);
+				cf.dwMask = CFM_BOLD | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_ITALIC | CFM_BACKCOLOR | CFM_COLOR;
+				GetSelectionCharFormat(cf);
+				cf.dwEffects |= CFE_PROTECTED;
+				SetSelectionCharFormat(cf);
+			}
+		}
+	}
+}
+
 int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int &lineIndex) {
 	int begin = 0, end = 0;
 	bool found = false;
@@ -462,6 +498,76 @@ LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	return 0;
 }
 
+LRESULT CFulEditCtrl::onSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(showHandCursor && handCursor != NULL) {
+		SetCursor(handCursor);
+		return TRUE;
+	}
+
+	bHandled = FALSE;
+	return FALSE;
+}
+
+LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	//set this here since it will always be false
+	bHandled = FALSE;
+
+	if(!isSet(HANDLE_URLS)){
+		return 1;
+	}
+
+	//if any mouse button is pressed avoid changing the cursor since
+	//it will mess up the selection
+	if(wParam != 0) {
+		return 1;
+	}
+
+	POINT mousePT = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
+	int ch = CharFromPos(mousePT);
+	POINT charPT = PosFromChar(ch);
+
+	//since CharFromPos returns the last character even if the cursor is past the end of text
+	//we have to check if the pointer was actually above the last char
+
+	//check xpos
+	if( mousePT.x > ( charPT.x + 3 ) ) {
+		showHandCursor = false;
+		return 1;
+	}
+
+	//check ypos
+	if( mousePT.y > (charPT.y +  fontHeight ) ) {
+		showHandCursor = false;
+		return 1;
+	}
+
+	CHARRANGE sel;
+	GetSel(sel);
+
+	
+	//the default behavior when activating autourldetect flickers too
+	//SetRedraw really slows things down...
+	//well if it's good enough for Microsoft it's good enough for me =)
+
+	//SetRedraw(FALSE);
+	SetSel(ch, ch);
+	CHARFORMAT2 cf;
+	cf.cbSize = sizeof(CHARFORMAT2);
+	GetSelectionCharFormat(cf);
+
+	if(cf.dwEffects & CFE_PROTECTED) {
+		showHandCursor = true;
+		SetCursor(handCursor);
+	} else {
+		showHandCursor = false;
+	}
+
+	SetSel(sel);
+	//SetRedraw(TRUE);
+
+	return 1;
+}
+
 LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	
 	//set this here since it will be false in most cases anyway
@@ -483,7 +589,7 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		return 1;
 	
 	//check ypos
-	if( mousePT.y > (charPT.y + ( WinUtil::getTextHeight(m_hWnd, WinUtil::font) * 1.5 ) ) )
+	if( mousePT.y > (charPT.y + fontHeight ) )
 		return 1;
 
 	FINDTEXT ft;

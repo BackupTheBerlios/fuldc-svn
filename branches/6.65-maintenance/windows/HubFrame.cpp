@@ -1496,8 +1496,7 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 		return false;
 
 	if((end = Util::findSubString(filter, _T("TiB"))) != tstring::npos) {
-		//hmms ugly but vs complains about integral constant overflow otherwise
-		multiplier = int64_t(1024*1024*1024)*1024;
+		multiplier = 1024LL * 1024LL * 1024LL * 1024LL;
 	} else if((end = Util::findSubString(filter, _T("GiB"))) != tstring::npos) {
 		multiplier = 1024*1024*1024;
 	} else if((end = Util::findSubString(filter, _T("MiB"))) != tstring::npos) {
@@ -1505,8 +1504,7 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 	} else if((end = Util::findSubString(filter, _T("KiB"))) != tstring::npos) {
 		multiplier = 1024;
 	} else if((end = Util::findSubString(filter, _T("TB"))) != tstring::npos) {
-		//hmms ugly but vs complains about integral constant overflow otherwise
-		multiplier = int64_t(1000*1000*1000)*1000;
+		multiplier = 1000LL * 1000LL * 1000LL * 1000LL;
 	} else if((end = Util::findSubString(filter, _T("GB"))) != tstring::npos) {
 		multiplier = 1000*1000*1000;
 	} else if((end = Util::findSubString(filter, _T("MB"))) != tstring::npos) {
