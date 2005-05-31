@@ -231,7 +231,7 @@ void HubFrame::onEnter() {
 					addClientLine(TSTRING(SPECIFY_SERVER));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
-				ctrlClient.SetWindowText(_T(""));
+				ctrlClient.Clear();
 			} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
 				int res = WinUtil::checkParam( param );
 				if( 1 == res || (param.empty() && !timeStamps) ) {
@@ -341,6 +341,10 @@ void HubFrame::onEnter() {
 				TextFrame::openWindow(ctrlClient.LastLog());
 			}else if(Util::stricmp(cmd.c_str(), _T("me")) == 0) {
 				client->hubMessage(Text::fromT(s));
+#ifdef DEBUG
+			} else if(Util::stricmp(cmd.c_str(), _T("dump")) == 0) {
+				ctrlClient.Dump();
+#endif
 			} else if(Util::stricmp(cmd.c_str(), _T("dns")) == 0) {
 				if( !param.empty() ) {
 					if( resolve(param) )

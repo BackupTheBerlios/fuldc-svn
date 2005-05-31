@@ -32,7 +32,6 @@
 
 #include <MMSystem.h>
 
-
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
 CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyStringT), findBufferSize(100),
@@ -43,14 +42,6 @@ CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyStringT),
 	findBuffer[0] = _T('\0');
 
 	fontHeight = static_cast<int>(WinUtil::getTextHeight(m_hWnd, WinUtil::font) * 1.5);
-
-	urls.push_back(_T("http://"));
-	urls.push_back(_T("https://"));
-	urls.push_back(_T("www."));
-	urls.push_back(_T("ftp://"));
-	urls.push_back(_T("ftps://"));
-	urls.push_back(_T("mms://"));
-	urls.push_back(_T("dchub://"));
 
 	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | HANDLE_URLS | MENU_COPY | 
 			MENU_SEARCH | MENU_SEARCH_TTH | MENU_SEARCH_MENU );
@@ -90,8 +81,6 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	handCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND));
 
-	SetAutoURLDetect(TRUE);
-	
 	bHandled = FALSE;
 	return 1;
 }
@@ -104,8 +93,10 @@ bool CFulEditCtrl::AddLine(const tstring & line, bool aTimeStamps) {
 	tstring aLine = Util::replace(line, _T("\r\n"), _T("\r"));
 	if(GetWindowTextLength() > SETTING(CHATBUFFERSIZE)) {
 		SetRedraw(FALSE);
-		SetSel(0, LineIndex(LineFromChar(2000)));
+		int ch = LineIndex(LineFromChar(2000));
+		SetSel(0, ch);
 		ReplaceSel(_T(""));
+		UpdateUrlRanges(ch);
 		SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 		ScrollCaret();
 		SetRedraw(TRUE);
@@ -268,7 +259,7 @@ void CFulEditCtrl::AddInternalLine(const tstring & aLine) {
 	
 	CHARRANGE cr;
 	GetSel(cr);
-	HideSelection(TRUE, FALSE);
+	//HideSelection(TRUE, FALSE);
 
 	Colorize(aLine, length);
 	CheckUrls(aLine, length);
@@ -278,7 +269,7 @@ void CFulEditCtrl::AddInternalLine(const tstring & aLine) {
 
 	SetSel(cr);
 
-	HideSelection(FALSE, FALSE);
+	//HideSelection(FALSE, FALSE);
 
 	skipLog = false;
 }
@@ -412,30 +403,19 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 }
 
 void CFulEditCtrl::CheckUrls(const tstring &line, const int &lineIndex) {
-	int begin = 0, end = 0;
-	CHARFORMAT2 cf;
-	cf.cbSize = sizeof(CHARFORMAT2);
-	PME regexp(_T("\\s(https?://\\S+|ftps?://\\S+|mms://\\S+|www\\.\\S+)"), _T("gims"));
+	PME regexp(_T("\\s(https?://\\S+|ftps?://\\S+|mms://\\S+|www\\.\\S+|dchub://\\S+)"), _T("gims"));
 	while( regexp.match(line) > 0 ){
 		if( regexp.NumBackRefs() == 1){
-			begin = lineIndex + regexp.GetStartPos(0);
-			end = begin + regexp.GetLength(0);
-
-			SetSel(begin, end);
-			cf.dwMask = CFM_BOLD | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_ITALIC | CFM_BACKCOLOR | CFM_COLOR;
-			GetSelectionCharFormat(cf);
-			cf.dwEffects |= CFE_PROTECTED;
-			SetSelectionCharFormat(cf);
+			CHARRANGE cr;
+			cr.cpMin = lineIndex + regexp.GetStartPos(0);
+			cr.cpMax = cr.cpMin + regexp.GetLength(0);
+			urlRanges.push_back(cr);
 		} else {
 			for(int j = 1; j < regexp.NumBackRefs(); ++j) {
-				begin = lineIndex + regexp.GetStartPos(j);
-				end = begin + regexp.GetLength(j);
-
-				SetSel(begin, end);
-				cf.dwMask = CFM_BOLD | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_ITALIC | CFM_BACKCOLOR | CFM_COLOR;
-				GetSelectionCharFormat(cf);
-				cf.dwEffects |= CFE_PROTECTED;
-				SetSelectionCharFormat(cf);
+				CHARRANGE cr;
+				cr.cpMin = lineIndex + regexp.GetStartPos(j);
+				cr.cpMax = cr.cpMin + regexp.GetLength(j);
+				urlRanges.push_back(cr);
 			}
 		}
 	}
@@ -516,9 +496,9 @@ LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		return 1;
 	}
 
-	//if any mouse button is pressed avoid changing the cursor since
-	//it will mess up the selection
+	//if a mouse button is pressed revert to the standard beam cursor
 	if(wParam != 0) {
+		showHandCursor = false;
 		return 1;
 	}
 
@@ -541,30 +521,17 @@ LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		return 1;
 	}
 
-	CHARRANGE sel;
-	GetSel(sel);
-
-	
-	//the default behavior when activating autourldetect flickers too
-	//SetRedraw really slows things down...
-	//well if it's good enough for Microsoft it's good enough for me =)
-
-	//SetRedraw(FALSE);
-	SetSel(ch, ch);
-	CHARFORMAT2 cf;
-	cf.cbSize = sizeof(CHARFORMAT2);
-	GetSelectionCharFormat(cf);
-
-	if(cf.dwEffects & CFE_PROTECTED) {
-		showHandCursor = true;
-		SetCursor(handCursor);
-	} else {
-		showHandCursor = false;
+	//let's start from the end, it's probably the last urls inserted that will be
+	//visible anyway, might save a few cycles =)
+	for(UrlRange::reverse_iterator i = urlRanges.rbegin(); i != urlRanges.rend(); ++i) {
+		if( ch >= i->cpMin && ch <= i->cpMax ) {
+			showHandCursor = true;
+			SetCursor(handCursor);
+			return 1;
+		}
 	}
 
-	SetSel(sel);
-	//SetRedraw(TRUE);
-
+	showHandCursor = false;
 	return 1;
 }
 
@@ -619,15 +586,10 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		end = tmp.length();
 	tstring url = tmp.substr(start, end-start);
 	
-	
-	TStringIter i = urls.begin();
-
-	for(; i != urls.end(); ++i) {
-		if(Util::strnicmp(url.c_str(), (*i).c_str(), (*i).length()) == 0){
-			WinUtil::openLink(url);
-			bHandled = TRUE;
-			break;
-		}
+	PME regexp(_T("^(https?://|ftps?://|mms://|www\\.|dchub://)"), _T("ims"));
+	if(regexp.match(url) > 0) {
+		WinUtil::openLink(url);
+		bHandled = TRUE;
 	}
 
 	return 0;
@@ -756,7 +718,7 @@ bool CFulEditCtrl::LastSeen(tstring & nick){
 	ft.chrg.cpMax = -1;
 	ft.lpstrText = search.c_str();
 	
-	//for some reason it can't search up, either msdn is wrong or i missed something =)
+	//bah only EM_FINDTEXT is able to search up
 	while(-1 != (result = (int)::SendMessage(m_hWnd, EM_FINDTEXTEX, FR_DOWN | FR_WHOLEWORD, (LPARAM)&ft))){
 		found = true;
 		ft.chrg.cpMin = result+1;
@@ -848,3 +810,44 @@ void CFulEditCtrl::CheckAction(ColorSettings* cs, const tstring& line) {
 	if(cs->getFlashWindow())
 		WinUtil::flashWindow();
 }
+
+void CFulEditCtrl::UpdateUrlRanges(int pos) {
+	for(UrlRange::iterator i = urlRanges.begin(); i != urlRanges.end(); ++i) {
+		if(pos > i->cpMax) {
+			urlRanges.erase(i);
+			i = urlRanges.begin();
+		} else {
+			i->cpMin -= pos;
+			i->cpMax -= pos;
+		}
+	}
+}
+
+void CFulEditCtrl::Clear() {
+	urlRanges.clear();
+	SetWindowText(_T(""));
+}
+
+#ifdef DEBUG
+
+DWORD CALLBACK EditStreamCallback( DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb ) {
+	File* f = reinterpret_cast<File*>(dwCookie);
+	*pcb = f->write(pbBuff, cb);
+
+	return 0;
+}
+
+void CFulEditCtrl::Dump() {
+	try {
+		File f(Util::getAppPath() + "temp.txt", File::WRITE, File::CREATE | File::TRUNCATE);
+		EDITSTREAM es;
+		es.dwCookie = reinterpret_cast<DWORD_PTR>(&f);
+		es.pfnCallback = EditStreamCallback;
+
+		SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
+
+		f.close();
+	} catch(...) {}
+
+}
+#endif
