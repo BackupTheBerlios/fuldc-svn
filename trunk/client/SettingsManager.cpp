@@ -135,7 +135,7 @@ SettingsManager::SettingsManager()
 	setDefault(MINIMIZE_TRAY, false);
 	setDefault(AUTO_SEARCH, true);
 	setDefault(TIME_STAMPS, true);
-	setDefault(CONFIRM_EXIT, false);
+	setDefault(CONFIRM_EXIT, true);
 	setDefault(IGNORE_OFFLINE, false);
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(LIST_DUPES, true);
