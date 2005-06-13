@@ -38,6 +38,11 @@ public:
 
 	void rebuildArrows()
 	{
+		//these arrows aren't used anyway so no need to create them
+		if(WinUtil::comCtlVersion >= MAKELONG(0,6)){
+			return;
+		}
+
 		POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
 		POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
 
@@ -45,6 +50,9 @@ public:
 		CBrushHandle brush;
 		CPen penLight;
 		CPen penShadow;
+
+		HPEN oldPen;
+		HBITMAP oldBitmap;
 
 		const int bitmapWidth = 8;
 		const int bitmapHeight = 8;
@@ -71,9 +79,9 @@ public:
 			downArrow.CreateCompatibleBitmap(pThis->GetDC(), bitmapWidth, bitmapHeight);
 
 		// create up arrow
-		dc.SelectBitmap(upArrow);
+		oldBitmap = dc.SelectBitmap(upArrow);
 		dc.FillRect(&rect, brush);
-		dc.SelectPen(penLight);
+		oldPen = dc.SelectPen(penLight);
 		dc.Polyline(pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
 		dc.SelectPen(penShadow);
 		dc.Polyline(pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
@@ -97,12 +105,12 @@ public:
 		}
 		dc.SelectPen(penShadow);
 		dc.Polyline(pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
+
+		dc.SelectPen(oldPen);
+		dc.SelectBitmap(oldBitmap);
 	}
 
 	void updateArrow() {
-		if (upArrow.IsNull())
-			return;
-
 		T* pThis = (T*)this;
 		
 		CHeaderCtrl headerCtrl = pThis->GetHeader();
@@ -114,17 +122,21 @@ public:
 				item.mask = HDI_FORMAT;
 				headerCtrl.GetItem(i, &item);
 				item.mask = HDI_FORMAT;
+
+				//clear the previous state
+				item.fmt &=  ~(HDF_SORTUP | HDF_SORTDOWN);
+
 				if( i == pThis->getSortColumn()){
-					//clear the previous state
-					item.fmt &=  ~(pThis->isAscending() ? HDF_SORTDOWN : HDF_SORTUP);
 					item.fmt |= (pThis->isAscending() ? HDF_SORTUP : HDF_SORTDOWN);
-				} else {
-					item.fmt &=  ~(HDF_SORTUP | HDF_SORTDOWN);
 				}
+
 				headerCtrl.SetItem(i, &item);
 			}
 
 		} else {
+			if (upArrow.IsNull())
+				return;
+
 			HBITMAP bitmap = (pThis->isAscending() ? upArrow : downArrow);
 
 			for (int i=0; i < itemCount; ++i)

@@ -1337,8 +1337,7 @@ void QueueFrame::collapse(HTREEITEM item) {
 			tmp = ctrlDirs.GetNextSiblingItem(tmp);
 		}
 		ctrlDirs.Expand(item, TVE_COLLAPSE);
-	}else 
-		return;
+	}
 }
 
 LRESULT QueueFrame::onSearchReleaseAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
