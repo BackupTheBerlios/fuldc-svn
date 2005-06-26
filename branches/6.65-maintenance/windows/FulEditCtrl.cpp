@@ -80,6 +80,7 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	menu.SetMenuInfo(&inf);
 
 	handCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND));
+	beamCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM));
 
 	bHandled = FALSE;
 	return 1;
@@ -498,6 +499,7 @@ LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 	//if a mouse button is pressed revert to the standard beam cursor
 	if(wParam != 0) {
+		SetCursor(beamCursor);
 		showHandCursor = false;
 		return 1;
 	}
@@ -511,12 +513,14 @@ LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 	//check xpos
 	if( mousePT.x > ( charPT.x + 3 ) ) {
+		SetCursor(beamCursor);
 		showHandCursor = false;
 		return 1;
 	}
 
 	//check ypos
 	if( mousePT.y > (charPT.y +  fontHeight ) ) {
+		SetCursor(beamCursor);
 		showHandCursor = false;
 		return 1;
 	}
@@ -531,6 +535,7 @@ LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		}
 	}
 
+	SetCursor(beamCursor);
 	showHandCursor = false;
 	return 1;
 }

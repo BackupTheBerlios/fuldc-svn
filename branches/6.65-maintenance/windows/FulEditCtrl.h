@@ -122,6 +122,7 @@ private:
 	CMenu		searchMenu;
 
 	HCURSOR		handCursor;
+	HCURSOR		beamCursor;
 
 	typedef vector<CHARRANGE> UrlRange;
 	UrlRange urlRanges;
