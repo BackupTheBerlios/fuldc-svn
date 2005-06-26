@@ -46,7 +46,7 @@ const string SettingsManager::settingTags[] =
 	
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
-	"QueueFrameVisible", "DirectoryListingFrameVisible",
+	"QueueFrameVisible", "DirectoryListingFrameVisible","FinishedVisible", "FinishedULVisible",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -265,6 +265,8 @@ SettingsManager::SettingsManager()
 	setDefault(ADD_FINISHED_DOWNLOADS, true);
 	setDefault(ADD_FINISHED_UPLOADS, true);
 	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,0,1,1");
+	setDefault(FINISHED_VISIBLE, "1,1,1,1,1,1,1,1");
+	setDefault(FINISHED_UL_VISIBLE, "1,1,1,1,1,1,1");
 	setDefault(REFRESH_INCOMING_BETWEEN, false);
 	setDefault(REFRESH_SHARE_BETWEEN, false);
 	setDefault(REFRESH_INCOMING_BEGIN, 0);

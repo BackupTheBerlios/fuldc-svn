@@ -24,11 +24,9 @@
 #endif // _MSC_VER > 1000
 
 #include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include "TypedListViewCtrl.h"
 
 #include "../client/FinishedManager.h"
-
-#define SERVER_MESSAGE_MAP 7
 
 class FinishedFrame : public MDITabChildWindowImpl<FinishedFrame>, public StaticFrame<FinishedFrame, ResourceManager::FINISHED_DOWNLOADS, IDC_FINISHED>,
 	private FinishedManagerListener
@@ -54,7 +52,11 @@ public:
 		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE, onOpenFile)
 		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpenFolder)
-		NOTIFY_HANDLER(IDC_FINISHED, LVN_COLUMNCLICK, onColumnClickFinished)
+		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
+		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrant)
+		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST+2, onCopy)
+		NOTIFY_HANDLER(IDC_FINISHED, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
+		NOTIFY_HANDLER(IDC_FINISHED, LVN_COLUMNCLICK, ctrlList.onColumnClick)
 		NOTIFY_HANDLER(IDC_FINISHED, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_FINISHED, NM_DBLCLK, onDoubleClick)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<FinishedFrame>)
@@ -68,27 +70,17 @@ public:
 	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onOpenFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGrant(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 
 	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
 		ctrlList.SetFocus();
 		return 0;
-	}
-
-	static int sortSize(LPARAM a, LPARAM b) {
-		FinishedItem* c = (FinishedItem*)a;
-		FinishedItem* d = (FinishedItem*)b;
-		return compare(c->getSize(), d->getSize());
-	}
-
-	static int sortSpeed(LPARAM a, LPARAM b) {
-		FinishedItem* c = (FinishedItem*)a;
-		FinishedItem* d = (FinishedItem*)b;
-		return compare(c->getAvgSpeed(), d->getAvgSpeed());
 	}
 
 private:
@@ -110,11 +102,45 @@ private:
 		COLUMN_CRC32,
 		COLUMN_LAST
 	};
+
+	class ItemInfo {
+	public:
+		ItemInfo(FinishedItem* fi) {
+			entry = fi;
+
+			columns[COLUMN_FILE]  = Text::toT(Util::getFileName(entry->getTarget()));
+			columns[COLUMN_DONE]  = Text::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime()));
+			columns[COLUMN_PATH]  = Text::toT(Util::getFilePath(entry->getTarget()));
+			columns[COLUMN_NICK]  = Text::toT(entry->getUser());
+			columns[COLUMN_HUB]   = Text::toT(entry->getHub());
+			columns[COLUMN_SIZE]  = Text::toT(Util::formatBytes(entry->getSize()));
+			columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s");
+			columns[COLUMN_CRC32] = entry->getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR);
+		}
+		tstring columns[COLUMN_LAST];
+
+		tstring& getText(int col) {
+			dcassert(col >= 0 && col < COLUMN_LAST);
+			return columns[col];
+		}
+
+		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
+			switch(col) {
+				case COLUMN_SPEED:	return compare(a->entry->getAvgSpeed(), b->entry->getAvgSpeed());
+				case COLUMN_SIZE:	return compare(a->entry->getSize(), b->entry->getSize());
+				default:			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+			}
+			
+		}
+
+		FinishedItem* entry;
+	};
 	
 	CStatusBarCtrl ctrlStatus;
 	CMenu ctxMenu;
+	CMenu copyMenu;
 	
-	ExListViewCtrl ctrlList;
+	TypedListViewCtrl<ItemInfo, IDC_FINISHED> ctrlList;
 	
 	int64_t totalBytes;
 	int64_t totalTime;

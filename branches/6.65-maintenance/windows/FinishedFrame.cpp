@@ -57,7 +57,9 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	}
 	
 	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	ctrlList.setSort(COLUMN_DONE, ExListViewCtrl::SORT_STRING_NOCASE);
+	ctrlList.setVisible(SETTING(FINISHED_VISIBLE));
+	ctrlList.setSortColumn(COLUMN_DONE);
+	
 	
 	UpdateLayout();
 	
@@ -65,10 +67,16 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	updateList(FinishedManager::getInstance()->lockList());
 	FinishedManager::getInstance()->unlockList();
 	
+	copyMenu.CreatePopupMenu();
+	ctrlList.buildCopyMenu(copyMenu);
+
 	ctxMenu.CreatePopupMenu();
 	ctxMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
 	ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FILE, CTSTRING(OPEN));
 	ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
+	ctxMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
+	ctxMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
+	ctxMenu.AppendMenu(MF_POPUP, copyMenu, CTSTRING(COPY));
 	ctxMenu.AppendMenu(MF_SEPARATOR);
 	ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CTSTRING(REMOVE_ALL));
@@ -93,29 +101,6 @@ LRESULT FinishedFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 	}
 	bHandled = FALSE;
 	return FALSE; 
-}
-
-LRESULT FinishedFrame::onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
-	if(l->iSubItem == ctrlList.getSortColumn()) {
-		if (!ctrlList.isAscending())
-			ctrlList.setSort(-1, ctrlList.getSortType());
-		else
-			ctrlList.setSortDirection(false);
-	} else {
-		switch(l->iSubItem) {
-			case COLUMN_SIZE:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
-				break;
-			case COLUMN_SPEED:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSpeed);
-				break;
-			default:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-				break;
-		}
-	}
-	return 0;
 }
 
 void FinishedFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
@@ -146,8 +131,8 @@ LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;
 
 	if(item->iItem != -1) {
-		FinishedItem* entry = (FinishedItem*)ctrlList.GetItemData(item->iItem);
-		WinUtil::openFile(Text::toT(entry->getTarget()));
+		ItemInfo *ii = ctrlList.getItemData(item->iItem);
+		WinUtil::openFile(Text::toT(ii->entry->getTarget()));
 	}
 	return 0;
 }
@@ -156,8 +141,8 @@ LRESULT FinishedFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		TextFrame::openWindow(Text::toT(entry->getTarget()));
+		ItemInfo *ii = ctrlList.getItemData(i);
+		TextFrame::openWindow(Text::toT(ii->entry->getTarget()));
 	}
 	return 0;
 }
@@ -166,8 +151,8 @@ LRESULT FinishedFrame::onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		WinUtil::openFile(Text::toT(entry->getTarget()));
+		ItemInfo *ii = ctrlList.getItemData(i);
+		WinUtil::openFile(Text::toT(ii->entry->getTarget()));
 	}
 	return 0;
 }
@@ -176,8 +161,28 @@ LRESULT FinishedFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		::ShellExecute(NULL, NULL, Text::toT(Util::getFilePath(entry->getTarget())).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		ItemInfo *ii = ctrlList.getItemData(i);
+		::ShellExecute(NULL, NULL, Text::toT(Util::getFilePath(ii->entry->getTarget())).c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+	return 0;
+}
+
+LRESULT FinishedFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i;
+	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		ItemInfo *ii = ctrlList.getItemData(i);
+		User::Ptr u = ClientManager::getInstance()->getUser(ii->entry->getUser());
+		QueueManager::getInstance()->addList(u, QueueItem::FLAG_CLIENT_VIEW);
+	}
+	return 0;
+}
+
+LRESULT FinishedFrame::onGrant(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i;
+	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		ItemInfo *ii = ctrlList.getItemData(i);
+		User::Ptr u = ClientManager::getInstance()->getUser(ii->entry->getUser());
+		UploadManager::getInstance()->reserveSlot(u);
 	}
 	return 0;
 }
@@ -189,8 +194,10 @@ LRESULT FinishedFrame::onRemove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 		{
 			int i = -1;
 			while((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-				FinishedManager::getInstance()->remove((FinishedItem*)ctrlList.GetItemData(i));
+				ItemInfo *ii = ctrlList.getItemData(i);
+				FinishedManager::getInstance()->remove(ii->entry);
 				ctrlList.DeleteItem(i);
+				delete ii;
 			}
 			break;
 		}
@@ -206,11 +213,18 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		FinishedManager::getInstance()->removeListener(this);
 
 		closed = true;
-		PostMessage(WM_CLOSE);
+        PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::FINISHED_ORDER, 
-			SettingsManager::FINISHED_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		//@todo switch to typedlist style save function
+		ctrlList.saveHeaderOrder(SettingsManager::FINISHED_ORDER, 
+			SettingsManager::FINISHED_WIDTHS, SettingsManager::FINISHED_VISIBLE);
+
+		//cleanup to avoid memory leak
+		for(int i = 0; i < ctrlList.GetItemCount(); ++i) {
+			delete ctrlList.getItemData(i);
+		}
+		ctrlList.DeleteAllItems();
 		
 		checkButton(false);
 
@@ -221,7 +235,7 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT FinishedFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == SPEAK_ADD_LINE) {
-		FinishedItem* entry = (FinishedItem*)lParam;
+		FinishedItem* entry = reinterpret_cast<FinishedItem*>(lParam);
 		addEntry(entry);
 		if(BOOLSETTING(FINISHED_DIRTY))
 			setDirty();
@@ -229,6 +243,9 @@ LRESULT FinishedFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	} else if(wParam == SPEAK_REMOVE) {
 		updateStatus();
 	} else if(wParam == SPEAK_REMOVE_ALL) {
+		for(int i = 0; i < ctrlList.GetItemCount(); ++i) {
+			delete ctrlList.getItemData(i);
+		}
 		ctrlList.DeleteAllItems();
 		updateStatus();
 	}
@@ -236,20 +253,13 @@ LRESULT FinishedFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 }
 
 void FinishedFrame::addEntry(FinishedItem* entry) {
-	TStringList l;
-	l.push_back(Text::toT(Util::getFileName(entry->getTarget())));
-	l.push_back(Text::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime())));
-	l.push_back(Text::toT(Util::getFilePath(entry->getTarget())));
-	l.push_back(Text::toT(entry->getUser()));
-	l.push_back(Text::toT(entry->getHub()));
-	l.push_back(Text::toT(Util::formatBytes(entry->getSize())));
-	l.push_back(Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s"));
-	l.push_back(entry->getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR));
+	ItemInfo *ii = new ItemInfo(entry);
+
 	totalBytes += entry->getChunkSize();
 	totalTime += entry->getMilliSeconds();
 
 	int image = WinUtil::getIconIndex(Text::toT(entry->getTarget()));
-	int loc = ctrlList.insert(l, image, (LPARAM)entry);
+	int loc = ctrlList.insertItem(ii, image);
 	ctrlList.EnsureVisible(loc, FALSE);
 }
 
@@ -259,6 +269,11 @@ LRESULT FinishedFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*
 	if(kd->wVKey == VK_DELETE) {
 		PostMessage(WM_COMMAND, IDC_REMOVE);
 	} 
+	return 0;
+}
+
+LRESULT FinishedFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ctrlList.copy(wID - IDC_COPY);
 	return 0;
 }
 

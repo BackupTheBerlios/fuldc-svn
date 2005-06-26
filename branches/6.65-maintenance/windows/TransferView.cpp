@@ -762,7 +762,7 @@ LRESULT TransferView::onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		return 0;
 
 	resolveBuffer = new char[MAXGETHOSTSTRUCT];
-	unsigned long l = inet_addr(Text::wideToAcp(ctrlTransfers.getItemData(i)->getText(COLUMN_IP)).c_str());
+	unsigned long l = inet_addr(Text::wideToAcp(ctrlTransfers.getItemData(i)->IP).c_str());
 
 	if( 0 == WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT)) {
 		delete[] resolveBuffer;
