@@ -464,7 +464,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				users[nick] = u;
 			}
 
-			if(getNick() == nick) {
+			//broken
+			//if(getNick() == nick) {
+
+			//do the compare in ascii since the nick might not survive a utf8->ascii->utf8 roundtrip
+			//might cause problems in other places?
+			if(toNmdc(getNick()) == param) {
 				setMe(u);
 
 				u->setFlag(User::DCPLUSPLUS);
