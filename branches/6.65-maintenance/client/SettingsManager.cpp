@@ -193,7 +193,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUNDER_PM, false);
 	setDefault(POPUNDER_FILELIST, false);
 	setDefault(ADD_FINISHED_INSTANTLY, false);
-	setDefault(SETTINGS_USE_UPNP, false);
+	setDefault(SETTINGS_USE_UPNP, true);
 	setDefault(DONT_DL_ALREADY_SHARED, false);
 	setDefault(CONFIRM_HUB_REMOVAL, false);
 	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);

@@ -971,11 +971,15 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 			// re-add all sources
 			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
 				QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
+				//reset the iterator since it won't be valid after the call to readd
+				s = ii->getBadSources().begin();
 			}
 		} else if(wID == IDC_READD_QUEUE) {
 			// re-add all sources
 			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
 				QueueManager::getInstance()->readdUser(s->getUser());
+				//reset the iterator since it won't be valid after the call to readdUser
+				s = ii->getBadSources().begin();
 			}
 		} else {
 			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
