@@ -31,6 +31,7 @@
 #include "LineDlg.h"
 #include "memdc.h"
 #include "SearchFrm.h"
+#include "MainFrm.h"
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_TOTALTIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75 };
@@ -787,7 +788,7 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	memcpy(&a.S_un.S_addr, h->h_addr_list[0], 4);
 	char * c = inet_ntoa(a);
 	if(c != NULL)
-		::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new tstring( Text::acpToWide(c) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(h->h_name) ));
+		::PostMessage(GetParent(), WM_SPEAKER, MainFrame::STATUS_MESSAGE, (LPARAM)new tstring( Text::acpToWide(c) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(h->h_name) ));
 	delete[] resolveBuffer;
 	resolveBuffer = NULL;
 

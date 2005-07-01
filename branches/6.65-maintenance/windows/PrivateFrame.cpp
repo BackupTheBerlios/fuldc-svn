@@ -638,11 +638,17 @@ void PrivateFrame::readLog() {
 
 			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG)) : 0;
 
+			//disable these to avoid false notifications when displaying the log
+			ctrlClient.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB);
+
 			for(; i < linesCount; ++i){
 				if(!lines[i].empty())
 					addLine(Text::toT(lines[i]));
 			}
 			ctrlClient.AddLine(tstring(_T(" ")), false);
+
+			ctrlClient.setFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB);
+
 			//keep this here, holding the handle open keeps
 			//LogManager from being able to write back to the log
 			f.close();

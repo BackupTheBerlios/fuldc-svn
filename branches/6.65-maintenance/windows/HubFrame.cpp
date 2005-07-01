@@ -129,6 +129,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
+	ctrlLastLines.SetDelayTime(TTDT_AUTOPOP, 30000);
 
 	copyMenu.CreatePopupMenu();
 	ctrlUsers.buildCopyMenu(copyMenu);
@@ -445,8 +446,7 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 	
 	}
 
-	UserIter j = usermap.begin();
-	for(; j != usermap.end(); ++j) {
+	for(UserIter j = usermap.begin(); j != usermap.end(); ++j) {
 		if(Util::stricmp(u->getNick(), j->second->user->getNick()) == 0) {
 			j->second->update();
 			return false;
@@ -461,7 +461,7 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 	if(filter.empty()){
 		add = true;
 	}else {
-		if((ui->getText(ctrlFilterSel.GetCurSel()).find(filter) != tstring::npos)) {
+		if((Text::toLower(ui->getText(ctrlFilterSel.GetCurSel())).find(Text::toLower(filter)) != tstring::npos)) {
 			add = true;
 		}
 	}
