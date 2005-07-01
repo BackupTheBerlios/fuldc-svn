@@ -243,7 +243,18 @@ private:
 			columns[COLUMN_DESCRIPTION] = Text::toT(user->getDescription());
 			columns[COLUMN_TAG] = Text::toT(user->getTag());
 			columns[COLUMN_ISP] = Text::toT(user->getIsp());
-			columns[COLUMN_IP] = Text::toT(user->getIp());
+			
+			tstring country;
+			if(!user->getIp().empty()) {
+				country = Text::toT(Util::getIpCountry(user->getIp()));
+			}
+
+			if(country.empty()) {
+				columns[COLUMN_IP] = Text::toT(user->getIp());
+			} else {
+				columns[COLUMN_IP] = country + _T(" (") + Text::toT(user->getIp()) + _T(")");
+			}
+			
 			columns[COLUMN_CONNECTION] = Text::toT(user->getConnection());
 			columns[COLUMN_EMAIL] = Text::toT(user->getEmail());
 			op = user->isSet(User::OP); 

@@ -807,7 +807,24 @@ Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw(
 		return d;
 	}
 
-	QueueItem* q = userQueue.getNext(aUser);
+	QueueItem* q = NULL;
+	while((q = userQueue.getNext(aUser)) != NULL) {
+		if(q->isSet(QueueItem::FLAG_USER_LIST)) {
+			break;
+		}
+		
+		int64_t size = File::getSize(q->getTarget());
+		
+		//the file does not exist or it's not complete so try to download it
+		if(size < q->getSize()) {
+			break;
+		}
+        	
+		//remove the file since it already exists (probably downloaded outside of dc)
+		//otherwise it'll be downloaded to a temp-file before it
+		//gets discarded.
+		remove(q->getTarget());
+	}
 
 	if(q == NULL)
 		return NULL;
