@@ -817,13 +817,13 @@ void CFulEditCtrl::CheckAction(ColorSettings* cs, const tstring& line) {
 }
 
 void CFulEditCtrl::UpdateUrlRanges(int pos) {
-	for(UrlRange::iterator i = urlRanges.begin(); i != urlRanges.end(); ++i) {
+	for(UrlRange::iterator i = urlRanges.begin(); i != urlRanges.end();) {
 		if(pos > i->cpMax) {
-			urlRanges.erase(i);
-			i = urlRanges.begin();
+			i = urlRanges.erase(i);
 		} else {
 			i->cpMin -= pos;
 			i->cpMax -= pos;
+			++i;
 		}
 	}
 }
