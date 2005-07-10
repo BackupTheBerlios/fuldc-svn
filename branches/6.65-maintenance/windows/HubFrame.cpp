@@ -441,6 +441,12 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
 			if(resort)
 				ctrlUsers.resort();
+
+			//the user might have updated something that should
+			//be filtered
+			if(!filter.empty())
+				updateUserList();
+
 			return false;
 		}
 	
@@ -461,9 +467,12 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 	if(filter.empty()){
 		add = true;
 	}else {
-		if((Text::toLower(ui->getText(ctrlFilterSel.GetCurSel())).find(Text::toLower(filter)) != tstring::npos)) {
-			add = true;
-		}
+		int64_t size;
+		int mode;
+		int sel = ctrlFilterSel.GetCurSel();
+		bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
+		
+		add = matchFilter(*ui, sel, doSizeCompare, mode, size);
 	}
 	
 	if( add ){
@@ -1537,13 +1546,6 @@ void HubFrame::updateUserList() {
 	ctrlUsers.DeleteAllItems();
 
 	int64_t size = -1;
-
-	//0 - ==
-	//1 - >=
-	//2 - <=
-	//3 - >
-	//4 - <
-	//5 - !=
 	int mode = -1;
 
 	int sel = ctrlFilterSel.GetCurSel();
@@ -1561,23 +1563,7 @@ void HubFrame::updateUserList() {
 	
 	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
 		if( i->second != NULL ) {
-			bool insert = false;
-
-			if(doSizeCompare) {
-				switch(mode) {
-					case 0: insert = (size == i->second->user->getBytesShared()); break;
-					case 1: insert = (size <=  i->second->user->getBytesShared()); break;
-					case 2: insert = (size >=  i->second->user->getBytesShared()); break;
-					case 3: insert = (size < i->second->user->getBytesShared()); break;
-					case 4: insert = (size > i->second->user->getBytesShared()); break;
-					case 5: insert = (size != i->second->user->getBytesShared()); break;
-				}
-			} else {
-				if(Util::findSubString(i->second->getText(sel), filter) != string::npos)
-					insert = true;
-			}
-
-			if(insert) {
+			if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
 				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
 			}
 		}
@@ -1709,6 +1695,36 @@ void HubFrame::handleTab(bool reverse) {
 			ctrlClient.SetFocus();
 		}
 	}
+}
+
+bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int mode, int64_t size) {
+	//mode
+	//0 - ==
+	//1 - >=
+	//2 - <=
+	//3 - >
+	//4 - <
+	//5 - !=
+
+	if(filter.empty())
+		return true;
+
+	bool insert = false;
+	if(doSizeCompare) {
+		switch(mode) {
+			case 0: insert = (size == ui.user->getBytesShared()); break;
+			case 1: insert = (size <=  ui.user->getBytesShared()); break;
+			case 2: insert = (size >=  ui.user->getBytesShared()); break;
+			case 3: insert = (size < ui.user->getBytesShared()); break;
+			case 4: insert = (size > ui.user->getBytesShared()); break;
+			case 5: insert = (size != ui.user->getBytesShared()); break;
+		}
+	} else {
+		if(Util::findSubString(ui.getText(sel), filter) != string::npos)
+			insert = true;
+	}
+
+	return insert;
 }
 
 

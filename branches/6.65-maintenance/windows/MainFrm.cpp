@@ -149,8 +149,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_HASH_PROGRESS);
 		
 		//Window
@@ -178,8 +178,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 	}
 
 	

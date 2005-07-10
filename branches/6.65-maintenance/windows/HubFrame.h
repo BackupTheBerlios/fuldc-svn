@@ -432,6 +432,7 @@ private:
 	void updateUserList();
 	bool parseFilter(int& mode, int64_t& size);
 	void addAsFavorite();
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);
 
 	void clearUserList() {
 		{
