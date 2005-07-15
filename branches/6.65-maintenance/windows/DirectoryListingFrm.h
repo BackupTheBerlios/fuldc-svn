@@ -175,6 +175,28 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		ctrlList.DeleteAllItems();
 	}
 
+	void clearTree() {
+		ctrlTree.SetRedraw(FALSE);
+
+		HTREEITEM ht = treeRoot;
+		HTREEITEM next = NULL;
+
+		while((next = ctrlTree.GetChildItem(ht)) != NULL) {
+			ctrlTree.DeleteItem(next);
+		}
+
+		ctrlTree.SetRedraw(TRUE);
+	}
+
+	void rebuild(const User::Ptr& user) {
+		clearList();
+		clearTree();
+		
+		delete dl;
+
+		dl = new DirectoryListing(user);
+	}
+
 	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		searching = true;
 		findFile(false);

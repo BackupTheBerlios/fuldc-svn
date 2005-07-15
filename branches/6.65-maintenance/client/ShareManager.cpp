@@ -1737,25 +1737,26 @@ bool ShareManager::refresh( const string& aDir ){
 	if(path[ path.length() -1 ] != PATH_SEPARATOR)
 		path += PATH_SEPARATOR;
 
-	RLock<> l(cs);
+	{
+		RLock<> l(cs);
 
-	//Directory::MapIter i = directories.find( path );
-	Directory::MapIter i = directories.begin();
-	for(; i != directories.end(); ++i) {
-		if(Util::stricmp(i->first, path) == 0)
-			break;
-	}
-
-	if( i == directories.end() ) {
-		for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
-			if( Util::stricmp( j->first, aDir ) == 0 ) {
-				refreshPaths.push_back( j->second );
-				result = true;
-			}
+		Directory::MapIter i = directories.begin();
+		for(; i != directories.end(); ++i) {
+			if(Util::stricmp(i->first, path) == 0)
+				break;
 		}
-	} else {
-		refreshPaths.push_back( path );
-		result = true;
+
+		if( i == directories.end() ) {
+			for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
+				if( Util::stricmp( j->first, aDir ) == 0 ) {
+					refreshPaths.push_back( j->second );
+					result = true;
+				}
+			}
+		} else {
+			refreshPaths.push_back( path );
+			result = true;
+		}
 	}
 
 	if(result)

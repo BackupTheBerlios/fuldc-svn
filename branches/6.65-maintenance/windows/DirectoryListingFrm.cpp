@@ -43,6 +43,8 @@ DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
 void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
+		i->second->rebuild(aUser);
+		i->second->loadFile(aFile);
 		if(!BOOLSETTING(POPUNDER_FILELIST)) {
 			i->second->MDIActivate(i->second->m_hWnd);
 		}
