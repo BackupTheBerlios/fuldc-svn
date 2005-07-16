@@ -1089,11 +1089,11 @@ void WinUtil::AppendSearchMenu(CMenu& menu) {
 
 void WinUtil::SetIcon(HWND hWnd, tstring file, bool big) {
 	tstring path = _T("icons\\") + file;
-	HICON hIconSm = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
+	HICON hIconSm = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
 	::SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIconSm);
 
 	if(big){
-		HICON hIcon   = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
+		HICON hIcon   = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
 		::SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 	}
 	

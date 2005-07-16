@@ -246,7 +246,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		ES_CENTER | ES_READONLY | ES_MULTILINE, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	
-	rc.bottom = rc.top + 2*WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
+	rc.bottom = rc.top + 3*WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
 	splash.HideCaret();
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
 	splash.SetFocus();

@@ -41,7 +41,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
-	
+		
 	// Create listview columns
 	WinUtil::splitTokens(columnIndexes, SETTING(FAVORITESFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(FAVORITESFRAME_WIDTHS), COLUMN_LAST);
@@ -321,6 +321,15 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	rc.OffsetRect(bspace + bwidth +2, 0);
 	ctrlConnect.MoveWindow(rc);
 
+}
+
+LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
+
+	if(kd->wVKey == VK_DELETE) {
+		PostMessage(WM_COMMAND, IDC_REMOVE);
+	} 
+	return 0;
 }
 
 /**

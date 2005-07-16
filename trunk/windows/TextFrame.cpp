@@ -113,6 +113,21 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	ctrlPad.MoveWindow(rc);
 }
 
+LRESULT TextFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlPad) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
+		if( pt.x == -1 && pt.y == -1 )
+			WinUtil::getContextMenuPos(ctrlPad, pt);
+
+		ctrlPad.ShowMenu(m_hWnd, pt);
+		bHandled = TRUE;
+	}else {
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
 /**
  * @file
  * $Id: TextFrame.cpp,v 1.3 2004/01/08 11:27:05 trem Exp $

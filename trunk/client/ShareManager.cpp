@@ -680,7 +680,8 @@ void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& i
 }
 
 void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, 
-						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) {
+						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) 
+{
 	update = aUpdate;
 	refreshDirs = dirs;
 	refreshIncoming = incoming;
@@ -790,9 +791,6 @@ int ShareManager::run() {
 			refreshDirs = false;
 		}
 	}
-
-	generateXmlList(true);
-	generateNmdcList(true);
 
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 	if(update) {
@@ -1759,26 +1757,31 @@ void ShareManager::setIncoming( const string& aDir, bool incoming /*= true*/ ) {
 
 bool ShareManager::refresh( const string& aDir ){
 	bool result = false;
-	string path = aDir;
+	string path = Text::toLower(aDir);
 
 	if(path[ path.length() -1 ] != PATH_SEPARATOR)
 		path += PATH_SEPARATOR;
 
-	RLock<> l(cs);
+	{
+		RLock<> l(cs);
 
-	Directory::MapIter i = directories.find( path );
-
-	if( i == directories.end() ) {
-		
-		for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
-			if( Util::stricmp( j->first, aDir ) == 0 ) {
-				refreshPaths.push_back( j->second );
-				result = true;
-			}
+		Directory::MapIter i = directories.begin();
+		for(; i != directories.end(); ++i) {
+			if(Util::stricmp(i->first, path) == 0)
+				break;
 		}
-	} else {
-		refreshPaths.push_back( path );
-		result = true;
+
+		if( i == directories.end() ) {
+			for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
+				if( Util::stricmp( j->first, aDir ) == 0 ) {
+					refreshPaths.push_back( j->second );
+					result = true;
+				}
+			}
+		} else {
+			refreshPaths.push_back( path );
+			result = true;
+		}
 	}
 
 	if(result)

@@ -194,6 +194,15 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 }
 
+LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
+
+	if(kd->wVKey == VK_DELETE) {
+		PostMessage(WM_COMMAND, IDC_REMOVE);
+	} 
+	return 0;
+}
+
 /**
  * @file
  * $Id: UsersFrame.cpp,v 1.3 2004/01/06 01:52:18 trem Exp $

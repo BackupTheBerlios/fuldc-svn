@@ -32,6 +32,7 @@
 #include "LineDlg.h"
 #include "memdc.h"
 #include "SearchFrm.h"
+#include "MainFrm.h"
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_TOTALTIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75 };
@@ -50,7 +51,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	arrows.CreateFromImage(_T("icons\\arrows.bmp"), 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
-	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
@@ -764,7 +765,7 @@ LRESULT TransferView::onResolveIP(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		return 0;
 
 	resolveBuffer = new char[MAXGETHOSTSTRUCT];
-	unsigned long l = inet_addr(Text::wideToAcp(ctrlTransfers.getItemData(i)->getText(COLUMN_IP)).c_str());
+	unsigned long l = inet_addr(Text::wideToAcp(ctrlTransfers.getItemData(i)->IP).c_str());
 
 	if( 0 == WSAAsyncGetHostByAddr(m_hWnd, WM_APP, (char*)&l, 4, AF_INET, resolveBuffer, MAXGETHOSTSTRUCT)) {
 		delete[] resolveBuffer;
@@ -789,7 +790,7 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	memcpy(&a.S_un.S_addr, h->h_addr_list[0], 4);
 	char * c = inet_ntoa(a);
 	if(c != NULL)
-		::PostMessage(GetParent(), WM_SPEAKER, 5, (LPARAM)new tstring( Text::acpToWide(c) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(h->h_name) ));
+		::PostMessage(GetParent(), WM_SPEAKER, MainFrame::STATUS_MESSAGE, (LPARAM)new tstring( Text::acpToWide(c) + _T(" ") +  TSTRING(RESOLVES_TO) + _T(" ") + Text::acpToWide(h->h_name) ));
 	delete[] resolveBuffer;
 	resolveBuffer = NULL;
 

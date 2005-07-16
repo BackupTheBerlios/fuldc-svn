@@ -86,7 +86,7 @@ private:
 			if(f.getPos() == 0) {
 				f.write("\xef\xbb\xbf");
 			}
-			f.write(msg + "\r\n");
+			f.write(Util::toDOS(msg) + "\r\n");
 		} catch (const FileException&) {
 			// ...
 		}

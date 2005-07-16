@@ -102,7 +102,10 @@ public:
 			FLAG_NO_TREE = 0x100,
 			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY 
 				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 
-				| FLAG_BAD_TREE | FLAG_NO_TREE
+				| FLAG_BAD_TREE | FLAG_NO_TREE,
+			
+			FLAG_ERROR_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY |
+				FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_BAD_TREE | FLAG_NO_TREE
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
@@ -185,7 +188,7 @@ public:
 	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
 		Source::ConstIter i = getSource(aUser, badSources);
 		if(i != badSources.end())
-			return (*i)->isAnySet(exceptions^Source::FLAG_MASK); 
+			return (*i)->isAnySet(exceptions^Source::FLAG_ERROR_MASK); 
 		return false;
 	};
 

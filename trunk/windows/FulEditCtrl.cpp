@@ -32,22 +32,16 @@
 
 #include <MMSystem.h>
 
-
 UINT CFulEditCtrl::WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
 CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyStringT), findBufferSize(100),
-								logged(false), matchedSound(false), skipLog(false)
+								logged(false), matchedSound(false), skipLog(false), handCursor(NULL),
+								showHandCursor(false)
 {
 	findBuffer = new TCHAR[findBufferSize];
 	findBuffer[0] = _T('\0');
 
-	urls.push_back(_T("http://"));
-	urls.push_back(_T("https://"));
-	urls.push_back(_T("www."));
-	urls.push_back(_T("ftp://"));
-	urls.push_back(_T("ftps://"));
-	urls.push_back(_T("mms://"));
-	urls.push_back(_T("dchub://"));
+	fontHeight = static_cast<int>(WinUtil::getTextHeight(m_hWnd, WinUtil::font) * 1.5);
 
 	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | HANDLE_URLS | MENU_COPY | 
 			MENU_SEARCH | MENU_SEARCH_TTH | MENU_SEARCH_MENU );
@@ -85,8 +79,10 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	inf.dwStyle = MNS_NOTIFYBYPOS;
 	menu.SetMenuInfo(&inf);
 
-	bHandled = FALSE;
+	handCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND));
+	beamCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM));
 
+	bHandled = FALSE;
 	return 1;
 }
 
@@ -98,8 +94,10 @@ bool CFulEditCtrl::AddLine(const tstring & line, bool aTimeStamps) {
 	tstring aLine = Util::replace(line, _T("\r\n"), _T("\r"));
 	if(GetWindowTextLength() > SETTING(CHATBUFFERSIZE)) {
 		SetRedraw(FALSE);
-		SetSel(0, LineIndex(LineFromChar(2000)));
+		int ch = LineIndex(LineFromChar(2000));
+		SetSel(0, ch);
 		ReplaceSel(_T(""));
+		UpdateUrlRanges(ch);
 		SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 		ScrollCaret();
 		SetRedraw(TRUE);
@@ -262,17 +260,17 @@ void CFulEditCtrl::AddInternalLine(const tstring & aLine) {
 	
 	CHARRANGE cr;
 	GetSel(cr);
-	HideSelection(TRUE, FALSE);
+	//HideSelection(TRUE, FALSE);
 
 	Colorize(aLine, length);
-	
+	CheckUrls(aLine, length);
 	
 	SetSel(GetTextLengthEx(GTL_NUMCHARS), GetTextLengthEx(GTL_NUMCHARS));
 	ScrollCaret();
 
 	SetSel(cr);
 
-	HideSelection(FALSE, FALSE);
+	//HideSelection(FALSE, FALSE);
 
 	skipLog = false;
 }
@@ -397,30 +395,31 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 	SetSel(GetTextLength()-1, GetTextLength()-1);
 	SetSelectionCharFormat(selFormat);
 
-	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
-		matchedPopup = true;
-		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
-	}
-	if(cs->getTab() && isSet(TAB))
-		matchedTab = true;
+	CheckAction(cs, line);
 
-	if(cs->getLog() && !logged && !skipLog){
-		logged = true;
-		AddLogLine(line);
-	}
-
-	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
-		matchedSound = true;
-		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-	}
-
-	if(cs->getFlashWindow())
-		WinUtil::flashWindow();
-					
 	if( cs->getTimestamps() || cs->getUsers() )
 		return tstring::npos;
 	
 	return pos;
+}
+
+void CFulEditCtrl::CheckUrls(const tstring &line, const int &lineIndex) {
+	PME regexp(_T("\\s(https?://\\S+|ftps?://\\S+|mms://\\S+|www\\.\\S+|dchub://\\S+)"), _T("gims"));
+	while( regexp.match(line) > 0 ){
+		if( regexp.NumBackRefs() == 1){
+			CHARRANGE cr;
+			cr.cpMin = lineIndex + regexp.GetStartPos(0);
+			cr.cpMax = cr.cpMin + regexp.GetLength(0);
+			urlRanges.push_back(cr);
+		} else {
+			for(int j = 1; j < regexp.NumBackRefs(); ++j) {
+				CHARRANGE cr;
+				cr.cpMin = lineIndex + regexp.GetStartPos(j);
+				cr.cpMax = cr.cpMin + regexp.GetLength(j);
+				urlRanges.push_back(cr);
+			}
+		}
+	}
 }
 
 int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int &lineIndex) {
@@ -466,26 +465,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 	SetSel(GetTextLength()-1, GetTextLength()-1);
 	SetSelectionCharFormat(selFormat);
 
-	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
-		matchedPopup = true;
-		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
-	}
-
-	if(cs->getTab() && isSet(TAB))
-		matchedTab = true;
-
-	if(cs->getLog() && !logged && !skipLog){
-		logged = true;
-		AddLogLine(line);
-	}
-
-	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
-		matchedSound = true;
-		PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-	}
-
-	if(cs->getFlashWindow())
-		WinUtil::flashWindow();
+	CheckAction(cs, line);
 	
 	return tstring::npos;
 }
@@ -497,6 +477,67 @@ LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	}		
 	bHandled = FALSE;
 	return 0;
+}
+
+LRESULT CFulEditCtrl::onSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(showHandCursor && handCursor != NULL) {
+		SetCursor(handCursor);
+		return TRUE;
+	}
+
+	bHandled = FALSE;
+	return FALSE;
+}
+
+LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	//set this here since it will always be false
+	bHandled = FALSE;
+
+	if(!isSet(HANDLE_URLS)){
+		return 1;
+	}
+
+	//if a mouse button is pressed revert to the standard beam cursor
+	if(wParam != 0) {
+		SetCursor(beamCursor);
+		showHandCursor = false;
+		return 1;
+	}
+
+	POINT mousePT = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
+	int ch = CharFromPos(mousePT);
+	POINT charPT = PosFromChar(ch);
+
+	//since CharFromPos returns the last character even if the cursor is past the end of text
+	//we have to check if the pointer was actually above the last char
+
+	//check xpos
+	if( mousePT.x > ( charPT.x + 3 ) ) {
+		SetCursor(beamCursor);
+		showHandCursor = false;
+		return 1;
+	}
+
+	//check ypos
+	if( mousePT.y > (charPT.y +  fontHeight ) ) {
+		SetCursor(beamCursor);
+		showHandCursor = false;
+		return 1;
+	}
+
+	//let's start from the end, it's probably the last urls inserted that will be
+	//visible anyway, might save a few cycles =)
+	for(UrlRange::reverse_iterator i = urlRanges.rbegin(); i != urlRanges.rend(); ++i) {
+		if( ch >= i->cpMin && ch <= i->cpMax ) {
+			showHandCursor = true;
+			SetCursor(handCursor);
+			return 1;
+		}
+	}
+
+	SetCursor(beamCursor);
+	showHandCursor = false;
+	return 1;
 }
 
 LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
@@ -520,7 +561,7 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		return 1;
 	
 	//check ypos
-	if( mousePT.y > (charPT.y + ( WinUtil::getTextHeight(m_hWnd, WinUtil::font) * 1.5 ) ) )
+	if( mousePT.y > (charPT.y + fontHeight ) )
 		return 1;
 
 	FINDTEXT ft;
@@ -550,15 +591,10 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		end = tmp.length();
 	tstring url = tmp.substr(start, end-start);
 	
-	
-	TStringIter i = urls.begin();
-
-	for(; i != urls.end(); ++i) {
-		if(Util::strnicmp(url.c_str(), (*i).c_str(), (*i).length()) == 0){
-			WinUtil::openLink(url);
-			bHandled = TRUE;
-			break;
-		}
+	PME regexp(_T("^(https?://|ftps?://|mms://|www\\.|dchub://)"), _T("ims"));
+	if(regexp.match(url) > 0) {
+		WinUtil::openLink(url);
+		bHandled = TRUE;
 	}
 
 	return 0;
@@ -687,7 +723,7 @@ bool CFulEditCtrl::LastSeen(tstring & nick){
 	ft.chrg.cpMax = -1;
 	ft.lpstrText = search.c_str();
 	
-	//for some reason it can't search up, either msdn is wrong or i missed something =)
+	//bah only EM_FINDTEXT is able to search up
 	while(-1 != (result = (int)::SendMessage(m_hWnd, EM_FINDTEXTEX, FR_DOWN | FR_WHOLEWORD, (LPARAM)&ft))){
 		found = true;
 		ft.chrg.cpMin = result+1;
@@ -755,3 +791,68 @@ void CFulEditCtrl::SetNick(const tstring& aNick) {
 		nick = aNick;
 	}
 }
+
+void CFulEditCtrl::CheckAction(ColorSettings* cs, const tstring& line) {
+	if(cs->getPopup() && !matchedPopup && isSet(POPUP)) {
+		matchedPopup = true;
+		PopupManager::getInstance()->ShowMC(line, ::GetParent(m_hWnd));
+	}
+	if(cs->getTab() && isSet(TAB))
+		matchedTab = true;
+
+	if(cs->getLog() && !logged && !skipLog){
+		logged = true;
+		AddLogLine(line);
+	}
+
+	if(cs->getPlaySound() && !matchedSound && isSet(SOUND)){
+		if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+			matchedSound = true;
+			PlaySound(cs->getSoundFile().c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+		}
+	}
+
+	if(cs->getFlashWindow())
+		WinUtil::flashWindow();
+}
+
+void CFulEditCtrl::UpdateUrlRanges(int pos) {
+	for(UrlRange::iterator i = urlRanges.begin(); i != urlRanges.end();) {
+		if(pos > i->cpMax) {
+			i = urlRanges.erase(i);
+		} else {
+			i->cpMin -= pos;
+			i->cpMax -= pos;
+			++i;
+		}
+	}
+}
+
+void CFulEditCtrl::Clear() {
+	urlRanges.clear();
+	SetWindowText(_T(""));
+}
+
+#ifdef DEBUG
+
+DWORD CALLBACK EditStreamCallback( DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb ) {
+	File* f = reinterpret_cast<File*>(dwCookie);
+	*pcb = f->write(pbBuff, cb);
+
+	return 0;
+}
+
+void CFulEditCtrl::Dump() {
+	try {
+		File f(Util::getAppPath() + "temp.txt", File::WRITE, File::CREATE | File::TRUNCATE);
+		EDITSTREAM es;
+		es.dwCookie = reinterpret_cast<DWORD_PTR>(&f);
+		es.pfnCallback = EditStreamCallback;
+
+		SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
+
+		f.close();
+	} catch(...) {}
+
+}
+#endif

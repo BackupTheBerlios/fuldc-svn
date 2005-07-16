@@ -5,35 +5,56 @@ set NET="C:\Program Files\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.e
 set OPTS=dcplusplus.sln /build release
 set CLEAN=dcplusplus.sln /clean release
 
-rem set RAR=C:\Progra~1\Winrar\rar.exe
-rem set RAROPS=a -r -idp -inul -m3 ..\fulDC.rar *.*
+set RAR="C:\Program Files\Winrar\rar.exe"
+set RAROPS=a -r -idp -inul -m3 ..\fulDC.rar *.*
+set RARSRCOPS=a -r -idp -inul -m3 -x@exclude.txt fulDC-src.rar *.*
 
 rem CONFIG END
 rem ----------------------------------------------------
 
-ECHO Cleaning Solution...
+ECHO Cleaning solution...
 %NET% %CLEAN%
 ECHO ------------------------------
-ECHO Compiling Solution...
+ECHO Compiling solution in release mode...
 %NET% %OPTS%
 ECHO Done!
 
 ECHO ------------------------------
-ECHO copying files...
-md App\icons
-xcopy /Q /Y res\*.* App\icons\
-xcopy /Q /Y help.xml App\
-xcopy /Q /Y changelog.txt App\
-xcopy /Q /Y example.xml App\
-
-del App\icons\dcplusplus.manifest
-del App\dcplusplus.map
+ECHO updating Geo ip database...
+updateGeoIP.py
 
 ECHO ------------------------------
-rem ECHO Rarring...
-rem del fulDC.rar
-rem cd App
-rem %RAR% %RAROPS%
+ECHO copying files...
+
+md Temp
+md Temp\icons
+xcopy /Q /Y res\*.* Temp\icons\
+xcopy /Q /Y changelog.txt Temp\
+xcopy /Q /Y example.xml Temp\
+xcopy /Q /Y App\Dcplusplus.exe Temp\
+xcopy /Q /Y App\DCPlusPlus.pdb Temp\
+xcopy /Q /Y App\DCPlusPlus.chm Temp\
+xcopy /Q /Y GeoIPCountryWhois.csv Temp\
+
+del Temp\icons\dcplusplus.manifest
+
+
+ECHO ------------------------------
+ECHO packing executable...
+del fulDC.rar
+cd Temp
+%RAR% %RAROPS%
+cd ..
+
+ECHO ------------------------------
+ECHO Removing temp directory...
+rmdir /S /Q Temp\ 
+
+ECHO ------------------------------
+ECHO packing source...
+del fulDc-src.rar
+%RAR% %RARSRCOPS%
+
 ECHO ------------------------------
 ECHO finished!
 pause

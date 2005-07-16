@@ -36,8 +36,8 @@ public:
 			tokens.push_back(aString.substr(j, i-j));
 			j = i + 1;
 		}
-		if(j < aString.size())
-			tokens.push_back(aString.substr(j, aString.size()-j));
+		if(j < aString.length())
+			tokens.push_back(aString.substr(j, aString.length()-j));
 	}
 
 	//broken, strlen might cause odd behavior
@@ -49,8 +49,8 @@ public:
 			tokens.push_back(aString.substr(j, i-j));
 			j = i + l;
 		}
-		if(j < aString.size())
-			tokens.push_back(aString.substr(j, aString.size()-j));
+		if(j < aString.length())
+			tokens.push_back(aString.substr(j, aString.length()-j));
 	}
 
 	StringTokenizer(const T& aString, const wchar_t* aToken) {
@@ -61,8 +61,8 @@ public:
 			tokens.push_back(aString.substr(j, i-j));
 			j = i + l;
 		}
-		if(j < aString.size())
-			tokens.push_back(aString.substr(j, aString.size()-j));
+		if(j < aString.length())
+			tokens.push_back(aString.substr(j, aString.length()-j));
 	}
 
 	vector<T>& getTokens() { return tokens; };

@@ -55,7 +55,7 @@ void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
 }
 void UserInfoBase::removeAll() {
-	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
+	// @todo QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 void UserInfoBase::ignore() {

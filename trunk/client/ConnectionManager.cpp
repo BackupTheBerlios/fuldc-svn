@@ -279,7 +279,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	for_each(penDel.begin(), penDel.end(), DeleteFunction<UserConnection*>());
 
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
-		QueueManager::getInstance()->removeSource(*ui, QueueItem::Source::FLAG_PASSIVE);
+		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
 
 	for(UserConnection::Iter i = added.begin(); i != added.end(); ++i) {

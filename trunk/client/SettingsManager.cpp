@@ -48,7 +48,7 @@ const string SettingsManager::settingTags[] =
 	
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
-	"QueueFrameVisible", "DirectoryListingFrameVisible",
+	"QueueFrameVisible", "DirectoryListingFrameVisible","FinishedVisible", "FinishedULVisible",
 	"SENTRY", 
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -61,7 +61,7 @@ const string SettingsManager::settingTags[] =
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
-	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", 
+	"SkipZeroByte", "AdlsBreakOnFirst",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
@@ -84,7 +84,7 @@ const string SettingsManager::settingTags[] =
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
-	"RefreshShareBegin", "RefreshShareEnd", 
+    "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -194,7 +194,6 @@ SettingsManager::SettingsManager()
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
 	setDefault(ADLS_BREAK_ON_FIRST, false);
-	setDefault(TAB_COMPLETION, true);
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, false);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
@@ -283,12 +282,15 @@ SettingsManager::SettingsManager()
 	setDefault(ADD_FINISHED_DOWNLOADS, true);
 	setDefault(ADD_FINISHED_UPLOADS, true);
 	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,0,1,1");
+	setDefault(FINISHED_VISIBLE, "1,1,1,1,1,1,1,1");
+	setDefault(FINISHED_UL_VISIBLE, "1,1,1,1,1,1,1");
 	setDefault(REFRESH_INCOMING_BETWEEN, false);
 	setDefault(REFRESH_SHARE_BETWEEN, false);
 	setDefault(REFRESH_INCOMING_BEGIN, 0);
 	setDefault(REFRESH_INCOMING_END, 0);
 	setDefault(REFRESH_SHARE_BEGIN, 0);
 	setDefault(REFRESH_SHARE_END, 0);
+	setDefault(MUTE_ON_AWAY, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

@@ -129,7 +129,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
-	ctrlLastLinesContainer.SubclassWindow(ctrlLastLines.m_hWnd);
+	ctrlLastLines.SetDelayTime(TTDT_AUTOPOP, 30000);
 
 	copyMenu.CreatePopupMenu();
 	ctrlUsers.buildCopyMenu(copyMenu);
@@ -232,7 +232,7 @@ void HubFrame::onEnter() {
 					addClientLine(TSTRING(SPECIFY_SERVER));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
-				ctrlClient.SetWindowText(_T(""));
+				ctrlClient.Clear();
 			} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
 				int res = WinUtil::checkParam( param );
 				if( 1 == res || (param.empty() && !timeStamps) ) {
@@ -343,6 +343,10 @@ void HubFrame::onEnter() {
 				TextFrame::openWindow(ctrlClient.LastLog());
 			}else if(Util::stricmp(cmd.c_str(), _T("me")) == 0) {
 				client->hubMessage(Text::fromT(s));
+#ifdef DEBUG
+			} else if(Util::stricmp(cmd.c_str(), _T("dump")) == 0) {
+				ctrlClient.Dump();
+#endif
 			} else if(Util::stricmp(cmd.c_str(), _T("dns")) == 0) {
 				if( !param.empty() ) {
 					if( resolve(param) )
@@ -435,18 +439,23 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 			resort = ui->update(u.identity, ctrlUsers.getSortColumn()) || resort;
 			ctrlUsers.updateItem(i);
 			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
+
+			//the user might have updated something that should
+			//be filtered
+			if(!filter.empty())
+				updateUserList();
+
 			return false;
 		}
 	
 	}
 
-	UserIter j = usermap.begin();
-	for(; j != usermap.end(); ++j) {
-		if(Util::stricmp(u.identity.getNick(), j->second->user->getFirstNick()) == 0) {
-			j->second->update(u.identity, ctrlUsers.getSortColumn());
+	for(UserIter j = usermap.begin(); j != usermap.end(); ++j) {
+	/* @todo	if(Util::stricmp(u->getNick(), j->second->user->getNick()) == 0) {
+			j->second->update();
 			return false;
 		}
-
+	*/
 	}
 	
 	UserInfo *ui = new UserInfo(u, stripIsp);
@@ -456,9 +465,12 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 	if(filter.empty()){
 		add = true;
 	}else {
-		if((ui->getText(ctrlFilterSel.GetCurSel()).find(filter) != tstring::npos)) {
-			add = true;
-		}
+		int64_t size;
+		int mode;
+		int sel = ctrlFilterSel.GetCurSel();
+		bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
+		
+		add = matchFilter(*ui, sel, doSizeCompare, mode, size);
 	}
 	
 	if( add ){
@@ -658,7 +670,6 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
-		ctrlLastLinesContainer.UnsubclassWindow();
 		if(!closing && BOOLSETTING(HUBFRAME_CONFIRMATION)) {
 			if(IDNO == MessageBox(CTSTRING(CONFIRM_CLOSE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2))
 				return 0;
@@ -940,22 +951,13 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 };
 
 void HubFrame::onTab() {
-	if(!BOOLSETTING(TAB_COMPLETION)) {
-		HWND focus = GetFocus();
+	bool up = ((GetKeyState(VK_SHIFT) & 0x8000) != 0);
 
-		if(focus == ctrlClient.m_hWnd) {
-			ctrlMessage.SetFocus();
-		} else if(focus == ctrlMessage.m_hWnd) {
-			ctrlUsers.SetFocus();
-		} else if(focus == ctrlUsers.m_hWnd) {
-			ctrlClient.SetFocus();
-		} 
-
+	if(ctrlMessage.GetWindowTextLength() == 0) {
+		handleTab(up);
 		return;
 	}
 		
-	bool up = ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
-
 	int n = ctrlMessage.GetWindowTextLength();
 	AutoArray<TCHAR> buf(n+1);
 	ctrlMessage.GetWindowText(buf, n+1);
@@ -1130,9 +1132,10 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				if (curCommandPosition > 0) {
 					//check whether current command needs to be saved
 					if (curCommandPosition == prevCommands.size()) {
-						auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-						currentCommand = tstring(messageContents.get());
+						TCHAR *messageContents = new TCHAR[ctrlMessage.GetWindowTextLength()+2];
+						ctrlMessage.GetWindowText(messageContents, ctrlMessage.GetWindowTextLength()+1);
+						currentCommand = tstring(messageContents);
+						delete[] messageContents;
 					}
 
 					//replace current chat buffer with current command
@@ -1178,9 +1181,10 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				curCommandPosition = 0;
 				
-				auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-				currentCommand = tstring(messageContents.get());
+				TCHAR *messageContents = new TCHAR[ctrlMessage.GetWindowTextLength()+2];
+				ctrlMessage.GetWindowText(messageContents, ctrlMessage.GetWindowTextLength()+1);
+				currentCommand = tstring(messageContents);
+				delete[] messageContents;
 
 				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
 				int pos = ctrlMessage.GetWindowTextLength();
@@ -1470,7 +1474,12 @@ void HubFrame::removeUser(const UpdateInfo& u) {
 	}
 }
 
-LRESULT HubFrame::onFilterChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(uMsg == WM_CHAR && wParam == VK_TAB) {
+		handleTab((GetKeyState(VK_SHIFT) & 0x8000) != 0);
+		return 0;
+	}
+
 	TCHAR *buf = new TCHAR[ctrlFilter.GetWindowTextLength()+1];
 	ctrlFilter.GetWindowText(buf, ctrlFilter.GetWindowTextLength()+1);
 	filter = buf;
@@ -1530,8 +1539,7 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 		return false;
 
 	if((end = Util::findSubString(filter, _T("TiB"))) != tstring::npos) {
-		//hmms ugly but vs complains about integral constant overflow otherwise
-		multiplier = int64_t(1024*1024*1024)*1024;
+		multiplier = 1024LL * 1024LL * 1024LL * 1024LL;
 	} else if((end = Util::findSubString(filter, _T("GiB"))) != tstring::npos) {
 		multiplier = 1024*1024*1024;
 	} else if((end = Util::findSubString(filter, _T("MiB"))) != tstring::npos) {
@@ -1539,8 +1547,7 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 	} else if((end = Util::findSubString(filter, _T("KiB"))) != tstring::npos) {
 		multiplier = 1024;
 	} else if((end = Util::findSubString(filter, _T("TB"))) != tstring::npos) {
-		//hmms ugly but vs complains about integral constant overflow otherwise
-		multiplier = int64_t(1000*1000*1000)*1000;
+		multiplier = 1000LL * 1000LL * 1000LL * 1000LL;
 	} else if((end = Util::findSubString(filter, _T("GB"))) != tstring::npos) {
 		multiplier = 1000*1000*1000;
 	} else if((end = Util::findSubString(filter, _T("MB"))) != tstring::npos) {
@@ -1569,13 +1576,6 @@ void HubFrame::updateUserList() {
 	ctrlUsers.DeleteAllItems();
 
 	int64_t size = -1;
-
-	//0 - ==
-	//1 - >=
-	//2 - <=
-	//3 - >
-	//4 - <
-	//5 - !=
 	int mode = -1;
 
 	int sel = ctrlFilterSel.GetCurSel();
@@ -1593,23 +1593,7 @@ void HubFrame::updateUserList() {
 	
 	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
 		if( i->second != NULL ) {
-			bool insert = false;
-
-			if(doSizeCompare) {
-				switch(mode) {
-					case 0: insert = (size == i->second->getBytes()); break;
-					case 1: insert = (size <=  i->second->getBytes()); break;
-					case 2: insert = (size >=  i->second->getBytes()); break;
-					case 3: insert = (size < i->second->getBytes()); break;
-					case 4: insert = (size > i->second->getBytes()); break;
-					case 5: insert = (size != i->second->getBytes()); break;
-				}
-			} else {
-				if(Util::findSubString(i->second->getText(sel), filter) != string::npos)
-					insert = true;
-			}
-
-			if(insert) {
+			if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
 				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
 			}
 		}
@@ -1711,6 +1695,66 @@ LRESULT HubFrame::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 		resolveBuffer = NULL;
 	}
 	return 0;
+}
+
+void HubFrame::handleTab(bool reverse) {
+	HWND focus = GetFocus();
+
+	if(reverse) {
+		if(focus == ctrlFilterSel.m_hWnd) {
+			ctrlFilter.SetFocus();
+		} else if(focus == ctrlFilter.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlMessage.m_hWnd) {
+			ctrlUsers.SetFocus();
+		} else if(focus == ctrlUsers.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlClient.m_hWnd) {
+			ctrlFilterSel.SetFocus();
+		}
+	} else {
+		if(focus == ctrlClient.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlUsers.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlMessage.m_hWnd) {
+			ctrlFilter.SetFocus();
+		} else if(focus == ctrlFilter.m_hWnd) {
+			ctrlFilterSel.SetFocus();
+		} else if(focus == ctrlFilterSel.m_hWnd) {
+			ctrlClient.SetFocus();
+		}
+	}
+}
+
+bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int mode, int64_t size) {
+	//mode
+	//0 - ==
+	//1 - >=
+	//2 - <=
+	//3 - >
+	//4 - <
+	//5 - !=
+
+	if(filter.empty())
+		return true;
+
+	bool insert = false;
+	if(doSizeCompare) {
+		/* @todo switch(mode) {
+			case 0: insert = (size == ui.user->getBytesShared()); break;
+			case 1: insert = (size <=  ui.user->getBytesShared()); break;
+			case 2: insert = (size >=  ui.user->getBytesShared()); break;
+			case 3: insert = (size < ui.user->getBytesShared()); break;
+			case 4: insert = (size > ui.user->getBytesShared()); break;
+			case 5: insert = (size != ui.user->getBytesShared()); break;
+		} */
+	} else {
+		if(Util::findSubString(ui.getText(sel), filter) != string::npos)
+			insert = true;
+	}
+
+	return insert;
 }
 
 

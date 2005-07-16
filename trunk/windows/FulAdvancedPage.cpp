@@ -52,6 +52,7 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::IGNORE_TTH_INCONSISTENCY,		ResourceManager::IGNORE_TTH_INCONSISTENCY	},
 	{ SettingsManager::ADD_FINISHED_DOWNLOADS,			ResourceManager::ADD_FINISHED_DOWNLOADS		},
 	{ SettingsManager::ADD_FINISHED_UPLOADS,			ResourceManager::ADD_FINISHED_UPLOADS		},
+	{ SettingsManager::MUTE_ON_AWAY,					ResourceManager::MUTE_ON_AWAY				},
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 

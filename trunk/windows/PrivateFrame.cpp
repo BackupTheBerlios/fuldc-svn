@@ -112,10 +112,12 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				p->setUser(aUser);
 				p->addLine(aMessage);
 				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !p->muted) {
-					if(BOOLSETTING(CUSTOM_SOUND))
-						PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-					else
-						MessageBeep(MB_OK);
+					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+						if(BOOLSETTING(CUSTOM_SOUND))
+							PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+						else
+							MessageBeep(MB_OK);
+					}
 				}
 				if(BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
 					//@todo PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
@@ -140,27 +142,31 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				}
 
 				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-					if(BOOLSETTING(CUSTOM_SOUND))
-						PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-					else
-						MessageBeep(MB_OK);
+					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+						if(BOOLSETTING(CUSTOM_SOUND))
+							PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+						else
+							MessageBeep(MB_OK);
+					}
 				}
 
 				if(BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
 					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
 				}
 
-				if(BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)){
+				if(BOOLSETTING(FLASH_WINDOW_ON_PM) || BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)){
 					WinUtil::flashWindow();
 				}
 			}*/
 		}
 	} else {
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !i->second->muted) {
-			if(BOOLSETTING(CUSTOM_SOUND))
-				PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-			else
-				MessageBeep(MB_OK);
+			if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+				if(BOOLSETTING(CUSTOM_SOUND))
+					PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+				else
+					MessageBeep(MB_OK);
+			}
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
 			PopupManager::getInstance()->ShowPm(Text::toT(aUser->getFirstNick()), aMessage, i->second->m_hWnd);
@@ -227,9 +233,10 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 				if (curCommandPosition > 0 && !prevCommands.empty()) {
 					//check whether current command needs to be saved
 					if (curCommandPosition == prevCommands.size()) {
-						auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-						currentCommand = tstring(messageContents.get());
+						TCHAR *messageContents = new TCHAR[ctrlMessage.GetWindowTextLength()+2];
+						ctrlMessage.GetWindowText(messageContents, ctrlMessage.GetWindowTextLength()+1);
+						currentCommand = tstring(messageContents);
+						delete[] messageContents;
 					}
 
 					//replace current chat buffer with current command
@@ -263,9 +270,10 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				curCommandPosition = 0;
 
-				auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-				currentCommand = tstring(messageContents.get());
+				TCHAR *messageContents = new TCHAR[ctrlMessage.GetWindowTextLength()+2];
+				ctrlMessage.GetWindowText(messageContents, ctrlMessage.GetWindowTextLength()+1);
+				currentCommand = tstring(messageContents);
+				delete[] messageContents;
 
 				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
 			} else {
@@ -596,7 +604,7 @@ LRESULT PrivateFrame::onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT PrivateFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
+	//@todo QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 
 	return 0;
 }
@@ -636,13 +644,23 @@ void PrivateFrame::readLog() {
 
 			int linesCount = lines.size();
 
+			dcassert(buf[buf.size()-1] != ' ');
+
 			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG)) : 0;
+
+			//disable these to avoid false notifications when displaying the log
+			ctrlClient.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB);
 
 			for(; i < linesCount; ++i){
 				if(!lines[i].empty())
-					addLine(_T("- ") + Text::toT(lines[i]));
+					addLine(Text::toT(lines[i]));
 			}
+			ctrlClient.AddLine(tstring(_T(" ")), false);
 
+			ctrlClient.setFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB);
+
+			//keep this here, holding the handle open keeps
+			//LogManager from being able to write back to the log
 			f.close();
 		}
 	} catch(const FileException& ){

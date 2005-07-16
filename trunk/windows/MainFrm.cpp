@@ -149,8 +149,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_HASH_PROGRESS);
 		
 		//Window
@@ -178,8 +178,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 	}
 
 	
@@ -206,6 +206,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
+	ctrlLastLines.SetDelayTime(TTDT_AUTOPOP, 30000);
 
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);

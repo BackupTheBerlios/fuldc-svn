@@ -33,7 +33,7 @@ class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<
 	private FavoriteManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
-	UsersFrame() : closed(false), startup(true) { };
+	UsersFrame() : closed(false), startup(true)	{ };
 	virtual ~UsersFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("UsersFrame"), IDR_USERS, 0, COLOR_3DFACE);
@@ -57,6 +57,7 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
+		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDown)
 		CHAIN_MSG_MAP(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -67,6 +68,7 @@ public:
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
@@ -77,7 +79,7 @@ public:
 		}
 		return 0;
 	}
-	
+
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlUsers.SetFocus();
 		return 0;

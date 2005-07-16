@@ -407,7 +407,7 @@ wstring Util::formatExactSize(int64_t aBytes) {
 	wchar_t buf[64];
 	wchar_t number[64];
 	NUMBERFMT nf;
-	wsprintf(number, L"%I64d", aBytes);
+	swprintf(number, L"%I64d", aBytes);
 	wchar_t dummy[16];
 
 	//No need to read these values from the system because they are not
@@ -417,9 +417,9 @@ wstring Util::formatExactSize(int64_t aBytes) {
 	nf.NegativeOrder = 0;
 	nf.lpDecimalSep = L",";
 
-	GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, dummy, 16 );
+	GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SGROUPING, dummy, 16 );
 	nf.Grouping = _wtoi(dummy);
-	GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, dummy, 16 );
+	GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, dummy, 16 );
 	nf.lpThousandSep = dummy;
 
 	GetNumberFormat(LOCALE_USER_DEFAULT, 0, number, &nf, buf, 64);
@@ -994,6 +994,16 @@ tstring Util::replace(const tstring& aString, const tstring& fStr, const tstring
 	tstring tmp = aString;
 	tstring::size_type pos;
 	while( (pos = tmp.find(fStr)) != tstring::npos ) {
+		tmp.replace(pos, fStr.length(), rStr);
+	}
+
+	return tmp;
+}
+
+string Util::replace(const string& aString, const string& fStr, const string& rStr) {
+	string tmp = aString;
+	string::size_type pos;
+	while( (pos = tmp.find(fStr)) != string::npos ) {
 		tmp.replace(pos, fStr.length(), rStr);
 	}
 

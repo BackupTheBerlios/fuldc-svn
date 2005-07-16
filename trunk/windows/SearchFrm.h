@@ -360,7 +360,18 @@ private:
 			/// @todo connection = Text::toT(sr->getUser()->getConnection());
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
-			ip = Text::toT(sr->getIP());
+			
+			tstring country;
+			if(!sr->getIP().empty()) {
+				country = Text::toT(Util::getIpCountry(sr->getIP()));
+			}
+
+			if(country.empty()) {
+				ip = Text::toT(sr->getIP());;
+			} else {
+				ip = country + Text::toT(" (" + sr->getIP() + ")");
+			}
+			
 			tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
 			if(!tmpCountry.empty())
 				ip = tmpCountry + _T(" (") + ip + _T(")");

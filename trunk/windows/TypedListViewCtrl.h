@@ -307,14 +307,21 @@ public:
 		//avoid an unsigned mismatch and save a few calls to size() =)
 		int size = static_cast<int>(columnList.size());
 
+		T* item = NULL;
+
 		while(( i = GetNextItem(i, LVNI_SELECTED)) != -1) {
+			item = getItemData(i);
 			if(col >= size) {
 				for(int j = 0; j < size; ++j) {
-					buf += getItemData(i)->getText(j) + _T(" ");
+					if(item){
+						buf +=  item->getText(j) + _T(" ");
+					}
 				}
 				buf.erase(buf.size()-1, 1);
 			} else {
-				buf += getItemData(i)->getText(col);
+				if(item) {
+					buf += item->getText(col);
+				}
 			}
 
 			buf += _T("\r\n");

@@ -55,7 +55,7 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 {
 	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
-	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
 		
 	ctrlTotal.Attach(GetDlgItem(IDC_TOTAL));
 
@@ -120,9 +120,6 @@ void UploadPage::write()
 		ShareManager::getInstance()->setIncoming( tmp, ctrlDirectories.GetCheckState(i) ? true : false );
 		
 	}
-
-	// Do specialized writing here
-	ShareManager::getInstance()->refresh();
 }
 
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -163,7 +160,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		ctrlDirectories.DeleteItem(i);
 	}
-	
+
 	return 0;
 }
 

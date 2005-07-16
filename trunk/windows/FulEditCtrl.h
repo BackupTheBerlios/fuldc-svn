@@ -33,6 +33,8 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_FINDREPLACE, onFind)
+		MESSAGE_HANDLER(WM_MOUSEMOVE, onMouseMove)
+		MESSAGE_HANDLER(WM_SETCURSOR, onSetCursor)
 	END_MSG_MAP()
 
 	CFulEditCtrl(void);
@@ -73,18 +75,28 @@ public:
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	//COMMAND ID HANDLERS
 	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-			
-	void	SetNick(const tstring& aNick);
 
+	void	SetNick(const tstring& aNick);
+	void	Clear();
+
+#ifdef DEBUG
+	//used to dump the chatbuffer to a file
+	void	Dump();
+#endif
 private:
 	void	AddInternalLine(const tstring &aLine);
 	void	Colorize(const tstring &aLine, int begin);
 	int		FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int pos, int &lineIndex);
 	int		RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring &line, int &lineIndex);
 	void	AddLogLine(const tstring &aLine);
+	void	CheckAction(ColorSettings* cs, const tstring& line);
+	void	CheckUrls(const tstring &line, const int &lineIndex);
+	void	UpdateUrlRanges(int pos);
 
 	bool		matchedSound;
 	bool		matchedPopup;
@@ -92,6 +104,7 @@ private:
 	bool		logged;
 	bool		skipLog;
 	bool		timeStamps;
+	bool		showHandCursor;
 
 	tstring		nick;
 	tstring		searchTerm;
@@ -101,10 +114,18 @@ private:
 	int			curFindPos;
 	const WORD	findBufferSize;
     static UINT	WM_FINDREPLACE;
-	TStringList	urls;
+
+	//cache this here to avoid having to compute it on every WM_MOUSEMOVE message
+	int			fontHeight;
 	
 	CMenu		menu;
 	CMenu		searchMenu;
+
+	HCURSOR		handCursor;
+	HCURSOR		beamCursor;
+
+	typedef vector<CHARRANGE> UrlRange;
+	UrlRange urlRanges;
 
 	deque<tstring> lastlog;
 };

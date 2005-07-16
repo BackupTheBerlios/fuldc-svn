@@ -301,6 +301,7 @@ public:
 	static wstring getShortTimeString();
 
 	static tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
+	static string replace(const string& aString, const string& fStr, const string& rStr);
 
 	static string getTimeString() {
 		char buf[64];

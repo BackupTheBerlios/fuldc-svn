@@ -92,8 +92,8 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
 		MESSAGE_HANDLER(WM_KEYUP, onFilterChar)
-		MESSAGE_HANDLER(WM_TIMER, onTimer)
 		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
 	END_MSG_MAP()
 
@@ -122,15 +122,6 @@ public:
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-	LRESULT onTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-		if(wParam == 4) {
-			ctrlLastLines.Pop();
-			return 0;
-		}
-		bHandled = FALSE;
-		return 1;
-	}
 	
 	
 	
@@ -139,6 +130,7 @@ public:
 	void addClientLine(const tstring& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
+	void handleTab(bool reverse);
 	void runUserCommand(::UserCommand& uc);
 
 	static void openWindow(const tstring& server);
@@ -278,8 +270,7 @@ private:
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
-		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP),
-		ctrlLastLinesContainer(TOOLTIPS_CLASS, this, FILTER_MESSAGE_MAP)
+		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
 	{
 		FavoriteHubEntry* fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(aServer));
 		if(fhe != NULL) {
@@ -374,7 +365,6 @@ private:
 	CContainedWindow showUsersContainer;
 	CContainedWindow ctrlFilterContainer;
 	CContainedWindow ctrlFilterSelContainer;
-	CContainedWindow ctrlLastLinesContainer;
 	
 	CMenu userMenu;
 	CMenu tabMenu;
@@ -434,6 +424,7 @@ private:
 	void updateUserList();
 	bool parseFilter(int& mode, int64_t& size);
 	void addAsFavorite();
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);
 
 	void clearUserList();
 

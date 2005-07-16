@@ -179,6 +179,13 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 		if(cand->getStatus() != QueueItem::STATUS_RUNNING)
 			break;
 	}
+
+	//check this again, if the first item we pick is running and there are no
+	//other suitable items this will be true
+	if((cand != NULL) && (cand->getStatus() == QueueItem::STATUS_RUNNING)) {
+		cand = NULL;
+	}
+
 	return cand;
 }
 
@@ -521,8 +528,9 @@ void QueueManager::readd(const string& target, User::Ptr& aUser) throw(QueueExce
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::readdUser(User::Ptr& aUser) throw() {
+int QueueManager::readdUser(User::Ptr& aUser) throw() {
 	bool wantConnection = false;
+	int matches = 0;
 	{
 		Lock l(cs);
 		QueueItem::StringMap queue = fileQueue.getQueue();
@@ -532,7 +540,8 @@ void QueueManager::readdUser(User::Ptr& aUser) throw() {
 			if(q != NULL && q->isBadSource(aUser)) {
 				try{
 					QueueItem::Source* s = *q->getBadSource(aUser);
-					wantConnection = addSource(q, s->getPath(), aUser, QueueItem::Source::FLAG_MASK, s->isSet(QueueItem::Source::FLAG_UTF8));
+					wantConnection = addSource(q, s->getPath(), aUser, QueueItem::Source::FLAG_ERROR_MASK, s->isSet(QueueItem::Source::FLAG_UTF8));
+					++matches;
 				} catch(const QueueException& /* e*/){
 				}
 			}
@@ -540,6 +549,8 @@ void QueueManager::readdUser(User::Ptr& aUser) throw() {
 	}
 	if(wantConnection && aUser->isOnline())
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
+
+	return matches;
 }
 
 string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
@@ -686,7 +697,8 @@ int QueueManager::matchFiles(const DirectoryListing::Directory* dir) throw() {
 			}
 			if(equal) {
 				try {
-					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, curDl->getUtf8());
+					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), 
+						QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, curDl->getUtf8());
 					matches++;
 				} catch(const Exception&) {
 				}
@@ -795,7 +807,24 @@ Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw(
 		return d;
 	}
 
-	QueueItem* q = userQueue.getNext(aUser);
+	QueueItem* q = NULL;
+	while((q = userQueue.getNext(aUser)) != NULL) {
+		if(q->isSet(QueueItem::FLAG_USER_LIST)) {
+			break;
+		}
+		
+		int64_t size = File::getSize(q->getTarget());
+		
+		//the file does not exist or it's not complete so try to download it
+		if(size < q->getSize()) {
+			break;
+		}
+        	
+		//remove the file since it already exists (probably downloaded outside of dc)
+		//otherwise it'll be downloaded to a temp-file before it
+		//gets discarded.
+		remove(q->getTarget());
+	}
 
 	if(q == NULL)
 		return NULL;
@@ -1075,16 +1104,13 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 	}
 }
 
-void QueueManager::removeSource(User::Ptr& aUser, int reason) throw() {
+void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
 	string x;
 	
-	//this is so damn ugly i should probably shoot myself but
-	//i'm tired and i hate this damn error =)
-	/*@todo string nick = aUser->getNick();
 	{
 		Lock l(cs);
 		QueueItem* qi = NULL;
-		while( (qi = userQueue.getNext(aUser, QueueItem::PAUSED)) != NULL && Util::stricmp(nick, aUser->getNick()) == 0) {
+		while( (qi = userQueue.getNext(aUser, QueueItem::PAUSED)) != NULL) {
 			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 				remove(qi->getTarget());
 			} else {
@@ -1108,7 +1134,7 @@ void QueueManager::removeSource(User::Ptr& aUser, int reason) throw() {
 				setDirty();
 			}
 		}
-	}*/
+	}
 	if(!x.empty()) {
 		DownloadManager::getInstance()->abortDownload(x);
 	}

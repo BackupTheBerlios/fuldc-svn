@@ -445,7 +445,6 @@ string ResourceManager::strings[] = {
 "Sounds", 
 "Note; because of changing download speeds, this is not 100% accurate...", 
 "View status messages in main chat", 
-"Tab completion of nicks in chat", 
 "Set hub/PM/Search tab bold when contents change", 
 "TCP Port", 
 "Mini slot size", 
@@ -740,6 +739,7 @@ string ResourceManager::strings[] = {
 "Parts", 
 "Releases", 
 "Re-add user to queue", 
+"Mute sounds when away mode is enabled", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1185,7 +1185,6 @@ string ResourceManager::names[] = {
 "SettingsSounds", 
 "SettingsSpeedsNotAccurate", 
 "SettingsStatusInChat", 
-"SettingsTabCompletion", 
 "SettingsTabDirty", 
 "SettingsTcpPort", 
 "SettingsTextMinislot", 
@@ -1480,4 +1479,5 @@ string ResourceManager::names[] = {
 "PresetParts", 
 "PresetReleases", 
 "ReaddSourceToQueue", 
+"MuteOnAway", 
 };

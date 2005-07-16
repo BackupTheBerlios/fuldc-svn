@@ -394,12 +394,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
-		string::size_type i = param.find_first_of("\r\n");
-		if(i != string::npos) {
-			param = param.substr(0, i);
-		}
+		param = fromNmdc(param);
+		param = Util::replace(param, "\r\n", " ");
 
-		i = param.rfind("-");
+		string::size_type i = param.rfind("-");
 		if(i != string::npos) {
 			getHubIdentity().setNick(param.substr(0, i));
 			getHubIdentity().setDescription(param.substr(i+1));
@@ -489,7 +487,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(!param.empty()) {
 			OnlineUser& u = getUser(param);
 
-			if(getMyNick() == param) {
+			if(toNmdc(getMyNick()) == param) {
 				u.getUser()->setFlag(User::DCPLUSPLUS);
 				if(ClientManager::getInstance()->isActive())
 					u.getUser()->unsetFlag(User::PASSIVE);

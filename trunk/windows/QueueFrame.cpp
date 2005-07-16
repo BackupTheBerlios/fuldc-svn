@@ -153,6 +153,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	readdMenu.AppendMenu(MF_STRING, IDC_READD, CTSTRING(ALL));
 	readdMenu.AppendMenu(MF_SEPARATOR);
 
+	readdQueueMenu.AppendMenu(MF_STRING, IDC_READD_QUEUE, CTSTRING(ALL));
+	readdQueueMenu.AppendMenu(MF_SEPARATOR);
+
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
@@ -969,11 +972,15 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 			// re-add all sources
 			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
 				QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
+				//reset the iterator since it won't be valid after the call to readd
+				s = ii->getBadSources().begin();
 			}
 		} else if(wID == IDC_READD_QUEUE) {
 			// re-add all sources
 			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
 				QueueManager::getInstance()->readdUser(s->getUser());
+				//reset the iterator since it won't be valid after the call to readdUser
+				s = ii->getBadSources().begin();
 			}
 		} else {
 			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
@@ -1018,7 +1025,7 @@ LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 	mi.fMask = MIIM_DATA;
 	removeAllMenu.GetMenuItemInfo(id, TRUE, &mi);
 	QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-	QueueManager::getInstance()->removeSource(s->getUser(), QueueItem::Source::FLAG_REMOVED);
+	//@todo QueueManager::getInstance()->removeSource(s->getUser(), QueueItem::Source::FLAG_REMOVED);
 	return 0;
 }
 
@@ -1335,8 +1342,7 @@ void QueueFrame::collapse(HTREEITEM item) {
 			tmp = ctrlDirs.GetNextSiblingItem(tmp);
 		}
 		ctrlDirs.Expand(item, TVE_COLLAPSE);
-	}else 
-		return;
+	}
 }
 
 LRESULT QueueFrame::onSearchReleaseAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -1358,7 +1364,7 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 		if(ht) {
 			tstring * name = (tstring*)ctrlDirs.GetItemData(ht);
 
-			if(tmp == COLUMN_LAST)
+			if(tmp == COLUMN_LAST+5)
 				WinUtil::setClipboard( Util::getLastDir(*name) );
 			else 
 				WinUtil::setClipboard( *name );

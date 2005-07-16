@@ -63,7 +63,6 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_ADLLIST);
 	ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-	listContainer.SubclassWindow(ctrlList.m_hWnd);
 
 	// Set background color
 	ctrlList.SetBkColor(WinUtil::bgColor);
@@ -201,21 +200,20 @@ void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 }
 
 // Keyboard shortcuts
-LRESULT ADLSearchFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 {
-	switch(wParam) 
+	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
+	switch(kd->wVKey) 
 	{
 	case VK_INSERT:
-		onAdd(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_ADD);
 		break;
 	case VK_DELETE:
-		onRemove(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_REMOVE);
 		break;
 	case VK_RETURN:
-		onEdit(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_EDIT);
 		break;
-	default:
-		bHandled = FALSE;
 	}
 	return 0;
 }

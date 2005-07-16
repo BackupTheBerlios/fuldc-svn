@@ -390,7 +390,12 @@ public:
 
 	string read(size_t len) throw(FileException) {
 		string s(len, 0);
-		size_t x = read(&s[0], len);
+		
+		//i'm not sure if the underlying read should be changed...
+		//probably but other stuff might rely on it's behavior so
+		//this will do for now
+		size_t tmp = len;
+		size_t x = read(&s[0], tmp);
 		if(x != len)
 			s.resize(x);
 		return s;

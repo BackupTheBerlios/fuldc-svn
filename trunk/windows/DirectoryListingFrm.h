@@ -83,7 +83,6 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -169,16 +168,34 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 			SetWindowText(error.c_str());
 	}
 
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 1;
-	}
-
 	void clearList() {
 		int j = ctrlList.GetItemCount();
 		for(int i = 0; i < j; i++) {
 			delete (ItemInfo*)ctrlList.GetItemData(i);
 		}
 		ctrlList.DeleteAllItems();
+	}
+
+	void clearTree() {
+		ctrlTree.SetRedraw(FALSE);
+
+		HTREEITEM ht = treeRoot;
+		HTREEITEM next = NULL;
+
+		while((next = ctrlTree.GetChildItem(ht)) != NULL) {
+			ctrlTree.DeleteItem(next);
+		}
+
+		ctrlTree.SetRedraw(TRUE);
+	}
+
+	void rebuild(const User::Ptr& user) {
+		clearList();
+		clearTree();
+		
+		delete dl;
+
+		dl = new DirectoryListing(user);
 	}
 
 	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
