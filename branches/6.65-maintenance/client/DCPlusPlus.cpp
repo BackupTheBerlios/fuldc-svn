@@ -48,7 +48,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	// Nev's great contribution to dc++
 	while(1) break;
 	
-	tstring tku[14] = {
+	tstring tku[] = {
 		_T("Fastkedjad i templet, ormar överallt, kukar överallt\r\n"),
 		_T("Jag såg en skäggig herre, han var täckt av säd\r\n"), 
 		_T("Läder och homosex, rött vin och havrekex, det vill vi ha!\r\n"),
@@ -63,9 +63,33 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 		_T("Äta olja, dricka sand, spela i arabiska heavymetalband\r\n"),
 		_T("Mellan Hudik och Sundsvall - det brutala Gnarp!\r\n"),
 		_T("Himmelriket i Norrland - det totala Gnarp!\r\n"),
+		_T("<[Slampa]Monolina> Hellre en slampa än en sockertopp :/\r\n"),
+		_T("<[Sockertopp]Monolina> Jag tycker illa om Irean nu.. Ååh vad hon är dum :(\r\n"),
+		_T("<[Sockertopp]Monolina> Dummadummadummadummadumma Irean! *pekar på sitt prefix och gråter*\r\n"),
+		_T("<[Sockertopp]Monolina> ZooR rädda mig!\r\n"),
+		_T("<[Rosenknopp]Monolina> Ni - *pekar anklagande på alla tanter* - är onda! *gny*\r\n"),
+		_T("<[Rosenknopp]Monolina> Ni sabbar mitt rykte och min badboy-image\r\n"),
+		_T("<[Rosenknopp]Monolina> Mitt prefix är en skam\r\n"),
+		_T("<[Rosenknopp]Monolina> Jag är en POJKE\r\n"),
+		_T("<[Rosenknopp]Monolina> *tittar under Whoevers kjol*\r\n"),
+		_T("<[Rosenknopp]Monolina  spelar Edguy och tänker på ZooR\r\n"),
+		_T("<[KasslerLover]Monolina> Siren hjälp mig\r\n"),
+		_T("<[SexySingle]Monolina> elakisar *peka på Irean* och tystisar *peka på resten av er*\r\n"),
+		_T("<[Wet&Kinky]Monolina> Men.. Du ska ju stoppa sedlar i mina kalsonger ju\r\n"),
+		_T("<[Wet&Kinky]Monolina> *lyder Siren*\r\n"),
+		_T("<[Wet&Kinky]Monolina> /me springer naken och skrikande genom chatten\r\n"),
+		_T("<[Wet&Kinky]Monolina> Irean är elak :/\r\n"),
+		_T("<[Sockersöt]Monolina> Elaka Irean\r\n"),
+		_T("<[Spirit]Mono> Så om du är sugen så.. I'm open for suggestions.\r\n"),
+		_T("<[Brudnäbb]Monolina> *surar*\r\n"),
+		_T("<[Spirit]Mono> Men vafan.. när du eggar mig sådär så.. vem kan motstå?\r\n"),
+		_T("<[Brudnäbb]Monolina> Men hårddiskar är ju det som lockar folk mest\r\n"),
+		_T("<[Brudnäbb]Monolina> *cries like a baby*\r\n"),
+		_T("<[Brudnäbb]Monolina> Jag är Normal\r\n"),
+		_T("<[Spirit]Mono> Fånga kor? Jag försöker ju fånga Siren.. det är väl ungefär samma sak?\r\n")
 	};
 	Util::initialize();
-	int index = Util::rand(14);
+	int index = Util::rand(38);
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();

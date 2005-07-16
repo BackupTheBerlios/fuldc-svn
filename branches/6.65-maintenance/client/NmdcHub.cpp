@@ -367,12 +367,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
 		param = fromNmdc(param);
-		int i = param.find_first_of("\r\n");
-		if(i != string::npos)
-			name = param.substr(0, i);
-		else
-			name = param;
-
+		name = Util::replace(param, "\r\n", " ");
+	
+		string::size_type i;
 		if( (i = name.rfind(" - ")) != string::npos)
 			shortName = name.substr(0, i);
 		else

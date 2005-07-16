@@ -996,6 +996,16 @@ tstring Util::replace(const tstring& aString, const tstring& fStr, const tstring
 
 	return tmp;
 }
+
+string Util::replace(const string& aString, const string& fStr, const string& rStr) {
+	string tmp = aString;
+	string::size_type pos;
+	while( (pos = tmp.find(fStr)) != string::npos ) {
+		tmp.replace(pos, fStr.length(), rStr);
+	}
+
+	return tmp;
+}
 /**
  * @file
  * $Id: Util.cpp,v 1.4 2004/02/14 13:26:28 trem Exp $
