@@ -61,6 +61,10 @@ const string Util::ANTI_FRAG_EXT = ".antifrag";
 
 static void sgenrand(unsigned long seed);
 
+extern "C" void bz_internal_error(int errcode) { 
+	dcdebug("bzip2 internal error: %d\n", errcode); 
+}
+
 void Util::initialize() {
 	setlocale(LC_ALL, "");
 

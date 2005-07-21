@@ -324,6 +324,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 		lastInfoMap[var] = tmp; \
 	}
 
+	updateCounts(false); \
+
 	ADDPARAM("NI", getMyIdentity().getNick());
 	ADDPARAM("DE", getMyIdentity().getDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));

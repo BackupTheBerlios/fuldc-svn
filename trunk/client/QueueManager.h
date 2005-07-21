@@ -116,6 +116,8 @@ public:
 		return (pfsQueue.find(aUser->getCID()) != pfsQueue.end()) || (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
+	int countOnlineSources(const string& aTarget);
+	
 	void loadQueue() throw();
 	void saveQueue() throw();
 	
