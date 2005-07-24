@@ -334,6 +334,7 @@ private:
 		tabList.push_back(_T("/ts"));
 		tabList.push_back(_T("/unshare"));
 		tabList.push_back(_T("/uptime"));
+		tabList.push_back(_T("/userlist"));
 	}
 
 	~HubFrame() {
