@@ -99,6 +99,9 @@ public:
 
 		size_t getTotalFileCount(bool adls = false);		
 		int64_t getTotalSize(bool adls = false);
+		void filterList(DirectoryListing& dirList);
+		void filterList(const HASH_SET<TTHValue, TTHValue::Hash>& l);
+		void getHashList(HASH_SET<TTHValue, TTHValue::Hash>& l);
 		
 		size_t getFileCount() { return files.size(); };
 		
@@ -129,7 +132,7 @@ public:
 
 	DirectoryListing(const User::Ptr& aUser) : user(aUser), utf8(false), root(new Directory(NULL, Util::emptyString, false, false)) {
 	}
-	
+
 	~DirectoryListing() {
 		delete root;
 	}
@@ -151,6 +154,8 @@ public:
 
 	const Directory* getRoot() const { return root; }
 	Directory* getRoot() { return root; }
+
+	static User::Ptr getUserFromFilename(const string& fileName);
 
 	GETSET(User::Ptr, user, User);
 	GETSET(bool, utf8, Utf8);

@@ -105,6 +105,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COMMAND_ID_HANDLER(IDC_FIND, onFind)
 		COMMAND_ID_HANDLER(IDC_NEXT, onNext)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
+		COMMAND_ID_HANDLER(IDC_FILELIST_DIFF, onListDiff)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -214,6 +215,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	}
 
 	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onListDiff(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
@@ -313,7 +315,7 @@ private:
 				}
 			}
 		}
-		
+
 		bool isDupe() const { return dupe; }
 	private:
 		tstring columns[COLUMN_LAST];
@@ -328,7 +330,7 @@ private:
 	CMenu copyMenu;
 	CMenu searchMenu;
 	CContainedWindow statusContainer;
-		
+
 	StringList targets;
 	StringPairList downloadPaths;
 	
@@ -338,6 +340,7 @@ private:
 	HTREEITEM treeRoot;
 	
 	CButton ctrlFind, ctrlFindNext;
+	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
 
 	/** Parameter map for user commands */
@@ -355,7 +358,7 @@ private:
 	bool searching;
 	bool mylist;
 
-	int statusSizes[8];
+	int statusSizes[9];
 	
 	DirectoryListing* dl;
 

@@ -108,6 +108,8 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 		if(!aTempTarget.empty()) {
 			qi->setTempTarget(aTempTarget);
 		}
+	} else {
+		qi->setPriority(QueueItem::HIGHEST);
 	}
 
 	if((qi->getDownloadedBytes() > 0))
@@ -1226,7 +1228,7 @@ void QueueManager::saveQueue() throw() {
 						f.write(STRINGLEN("\t\t<Source Nick=\""));
 						f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
 					}
-					if(!s->getPath().empty() || (!s->getUser()->isSet(User::TTH_GET) && qi->getTTH())) {
+					if(!s->getPath().empty() && (!s->getUser()->isSet(User::TTH_GET) || !qi->getTTH()) ) {
 						f.write(STRINGLEN("\" Path=\""));
 						f.write(CHECKESCAPE(s->getPath()));
 						f.write(STRINGLEN("\" Utf8=\""));

@@ -1012,15 +1012,11 @@ static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0
 LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring file;
 	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getAppPath() + "FileLists\\"), types)) {
-		tstring username;
-		if(file.rfind('\\') != string::npos) {
-			username = file.substr(file.rfind('\\') + 1);
-			if(username.rfind('.') != string::npos) {
-				username.erase(username.rfind('.'));
-			}
-			if(username.length() > 4 && Util::stricmp(username.c_str() + username.length() - 4, _T(".xml")) == 0)
-				username.erase(username.length()-4);
-			/// @todo DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(Text::fromT(username)));
+		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
+		if(u) {
+			DirectoryListingFrame::openWindow(file, u);
+		} else {
+			MessageBox(CTSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		}
 	}
 	return 0;

@@ -357,6 +357,26 @@ private:
 	tstring currentCommand;
 	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
+	struct CountAvailable {
+		CountAvailable() : available(0) { }
+		int64_t available;
+		void operator()(UserInfo *ui) {
+			available += ui->getIdentity().getBytesShared();
+		}
+	};
+
+	size_t getUserCount() const {
+		size_t sel = ctrlUsers.GetSelectedCount();
+		return sel>1?sel:client->getUserCount();
+	}
+
+	int64_t getAvailable() {
+		if (ctrlUsers.GetSelectedCount() > 1) {
+			return ctrlUsers.forEachSelectedT(CountAvailable()).available;
+		} else
+			return client->getAvailable();
+	}
+
 	TStringList tabList;
 
 	Client* client;
@@ -434,7 +454,8 @@ private:
 		
 		/** @todo if(u->isSet(User::DCPLUSPLUS))
 			image+=2; */
-		if(u.isTcpActive()) {
+		if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !u.isTcpActive()) {
+			// Users we can't connect to...
 			image+=4;
 		}
 		return image;	

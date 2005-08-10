@@ -206,6 +206,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			aSource->setFlag(UserConnection::FLAG_HASSLOT);
 			running++;
 		}
+
+		reservedSlots.erase(aSource->getUser());
 	}
 
 	return true;
@@ -214,7 +216,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 void UploadManager::reserveSlot(const User::Ptr& aUser) {
 	{
 		Lock l(cs);
-		reservedSlots[aUser] = GET_TICK();
+		reservedSlots.insert(aUser);
 	}
 	if(aUser->isOnline())
 		ClientManager::getInstance()->connect(aUser);
@@ -334,17 +336,6 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
 		aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 	}
 	ConnectionManager::getInstance()->putUploadConnection(aConn, ntd);
-}
-
-void UploadManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
-	Lock l(cs);
-	for(SlotIter j = reservedSlots.begin(); j != reservedSlots.end();) {
-		if(j->second + 600 * 1000 < aTick) {
-			reservedSlots.erase(j++);
-		} else {
-			++j;
-		}
-	}
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() { 

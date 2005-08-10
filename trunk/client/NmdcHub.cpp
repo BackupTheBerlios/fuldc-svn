@@ -394,16 +394,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
-		param = fromNmdc(param);
-		param = Util::replace(param, "\r\n", " ");
-
-		string::size_type i = param.rfind("-");
-		if(i != string::npos) {
+		// Hack - first word goes to hub name, rest to description
+		string::size_type i = param.find(' ');
+		if(i == string::npos) {
+			getHubIdentity().setNick(param);
+			getHubIdentity().setDescription(Util::emptyString);			
+		} else {
 			getHubIdentity().setNick(param.substr(0, i));
 			getHubIdentity().setDescription(param.substr(i+1));
-		} else {
-			getHubIdentity().setNick(param);
-			getHubIdentity().setDescription(param);
 		}
 		fire(ClientListener::HubUpdated(), this);
 	} else if(cmd == "$Supports") {

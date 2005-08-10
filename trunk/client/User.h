@@ -87,10 +87,12 @@ private:
 class Identity : public Flags {
 public:
 	enum {
-		GOT_INF_BIT
+		GOT_INF_BIT,
+		NMDC_PASSIVE_BIT
 	};
 	enum Flags {
-		GOT_INF
+		GOT_INF = 1 << GOT_INF_BIT,
+		NMDC_PASSIVE = 1 << NMDC_PASSIVE_BIT
 	};
 
 	Identity() { }
@@ -120,7 +122,7 @@ public:
 	const bool isHub() const { return !get("HU").empty(); }
 	const bool isOp() const { return !get("OP").empty(); }
 	const bool isHidden() const { return !get("HI").empty(); }
-	const bool isTcpActive() const { return !getIp().empty(); }
+	const bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
 	const bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 
 	const string& get(const char* name) const {

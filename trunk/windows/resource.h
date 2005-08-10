@@ -174,6 +174,7 @@
 #define IDD_DIALOG4                     310
 #define IDC_BOLD_BOOLEANS               311
 #define IDC_SETTINGS_BOLD_CONTENTS      312
+#define IDC_FILELIST_DIFF               313
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002

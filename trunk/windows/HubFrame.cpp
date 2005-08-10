@@ -1396,7 +1396,7 @@ void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
 void HubFrame::on(HubUpdated, Client*) throw() { 
-	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName(), true, false) + " (" + client->getHubUrl() + ")");
+	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName() + " " + client->getHubDescription(), true, false) + " (" + client->getHubUrl() + ")");
 }
 void HubFrame::on(Message, Client*, const string& line) throw() { 
 	if(SETTING(FILTER_MESSAGES)) {
