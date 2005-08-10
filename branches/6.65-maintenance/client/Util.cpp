@@ -989,9 +989,10 @@ wstring Util::getShortTimeString() {
 
 tstring Util::replace(const tstring& aString, const tstring& fStr, const tstring& rStr) {
 	tstring tmp = aString;
-	tstring::size_type pos;
-	while( (pos = tmp.find(fStr)) != tstring::npos ) {
+	tstring::size_type pos = 0;
+	while( (pos = tmp.find(fStr, pos)) != tstring::npos ) {
 		tmp.replace(pos, fStr.length(), rStr);
+		pos += rStr.length() - fStr.length();
 	}
 
 	return tmp;
@@ -1002,6 +1003,7 @@ string Util::replace(const string& aString, const string& fStr, const string& rS
 	string::size_type pos;
 	while( (pos = tmp.find(fStr)) != string::npos ) {
 		tmp.replace(pos, fStr.length(), rStr);
+		pos += rStr.length() - fStr.length();
 	}
 
 	return tmp;

@@ -757,7 +757,7 @@ BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 	if(cr.cpMax != cr.cpMin) {
 		TCHAR *buf = new TCHAR[cr.cpMax - cr.cpMin + 1];
 		GetSelText(buf);
-		searchTerm = buf;
+		searchTerm = Util::replace(buf, _T("\r"), _T("\r\n"));
 		delete[] buf;
 	} else {
 		tstring line;
