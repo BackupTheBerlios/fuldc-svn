@@ -34,6 +34,8 @@
 #include "../client/FavoriteManager.h"
 #include "../client/LogManager.h"
 #include "../client/AdcCommand.h"
+#include "../client/ConnectionManager.h"
+#include "../client/SearchManager.h"
 #include "../client/version.h"
 #include "../client/IgnoreManager.h"
 
@@ -274,7 +276,7 @@ void HubFrame::onEnter() {
 					ctrlShowUsers.SetCheck(BST_CHECKED);
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(TCP_PORT)) + "/" + Util::toString(SETTING(UDP_PORT)))));
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + Util::toString(SearchManager::getInstance()->getPort()))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
@@ -438,7 +440,7 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 		if( Util::stricmp(u.identity.getNick(), ui->user->getFirstNick()) == 0) {
 			resort = ui->update(u.identity, ctrlUsers.getSortColumn()) || resort;
 			ctrlUsers.updateItem(i);
-			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
+			//@todo ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
 
 			//the user might have updated something that should
 			//be filtered
@@ -474,7 +476,7 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 	}
 	
 	if( add ){
-		ctrlUsers.insertItem(ui, getImage(u.user));
+		//@todo ctrlUsers.insertItem(ui, getImage(u.user));
 	}
 
 	return true;
@@ -501,6 +503,8 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	if(sortCol != -1) {
 		needsSort = needsSort || (old != columns[sortCol]);
 	}
+
+	setIdentity(identity);
 	return needsSort;
 }
 
@@ -931,8 +935,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
-	ucParams["mynick"] = client->getMyNick();
-	ucParams["mycid"] = SETTING(CLIENT_ID);
+	client->getMyIdentity().getParams(ucParams, "my");
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
@@ -942,9 +945,10 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
 			StringMap tmp = ucParams;
-			/**@todo u->user->getParams(tmp);
+
+			u->getIdentity().getParams(tmp, "user");
 			client->escapeParams(tmp);
-			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); 
 		}
 	}
 	return;
@@ -1285,8 +1289,9 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 		lastLinesList.erase(lastLinesList.begin());
 	lastLinesList.push_back(line);
 
-	if(BOOLSETTING(HUB_BOLD_TABS))
+	if (BOOLSETTING(TAB_HUB_DIRTY)) {
 		setDirty();
+	}
 	
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 		addLine(_T("*** ") + aLine, BOOLSETTING(HUB_BOLD_TABS));
@@ -1585,7 +1590,8 @@ void HubFrame::updateUserList() {
 	if(filter.empty()) {
 		for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
 			if(i->second != NULL)
-				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
+				;
+				//@todo ctrlUsers.insertItem(i->second, getImage(i->second->user));	
 		}
 		ctrlUsers.SetRedraw(TRUE);
 		return;
@@ -1594,7 +1600,7 @@ void HubFrame::updateUserList() {
 	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
 		if( i->second != NULL ) {
 			if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
-				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
+				//@todo ctrlUsers.insertItem(i->second, getImage(i->second->user));	
 			}
 		}
 	}

@@ -207,7 +207,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		// Filter own searches
 		if(ClientManager::getInstance()->isActive()) {
-			if(seeker == (getLocalIp() + ":" + Util::toString(SETTING(UDP_PORT)))) {
+			if(seeker == (getLocalIp() + ":" + Util::toString(SearchManager::getInstance()->getPort()))) {
 				return;
 			}
 		} else {
@@ -578,7 +578,6 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				OnlineUser& ou = getUser(*it);
 				ou.getIdentity().setOp(true);
 				v.push_back(&getUser(*it));
-				v.back()->getUser()->setFlag(User::OP);
 			}
 
 			fire(ClientListener::UsersUpdated(), this, v);
@@ -629,7 +628,7 @@ void NmdcHub::connectToMe(const OnlineUser& aUser) {
 	checkstate(); 
 	dcdebug("NmdcHub::connectToMe %s\n", aUser.getIdentity().getNick().c_str());
 	ConnectionManager::getInstance()->nmdcExpect(aUser.getIdentity().getNick(), getMyNick(), getHubUrl());
-	send("$ConnectToMe " + toNmdc(aUser.getIdentity().getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(TCP_PORT)) + "|");
+	send("$ConnectToMe " + toNmdc(aUser.getIdentity().getNick()) + " " + getLocalIp() + ":" + Util::toString(ConnectionManager::getInstance()->getPort()) + "|");
 }
 
 void NmdcHub::revConnectToMe(const OnlineUser& aUser) {
@@ -700,7 +699,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	if(ClientManager::getInstance()->isActive()) {
 		string x = getLocalIp();
 		buf = new char[x.length() + aString.length() + 64];
-		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(UDP_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
 		buf = new char[getMyNick().length() + aString.length() + 64];
 		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", toNmdc(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());

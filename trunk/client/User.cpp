@@ -26,6 +26,12 @@ OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), ident
 
 }
 
+void Identity::getParams(StringMap& map, const string& prefix) const {
+	for(InfMap::const_iterator i = info.begin(); i != info.end(); ++i) {
+		map[prefix + string((char*)(&i->first), 2)] = i->second;
+	}
+	map[prefix + "CID"] = user->getCID().toBase32();
+}
 
 /**
  * @file

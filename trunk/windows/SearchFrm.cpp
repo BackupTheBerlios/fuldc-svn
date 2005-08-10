@@ -43,7 +43,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, Resourc
 
 SearchFrame::FrameMap SearchFrame::frames;
 
-void SearchFrame::openWindow(const tstring& str /* = Util::emptyString */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
+void SearchFrame::openWindow(const tstring& str /* = Util::emptyString */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY ( 0 ) */) {
 	SearchFrame* pChild = new SearchFrame();
 	pChild->setInitial(str, size, mode, type);
 	pChild->CreateEx(WinUtil::mdiClient);
@@ -139,6 +139,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlSlots.SetButtonStyle(BS_AUTOCHECKBOX, FALSE);
 	ctrlSlots.SetFont(WinUtil::systemFont, FALSE);
 	ctrlSlots.SetWindowText(CTSTRING(ONLY_FREE_SLOTS));
+	ctrlSlots.SetCheck(onlyFree);
 	slotsContainer.SubclassWindow(ctrlSlots.m_hWnd);
 
 	ctrlTTH.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, NULL, IDC_ONLYTTH);
@@ -189,7 +190,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlFiletype.AddString(CTSTRING(VIDEO));
 	ctrlFiletype.AddString(CTSTRING(DIRECTORY));
 	ctrlFiletype.AddString(_T("TTH"));
-	ctrlFiletype.SetCurSel(0);
+	ctrlFiletype.SetCurSel(SETTING(LAST_SEARCH_TYPE));
 	
 	// Create listview columns
 	WinUtil::splitTokens(columnIndexes, SETTING(SEARCHFRAME_ORDER), COLUMN_LAST);
@@ -262,6 +263,14 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 void SearchFrame::onEnter() {
 	StringList clients;
 	
+	// Change Default Settings If Changed
+	if (onlyTTH != BOOLSETTING(SEARCH_ONLY_TTH))
+		SettingsManager::getInstance()->set(SettingsManager::SEARCH_ONLY_TTH, onlyTTH);
+	if (onlyFree != BOOLSETTING(SEARCH_ONLY_FREE_SLOTS))
+		SettingsManager::getInstance()->set(SettingsManager::SEARCH_ONLY_FREE_SLOTS, onlyFree);
+	if (!initialType && ctrlFiletype.GetCurSel() != SETTING(LAST_SEARCH_TYPE))
+		SettingsManager::getInstance()->set(SettingsManager::LAST_SEARCH_TYPE, ctrlFiletype.GetCurSel());
+
 	if(!(ctrlSearch.GetWindowTextLength() > 0))
 		return;
 

@@ -75,22 +75,18 @@ public:
 	}
 
 	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
-	void adcConnect(const string& aServer, short aPort, const string& aToken);
+	void adcConnect(const OnlineUser& aUser, short aPort, const string& aToken);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
 	void putUploadConnection(UserConnection* aSource, bool ntd);
 	
 	void removeConnection(const User::Ptr& aUser, int isDownload);
 	void shutdown();	
-	/**
-	 * Set this ConnectionManager to listen at a different port.
-	 */
-	void setPort(short aPort) throw(SocketException) {
-		port = aPort;
-		socket.waitForConnections(aPort);
-	}
+	/** Find a suitable port to listen on, and start doing it */
+	void listen() throw(Exception);
 	void disconnect() throw() {
 		socket.disconnect();
+		port = 0;
 	}
 	unsigned short getPort() {
 		return port;

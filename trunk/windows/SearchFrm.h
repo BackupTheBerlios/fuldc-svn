@@ -124,7 +124,7 @@ public:
 		filterContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
 		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
+		showUI(true), onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
 		onlyTTH(BOOLSETTING(SEARCH_ONLY_TTH)), timerID(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
@@ -360,21 +360,13 @@ private:
 			/// @todo connection = Text::toT(sr->getUser()->getConnection());
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
-			
-			tstring country;
-			if(!sr->getIP().empty()) {
-				country = Text::toT(Util::getIpCountry(sr->getIP()));
+			ip = Text::toT(sr->getIP());
+			if (!ip.empty()) {
+				// Only attempt to grab a country mapping if we actually have an IP address
+				tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+				if(!tmpCountry.empty())
+					ip = tmpCountry + _T(" (") + ip + _T(")");
 			}
-
-			if(country.empty()) {
-				ip = Text::toT(sr->getIP());;
-			} else {
-				ip = country + Text::toT(" (" + sr->getIP() + ")");
-			}
-			
-			tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
-			if(!tmpCountry.empty())
-				ip = tmpCountry + _T(" (") + ip + _T(")");
 			if(sr->getTTH() != NULL)
 				setTTH(Text::toT(sr->getTTH()->toBase32()));
 		}

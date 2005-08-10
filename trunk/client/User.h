@@ -33,7 +33,6 @@ class User : public FastAlloc<User>, public PointerBase, public Flags
 {
 public:
 	enum Bits {
-		OP_BIT,
 		ONLINE_BIT,
 		DCPLUSPLUS_BIT,
 		PASSIVE_BIT,
@@ -46,7 +45,6 @@ public:
 
 	/** Each flag is set if it's true in at least one hub */
 	enum UserFlags {
-		OP = 1<<OP_BIT,
 		ONLINE = 1<<ONLINE_BIT,
 		DCPLUSPLUS = 1<<DCPLUSPLUS_BIT,
 		PASSIVE = 1<<PASSIVE_BIT,
@@ -137,6 +135,7 @@ public:
 			info[*(short*)name] = val;
 	}
 	
+	void getParams(StringMap& map, const string& prefix) const;
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubUrl, HubUrl);
 	//oops same as a macro, well it works for now since they're equal

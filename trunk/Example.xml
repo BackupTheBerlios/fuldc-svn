@@ -37,8 +37,8 @@
 		<String Name="AwayModeOn">Away mode on: </String>
 		<String Name="B">B</String>
 		<String Name="BanUser">Ban user(s)</String>
-		<String Name="Bool">0/1</String>
 		<String Name="BothUsersOffline">Both users offline</String>
+		<String Name="Bps">B/s</String>
 		<String Name="Browse">Browse...</String>
 		<String Name="BrowseAccel">&amp;Browse...</String>
 		<String Name="BrowseFileList">Browse file list</String>
@@ -115,6 +115,7 @@
 		<String Name="FavoriteDirName">Favorite name</String>
 		<String Name="FavoriteDirNameLong">Under what name you see the directory</String>
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
+		<String Name="FavoriteHubAlreadyExists">Hub already exists as a favorite</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
 		<String Name="FavoriteHubs">Favorite Hubs</String>
@@ -223,7 +224,6 @@
 		<String Name="MenuOpenOwnList">Open own list</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
-		<String Name="MenuReadme">Readme / Newbie help</String>
 		<String Name="MenuReconnect">&amp;Reconnect	Ctrl+R</String>
 		<String Name="MenuRefreshFileList">Refresh file list</String>
 		<String Name="MenuReportBug">Report a bug</String>
@@ -283,7 +283,6 @@
 		<String Name="Pib">PiB</String>
 		<String Name="Picture">Picture</String>
 		<String Name="Port">Port: </String>
-		<String Name="PortIsBusy">Port %d is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++</String>
 		<String Name="PreparingFileList">Preparing file list...</String>
 		<String Name="PressFollow">Press the follow redirect button to connect to </String>
 		<String Name="Priority">Priority</String>
@@ -310,6 +309,7 @@
 		<String Name="RemoveSource">Remove source</String>
 		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
 		<String Name="Running">Running...</String>
+		<String Name="S">s</String>
 		<String Name="Search">Search</String>
 		<String Name="SearchByTth">Search by TTH</String>
 		<String Name="SearchFor">Search for</String>
@@ -346,6 +346,7 @@
 		<String Name="SettingsAutoUpdateList">Automatically refresh share</String>
 		<String Name="SettingsAutoOpen">Auto-open at startup</String>
 		<String Name="SettingsBindAddress">Bind address</String>
+		<String Name="SettingsBoldOptions">Bold options</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
 		<String Name="SettingsColors">Colors</String>
@@ -372,7 +373,8 @@
 		<String Name="SettingsFavoriteDirs">Favorite download directories</String>
 		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
-		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
+		<String Name="SettingsFinishedDownloadDirty">Set Finished Download tab bold when an entry is added</String>
+		<String Name="SettingsFinishedUploadDirty">Set Finished Upload tab bold when an entry is added</String>
 		<String Name="SettingsFirewallNat">Firewall with manual port forwarding</String>
 		<String Name="SettingsFirewallPassive">Firewall (passive, last resort)</String>
 		<String Name="SettingsFirewallUpnp">Firewall with UPnP</String>
@@ -444,14 +446,16 @@
 		<String Name="SettingsSounds">Sounds</String>
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
-		<String Name="SettingsTabDirty">Set hub/PM/Search tab bold when contents change</String>
+		<String Name="SettingsTabHubDirty">Set hub tab bold when contents change</String>
+		<String Name="SettingsTabPmDirty">Set PM tab bold when contents change</String>
+		<String Name="SettingsTabSearchDirty">Set search tab bold when contents change</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
-		<String Name="SettingsPrioHighest">Highest prio size</String>
-		<String Name="SettingsPrioHigh">High prio size</String>
-		<String Name="SettingsPrioNormal">Normal prio size</String>
-		<String Name="SettingsPrioLow">Low prio size</String>
-		<String Name="SettingsPrioLowest">Lowest prio enabled</String>
+		<String Name="SettingsPrioHighest">Highest prio max size</String>
+		<String Name="SettingsPrioHigh">High prio max size</String>
+		<String Name="SettingsPrioNormal">Normal prio max size</String>
+		<String Name="SettingsPrioLow">Low prio max size</String>
+		<String Name="SettingsPrioLowest">Set lowest prio for newly added files larger than Low prio size</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
@@ -493,6 +497,7 @@
 		<String Name="StoredPasswordSent">Stored password sent...</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
+		<String Name="TcpPortBusy">Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port</String>
 		<String Name="Tib">TiB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimeLeft">Time left</String>
@@ -504,6 +509,7 @@
 		<String Name="TthInconsistency">TTH inconsistency</String>
 		<String Name="TthRoot">TTH Root</String>
 		<String Name="Type">Type</String>
+		<String Name="UdpPortBusy">Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port</String>
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="Unknown">Unknown</String>
 		<String Name="UnknownAddress">Unknown address</String>

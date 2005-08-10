@@ -159,7 +159,7 @@ public:
 		return port;
 	}
 
-	void setPort(short aPort) throw(SocketException);
+	void listen() throw(Exception);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);

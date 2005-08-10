@@ -225,6 +225,14 @@ private:
 		if(aUser == user)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
+	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
+		if(aUser == user)
+			PostMessage(WM_SPEAKER, USER_UPDATED);
+	}
+	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+		if(aUser == user)
+			PostMessage(WM_SPEAKER, USER_UPDATED);
+	}
 };
 
 #endif // !defined(PRIVATE_FRAME_H)

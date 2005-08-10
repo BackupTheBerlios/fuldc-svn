@@ -280,7 +280,7 @@ private:
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw();
 };
 
 #endif // !defined(QUEUE_MANAGER_H)

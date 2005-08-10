@@ -66,6 +66,7 @@ protected:
 
 	static Item items[];
 	static TextItem texts[];
+	static ListItem listItems[];
 
 	CStatic ctrlExample;
 	COLORREF fg, bg, upBar, downBar;

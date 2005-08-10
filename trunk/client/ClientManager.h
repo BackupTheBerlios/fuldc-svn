@@ -81,6 +81,13 @@ public:
 	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
 
+	bool isOnline(const User::Ptr& aUser) {
+		Lock l(cs);
+		return onlineUsers.find(aUser->getCID()) != onlineUsers.end();
+	}
+
+	bool isOp(const User::Ptr& aUser, const string& aHubUrl);
+
 	string getHubUrl(const User::Ptr& user);
 
 	/** Constructs a synthetic, hopefully unique CID */

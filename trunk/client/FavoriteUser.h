@@ -40,6 +40,8 @@ public:
 		FLAG_GRANTSLOT = 1 << 0
 	};
 
+	User::Ptr& getUser() { return user; }
+
 	GETSET(User::Ptr, user, User);
 	GETSET(Identity, lastIdentity, LastIdentity);
 	GETSET(u_int32_t, lastSeen, LastSeen);

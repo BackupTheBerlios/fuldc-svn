@@ -150,7 +150,7 @@ string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 			i++;
 		}
 		if(checkNewLines) {
-			// Check all '<' and '|' after newlines...
+			// Check all '<' and '[' after newlines...
 			i = 0;
 			while( (i = tmp.find('\n', i)) != string::npos) {
 				if(i + 1 < tmp.length()) {

@@ -60,7 +60,7 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
+	"MaxCompression", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
@@ -71,7 +71,8 @@ const string SettingsManager::settingTags[] =
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
-	"NoIpOverride",
+	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
+	"TabHubDirty", "TabPmDirty", "TabSearchDirty", 
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
@@ -82,7 +83,7 @@ const string SettingsManager::settingTags[] =
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
-	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
+	"IgnoreTTHInconsistency",
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
     "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", 
 	"SENTRY",
@@ -123,8 +124,8 @@ SettingsManager::SettingsManager()
 	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads" PATH_SEPARATOR_STR);
 	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getAppPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
-	setDefault(TCP_PORT, Util::rand(1025, 32000));
-	setDefault(UDP_PORT, Util::rand(1025, 32000));
+	setDefault(TCP_PORT, 0);
+	setDefault(UDP_PORT, 0);
 	setDefault(INCOMING_CONNECTIONS, INCOMING_DIRECT);
 	setDefault(OUTGOING_CONNECTIONS, OUTGOING_DIRECT);
 	setDefault(ROLLBACK, 4096);
@@ -188,8 +189,6 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
-	setDefault(FINISHED_DIRTY, true);
-	setDefault(QUEUE_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
@@ -231,6 +230,14 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_NETWORK_STATISTICS, false);
 	setDefault(OPEN_NOTEPAD, false);
 	setDefault(NO_IP_OVERRIDE, false);
+	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
+	setDefault(LAST_SEARCH_TYPE, 0);
+	setDefault(FINISHED_DOWNLOAD_DIRTY, true);
+	setDefault(FINISHED_UPLOAD_DIRTY, true);
+	setDefault(QUEUE_DIRTY, true);
+	setDefault(TAB_HUB_DIRTY, true);
+	setDefault(TAB_SEARCH_DIRTY, true);
+	setDefault(TAB_PM_DIRTY, true);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -279,8 +286,6 @@ SettingsManager::SettingsManager()
 	setDefault(FLASH_WINDOW_ON_PM, false);
 	setDefault(FLASH_WINDOW_ON_NEW_PM, false);
 	setDefault(IGNORE_TTH_INCONSISTENCY, false);
-	setDefault(ADD_FINISHED_DOWNLOADS, true);
-	setDefault(ADD_FINISHED_UPLOADS, true);
 	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,0,1,1");
 	setDefault(FINISHED_VISIBLE, "1,1,1,1,1,1,1,1");
 	setDefault(FINISHED_UL_VISIBLE, "1,1,1,1,1,1,1");

@@ -239,7 +239,7 @@ LRESULT FinishedFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	if(wParam == SPEAK_ADD_LINE) {
 		FinishedItem* entry = reinterpret_cast<FinishedItem*>(lParam);
 		addEntry(entry);
-		if(BOOLSETTING(FINISHED_DIRTY))
+		if(BOOLSETTING(FINISHED_DOWNLOAD_DIRTY))
 			setDirty();
 		updateStatus();
 	} else if(wParam == SPEAK_REMOVE) {

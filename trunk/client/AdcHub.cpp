@@ -27,6 +27,8 @@
 #include "ConnectionManager.h"
 #include "version.h"
 #include "Util.h"
+#include "UserCommand.h"
+#include "FavoriteManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 
@@ -167,7 +169,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 
 	string token;
 	c.getParam("TO", 2, token);
-	ConnectionManager::getInstance()->adcConnect(u->getIdentity().getIp(), (short)Util::toInt(c.getParameters()[1]), token);
+	ConnectionManager::getInstance()->adcConnect(*u, (short)Util::toInt(c.getParameters()[1]), token);
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
@@ -181,6 +183,34 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 	string token;
 	c.getParam("TO", 1, token);
     connect(*u, token);
+}
+
+void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
+	if(c.getParameters().size() < 1)
+		return;
+	const string& name = c.getParam(0);
+	bool rem = c.hasFlag("RM", 1);
+	if(rem) {
+		int cmd = FavoriteManager::getInstance()->findUserCommand(name);
+		if(cmd != -1)
+			FavoriteManager::getInstance()->removeUserCommand(cmd);
+	}
+	bool sep = c.hasFlag("SP", 1);
+	string sctx;
+	if(!c.getParam("CT", 1, sctx))
+		return;
+	int ctx = Util::toInt(sctx);
+	if(ctx <= 0)
+		return;
+	if(sep) {
+		FavoriteManager::getInstance()->addUserCommand(UserCommand::TYPE_SEPARATOR, ctx, UserCommand::FLAG_NOSAVE, name, "", getHubUrl());
+		return;
+	}
+	bool once = c.hasFlag("CO", 1);
+	string txt;
+	if(!c.getParam("TT", 1, txt))
+		return;
+	FavoriteManager::getInstance()->addUserCommand(once ? UserCommand::TYPE_RAW_ONCE : UserCommand::TYPE_RAW, ctx, UserCommand::FLAG_NOSAVE, name, txt, getHubUrl());
 }
 
 void AdcHub::sendUDP(const AdcCommand& cmd) {
@@ -342,7 +372,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 		} else {
 			ADDPARAM("I4", "0.0.0.0");
 		}
-		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
+		ADDPARAM("U4", Util::toString(SearchManager::getInstance()->getPort()));
 	} else {
 		ADDPARAM("I4", "");
 		ADDPARAM("U4", "");

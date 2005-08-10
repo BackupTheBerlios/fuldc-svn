@@ -391,6 +391,9 @@ void PrivateFrame::sendMessage(const tstring& msg) {
 		ClientManager::getInstance()->privateMessage(user, Text::fromT(msg));
 		/// @todo potentially wrong nick used
 		string s = "<" + SETTING(NICK) + "> " + Text::fromT(msg);
+		// local echo formatting
+		s = Util::validateMessage(s, false);
+		s = Util::validateMessage(s, true, true);
 		addLine(Text::toT(s));
 	}
 }
