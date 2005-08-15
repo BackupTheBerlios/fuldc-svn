@@ -37,6 +37,7 @@
 #include "FinishedULFrame.h"
 #include "TextFrame.h"
 #include "StatsFrame.h"
+#include "WaitingUsersFrame.h"
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 #include "UPnP.h"
@@ -127,9 +128,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 30, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 31, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	m_CmdBar.m_hImageList = images;
-	if(images.GetImageCount() > 15) {
+	if(images.GetImageCount() > 16) {
 		//File
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_OWN_LIST);
@@ -143,6 +144,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		//View
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
+		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
@@ -165,13 +167,14 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_PM);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_DIR_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_SEARCH_FRAME);
-	} else if(images.GetImageCount() == 15) {
+	} else if(images.GetImageCount() == 16) {
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
+		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
@@ -360,7 +363,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolBar.SetImageList(largeImages);
 	ctrlToolBar.SetHotImageList(largeImagesHot);
 
-	const int numButtons = 22;
+	const int numButtons = 23;
 
 
 	TBBUTTON tb[numButtons];
@@ -408,6 +411,12 @@ HWND MainFrame::createToolbar() {
 	n++;
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_QUEUE;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_VIEW_WAITING_USERS;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
@@ -570,17 +579,18 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	switch(wID){
-		case ID_FILE_CONNECT:		PublicHubsFrame::openWindow(); break;
-		case IDC_FAVORITES:			FavoriteHubsFrame::openWindow(); break;
-		case IDC_FAVUSERS:			UsersFrame::openWindow(); break;
-		case IDC_QUEUE:				QueueFrame::openWindow(); break;
-		case IDC_FINISHED:			FinishedFrame::openWindow(); break;
-		case IDC_FINISHED_UL:		FinishedULFrame::openWindow(); break;
-		case ID_FILE_SEARCH:		SearchFrame::openWindow(); break;
-		case IDC_FILE_ADL_SEARCH:	ADLSearchFrame::openWindow(); break;
-		case IDC_SEARCH_SPY:		SpyFrame::openWindow(); break;
-		case IDC_NOTEPAD:			NotepadFrame::openWindow(); break;
-		case IDC_NET_STATS:			StatsFrame::openWindow(); break;
+		case ID_FILE_CONNECT:			PublicHubsFrame::openWindow(); break;
+		case IDC_FAVORITES:				FavoriteHubsFrame::openWindow(); break;
+		case IDC_FAVUSERS:				UsersFrame::openWindow(); break;
+		case IDC_QUEUE:					QueueFrame::openWindow(); break;
+		case IDC_VIEW_WAITING_USERS:	WaitingUsersFrame::openWindow(); break;
+		case IDC_FINISHED:				FinishedFrame::openWindow(); break;
+		case IDC_FINISHED_UL:			FinishedULFrame::openWindow(); break;
+		case ID_FILE_SEARCH:			SearchFrame::openWindow(); break;
+		case IDC_FILE_ADL_SEARCH:		ADLSearchFrame::openWindow(); break;
+		case IDC_SEARCH_SPY:			SpyFrame::openWindow(); break;
+		case IDC_NOTEPAD:				NotepadFrame::openWindow(); break;
+		case IDC_NET_STATS:				StatsFrame::openWindow(); break;
 	}
 	return 0;
 }
@@ -775,6 +785,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
 			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
+			case IDC_VIEW_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
 			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
 			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case IDC_REFRESH_FILE_LIST: stringId = ResourceManager::MENU_REFRESH_FILE_LIST; break;

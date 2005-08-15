@@ -559,6 +559,7 @@ enum Strings { // @DontAdd
 	VIRTUAL_NAME_LONG, // "Name under which the others see the directory"
 	WAITING, // "Waiting..."
 	WAITING_TO_RETRY, // "Waiting to retry..."
+	WAITING_USERS, // "Waiting Users"
 	WAITING_USER_ONLINE, // "Waiting (User online)"
 	WAITING_USERS_ONLINE, // "Waiting (%d of %d users online)"
 	YES_STR, // "Yes"
