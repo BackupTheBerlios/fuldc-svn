@@ -551,7 +551,6 @@
 		<String Name="StripIspPm">Strip ISP in private messages</String>
 		<String Name="Isp">ISP</String>
 		<String Name="HubBoldTabs">Make tabs bold on status messages in Hubs</String>
-		<String Name="PmBoldTabs">Make tabs bold on status messages in private messages</String>
 		<String Name="HighPrioSample">Set high priority on sample and sub files when enqueued</String>
 		<String Name="PopupAway">Only show popups if away</String>
 		<String Name="PopupMinimized">Only show popups if minimized to tray</String>
@@ -711,9 +710,6 @@
 		<String Name="DropStupidConnectionLog">Incoming connection dropped because user tried to use a fake nick, IP=</String>
 		<String Name="FlashWindowOnPm">Flash window on PM</String>
 		<String Name="FlashWindowOnNewPm">Flash window on PM only if it's from a new user</String>
-		<String Name="IgnoreTthInconsistency">Ignore TTH inconsistency on downloads</String>
-		<String Name="AddFinishedDownloads">Add finished downloads to finished downloads window</String>
-		<String Name="AddFinishedUploads">Add finished uploads to finished uploads window</String>
 		<String Name="Unignore">Unignore</String>
 		<String Name="Ignorea">Ignore</String>
 		<String Name="NewIgnorePatternTitle">New ignore pattern</String>

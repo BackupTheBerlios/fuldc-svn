@@ -63,37 +63,34 @@ void FinishedManager::removeAll(bool upload /* = false */) {
 
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
-	if(BOOLSETTING(ADD_FINISHED_DOWNLOADS)) {
-		if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
-			FinishedItem *item = new FinishedItem(
-				d->getTarget(), d->getUserConnection()->getUser()->getNick(),
-				d->getUserConnection()->getUser()->getLastHubName(),
-				d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
-			{
-				Lock l(cs);
-				downloads.push_back(item);
-			}
-
-			fire(FinishedManagerListener::AddedDl(), item);
+	
+	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
+		FinishedItem *item = new FinishedItem(
+			d->getTarget(), d->getUserConnection()->getUser()->getNick(),
+			d->getUserConnection()->getUser()->getLastHubName(),
+			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
+		{
+			Lock l(cs);
+			downloads.push_back(item);
 		}
+
+		fire(FinishedManagerListener::AddedDl(), item);
 	}
 }
 
 void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
-	if(BOOLSETTING(ADD_FINISHED_UPLOADS)) {
-		if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
-			FinishedItem *item = new FinishedItem(
-				u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
-				u->getUserConnection()->getUser()->getLastHubName(),
-				u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
-			{
-				Lock l(cs);
-				uploads.push_back(item);
-			}
-			
-			fire(FinishedManagerListener::AddedUl(), item);
+	if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
+		FinishedItem *item = new FinishedItem(
+			u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
+			u->getUserConnection()->getUser()->getLastHubName(),
+			u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
+		{
+			Lock l(cs);
+			uploads.push_back(item);
 		}
+		
+		fire(FinishedManagerListener::AddedUl(), item);
 	}
 }
 

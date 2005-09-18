@@ -597,22 +597,20 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CONTROL         "",IDC_CH_STATUS_HUB_BOLD,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,7,7,246,10
-    CONTROL         "",IDC_CH_STATUS_PM_BOLD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,18,246,10
     CONTROL         "",IDC_CH_ICONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,
-                    29,248,10
-    EDITTEXT        IDC_TAB_SIZE,15,59,84,14,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COLOR_COMBO,157,55,98,30,CBS_DROPDOWNLIST | 
+                    18,248,10
+    EDITTEXT        IDC_TAB_SIZE,15,49,84,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COLOR_COMBO,157,45,98,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,72,57,11
-    EDITTEXT        IDC_TAB_DIRTY_BLEND,15,102,84,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,62,57,11
+    EDITTEXT        IDC_TAB_DIRTY_BLEND,15,92,84,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_CH_BLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,
-                    119,235,10
-    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,45,116,40
-    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,7,45,
+                    109,235,10
+    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,35,116,40
+    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,7,35,
                     116,40
-    GROUPBOX        "Blending",IDC_SB_TAB_DIRTY_BLEND,8,89,258,47
-    LTEXT           "%",IDC_STATIC,102,105,8,8
+    GROUPBOX        "Blending",IDC_SB_TAB_DIRTY_BLEND,8,79,258,47
+    LTEXT           "%",IDC_STATIC,102,95,8,8
 END
 
 IDD_FULPOPUPPAGE DIALOGEX 0, 0, 275, 225
@@ -961,7 +959,7 @@ BEGIN
         VERTGUIDE, 255
         TOPMARGIN, 7
         BOTTOMMARGIN, 216
-        HORZGUIDE, 59
+        HORZGUIDE, 51
         HORZGUIDE, 93
         HORZGUIDE, 99
     END

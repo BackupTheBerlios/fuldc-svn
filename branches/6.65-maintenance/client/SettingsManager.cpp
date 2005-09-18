@@ -70,7 +70,7 @@ const string SettingsManager::settingTags[] =
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad",
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
-	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
+	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
@@ -78,7 +78,6 @@ const string SettingsManager::settingTags[] =
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
-	"IgnoreTTHInconsistency", "AddFinishedUploads", "AddFinishedDownloads", 
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
     "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", 
 	"SENTRY",
@@ -222,7 +221,6 @@ SettingsManager::SettingsManager()
 	setDefault(STRIP_ISP, false);
 	setDefault(STRIP_ISP_PM, false);
 	setDefault(HUB_BOLD_TABS, true);
-	setDefault(PM_BOLD_TABS, true);
 	setDefault(HIGH_PRIO_SAMPLE, false);
 	setDefault(POPUP_TIMEOUT, 5);
 	setDefault(POPUP_AWAY, false);
@@ -261,9 +259,6 @@ SettingsManager::SettingsManager()
 	setDefault(DROP_STUPID_CONNECTION, false);
 	setDefault(FLASH_WINDOW_ON_PM, false);
 	setDefault(FLASH_WINDOW_ON_NEW_PM, false);
-	setDefault(IGNORE_TTH_INCONSISTENCY, false);
-	setDefault(ADD_FINISHED_DOWNLOADS, true);
-	setDefault(ADD_FINISHED_UPLOADS, true);
 	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,0,1,1");
 	setDefault(FINISHED_VISIBLE, "1,1,1,1,1,1,1,1");
 	setDefault(FINISHED_UL_VISIBLE, "1,1,1,1,1,1,1");

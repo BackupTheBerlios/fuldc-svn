@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by f:\Programmering\C++\fuldc\DCPlusPlus.rc
+// Used by f:\Programmering\C++\fuldc\branches\6.65-maintenance\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_SLOTSPIN                    101
