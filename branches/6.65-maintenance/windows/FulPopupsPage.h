@@ -25,6 +25,7 @@
 
 #include <atlcrack.h>
 #include "PropPage.h"
+#include "ExListViewCtrl.h"
 
 class FulPopupsPage: public CPropertyPage<IDD_FULPOPUPPAGE>, public PropPage
 {
@@ -57,6 +58,7 @@ public:
 protected:
 	static Item items[];
 	static TextItem texts[];
+	static ListItem listItems[];
 };
 
 #endif //FULPOPUPSPAGE_H

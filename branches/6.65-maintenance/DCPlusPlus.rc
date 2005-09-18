@@ -624,24 +624,11 @@ BEGIN
     PUSHBUTTON      "Font",IDC_BTN_FONT,21,158,70,14
     PUSHBUTTON      "TextColor",IDC_BTN_TEXTCOLOR,21,177,70,14
     GROUPBOX        "Popup",IDC_ST_DISPLAYTIME,7,105,98,33
-    CONTROL         "Check1",IDC_POPUP_AWAY,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,7,261,10
-    CONTROL         "Check1",IDC_POPUP_MINIMIZED,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,18,261,10
-    CONTROL         "Check1",IDC_POPUP_ON_PM,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,29,261,10
-    CONTROL         "Check1",IDC_POPUP_ON_NEW_PM,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,40,261,10
-    CONTROL         "Check1",IDC_POPUP_ON_HUBSTATUS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,51,261,10
-    CONTROL         "Check1",IDC_POPUP_REMOVE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,62,261,10
     GROUPBOX        "Static",IDC_POPUP_APPEARANCE,7,145,98,52
     GROUPBOX        "Static",IDC_ST_MESSAGE_LENGTH,170,105,98,33
-    CONTROL         "Check1",IDC_POPUP_ACTIVATE_ON_CLICK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,73,261,10
-    CONTROL         "Check1",IDC_POPUP_DONT_SHOW_ACTIVE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,84,261,10
+    CONTROL         "",IDC_POPUP_ITEMS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,7,261,91
 END
 
 IDD_ADVANCED3PAGE DIALOGEX 0, 0, 275, 225
