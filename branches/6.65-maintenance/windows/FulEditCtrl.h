@@ -63,7 +63,8 @@ public:
 	void	ScrollToEnd();
 	void	ScrollToBeginning();
 
-	int		TextUnderCursor(POINT p, tstring& x);
+	tstring::size_type	TextUnderCursor(POINT mousePT, tstring& x);
+
 	bool	LastSeen(tstring & nick);
 	BOOL	ShowMenu(HWND hWnd, POINT &pt);
 	

@@ -228,26 +228,60 @@ void CFulEditCtrl::SetTextColor( COLORREF color ) {
 	GetSelectionCharFormat(selFormat);
 }
 
-int CFulEditCtrl::TextUnderCursor(POINT p, tstring& x) {
+//
+// Input:
+// POINT mousPT = the cursor position in client coordinates, that is after a ScreenToClient conversion
+//				  if necessary
+// tstring& x = the buffer to hold the line if/when it's copied, the buffer is left untouched in case
+//				of errors
+
+//	Return value: tstring::size_type
+//				  the return value is the position of the mouse cursor on the line.
+//				  in case of errors the return value is tstring::npos
+//
+
+tstring::size_type CFulEditCtrl::TextUnderCursor(POINT mousePT, tstring& x) {
 	
-	int i = CharFromPos(p);
-	int line = LineFromChar(i);
-	int c = i - LineIndex(line);
-	int len = LineLength(i) + 1;
-	if(len < 3) {
-		return 0;
+	tstring::size_type start = tstring::npos;
+
+	int ch = CharFromPos(mousePT);
+	POINT charPT = PosFromChar(ch);
+
+	//since CharFromPos returns the last character even if the cursor is past the end of text
+	//we have to check if the pointer was actually above the last char
+
+	//check xpos
+	if( mousePT.x > ( charPT.x + 3 ) ) 
+		start;
+
+	//check ypos
+	if( mousePT.y > (charPT.y + fontHeight ) )
+		start;
+
+	FINDTEXT ft;
+	ft.chrg.cpMin = ch;
+	ft.chrg.cpMax = -1;
+	ft.lpstrText = _T("\r");
+
+	int begin = (int)SendMessage(EM_FINDTEXT, 0, (LPARAM)&ft) + 1;
+	int rEnd = (int)SendMessage(EM_FINDTEXT, FR_DOWN, (LPARAM)&ft);
+
+	if(begin < 0) {
+		begin = 0;
 	}
 
-	TCHAR* buf = new TCHAR[len];
-	GetLine(line, buf, len);
-	x = tstring(buf, len-1);
+	if(rEnd == -1) {
+		rEnd = GetTextLengthEx(GTL_NUMCHARS);
+	}
+
+	TCHAR *buf = new TCHAR[(rEnd-begin)+1];
+
+	GetTextRange(begin, rEnd, buf);
+
+	x = buf;
 	delete[] buf;
 
-	tstring::size_type start = x.find_last_of(_T(" <\t\r"), c);
-	if(start == tstring::npos)
-		start = 0;
-	else
-		start++;
+	start = ch - begin;
 
 	return start;
 }
@@ -549,43 +583,15 @@ LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 		return 1;
 	}
 
-	POINT mousePT = {GET_X_LPARAM(lParam) , GET_Y_LPARAM(lParam)};
-	int ch = CharFromPos(mousePT);
-	POINT charPT = PosFromChar(ch);
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	tstring tmp;
 
-	//since CharFromPos returns the last character even if the cursor is past the end of text
-	//we have to check if the pointer was actually above the last char
-
-	//check xpos
-	if( mousePT.x > ( charPT.x + 3 ) ) 
+	tstring::size_type ch = TextUnderCursor(pt, tmp);
+	if(ch == tstring::npos) {
 		return 1;
+	}
 	
-	//check ypos
-	if( mousePT.y > (charPT.y + fontHeight ) )
-		return 1;
-
-	FINDTEXT ft;
-	ft.chrg.cpMin = ch;
-	ft.chrg.cpMax = -1;
-	ft.lpstrText = _T("\r");
-
-	int begin = (int)SendMessage(EM_FINDTEXT, 0, (LPARAM)&ft) + 1;
-	int rEnd = (int)SendMessage(EM_FINDTEXT, FR_DOWN, (LPARAM)&ft);
-
-	if(begin < 0)
-		begin = 0;
-	if(rEnd == -1)
-		rEnd = GetTextLengthEx(GTL_NUMCHARS);
-		
-	TCHAR *buf = new TCHAR[rEnd-begin+1];
-	
-	GetTextRange(begin, rEnd, buf);
-	
-	
-	tstring tmp = buf;
-	delete[] buf;
-	
-	int start = tmp.find_last_of(_T(" \t\r"), ch-begin) +1;
+	int start = tmp.find_last_of(_T(" \t\r"), ch) +1;
 	int end = tmp.find_first_of(_T(" \t\r"), start+1);
 	if(end == tstring::npos)
 		end = tmp.length();
@@ -749,6 +755,16 @@ deque<tstring> *CFulEditCtrl::LastLog(){
 	return &lastlog;
 }
 
+//
+// Input:
+// HWND hWnd = window handle to the window that should own the menu, usually the parent window
+//			   of the richedit
+// POINT& pt = the cursor position in screen coordinates.
+//
+// Return value: BOOL
+//				 returns the result of TrackPopupMenu
+//
+
 BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 	ScreenToClient(&pt);
 	
@@ -761,11 +777,16 @@ BOOL CFulEditCtrl::ShowMenu(HWND hWnd, POINT &pt){
 		delete[] buf;
 	} else {
 		tstring line;
-		int start = TextUnderCursor(pt, line);
-		if( start != tstring::npos ) {
-			int end = line.find_first_of(_T(" \t\r"), start+1);
-			if(end == tstring::npos)
+		tstring::size_type ch = TextUnderCursor(pt, line);
+        if( ch != tstring::npos ) {
+			
+			tstring::size_type start = line.find_last_of(_T(" \t\r"), ch) + 1;
+			
+			tstring::size_type end = line.find_first_of(_T(" \t\r"), start);
+			if(end == tstring::npos) {
 				end = line.length();
+			}
+
 			searchTerm = line.substr(start, end-start);
 		}
 	}

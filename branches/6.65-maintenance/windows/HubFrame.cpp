@@ -714,10 +714,11 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 	if(focus == ctrlClient.m_hWnd) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		tstring x;
-		tstring::size_type start = (tstring::size_type)ctrlClient.TextUnderCursor(pt, x);
+		tstring::size_type ch = ctrlClient.TextUnderCursor(pt, x);
+		tstring::size_type start = x.find_last_of(_T(" <\t\r"), ch) + 1;
 		tstring::size_type end = x.find(_T(" "), start);
 
-		if(end == string::npos)
+		if(end == tstring::npos)
 			end = x.length();
 		
 		if( (Util::strnicmp(x.c_str() + start, _T("http://"), 7) == 0) || 
@@ -732,7 +733,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			bHandled = true;
 			WinUtil::parseDchubUrl(x.substr(start, end-start));
 		} else {
-			string::size_type end = x.find_first_of(_T(" >\t"), start+1);
+			string::size_type end = x.find_first_of(_T(" >\t\r"), start+1);
 
 			if(end == string::npos) // get EOL as well
 				end = x.length();
@@ -809,7 +810,9 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
 		tstring x;
 		ctrlClient.ScreenToClient(&pt);
-		string::size_type start = (string::size_type)ctrlClient.TextUnderCursor(pt, x);
+		tstring::size_type ch = ctrlClient.TextUnderCursor(pt, x);
+		tstring::size_type start = x.find_last_of(_T(" <\t\r"), ch) + 1;
+
 
 		string::size_type end = x.find_first_of(_T(" >\t"), start+1);
 		if(end == string::npos) // get EOL as well
@@ -1476,8 +1479,8 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 }
 
 bool HubFrame::parseFilter(int& mode, int64_t& size) {
-	size_t start = tstring::npos;
-	size_t end = tstring::npos;
+	tstring::size_type start = tstring::npos;
+	tstring::size_type end = tstring::npos;
 	int64_t multiplier = 1;
 	
 	if(Util::strnicmp(filter.c_str(), _T(">="), 2) == 0) {
