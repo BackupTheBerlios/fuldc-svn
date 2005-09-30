@@ -742,7 +742,7 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 		// "Size"
 		int w2 = width - rMargin - lMargin;
 		rc.top += spacing;
-		rc.bottom += spacing;
+		rc.bottom = rc.top + comboH;
 		rc.right = w2/3;
 		ctrlMode.MoveWindow(rc);
 
@@ -750,10 +750,12 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		rc.left = rc.right + lMargin;
 		rc.right += w2/3;
+		rc.bottom = rc.top + 21;
 		ctrlSize.MoveWindow(rc);
 
 		rc.left = rc.right + lMargin;
 		rc.right = width - rMargin;
+		rc.bottom = rc.top + comboH;
 		ctrlSizeMode.MoveWindow(rc);
 
 		// "File type"
