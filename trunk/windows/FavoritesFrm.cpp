@@ -206,8 +206,19 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	e.setStripIsp(BOOLSETTING(STRIP_ISP));
 	e.setShowUserlist(true);
 
-	if(dlg.DoModal((HWND)*this) == IDOK)
-		FavoriteManager::getInstance()->addFavorite(e);
+	while (true) {
+		if(dlg.DoModal((HWND)*this) == IDOK) {
+			if (FavoriteManager::getInstance()->checkFavHubExists(e)){
+				MessageBox(
+					CTSTRING(FAVORITE_HUB_ALREADY_EXISTS), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONWARNING | MB_OK);
+			} else {
+				FavoriteManager::getInstance()->addFavorite(e);
+				break;
+			}
+		} else {
+			break;
+		}
+	}
 	return 0;
 }
 

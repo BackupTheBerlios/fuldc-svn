@@ -675,31 +675,6 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 						}
 					}
 				}
-			} else {
-				xml.resetCurrentChild();
-				if(xml.findChild("VeryOldVersion")) {
-					if(Util::toDouble(xml.getChildData()) >= VERSIONFLOAT) {
-						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
-						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str());
-						oldshutdown = true;
-						PostMessage(WM_CLOSE);
-					}
-				}
-			}
-
-			xml.resetCurrentChild();
-			if(xml.findChild("BadVersions")) {
-				xml.stepIn();
-				while(xml.findChild("BadVersion")) {
-					double v = Util::toDouble(xml.getChildAttrib("Version"));
-					if(v == VERSIONFLOAT) {
-						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
-						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str(), _T("Bad DC++ version"), MB_OK | MB_ICONEXCLAMATION);
-						oldshutdown = true;
-						PostMessage(WM_CLOSE);
-					}
-				}
-				xml.stepOut();
 			}
 
 			xml.resetCurrentChild();

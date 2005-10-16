@@ -578,6 +578,11 @@
 #define IDC_SETTINGS_PORTS              1346
 #define IDC_SETTINGS_UPLOAD_SPEED       1347
 #define IDC_SETTINGS_MEBIBYES           1348
+#define IDC_CONFIRM_OPTIONS             1349
+#define IDC_MAX_FILELIST_SIZE           1350
+#define IDC_SETTINGS_MAX_FILELIST_SIZE  1351
+#define IDC_SETTINGS_MB                 1352
+#define IDC_SETTINGS_CONFIRM_OPTIONS    1353
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

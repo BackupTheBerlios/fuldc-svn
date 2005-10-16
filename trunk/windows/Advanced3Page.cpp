@@ -39,6 +39,8 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_PM_HISTORY, ResourceManager::SETTINGS_PM_HISTORY }, 
 	{ IDC_SETTINGS_SEARCH_HISTORY, ResourceManager::SETTINGS_SEARCH_HISTORY },
 	{ IDC_SETTINGS_BIND_ADDRESS, ResourceManager::SETTINGS_BIND_ADDRESS },
+	{ IDC_SETTINGS_MAX_FILELIST_SIZE, ResourceManager::SETTINGS_MAX_FILELIST_SIZE },
+	{ IDC_SETTINGS_MB, ResourceManager::MiB },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -50,6 +52,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_SHOW_LAST_LINES_LOG, SettingsManager::SHOW_LAST_LINES_LOG, PropPage::T_INT },
 	{ IDC_SEARCH_HISTORY, SettingsManager::SEARCH_HISTORY, PropPage::T_INT },
 	{ IDC_BIND_ADDRESS, SettingsManager::BIND_ADDRESS, PropPage::T_STR },
+	{ IDC_MAX_FILELIST_SIZE, SettingsManager::MAX_FILELIST_SIZE, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 

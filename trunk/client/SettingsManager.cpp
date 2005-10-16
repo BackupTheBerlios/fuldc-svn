@@ -68,7 +68,7 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", 
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "MaxFilelistSize", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
@@ -195,7 +195,7 @@ SettingsManager::SettingsManager()
 	setDefault(ADLS_BREAK_ON_FIRST, false);
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, false);
-	setDefault(LOG_FILELIST_TRANSFERS, true);
+	setDefault(LOG_FILELIST_TRANSFERS, false);
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, false);
 	setDefault(MAX_HASH_SPEED, 0);
