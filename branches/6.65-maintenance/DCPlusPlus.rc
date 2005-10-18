@@ -1163,6 +1163,9 @@ BEGIN
                     IDC_DUPE_DESCRIPTION,15,67,244,20
     LTEXT           "Background color used in search window to show which files are missing a TTH",
                     IDC_NOTTH_DESCRIPTION,15,123,244,20
+    GROUPBOX        "History",IDC_HISTORY,7,169,259,40
+    PUSHBUTTON      "Clear search history",IDC_SEARCH_HISTORY,15,184,90,14
+    PUSHBUTTON      "Clear filter history",IDC_FILTER_HISTORY,123,184,90,14
 END
 
 IDD_FULIGNOREPAGE DIALOGEX 0, 0, 275, 225

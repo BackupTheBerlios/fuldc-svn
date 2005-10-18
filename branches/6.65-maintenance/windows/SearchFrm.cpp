@@ -53,6 +53,11 @@ void SearchFrame::closeAll() {
 		::PostMessage(i->first, WM_CLOSE, 0, 0);
 }
 
+void SearchFrame::clearHistory(WORD id) {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		::PostMessage(i->first, WM_COMMAND, id, 0);
+}
+
 LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
@@ -64,12 +69,6 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	searchBoxContainer.SubclassWindow(ctrlSearchBox.m_hWnd);
 	ctrlSearchBox.SetExtendedUI();
 	
-	ctrlPurge.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_PURGE);
-	ctrlPurge.SetWindowText(CTSTRING(PURGE));
-	ctrlPurge.SetFont(WinUtil::systemFont);
-	purgeContainer.SubclassWindow(ctrlPurge.m_hWnd);
-
 	ctrlFilterBox.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL, 0);
 	
@@ -248,7 +247,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			ctrlSearchBox.InsertString(0, initialString.c_str());
 		
 		int pos;
-		if(CB_ERR != (pos = ctrlSearchBox.FindString(initialString.c_str())))
+		if(CB_ERR != (pos = ctrlSearchBox.FindString(-1, initialString.c_str())))
 			ctrlSearchBox.SetCurSel(pos);
 
 		ctrlMode.SetCurSel(initialMode);
@@ -728,13 +727,6 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		filterLabel.MoveWindow(rc.left + lMargin, rc.top - labelH, width - rMargin, labelH-1);
 
-		// "Purge"
-		rc.right = rc.left + spacing;
-		rc.left = lMargin;
-		rc.top += 25;
-		rc.bottom = rc.top + 21;
-		ctrlPurge.MoveWindow(rc);
-
 		// "Size"
 		int w2 = width - rMargin - lMargin;
 		rc.top += spacing;
@@ -808,7 +800,6 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 		ctrlSearchBox.MoveWindow(rc);
 		ctrlFilterBox.MoveWindow(rc);
 		ctrlMode.MoveWindow(rc);
-		ctrlPurge.MoveWindow(rc);
 		ctrlSize.MoveWindow(rc);
 		ctrlSizeMode.MoveWindow(rc);
 		ctrlFiletype.MoveWindow(rc);
@@ -904,7 +895,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 
 void SearchFrame::onTab(bool shift) {
 	HWND wnds[] = {
-		ctrlSearch.m_hWnd, ctrlFilter.m_hWnd, ctrlPurge.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
+		ctrlSearch.m_hWnd, ctrlFilter.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
 		ctrlFiletype.m_hWnd, ctrlSlots.m_hWnd, ctrlTTH.m_hWnd, ctrlDoSearch.m_hWnd, ctrlSearch.m_hWnd, 
 		ctrlResults.m_hWnd
 	};
@@ -1154,18 +1145,19 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 	return 0;
 }
 
-LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
-{
-	while(ctrlSearchBox.GetCount() > 0){
-			ctrlSearchBox.DeleteString(0);
-	}
-	return 0;
-}
-
-
 LRESULT SearchFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int tmp = (int)wID - (int)IDC_COPY;
 	ctrlResults.copy(tmp);
+
+	return 0;
+}
+
+LRESULT SearchFrame::onClearHistory(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(wID == IDC_SEARCH_HISTORY) {
+		ctrlSearchBox.ResetContent();
+	} else {
+		ctrlFilterBox.ResetContent();
+	}
 
 	return 0;
 }

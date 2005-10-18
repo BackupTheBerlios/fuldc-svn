@@ -206,7 +206,6 @@
 #define IDC_REMOVESOURCE                1025
 #define IDC_EDIT                        1026
 #define IDC_NOTEPAD                     1027
-#define IDC_PURGE                       1028
 #define IDC_SEARCH_ALTERNATES           1029
 #define IDC_SELWINCOLOR                 1031
 #define IDC_SELTEXTCOLOR                1032
@@ -556,8 +555,11 @@
 #define IDC_LIST1                       1326
 #define IDC_POPUP_ITEMS                 1326
 #define IDC_SETTINGS_WINDOWS_OPTIONS    1327
+#define IDC_HISTORY                     1327
 #define IDC_WINDOWS_OPTIONS             1328
 #define IDD_WINDOWSPAGE                 1329
+#define IDC_BUTTON3                     1329
+#define IDC_FILTER_HISTORY              1329
 #define IDC_SET_MINISLOT_SIZE           1330
 #define IDC_SETTINGS_TEXT_MINISLOT      1331
 #define IDC_SETTINGS_KB2                1332
@@ -611,7 +613,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1327
+#define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           137
 #endif
 #endif

@@ -625,6 +625,9 @@
 		<String Name="SettingsNotthDescription">Background color used in search window to show which files are missing a TTH</String>
 		<String Name="SettingsRefreshShareBetween">Only refresh share between...</String>
 		<String Name="SettingsRefreshIncomingBetween">Only refresh incoming between...</String>
+		<String Name="SettingsHistory">History</String>
+		<String Name="SettingsClearSearchHistory">Clear search history</String>
+		<String Name="SettingsClearFilterHistory">Clear filter history</String>
 		<String Name="Bold">Bold</String>
 		<String Name="Italic">Italic</String>
 		<String Name="Underline">Underline</String>

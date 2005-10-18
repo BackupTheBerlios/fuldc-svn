@@ -23,6 +23,7 @@
 #include "../client/SettingsManager.h"
 
 #include "fulappearance.h"
+#include "SearchFrm.h"
 #include "WinUtil.h"
 
 PropPage::TextItem FulAppearancePage::texts[] = {
@@ -36,7 +37,9 @@ PropPage::TextItem FulAppearancePage::texts[] = {
 	{ IDC_NOTTH_BOX,		  ResourceManager::SETTINGS_NOTTH_BOX			 },
 	{ IDC_NOTTH,			  ResourceManager::SETTINGS_BTN_COLOR			 },
 	{ IDC_NOTTH_DESCRIPTION,  ResourceManager::SETTINGS_NOTTH_DESCRIPTION	 },
-
+	{ IDC_HISTORY,			  ResourceManager::SETTINGS_HISTORY				 },
+	{ IDC_SEARCH_HISTORY,	  ResourceManager::SETTINGS_CLEAR_SEARCH_HISTORY },
+	{ IDC_FILTER_HISTORY,	  ResourceManager::SETTINGS_CLEAR_FILTER_HISTORY },
 	{ 0,					  ResourceManager::SETTINGS_AUTO_AWAY			 }
 };
 
@@ -74,6 +77,18 @@ LRESULT FulAppearancePage::onNoTTHColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	CColorDialog c(noTTHColor, CC_FULLOPEN);
 	if( c.DoModal() == IDOK )
 		noTTHColor = c.GetColor();
+
+	return 0;
+}
+
+LRESULT FulAppearancePage::onSearchHistory(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(wID == IDC_SEARCH_HISTORY) {
+		SettingsManager::getInstance()->clearSearchHistory();
+		SearchFrame::clearHistory(wID);
+	} else {
+		SettingsManager::getInstance()->clearFilterHistory();
+		SearchFrame::clearHistory(wID);
+	}
 
 	return 0;
 }
