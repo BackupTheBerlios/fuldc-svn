@@ -30,9 +30,6 @@
 #include "../client/StringTokenizer.h"
 #include "../client/ClientManager.h"
 
-TStringList SearchFrame::lastSearches;
-TStringList SearchFrame::lastFilters;
-
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH };
 int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 100, 125 };
@@ -63,9 +60,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	ctrlSearchBox.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL, 0);
-	for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
-		ctrlSearchBox.InsertString(0, i->c_str());
-	}
+
 	searchBoxContainer.SubclassWindow(ctrlSearchBox.m_hWnd);
 	ctrlSearchBox.SetExtendedUI();
 	
@@ -238,10 +233,24 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	UpdateLayout();
 
+	TStringList lastSearches = SettingsManager::getInstance()->getSearchHistory();
+	for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
+		ctrlSearchBox.InsertString(0, i->c_str());
+	}
+
+	TStringList lastFilters = SettingsManager::getInstance()->getFilterHistory();
+	for(TStringIter i = lastFilters.begin(); i != lastFilters.end(); ++i) {
+		ctrlFilterBox.InsertString(0, i->c_str());
+	}
+
 	if(!initialString.empty()) {
-		lastSearches.push_back(initialString);
-		ctrlSearchBox.InsertString(0, initialString.c_str());
-		ctrlSearchBox.SetCurSel(0);
+		if(SettingsManager::getInstance()->addSearchToHistory(initialString))
+			ctrlSearchBox.InsertString(0, initialString.c_str());
+		
+		int pos;
+		if(CB_ERR != (pos = ctrlSearchBox.FindString(initialString.c_str())))
+			ctrlSearchBox.SetCurSel(pos);
+
 		ctrlMode.SetCurSel(initialMode);
 		ctrlSize.SetWindowText(Text::toT(Util::toString(initialSize)).c_str());
 		ctrlFiletype.SetCurSel(initialType);
@@ -332,33 +341,20 @@ void SearchFrame::onEnter() {
 	} else {
 		lastSearch = TimerManager::getInstance()->getTick();
 	}
-
+	
 	// Add new searches to the last-search dropdown list
-	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
-	{
-		int i = max(SETTING(SEARCH_HISTORY)-1, 0);
-
-		if(ctrlSearchBox.GetCount() > i) 
-			ctrlSearchBox.DeleteString(i);
+	if(SettingsManager::getInstance()->addSearchToHistory(s)) {
+		if(ctrlSearchBox.GetCount() > SETTING(SEARCH_HISTORY)) 
+			ctrlSearchBox.DeleteString(ctrlSearchBox.GetCount()-1);
 		ctrlSearchBox.InsertString(0, s.c_str());
-
-		while(lastSearches.size() > (int64_t)i) {
-			lastSearches.erase(lastSearches.begin());
-		}
-		lastSearches.push_back(s);
 	}
 
-	if(find(lastFilters.begin(), lastFilters.end(), s) == lastFilters.end()) 
-	{
-		if(ctrlFilterBox.GetCount() > 9)
-			ctrlFilterBox.DeleteString(9);
+	if(SettingsManager::getInstance()->addFilterToHistory(f)) {
+		if(ctrlFilterBox.GetCount() > SETTING(SEARCH_HISTORY))
+			ctrlFilterBox.DeleteString(ctrlFilterBox.GetCount()-1);
 		ctrlFilterBox.InsertString(0, f.c_str());
-
-		while(lastFilters.size() > 9) {
-			lastFilters.erase(lastFilters.begin());
-		}
-		lastFilters.push_back(f);
 	}
+
 	
 	ctrlStatus.SetText(1, (TSTRING(SEARCHING_FOR) + s + _T("...")).c_str());
 	{

@@ -48,7 +48,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="ws2_32.lib htmlhelp.lib pdh.lib winmm.lib"
+				AdditionalDependencies="ws2_32.lib htmlhelp.lib pdh.lib winmm.lib uxtheme.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -422,11 +422,10 @@
 				RelativePath=".\windows\UsersFrame.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\WindowsPage.cpp">
+				RelativePath=".\windows\WebShortcutsProperties.cpp">
 			</File>
 			<File
-
-				RelativePath=".\windows\WebShortcutsProperties.cpp">
+				RelativePath=".\windows\WindowsPage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\WinUtil.cpp">
@@ -610,6 +609,9 @@
 				RelativePath=".\windows\TypedListViewCtrl.h">
 			</File>
 			<File
+				RelativePath=".\windows\TypedTreeListViewCtrl.h">
+			</File>
+			<File
 				RelativePath=".\windows\UCHandler.h">
 			</File>
 			<File
@@ -622,9 +624,6 @@
 				RelativePath=".\windows\UPnP.h">
 			</File>
 			<File
-				RelativePath=".\windows\WindowsPage.h">
-			</File>
-			<File
 				RelativePath=".\windows\UserInfoBase.h">
 			</File>
 			<File
@@ -632,6 +631,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\WebShortcutsProperties.h">
+			</File>
+			<File
+				RelativePath=".\windows\WindowsPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\WinUtil.h">

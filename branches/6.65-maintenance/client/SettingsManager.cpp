@@ -370,6 +370,26 @@ void SettingsManager::load(string const& aFileName)
 		
 		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
 
+		xml.resetCurrentChild();
+		if(xml.findChild("SearchHistory")) {
+			xml.stepIn();
+			while(xml.findChild("Search")) {
+				addSearchToHistory(Text::toT(xml.getChildData()));
+			}
+			xml.stepOut();
+		}
+
+		xml.resetCurrentChild();
+		if(xml.findChild("FilterHistory")) {
+			xml.stepIn();
+			while(xml.findChild("Filter")) {
+				addFilterToHistory(Text::toT(xml.getChildData()));
+			}
+			xml.stepOut();
+		}
+
+		xml.resetCurrentChild();
+
 		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();
@@ -429,6 +449,28 @@ void SettingsManager::save(string const& aFileName) {
 		for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i ) {
 			xml.addTag( "DownloadPath", i->second );
 			xml.addChildAttrib( "Name", i->first );
+		}
+	}
+	xml.stepOut();
+
+	xml.addTag("SearchHistory");
+	xml.stepIn();
+	{
+		Lock l(cs);
+		for(TStringIter i = searchHistory.begin(); i != searchHistory.end(); ++i) {
+			string tmp = Text::fromT(*i);
+			xml.addTag("Search", tmp);
+		}
+	}
+	xml.stepOut();
+
+	xml.addTag("FilterHistory");
+	xml.stepIn();
+	{
+		Lock l(cs);
+		for(TStringIter i = filterHistory.begin(); i != filterHistory.end(); ++i) {
+			string tmp = Text::fromT(*i);
+			xml.addTag("Filter", tmp);
 		}
 	}
 	xml.stepOut();

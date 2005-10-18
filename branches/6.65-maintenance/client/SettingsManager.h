@@ -203,6 +203,66 @@ public:
 		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
 	}
 
+	TStringList getSearchHistory() const {
+		Lock l(cs);
+		return searchHistory;
+	}
+
+	//returns true if the search string is added to the history
+	//returns false if the search string already exists in the history.
+	bool addSearchToHistory(const tstring& search) {
+		if(search.empty())
+			return false;
+
+		Lock l(cs);
+
+		if(find(searchHistory.begin(), searchHistory.end(), search) != searchHistory.end())
+			return false;
+
+		
+		while(searchHistory.size() > static_cast<TStringList::size_type>(getInstance()->get(SEARCH_HISTORY)))
+			searchHistory.erase(searchHistory.begin());
+
+		searchHistory.push_back(search);
+
+		return true;
+	}
+
+	void clearSearchHistory() {
+		Lock l(cs);
+		searchHistory.clear();
+	}
+
+	TStringList getFilterHistory() const {
+		Lock l(cs);
+		return filterHistory;
+	}
+
+	//returns true if the filter string is added to the history
+	//returns false if the filter string already exists in the history.
+	bool addFilterToHistory(const tstring& filter) {
+		
+		if(filter.empty())
+			return false;
+
+		Lock l(cs);
+
+		if(find(filterHistory.begin(), filterHistory.end(), filter) != filterHistory.end())
+			return false;
+
+		while(filterHistory.size() > static_cast<TStringList::size_type>(getInstance()->get(SEARCH_HISTORY)))
+			filterHistory.erase(filterHistory.begin());
+
+		filterHistory.push_back(filter);
+
+		return true;
+	}
+
+	void clearFilterHistory() {
+		Lock l(cs);
+		filterHistory.clear();
+	}
+
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
@@ -219,7 +279,10 @@ private:
 	bool isSet[SETTINGS_LAST];
 
 	mutable CriticalSection cs;
-	StringPairList downloadPaths;
+
+	StringPairList	downloadPaths;
+	TStringList		searchHistory;
+	TStringList		filterHistory;
 };
 
 // Shorthand accessor macros

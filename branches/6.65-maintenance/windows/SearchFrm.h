@@ -483,9 +483,6 @@ private:
 
 	CriticalSection cs;
 
-	static TStringList lastSearches;
-	static TStringList lastFilters;
-
 	DWORD lastSearch;
 	bool closed;
 
