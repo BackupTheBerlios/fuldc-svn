@@ -852,6 +852,7 @@ void CFulEditCtrl::UpdateUrlRanges(int pos) {
 void CFulEditCtrl::Clear() {
 	urlRanges.clear();
 	SetWindowText(_T(""));
+	lastlog.clear();
 }
 
 #ifdef DEBUG
