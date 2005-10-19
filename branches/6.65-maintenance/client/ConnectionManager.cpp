@@ -446,6 +446,15 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 			}
 		}
 
+		if(aSource->getUser()->getUserIp()) {
+			if(Util::stricmp(aSource->getUser()->getIp(), aSource->getRemoteIp()) != 0) {
+				dcdebug("CM::onMyNick Incoming connection using fake nick(%s) %s\n", aNick, aSource->getRemoteIp());
+                LogManager::getInstance()->message(STRING(DROP_FAKE_NICK_CONNECTION_LOG) + aSource->getRemoteIp());
+				putConnection(aSource);
+				return;
+			}
+		}
+
 		// We don't need this connection for downloading...make it an upload connection instead...
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 	}
@@ -453,6 +462,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	if(aSource->getUser()->getIp().empty()) {
 		if(Util::stricmp(aSource->getUser()->getNick(), aSource->getUser()->getClientNick()) != 0) {
 			aSource->getUser()->setIp(aSource->getRemoteIp());
+			aSource->getUser()->setUserIp(false);
 			User::updated(aSource->getUser());
 		}
 	}

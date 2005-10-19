@@ -508,6 +508,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 					continue;
 				v.push_back(ClientManager::getInstance()->getUser(it->substr(0, j), this));
 				v.back()->setIp(it->substr(j+1));
+				v.back()->setUserIp(true);
 			}
 
 			Speaker<NmdcHubListener>::fire(NmdcHubListener::UserIp(), this, v);

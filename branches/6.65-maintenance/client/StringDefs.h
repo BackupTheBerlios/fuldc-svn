@@ -736,5 +736,6 @@ enum Strings { // @DontAdd
 	PRESET_RELEASES, // "Releases"
 	READD_SOURCE_TO_QUEUE, // "Re-add user to queue"
 	MUTE_ON_AWAY, // "Mute sounds when away mode is enabled"
+	DROP_FAKE_NICK_CONNECTION_LOG, //"Detected a user trying to connect using a fake nick, ip="
 	LAST // @DontAdd
 };

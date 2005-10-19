@@ -732,5 +732,6 @@
 		<String Name="PresetReleases">Releases</String>
 		<String Name="ReaddSourceToQueue">Re-add user to queue</String>
 		<String Name="MuteOnAway">Mute sounds when away mode is enabled</String>
+		<String Name="DropFakeNickConnectionLog">Detected a user trying to connect using a fake nick, ip=</String>
 	</Strings>
 </Language>

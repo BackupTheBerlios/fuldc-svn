@@ -147,6 +147,9 @@ public:
 	GETSET(int64_t, bytesShared, BytesShared);
 	GETSET(int, slots, Slots);
 	GETSET(short, udpPort, UDPPort);
+	//used to determine if the ip is to be trusted for fake nick checking
+	//don't trust ip's received in c-c connections.
+	GETSET(bool, userIp, UserIp);
 private:
 	mutable RWLock<> cs;
 

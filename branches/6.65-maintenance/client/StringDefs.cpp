@@ -733,6 +733,7 @@ string ResourceManager::strings[] = {
 "Releases", 
 "Re-add user to queue", 
 "Mute sounds when away mode is enabled", 
+"Detected a user trying to connect using a fake nick, ip=", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1466,4 +1467,5 @@ string ResourceManager::names[] = {
 "PresetReleases", 
 "ReaddSourceToQueue", 
 "MuteOnAway", 
+"DropFakeNickConnectionLog", 
 };

@@ -262,6 +262,7 @@ void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub /*= false*/) {
 	{
 		Lock l(cs);
 		aUser->setIp(Util::emptyString);
+		aUser->setUserIp(false);
 		aUser->unsetFlag(User::PASSIVE);
 		aUser->unsetFlag(User::OP);
 		aUser->unsetFlag(User::DCPLUSPLUS);
