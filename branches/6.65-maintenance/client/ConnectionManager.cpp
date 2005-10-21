@@ -449,7 +449,15 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		if(aSource->getUser()->getUserIp()) {
 			if(Util::stricmp(aSource->getUser()->getIp(), aSource->getRemoteIp()) != 0) {
 				dcdebug("CM::onMyNick Incoming connection using fake nick(%s) %s\n", aNick, aSource->getRemoteIp());
-                LogManager::getInstance()->message(STRING(DROP_FAKE_NICK_CONNECTION_LOG) + aSource->getRemoteIp());
+                char * tmp = new char[STRING(DROP_FAKE_NICK_CONNECTION_LOG).length() + aSource->getRemoteIp().length() +
+					aNick.length()];
+
+				sprintf(tmp,STRING(DROP_FAKE_NICK_CONNECTION_LOG).c_str(), aNick.c_str(), aSource->getRemoteIp().c_str() );
+				
+				LogManager::getInstance()->message(tmp);
+
+				delete[] tmp;
+
 				putConnection(aSource);
 				return;
 			}
