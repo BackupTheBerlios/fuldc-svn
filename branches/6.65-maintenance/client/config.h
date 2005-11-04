@@ -56,7 +56,7 @@
 # pragma warning(disable: 4127) // constant expression
 # pragma warning(disable: 4710) // function not inlined
 
-# if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310
+# if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
 
 typedef signed char int8_t;
 typedef signed short int16_t;

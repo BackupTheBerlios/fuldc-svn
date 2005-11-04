@@ -1202,7 +1202,7 @@ string ResourceManager::names[] = {
 "Shared", 
 "SharedFiles", 
 "Size", 
-"SizeMax", 
+"MaxSize", 
 "SizeMin", 
 "SkipRename", 
 "SlotGranted", 

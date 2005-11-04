@@ -38,7 +38,7 @@ public:
 };
 
 template<class T, int ctrlId>
-class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, CControlWinTraits>,
+class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl<T, ctrlId>, CListViewCtrl, CControlWinTraits>,
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:

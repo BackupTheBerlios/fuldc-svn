@@ -1,6 +1,11 @@
 import re
 import codecs
 import xml.sax.saxutils
+import sys
+import os
+
+#make sure relative paths work from the vc7.1 dir too
+os.chdir(sys.argv[0][0: sys.argv[0].rfind("\\")])
 
 def makename(oldname):
 	name = "";

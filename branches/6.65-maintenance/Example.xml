@@ -467,7 +467,7 @@
 		<String Name="Shared">Shared</String>
 		<String Name="SharedFiles">Shared Files</String>
 		<String Name="Size">Size</String>
-		<String Name="SizeMax">Max Size</String>
+		<String Name="MaxSize">Max Size</String>
 		<String Name="SizeMin">Min Size</String>
 		<String Name="SkipRename">New virtual name matches old name, skipping...</String>
 		<String Name="SlotGranted">Slot granted</String>

@@ -471,7 +471,7 @@ enum Strings { // @DontAdd
 	SHARED, // "Shared"
 	SHARED_FILES, // "Shared Files"
 	SIZE, // "Size"
-	SIZE_MAX, // "Max Size"
+	MAX_SIZE, // "Max Size"
 	SIZE_MIN, // "Min Size"
 	SKIP_RENAME, // "New virtual name matches old name, skipping..."
 	SLOT_GRANTED, // "Slot granted"

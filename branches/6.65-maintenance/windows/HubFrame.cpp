@@ -384,7 +384,9 @@ struct CompareItems {
 };
 
 int HubFrame::findUser(const User::Ptr& aUser) {
-	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
+	UserIter i = usermap.begin();
+
+	for(; i != usermap.end(); ++i){
 		if(Util::stricmp(aUser->getNick(), i->second->user->getNick()) == 0)
 			break;
 	}

@@ -64,7 +64,7 @@ LRESULT FulSharePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	TCHAR buf[32];
 
 	for(int i = 0; i < 24; ++i) {
-		_stprintf(buf, 32, _T("%02d"), i);
+		swprintf(buf, 32, _T("%02d"), i);
 		incomingBegin.AddString(buf);
 		incomingEnd.AddString(buf);
 		shareBegin.AddString(buf);

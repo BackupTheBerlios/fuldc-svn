@@ -1,6 +1,9 @@
 from xml.dom import minidom
 import os
+import sys
 
+#make sure relative paths work from the vc7.1 dir too
+os.chdir(sys.argv[0][0: sys.argv[0].rfind("\\")])
 
 ENTRIESSUBPATH = ".svn/entries"
 TEMPLATE = "client/versiontemplate.h"
