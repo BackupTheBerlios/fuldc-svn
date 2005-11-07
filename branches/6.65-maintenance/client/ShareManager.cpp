@@ -47,7 +47,7 @@
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
 	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20),
-	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false)
+	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false), refreshing(0)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -666,6 +666,11 @@ void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& i
 void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, 
 						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) 
 {
+	if(Thread::safeInc(refreshing) == 2) {
+		Thread::safeDec(refreshing);
+		return;
+	}
+
 	update = aUpdate;
 	refreshDirs = dirs;
 	refreshIncoming = incoming;
@@ -687,11 +692,15 @@ int ShareManager::run() {
 			{
 				RLock<> l(cs);
 				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
-					Directory::MapIter i = directories.find( *j );
-					if( i != directories.end() ){
-						Directory* dp = buildTree(i->first, NULL);
-						dp->setName(findVirtual(i->first)->first);
-						newDirs.insert(make_pair(i->first, dp));
+					//find() is case sensitive...
+					Directory::MapIter i = directories.begin();
+					for(; i != directories.end(); ++i) {
+						if(Util::stricmp(i->first, *j) == 0) {
+							Directory* dp = buildTree(i->first, NULL);
+							dp->setName(findVirtual(i->first)->first);
+							newDirs.insert(make_pair(i->first, dp));
+							break;
+						}
 					}
 				}
 			}
@@ -775,6 +784,8 @@ int ShareManager::run() {
 			refreshDirs = false;
 		}
 	}
+
+	Thread::safeDec(refreshing);
 
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 	if(update) {
