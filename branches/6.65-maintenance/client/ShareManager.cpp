@@ -350,10 +350,12 @@ void ShareManager::removeDirectory(const string& aDirectory, bool duringRefresh)
 	if(d[d.length() - 1] != PATH_SEPARATOR)
 		d += PATH_SEPARATOR;
 
-	Directory::MapIter i = directories.find(d);
-	if(i != directories.end()) {
-		delete i->second;
-		directories.erase(i);
+	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+		if(Util::stricmp(aDirectory, i->first) == 0) {
+			delete i->second;
+			directories.erase(i);
+			break;
+		}
 	}
 
 	for(StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j) {
