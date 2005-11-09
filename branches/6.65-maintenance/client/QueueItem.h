@@ -107,7 +107,7 @@ public:
 				| FLAG_BAD_TREE | FLAG_NO_TREE,
 			
 			FLAG_ERROR_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY |
-				FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_BAD_TREE | FLAG_NO_TREE
+								FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_BAD_TREE | FLAG_NO_TREE
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
