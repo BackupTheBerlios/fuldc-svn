@@ -523,7 +523,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	
 	if(isFileList) {
 		dcassert(fileLists != NULL);
-		delete (string*)ctrlDirs.GetItemData(fileLists);
+		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(fileLists));
 		ctrlDirs.DeleteItem(fileLists);
 		fileLists = NULL;
 		return;
@@ -550,7 +550,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	next = parent;
 
 	while((ctrlDirs.GetChildItem(next) == NULL) && (directories.find(getDir(next)) == directories.end())) {
-		delete (string*)ctrlDirs.GetItemData(next);
+		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(next));
 		parent = ctrlDirs.GetParentItem(next);
 		
 		ctrlDirs.DeleteItem(next);
@@ -1036,7 +1036,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		
 		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		PrivateFrame::openWindow(s->getUser());
+		// @todo PrivateFrame::openWindow(s->getUser());
 	}
 	return 0;
 }

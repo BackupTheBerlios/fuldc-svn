@@ -134,7 +134,6 @@ public:
 
 	virtual ~SearchFrame() {
 	}
-	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

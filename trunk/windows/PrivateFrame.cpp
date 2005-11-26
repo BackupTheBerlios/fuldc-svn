@@ -39,7 +39,6 @@
 
 #include <MMSystem.h>
 
-CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
 
 LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -94,70 +93,35 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
+void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
-	Lock l(cs);
-	FrameIter i = frames.find(aUser);
-	if(i == frames.end()) {
-		bool found = false;
-		for(i = frames.begin(); i != frames.end(); ++i) {
-			if( (!i->first->isOnline()) && 
-				(i->first->getFirstNick() == aUser->getFirstNick()) /*&&
-				(i->first->getLastHubAddress() == aUser->getLastHubAddress())*/ ) {
-				
-				found = true;
-				p = i->second;
-				frames.erase(i);
-				frames[aUser] = p;
-				p->setUser(aUser);
-				p->addLine(aMessage);
-				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !p->muted) {
-					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
-						if(BOOLSETTING(CUSTOM_SOUND))
-							PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-						else
-							MessageBeep(MB_OK);
-					}
-				}
-				if(BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
-					//@todo PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
-				}
-
-				if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
-					WinUtil::flashWindow();
-				}
-				break;
+	FrameIter i = frames.find(replyTo);
+	if(i != frames.end()) {
+		if(!IgnoreManager::getInstance()->isIgnored(from->getFirstNick())) {
+			p = new PrivateFrame(replyTo);
+			frames[replyTo] = p;
+			p->readLog();
+			p->addLine(from, aMessage);
+			if(Util::getAway()) {
+				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && from->isSet(User::BOT)))
+					p->sendMessage(Text::toT(Util::getAwayMessage()));
 			}
-		}
-		if(!found) {
-			/*@todo if(!IgnoreManager::getInstance()->isIgnored(aUser->getNick())) {
-				p = new PrivateFrame(aUser);
-				frames[aUser] = p;
-				p->readLog();
-				p->addLine(aMessage);
-				if(Util::getAway()) {
-					// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
-					if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->isSet(User::BOT)))
-						p->sendMessage(Text::toT(Util::getAwayMessage()));
-				}
 
-				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
-						if(BOOLSETTING(CUSTOM_SOUND))
-							PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-						else
-							MessageBeep(MB_OK);
-					}
+			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !p->muted) {
+				if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
+					if(BOOLSETTING(CUSTOM_SOUND))
+						PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+					else
+						MessageBeep(MB_OK);
 				}
+			}
+			if(BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
+				//@todo PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
+			}
 
-				if(BOOLSETTING(POPUP_ON_PM) && p->doPopups) {
-					PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
-				}
-
-				if(BOOLSETTING(FLASH_WINDOW_ON_PM) || BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)){
-					WinUtil::flashWindow();
-				}
-			}*/
+			if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
+				WinUtil::flashWindow();
+			}
 		}
 	} else {
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !i->second->muted) {
@@ -169,25 +133,23 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 			}
 		}
 		if (BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && i->second->doPopups) {
-			PopupManager::getInstance()->ShowPm(Text::toT(aUser->getFirstNick()), aMessage, i->second->m_hWnd);
+			PopupManager::getInstance()->ShowPm(Text::toT(from->getFirstNick()), aMessage, i->second->m_hWnd);
 		}
 
 		if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
 			WinUtil::flashWindow();
 		}
 
-		i->second->addLine(aMessage);
-
+		i->second->addLine(from, aMessage);
 	}
 }
 
-void PrivateFrame::openWindow(const User::Ptr& aUser, const tstring& msg) {
+void PrivateFrame::openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& msg) {
 	PrivateFrame* p = NULL;
-	Lock l(cs);
-	FrameIter i = frames.find(aUser);
+	FrameIter i = frames.find(to);
 	if(i == frames.end()) {
-		p = new PrivateFrame(aUser);
-		frames[aUser] = p;
+		p = new PrivateFrame(to);
+		frames[to] = p;
 		p->CreateEx(WinUtil::mdiClient);
 	} else {
 		p = i->second;
@@ -195,9 +157,11 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, const tstring& msg) {
 			::ShowWindow(p->m_hWnd, SW_RESTORE);
 		p->MDIActivate(p->m_hWnd);
 	}
-	if(!msg.empty())
-		p->sendMessage(msg);
+	// @todo if(!msg.empty())
+	// p->sendMessage(from, msg);
 }
+
+
 
 LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	if (uMsg != WM_KEYDOWN) {
@@ -334,7 +298,7 @@ void PrivateFrame::onEnter()
 				PostMessage(WM_CLOSE);
 			} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
 				FavoriteManager::getInstance()->addFavoriteUser(getUser());
-				addLine(TSTRING(FAVORITE_USER_ADDED));
+				// @todo addLine(TSTRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
@@ -394,7 +358,7 @@ void PrivateFrame::sendMessage(const tstring& msg) {
 		// local echo formatting
 		s = Util::validateMessage(s, false);
 		s = Util::validateMessage(s, true, true);
-		addLine(Text::toT(s));
+		// @todo addLine(Text::toT(s));
 	}
 }
 
@@ -406,7 +370,6 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		Lock l(cs);
 		frames.erase(user);
 
 		bHandled = FALSE;
@@ -414,7 +377,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 }
 
-void PrivateFrame::addLine(const tstring& aLine, bool bold) {
+void PrivateFrame::addLine(const User::Ptr&, const tstring& aLine) {
 	if(!created) {
 		if(BOOLSETTING(POPUNDER_PM))
 			WinUtil::hiddenCreateEx(this);
@@ -440,8 +403,8 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 	
 	addClientLine(TSTRING(LAST_CHANGE) + Util::getTimeStringW());
 
-	if(bold)
-		setDirty();
+	//@todo if(bold)
+	//@todo		setDirty();
 }
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -656,8 +619,8 @@ void PrivateFrame::readLog() {
 			ctrlClient.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB);
 
 			for(; i < linesCount; ++i){
-				if(!lines[i].empty())
-					addLine(Text::toT(lines[i]));
+				//@todo if(!lines[i].empty())
+					//@todo addLine(Text::toT(lines[i]));
 			}
 			ctrlClient.AddLine(tstring(_T(" ")), false);
 

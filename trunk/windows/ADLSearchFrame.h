@@ -103,12 +103,6 @@ public:
 		return FALSE;
 	};
 
-	// Final message
-	virtual void OnFinalMessage(HWND /*hWnd*/) 
-	{
-		delete this;
-	}
-
 	// Update control layouts
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	

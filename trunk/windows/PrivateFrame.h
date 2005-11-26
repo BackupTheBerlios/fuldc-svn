@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "../client/User.h"
-#include "../client/CriticalSection.h"
 #include "../client/ClientManagerListener.h"
 #include "../client/ResourceManager.h"
 
@@ -40,8 +39,8 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>,
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
-	static void gotMessage(const User::Ptr& aUser, const tstring& aMessage);
-	static void openWindow(const User::Ptr& aUser, const tstring& aMessage = Util::emptyStringT);
+	static void gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
+	static void openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 	static void closeAll();
 
@@ -51,11 +50,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("PrivateFrame"), IDR_PRIVATE, 0, COLOR_3DFACE);
 
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
-	typedef MDITabChildWindowImpl<PrivateFrame> baseClass;
 	typedef UCHandler<PrivateFrame> ucBase;
 
 	BEGIN_MSG_MAP(PrivateFrame)
@@ -102,7 +96,7 @@ public:
 	LRESULT onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void addLine(const tstring& aLine, bool bold = true);
+	void addLine(const User::Ptr&, const tstring& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
@@ -149,7 +143,6 @@ public:
 		ctrlStatus.SetText(0, (_T("[") + Util::getShortTimeString() + _T("] ") + aLine).c_str());
 	}
 	
-	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const tstring& msg);
 	
 	User::Ptr& getUser() { return user; };
@@ -163,8 +156,7 @@ private:
 		ctrlClientContainer(WC_EDIT, this, PM_MESSAGE_MAP) {
 	}
 	
-	~PrivateFrame() {
-	}
+	virtual ~PrivateFrame() { }
 	
 	bool doPopups;
 	bool created;
@@ -174,7 +166,6 @@ private:
 	CFulEditCtrl ctrlClient;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
-	static CriticalSection cs;
 
 	CMenu tabMenu;
 
@@ -201,7 +192,7 @@ private:
 			//@todo SetWindowText(Text::toT(user->getFullNick()).c_str());
 			setDisconnected(false);
 			if(offline){
-				addLine(_T("*** ") + TSTRING(USER_CAME_ONLINE), false);
+				//@todo addLine(_T("*** ") + TSTRING(USER_CAME_ONLINE), false);
 				offline = false;
 			}
 		} else {
@@ -210,7 +201,7 @@ private:
 			} else {
 				SetWindowText((Text::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
 			}*/
-			addLine(_T("*** ") + TSTRING(USER_WENT_OFFLINE), false);
+			//@todo addLine(_T("*** ") + TSTRING(USER_WENT_OFFLINE), false);
             setDisconnected(true);
 			offline = true;
 		}

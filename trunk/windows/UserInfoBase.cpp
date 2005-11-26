@@ -45,11 +45,11 @@ void UserInfoBase::addFav() {
 	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 void UserInfoBase::pm() {
-	PrivateFrame::openWindow(user);
+	//@todo PrivateFrame::openWindow(user);
 }
 
 void UserInfoBase::pm(const tstring& aMsg) {
-	PrivateFrame::openWindow(user, aMsg);
+	//@todo PrivateFrame::openWindow(user, aMsg);
 }
 void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);

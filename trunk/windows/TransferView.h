@@ -43,7 +43,7 @@ public:
 		headerBuf = new TCHAR[128];
 		resolveBuffer = NULL;
 	};
-	~TransferView(void);
+	virtual ~TransferView(void);
 
 	typedef UserInfoBaseHandler<TransferView> uibBase;
 	typedef UCHandler<TransferView> ucBase;

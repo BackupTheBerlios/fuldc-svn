@@ -97,13 +97,6 @@ public:
 		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
 	END_MSG_MAP()
 
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		dcassert(frames.find(server) != frames.end());
-		dcassert(frames[server] == this);
-		frames.erase(server);
-		delete this;
-	}
-
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -242,7 +235,7 @@ private:
 				}
 			}
 			if(col == COLUMN_SHARED) {
-				return compare(a->getBytes(), b->getBytes());
+				return compare(a->identity.getBytesShared(), b->identity.getBytesShared());;
 			}
 			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
 		}
@@ -251,7 +244,6 @@ private:
 
 		tstring columns[COLUMN_LAST];
 		GETSET(Identity, identity, Identity);
-		GETSET(int64_t, bytes, Bytes);
 		GETSET(bool, op, Op);
 		GETSET(bool, hidden, Hidden);
 		bool stripIsp;
@@ -327,7 +319,11 @@ private:
 		tabList.push_back(_T("/uptime"));
 	}
 
-	~HubFrame() {
+	virtual ~HubFrame() {
+		dcassert(frames.find(server) != frames.end());
+		dcassert(frames[server] == this);
+		frames.erase(server);
+
 		ClientManager::getInstance()->putClient(client);
 
 		if(resolveBuffer)

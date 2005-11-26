@@ -169,6 +169,7 @@ public:
 	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
+	static void openFolder(const tstring& file);
 
 	static int getIconIndex(const tstring& aFileName);
 

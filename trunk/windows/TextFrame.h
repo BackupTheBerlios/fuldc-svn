@@ -38,12 +38,8 @@ public:
 	TextFrame(const tstring& fileName) : file(fileName){ }
 	TextFrame(deque<tstring> *aLog) : log(aLog) {}
 	
-	~TextFrame() { }
+	virtual ~TextFrame() { }
 	
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
 	typedef MDITabChildWindowImpl<TextFrame> baseClass;
 	BEGIN_MSG_MAP(TextFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)

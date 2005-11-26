@@ -306,13 +306,13 @@ void HubFrame::onEnter() {
 				if(ui != NULL){
 					if(!msg.empty()){
 						if (BOOLSETTING(POPUP_PMS) ) {
-							PrivateFrame::openWindow(ui->user, msg);
+							//@todo PrivateFrame::openWindow(ui->user, msg);
 						} else {
 							//ui->user->privateMessage("<" + client->getMyNick() + "> " + Text::fromT(msg));
 							ClientManager::getInstance()->privateMessage(ui->user, Text::fromT(msg));
 						}
-					} else
-						PrivateFrame::openWindow(ui->user);
+					} //else
+						//@todo PrivateFrame::openWindow(ui->user);
 				}
 			}else if(Util::stricmp(cmd.c_str(), _T("topic")) == 0) {
 				addLine(_T("*** ") + Text::toT(client->getHubNameWithDescription()));
@@ -592,7 +592,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		PMInfo* i = (PMInfo*)lParam;
 		if(i->user->isOnline()) {
 			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->user)) {
-				PrivateFrame::gotMessage(i->user, i->msg);
+				// @todo PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
 				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
@@ -600,7 +600,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
 				addClientLine(TSTRING(IGNORED_MESSAGE) + i->msg, false);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
-				PrivateFrame::gotMessage(i->user, i->msg);
+				// @todo PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
 				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
@@ -789,7 +789,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			if(pos != -1) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					PrivateFrame::openWindow((ctrlUsers.getItemData(pos))->user);
+					// @todo PrivateFrame::openWindow((ctrlUsers.getItemData(pos))->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
 						QueueManager::getInstance()->addList((ctrlUsers.getItemData(pos))->user, QueueItem::FLAG_CLIENT_VIEW);

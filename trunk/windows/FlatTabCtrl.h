@@ -52,7 +52,7 @@ public:
 	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), moving(NULL), inTab(false) { 
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
 	};
-	~FlatTabCtrlImpl() { }
+	virtual ~FlatTabCtrlImpl() { }
 
 	static LPCTSTR GetWndClassName()
 	{
@@ -739,6 +739,8 @@ public:
 
 	MDITabChildWindowImpl() : created(false) { };
 	FlatTabCtrl* getTab() { return WinUtil::tabCtrl; };
+
+	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
  	typedef MDITabChildWindowImpl<T, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;

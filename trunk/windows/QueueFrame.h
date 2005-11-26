@@ -52,10 +52,6 @@ public:
 
 	virtual ~QueueFrame() { }
 	
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
 	typedef MDITabChildWindowImpl<QueueFrame> baseClass;
 	typedef CSplitterImpl<QueueFrame> splitBase;
 
@@ -415,7 +411,7 @@ private:
 			clearTree(next);
 			next = ctrlDirs.GetNextSiblingItem(next);
 		}
-		delete (string*)ctrlDirs.GetItemData(item);
+		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(item));
 	}
 
 	void removeSelected() {

@@ -29,7 +29,7 @@
 template<class T, int title, int ID>
 class StaticFrame {
 public:
-	~StaticFrame() { frame = NULL; };
+	virtual ~StaticFrame() { };
 
 	static T* frame;
 	static void openWindow() {

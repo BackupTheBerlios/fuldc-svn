@@ -697,17 +697,17 @@ void WinUtil::searchHash(const TTHValue* aHash) {
 	}
 
 	if(Util::stricmp(app.c_str(), Buf) != 0) {
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		TCHAR* tmp = _T("URL:Direct Connect Protocol");
 		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		::RegCloseKey(hk);
 
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
 
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		app = Text::toT(Util::getAppName());
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
@@ -732,17 +732,17 @@ void WinUtil::searchHash(const TTHValue* aHash) {
 	 }
 
 	 if(Util::stricmp(app.c_str(), Buf) != 0) {
-		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc"), &hk);
+		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		 TCHAR* tmp = _T("URL:Direct Connect Protocol");
 		 ::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		 ::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		 ::RegCloseKey(hk);
 
-		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), &hk);
+		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		 ::RegCloseKey(hk);
 
-		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc\\DefaultIcon"), &hk);
+		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		 app = Text::toT(Util::getAppName());
 		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		 ::RegCloseKey(hk);
@@ -943,6 +943,13 @@ void WinUtil::getContextMenuPos(CFulEditCtrl& aEdit, POINT& aPt) {
 	aPt.x = erc.Width() / 2;
 	aPt.y = erc.Height() / 2;
 	aEdit.ClientToScreen(&aPt);
+}
+
+void WinUtil::openFolder(const tstring& file) {
+	if (File::getSize(Text::fromT(file)) != -1)
+		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, /select, \"" + (Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
+	else
+		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, \"" + Util::getFilePath(Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
 }
 
 void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
