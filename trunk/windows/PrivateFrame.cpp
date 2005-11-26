@@ -549,7 +549,8 @@ LRESULT PrivateFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 		ctrlClient.ScreenToClient(&pt);
 		tstring tmp;
-		tstring::size_type start = ctrlClient.TextUnderCursor(pt, tmp);
+		tstring::size_type ch = ctrlClient.TextUnderCursor(pt, tmp);
+		tstring::size_type start = tmp.find_last_of(_T(" <\t\r"), ch) + 1;
 		ctrlClient.ClientToScreen(&pt);
 
 		//did we hit a nick?

@@ -37,6 +37,9 @@
 // This enables stlport's debug mode (and slows it down to a crawl...)
 //# define _STLP_DEBUG 1
 
+//Remove this line if you want to try compiling without stlport
+#define HAS_STLPORT 1
+
 // --- Shouldn't have to change anything under here...
 
 #ifndef _REENTRANT
@@ -56,7 +59,7 @@
 # pragma warning(disable: 4127) // constant expression
 # pragma warning(disable: 4710) // function not inlined
 
-# if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310
+# if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
 
 typedef signed char int8_t;
 typedef signed short int16_t;

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import os, re, cgi
-
+import os, re, cgi, sys
+#make sure relative paths work from the vc7.1 dir too
+os.chdir(sys.argv[0][0: sys.argv[0].rfind("\\")])
 filetext = "../changelog.txt"
 filehtml = "changelog.html"
 #os.rename(filehtml,"%s.old" % filehtml)

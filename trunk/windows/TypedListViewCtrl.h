@@ -38,7 +38,7 @@ public:
 };
 
 template<class T, int ctrlId>
-class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, CControlWinTraits>,
+class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl<T, ctrlId>, CListViewCtrl, CControlWinTraits>,
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:
@@ -527,15 +527,16 @@ public:
 
 	void setOwnerDraw(bool handleDrawing) { ownerDraw = handleDrawing; }
 
+protected:
+	int sortColumn;
+	bool sortAscending;
+
 private:
 	CMenu headerMenu;
 
 	//should we handle the drawing?
 	bool ownerDraw;
 
-	int sortColumn;
-	bool sortAscending;
-	
 	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		thisClass* t = (thisClass*)lParamSort;
 		int result = T::compareItems((T*)lParam1, (T*)lParam2, t->getRealSortColumn());

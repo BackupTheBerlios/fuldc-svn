@@ -1,7 +1,7 @@
 "DeployProject"
 {
-"VSVersion" = "3:800"
-"ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
+"VSVersion" = "3:701"
+"ProjectType" = "8:{2C2AF0D9-9B47-4FE5-BEF2-169778172667}"
 "IsWebType" = "8:FALSE"
 "ProjectName" = "8:Setup"
 "LanguageId" = "3:1033"
@@ -223,17 +223,6 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
-            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
-            {
-            "Enabled" = "11:TRUE"
-            "PromptEnabled" = "11:TRUE"
-            "PrerequisitesLocation" = "2:1"
-            "Url" = "8:"
-            "ComponentsUrl" = "8:"
-                "Items"
-                {
-                }
-            }
         }
         "Release"
         {
@@ -250,17 +239,6 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
-            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
-            {
-            "Enabled" = "11:TRUE"
-            "PromptEnabled" = "11:TRUE"
-            "PrerequisitesLocation" = "2:1"
-            "Url" = "8:"
-            "ComponentsUrl" = "8:"
-                "Items"
-                {
-                }
-            }
         }
     }
     "Deployable"
@@ -280,11 +258,14 @@
             {
             }
         }
+        "Feature"
+        {
+        }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_07DD13D04BC3479FA46025F5CA8C6AE1"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_07DD13D04BC3479FA46025F5CA8C6AE1"
             {
-            "SourcePath" = "8:res\\users.bmp"
+            "SourcePath" = "8:..\\res\\users.bmp"
             "TargetName" = "8:users.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -302,9 +283,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_089D9C106246493384A6E7C98E3A130C"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_089D9C106246493384A6E7C98E3A130C"
             {
-            "SourcePath" = "8:res\\toolbar.bmp"
+            "SourcePath" = "8:..\\res\\toolbar.bmp"
             "TargetName" = "8:toolbar.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -322,9 +303,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0CA2BB63659A434289E2E05F6D5CBDBF"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_0CA2BB63659A434289E2E05F6D5CBDBF"
             {
-            "SourcePath" = "8:res\\ADLSearch.ico"
+            "SourcePath" = "8:..\\res\\ADLSearch.ico"
             "TargetName" = "8:ADLSearch.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -342,7 +323,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_108599711698C842CAA8EB7C67878720"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_108599711698C842CAA8EB7C67878720"
             {
             "SourcePath" = "8:pdh.dll"
             "TargetName" = "8:pdh.dll"
@@ -362,9 +343,9 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1259231CA0D649799A7E9766E44C1FEE"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_1259231CA0D649799A7E9766E44C1FEE"
             {
-            "SourcePath" = "8:res\\PublicHubs.ico"
+            "SourcePath" = "8:..\\res\\PublicHubs.ico"
             "TargetName" = "8:PublicHubs.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -382,9 +363,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_12BF2DE779EA49938F5A0FDEDDF6387D"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_12BF2DE779EA49938F5A0FDEDDF6387D"
             {
-            "SourcePath" = "8:res\\Speeds.bmp"
+            "SourcePath" = "8:..\\res\\Speeds.bmp"
             "TargetName" = "8:Speeds.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -402,9 +383,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1D1FDF1480224B2D90CFAB0DAA7CE43D"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_1D1FDF1480224B2D90CFAB0DAA7CE43D"
             {
-            "SourcePath" = "8:res\\arrows.bmp"
+            "SourcePath" = "8:..\\res\\arrows.bmp"
             "TargetName" = "8:arrows.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -422,9 +403,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E4C3CB8D3754A1B80C525ED59338D5B"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_1E4C3CB8D3754A1B80C525ED59338D5B"
             {
-            "SourcePath" = "8:res\\searchspy.ico"
+            "SourcePath" = "8:..\\res\\searchspy.ico"
             "TargetName" = "8:searchspy.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -442,9 +423,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_236E911B5D6D446AAE5F31B29AD18F90"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_236E911B5D6D446AAE5F31B29AD18F90"
             {
-            "SourcePath" = "8:res\\User.ico"
+            "SourcePath" = "8:..\\res\\User.ico"
             "TargetName" = "8:User.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -462,9 +443,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2CF447F1DD424282A07223833ABDFF34"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_2CF447F1DD424282A07223833ABDFF34"
             {
-            "SourcePath" = "8:res\\popup.bmp"
+            "SourcePath" = "8:..\\res\\popup.bmp"
             "TargetName" = "8:popup.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -482,9 +463,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3355271A73154B859C4E6A94E885C4F3"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_3355271A73154B859C4E6A94E885C4F3"
             {
-            "SourcePath" = "8:res\\Favorites.ico"
+            "SourcePath" = "8:..\\res\\Favorites.ico"
             "TargetName" = "8:Favorites.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -502,9 +483,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_373960AE32414731A1EA27868F54B0E0"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_373960AE32414731A1EA27868F54B0E0"
             {
-            "SourcePath" = "8:res\\DCPlusPlus.ico"
+            "SourcePath" = "8:..\\res\\DCPlusPlus.ico"
             "TargetName" = "8:DCPlusPlus.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -522,9 +503,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3C6CD86043AB4B3E94E87E13EACC7247"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_3C6CD86043AB4B3E94E87E13EACC7247"
             {
-            "SourcePath" = "8:ChangeLog.txt"
+            "SourcePath" = "8:..\\ChangeLog.txt"
             "TargetName" = "8:ChangeLog.txt"
             "Tag" = "8:"
             "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
@@ -542,9 +523,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3CC64198A2E84F508662E603D8932D4C"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_3CC64198A2E84F508662E603D8932D4C"
             {
-            "SourcePath" = "8:res\\Hub.ico"
+            "SourcePath" = "8:..\\res\\Hub.ico"
             "TargetName" = "8:Hub.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -562,9 +543,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_47401C0EAF684D188DA8C88B6D2BC6D2"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_47401C0EAF684D188DA8C88B6D2BC6D2"
             {
-            "SourcePath" = "8:res\\toolbar20.bmp"
+            "SourcePath" = "8:..\\res\\toolbar20.bmp"
             "TargetName" = "8:toolbar20.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -582,9 +563,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_48B1922A85464E8F97C164325AE071C5"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_48B1922A85464E8F97C164325AE071C5"
             {
-            "SourcePath" = "8:res\\FinishedUL.ico"
+            "SourcePath" = "8:..\\res\\FinishedUL.ico"
             "TargetName" = "8:FinishedUL.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -602,9 +583,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B9F6273363547E3B5F83281DBA80C2E"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_4B9F6273363547E3B5F83281DBA80C2E"
             {
-            "SourcePath" = "8:res\\Directory.ico"
+            "SourcePath" = "8:..\\res\\Directory.ico"
             "TargetName" = "8:Directory.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -622,9 +603,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_513D4DC774AD41589B85F94020C5882A"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_513D4DC774AD41589B85F94020C5882A"
             {
-            "SourcePath" = "8:res\\notepad.ico"
+            "SourcePath" = "8:..\\res\\notepad.ico"
             "TargetName" = "8:notepad.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -642,9 +623,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B70A593CC1A42B0A50D0DF964B0E547"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_5B70A593CC1A42B0A50D0DF964B0E547"
             {
-            "SourcePath" = "8:res\\FinishedDL.ico"
+            "SourcePath" = "8:..\\res\\FinishedDL.ico"
             "TargetName" = "8:FinishedDL.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -662,9 +643,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_620F22489FF8445987E00295F0F61D81"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_620F22489FF8445987E00295F0F61D81"
             {
-            "SourcePath" = "8:GeoIPCountryWhois.csv"
+            "SourcePath" = "8:..\\GeoIPCountryWhois.csv"
             "TargetName" = "8:GeoIPCountryWhois.csv"
             "Tag" = "8:"
             "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
@@ -682,9 +663,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_654868E0EE9940D8A60033BF368B33AD"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_654868E0EE9940D8A60033BF368B33AD"
             {
-            "SourcePath" = "8:res\\netstats.ico"
+            "SourcePath" = "8:..\\res\\netstats.ico"
             "TargetName" = "8:netstats.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -702,9 +683,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_670052CFBCB94220ACDB4702D840E575"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_670052CFBCB94220ACDB4702D840E575"
             {
-            "SourcePath" = "8:res\\Search.ico"
+            "SourcePath" = "8:..\\res\\Search.ico"
             "TargetName" = "8:Search.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -722,9 +703,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68E6332F2F9146B9976D3E43BA2C334C"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_68E6332F2F9146B9976D3E43BA2C334C"
             {
-            "SourcePath" = "8:res\\Queue.ico"
+            "SourcePath" = "8:..\\res\\Queue.ico"
             "TargetName" = "8:Queue.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -742,9 +723,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_736936CE1D47426F98CBE01F5BDE0CD9"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_736936CE1D47426F98CBE01F5BDE0CD9"
             {
-            "SourcePath" = "8:res\\toolbar20-highlight.bmp"
+            "SourcePath" = "8:..\\res\\toolbar20-highlight.bmp"
             "TargetName" = "8:toolbar20-highlight.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -762,7 +743,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8ED5E381F9DD4879B613F7C26F304C92"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_8ED5E381F9DD4879B613F7C26F304C92"
             {
             "SourcePath" = "8:C:\\WINDOWS\\system32\\dbghelp.dll"
             "TargetName" = "8:dbghelp.dll"
@@ -782,7 +763,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A9B1C3A967EBCD7017507CD1BC0D7118"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_A9B1C3A967EBCD7017507CD1BC0D7118"
             {
             "SourcePath" = "8:comdlg32.dll"
             "TargetName" = "8:comdlg32.dll"
@@ -802,9 +783,9 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BA8FA974CC3343599DF914B4145E60D2"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_BA8FA974CC3343599DF914B4145E60D2"
             {
-            "SourcePath" = "8:res\\mdichild.bmp"
+            "SourcePath" = "8:..\\res\\mdichild.bmp"
             "TargetName" = "8:mdichild.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -822,9 +803,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C19B7462AB11422FB9E79289BE0D6696"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_C19B7462AB11422FB9E79289BE0D6696"
             {
-            "SourcePath" = "8:res\\folders.bmp"
+            "SourcePath" = "8:..\\res\\folders.bmp"
             "TargetName" = "8:folders.bmp"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -842,9 +823,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D7EA579D26494D858A16B92342300465"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_D7EA579D26494D858A16B92342300465"
             {
-            "SourcePath" = "8:Example.xml"
+            "SourcePath" = "8:..\\Example.xml"
             "TargetName" = "8:Example.xml"
             "Tag" = "8:"
             "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
@@ -862,9 +843,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D989F593BE1F4EFFB97A181157B18B0E"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_D989F593BE1F4EFFB97A181157B18B0E"
             {
-            "SourcePath" = "8:app\\DCPlusPlus.chm"
+            "SourcePath" = "8:..\\app\\DCPlusPlus.chm"
             "TargetName" = "8:DCPlusPlus.chm"
             "Tag" = "8:"
             "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
@@ -882,9 +863,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E41060A496A94748ADFE4393AA7E35E4"
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_E41060A496A94748ADFE4393AA7E35E4"
             {
-            "SourcePath" = "8:res\\FavoriteUser.ico"
+            "SourcePath" = "8:..\\res\\FavoriteUser.ico"
             "TargetName" = "8:FavoriteUser.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
@@ -908,7 +889,7 @@
         }
         "Folder"
         {
-            "{3C67513D-01DD-4637-8A68-80971EB9504F}:_759FDD88ECDA4CD38E5633B20B4E3458"
+            "{58C0ADA3-3CEA-43BD-A3B3-2EA121BC8217}:_759FDD88ECDA4CD38E5633B20B4E3458"
             {
             "DefaultLocation" = "8:[ProgramFilesFolder]\\[ProductName]"
             "Name" = "8:#1925"
@@ -918,7 +899,7 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_F4EDDF9F986D47728FE88A15AEAE5C98"
+                    "{F27BD5C5-A65D-4608-96D4-7C5DA1F76302}:_F4EDDF9F986D47728FE88A15AEAE5C98"
                     {
                     "Name" = "8:Icons"
                     "AlwaysCreate" = "11:FALSE"
@@ -931,7 +912,7 @@
                     }
                 }
             }
-            "{1525181F-901A-416C-8A58-119130FE478E}:_A5EDE1874414409FA8F63C01C5648C7C"
+            "{78BAF5CE-F2E5-45BE-83BC-DB6AF387E941}:_A5EDE1874414409FA8F63C01C5648C7C"
             {
             "Name" = "8:#1919"
             "AlwaysCreate" = "11:TRUE"
@@ -940,7 +921,7 @@
             "Property" = "8:ProgramMenuFolder"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_6A3A3E6E96A7422C8E04510A8FEA186D"
+                    "{F27BD5C5-A65D-4608-96D4-7C5DA1F76302}:_6A3A3E6E96A7422C8E04510A8FEA186D"
                     {
                     "Name" = "8:fulDC"
                     "AlwaysCreate" = "11:TRUE"
@@ -956,7 +937,7 @@
         }
         "LaunchCondition"
         {
-            "{836E08B8-0285-4809-BA42-01DB6754A45D}:_7702144B0FD74D2698DB0090F8F7971B"
+            "{E4DE4623-56CB-424E-96A0-1AD21D5ECA20}:_7702144B0FD74D2698DB0090F8F7971B"
             {
             "Name" = "8:Windows NT"
             "Condition" = "8:VersionNT AND NOT Version9X"
@@ -981,7 +962,6 @@
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:6.66"
         "Manufacturer" = "8:Trem"
         "ARPHELPTELEPHONE" = "8:"
@@ -996,10 +976,6 @@
         "ARPIconIndex" = "3:128"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
-        "TargetPlatform" = "3:0"
-        "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:"
-        "RunPostBuildEvent" = "3:0"
         }
         "Registry"
         {
@@ -1007,7 +983,7 @@
             {
                 "Keys"
                 {
-                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_5710537D71394F2EA6972C38A26B6C12"
+                    "{6A471EEF-D31B-40F8-BCF6-C9E8EC783F36}:_5710537D71394F2EA6972C38A26B6C12"
                     {
                     "Name" = "8:Software"
                     "Condition" = "8:"
@@ -1016,7 +992,7 @@
                     "Transitive" = "11:FALSE"
                         "Keys"
                         {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_42F68463CA2E4B77899573BB2BFC0E5D"
+                            "{6A471EEF-D31B-40F8-BCF6-C9E8EC783F36}:_42F68463CA2E4B77899573BB2BFC0E5D"
                             {
                             "Name" = "8:[Manufacturer]"
                             "Condition" = "8:"
@@ -1041,7 +1017,7 @@
             {
                 "Keys"
                 {
-                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_B30333A5A0A14D7493E032458D0BE1E0"
+                    "{6A471EEF-D31B-40F8-BCF6-C9E8EC783F36}:_B30333A5A0A14D7493E032458D0BE1E0"
                     {
                     "Name" = "8:Software"
                     "Condition" = "8:"
@@ -1050,7 +1026,7 @@
                     "Transitive" = "11:FALSE"
                         "Keys"
                         {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_709DF4DF22424854B1BC6B24AE6414FA"
+                            "{6A471EEF-D31B-40F8-BCF6-C9E8EC783F36}:_709DF4DF22424854B1BC6B24AE6414FA"
                             {
                             "Name" = "8:[Manufacturer]"
                             "Condition" = "8:"
@@ -1095,7 +1071,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D5C60746E9414CF78EA481324580B41E"
+            "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_D5C60746E9414CF78EA481324580B41E"
             {
             "Name" = "8:Help"
             "Arguments" = "8:"
@@ -1109,7 +1085,7 @@
             "Icon" = "8:"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ED7F61E93AFF4447A937C083004CF7AB"
+            "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_ED7F61E93AFF4447A937C083004CF7AB"
             {
             "Name" = "8:Changelog.txt"
             "Arguments" = "8:"
@@ -1123,7 +1099,7 @@
             "Icon" = "8:"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F6B9D89A3D05443097347E7C3FCBC294"
+            "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_F6B9D89A3D05443097347E7C3FCBC294"
             {
             "Name" = "8:fulDC"
             "Arguments" = "8:"
@@ -1140,20 +1116,20 @@
         }
         "UserInterface"
         {
-            "{2479F3F5-0309-486D-8047-8187E2CE5BA0}:_160C12802BB14EF6A004F8FC48E09859"
+            "{B654A020-6903-4E6A-A86C-75DC463DB54B}:_160C12802BB14EF6A004F8FC48E09859"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:FALSE"
             "SourcePath" = "8:<VsdDialogDir>\\VsdUserInterface.wim"
             }
-            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_3816288EA3F94DB58CC4EB860A918C23"
+            "{8D9DEE8B-DD8B-4F48-9072-C4364E4F4011}:_3816288EA3F94DB58CC4EB860A918C23"
             {
             "Name" = "8:#1902"
             "Sequence" = "3:2"
             "Attributes" = "3:3"
                 "Dialogs"
                 {
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_5C327D94343A4524B2DADAB76D8B30AE"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_5C327D94343A4524B2DADAB76D8B30AE"
                     {
                     "Sequence" = "3:100"
                     "DisplayName" = "8:Finished"
@@ -1177,14 +1153,14 @@
                     }
                 }
             }
-            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_852C284417F046EE8B34031CFC5186C8"
+            "{8D9DEE8B-DD8B-4F48-9072-C4364E4F4011}:_852C284417F046EE8B34031CFC5186C8"
             {
             "Name" = "8:#1901"
             "Sequence" = "3:2"
             "Attributes" = "3:2"
                 "Dialogs"
                 {
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_AB225B694A1D488BB340C32D0CE956F7"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_AB225B694A1D488BB340C32D0CE956F7"
                     {
                     "Sequence" = "3:100"
                     "DisplayName" = "8:Progress"
@@ -1221,20 +1197,20 @@
                     }
                 }
             }
-            "{2479F3F5-0309-486D-8047-8187E2CE5BA0}:_98F2304E798B4F38BD51E92157D12380"
+            "{B654A020-6903-4E6A-A86C-75DC463DB54B}:_98F2304E798B4F38BD51E92157D12380"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:FALSE"
             "SourcePath" = "8:<VsdDialogDir>\\VsdBasicDialogs.wim"
             }
-            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_AC8CB76B8A6A4123881D30A58C7F73E1"
+            "{8D9DEE8B-DD8B-4F48-9072-C4364E4F4011}:_AC8CB76B8A6A4123881D30A58C7F73E1"
             {
             "Name" = "8:#1901"
             "Sequence" = "3:1"
             "Attributes" = "3:2"
                 "Dialogs"
                 {
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_254840047C764B4EA2B40984B23009D3"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_254840047C764B4EA2B40984B23009D3"
                     {
                     "Sequence" = "3:100"
                     "DisplayName" = "8:Progress"
@@ -1271,14 +1247,14 @@
                     }
                 }
             }
-            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_B8E6F5E80B474760894D44C3589B9168"
+            "{8D9DEE8B-DD8B-4F48-9072-C4364E4F4011}:_B8E6F5E80B474760894D44C3589B9168"
             {
             "Name" = "8:#1900"
             "Sequence" = "3:1"
             "Attributes" = "3:1"
                 "Dialogs"
                 {
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_C23AE98E9AD6487089DB6D20C4E9D473"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_C23AE98E9AD6487089DB6D20C4E9D473"
                     {
                     "Sequence" = "3:320"
                     "DisplayName" = "8:Confirm Installation"
@@ -1300,7 +1276,7 @@
                             }
                         }
                     }
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_D66F999E1480478C8DF5C56B219CADD4"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_D66F999E1480478C8DF5C56B219CADD4"
                     {
                     "Sequence" = "3:100"
                     "DisplayName" = "8:Welcome"
@@ -1348,7 +1324,7 @@
                             }
                         }
                     }
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EA22C123D7654BEBB7562902053DC479"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_EA22C123D7654BEBB7562902053DC479"
                     {
                     "Sequence" = "3:310"
                     "DisplayName" = "8:Installation Folder"
@@ -1368,31 +1344,18 @@
                             "Setting" = "3:1"
                             "UsePlugInResources" = "11:TRUE"
                             }
-                            "InstallAllUsersVisible"
-                            {
-                            "Name" = "8:InstallAllUsersVisible"
-                            "DisplayName" = "8:#1059"
-                            "Description" = "8:#1159"
-                            "Type" = "3:5"
-                            "ContextData" = "8:1;True=1;False=0"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:0"
-                            "Value" = "3:1"
-                            "DefaultValue" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
                         }
                     }
                 }
             }
-            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_D40C8794E8D241A3A87D6CFF093C26BB"
+            "{8D9DEE8B-DD8B-4F48-9072-C4364E4F4011}:_D40C8794E8D241A3A87D6CFF093C26BB"
             {
             "Name" = "8:#1902"
             "Sequence" = "3:1"
             "Attributes" = "3:3"
                 "Dialogs"
                 {
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EEB10FC11B9948BAB7A62CCDA8E28A78"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_EEB10FC11B9948BAB7A62CCDA8E28A78"
                     {
                     "Sequence" = "3:120"
                     "DisplayName" = "8:Finished"
@@ -1429,14 +1392,14 @@
                     }
                 }
             }
-            "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_FD31EAAED256425484CFE64560D8DF8E"
+            "{8D9DEE8B-DD8B-4F48-9072-C4364E4F4011}:_FD31EAAED256425484CFE64560D8DF8E"
             {
             "Name" = "8:#1900"
             "Sequence" = "3:2"
             "Attributes" = "3:1"
                 "Dialogs"
                 {
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_4EA427621C8440E994F61320D6803A63"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_4EA427621C8440E994F61320D6803A63"
                     {
                     "Sequence" = "3:300"
                     "DisplayName" = "8:Confirm Installation"
@@ -1458,7 +1421,7 @@
                             }
                         }
                     }
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_80D08B2342E34504A9DE91387D7F6DFD"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_80D08B2342E34504A9DE91387D7F6DFD"
                     {
                     "Sequence" = "3:200"
                     "DisplayName" = "8:Installation Folder"
@@ -1480,7 +1443,7 @@
                             }
                         }
                     }
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_F1792C97982C4E1E9C3084770C22BBC5"
+                    "{18ADD6EC-89FE-4ED7-AD3E-211C40278470}:_F1792C97982C4E1E9C3084770C22BBC5"
                     {
                     "Sequence" = "3:100"
                     "DisplayName" = "8:Welcome"
@@ -1536,7 +1499,7 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_00EBC216A89845D8BFFD58CC1F0055BE"
+            "{8062640A-2EEE-46E9-AB67-688E9A886E9F}:_00EBC216A89845D8BFFD58CC1F0055BE"
             {
             "SourcePath" = "8:"
             "TargetName" = "8:"
@@ -1564,9 +1527,9 @@
                 {
                 }
             }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C2E054C30D7E4DD6A9B3B3E846A63748"
+            "{8062640A-2EEE-46E9-AB67-688E9A886E9F}:_C2E054C30D7E4DD6A9B3B3E846A63748"
             {
-            "SourcePath" = "8:App\\DCPlusPlus.exe"
+            "SourcePath" = "8:..\\App\\DCPlusPlus.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"

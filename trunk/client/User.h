@@ -66,6 +66,7 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); }
 	};
 
+
 	User(const string& nick) : firstNick(nick), Flags(NMDC) { }
 	User(const CID& aCID) : cid(aCID) { }
 
@@ -78,6 +79,9 @@ public:
 
 	GETSET(CID, cid, CID);
 	GETSET(string, firstNick, FirstNick);
+	//used to determine if the ip is to be trusted for fake nick checking
+	//don't trust ip's received in c-c connections.
+	GETSET(bool, userIp, UserIp);
 private:
 	User(const User&);
 	User& operator=(const User&);

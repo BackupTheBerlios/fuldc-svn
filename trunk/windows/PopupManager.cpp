@@ -112,7 +112,9 @@ void PopupManager::AutoRemove(){
 
 void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
 	//find the correct window
-	for(PopupIter i = popups.begin(); i != popups.end(); ++i) {
+	PopupIter i = popups.begin();
+
+	for(; i != popups.end(); ++i) {
 		if((*i)->id == pos)
 			break;
 	}

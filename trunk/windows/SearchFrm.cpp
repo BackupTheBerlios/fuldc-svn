@@ -30,9 +30,6 @@
 #include "../client/StringTokenizer.h"
 #include "../client/ClientManager.h"
 
-TStringList SearchFrame::lastSearches;
-TStringList SearchFrame::lastFilters;
-
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH };
 int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 100, 125 };
@@ -56,6 +53,11 @@ void SearchFrame::closeAll() {
 		::PostMessage(i->first, WM_CLOSE, 0, 0);
 }
 
+void SearchFrame::clearHistory(WORD id) {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		::PostMessage(i->first, WM_COMMAND, id, 0);
+}
+
 LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
@@ -63,18 +65,10 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	ctrlSearchBox.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL, 0);
-	for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
-		ctrlSearchBox.InsertString(0, i->c_str());
-	}
+
 	searchBoxContainer.SubclassWindow(ctrlSearchBox.m_hWnd);
 	ctrlSearchBox.SetExtendedUI();
 	
-	ctrlPurge.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_PURGE);
-	ctrlPurge.SetWindowText(CTSTRING(PURGE));
-	ctrlPurge.SetFont(WinUtil::systemFont);
-	purgeContainer.SubclassWindow(ctrlPurge.m_hWnd);
-
 	ctrlFilterBox.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL, 0);
 	
@@ -239,10 +233,24 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	UpdateLayout();
 
+	TStringList lastSearches = SettingsManager::getInstance()->getSearchHistory();
+	for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
+		ctrlSearchBox.InsertString(0, i->c_str());
+	}
+
+	TStringList lastFilters = SettingsManager::getInstance()->getFilterHistory();
+	for(TStringIter i = lastFilters.begin(); i != lastFilters.end(); ++i) {
+		ctrlFilterBox.InsertString(0, i->c_str());
+	}
+
 	if(!initialString.empty()) {
-		lastSearches.push_back(initialString);
-		ctrlSearchBox.InsertString(0, initialString.c_str());
-		ctrlSearchBox.SetCurSel(0);
+		if(SettingsManager::getInstance()->addSearchToHistory(initialString))
+			ctrlSearchBox.InsertString(0, initialString.c_str());
+		
+		int pos;
+		if(CB_ERR != (pos = ctrlSearchBox.FindString(-1, initialString.c_str())))
+			ctrlSearchBox.SetCurSel(pos);
+
 		ctrlMode.SetCurSel(initialMode);
 		ctrlSize.SetWindowText(Text::toT(Util::toString(initialSize)).c_str());
 		ctrlFiletype.SetCurSel(initialType);
@@ -341,33 +349,20 @@ void SearchFrame::onEnter() {
 	} else {
 		lastSearch = TimerManager::getInstance()->getTick();
 	}
-
+	
 	// Add new searches to the last-search dropdown list
-	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
-	{
-		int i = max(SETTING(SEARCH_HISTORY)-1, 0);
-
-		if(ctrlSearchBox.GetCount() > i) 
-			ctrlSearchBox.DeleteString(i);
+	if(SettingsManager::getInstance()->addSearchToHistory(s)) {
+		if(ctrlSearchBox.GetCount() > SETTING(SEARCH_HISTORY)) 
+			ctrlSearchBox.DeleteString(ctrlSearchBox.GetCount()-1);
 		ctrlSearchBox.InsertString(0, s.c_str());
-
-		while(lastSearches.size() > (int64_t)i) {
-			lastSearches.erase(lastSearches.begin());
-		}
-		lastSearches.push_back(s);
 	}
 
-	if(find(lastFilters.begin(), lastFilters.end(), s) == lastFilters.end()) 
-	{
-		if(ctrlFilterBox.GetCount() > 9)
-			ctrlFilterBox.DeleteString(9);
+	if(SettingsManager::getInstance()->addFilterToHistory(f)) {
+		if(ctrlFilterBox.GetCount() > SETTING(SEARCH_HISTORY))
+			ctrlFilterBox.DeleteString(ctrlFilterBox.GetCount()-1);
 		ctrlFilterBox.InsertString(0, f.c_str());
-
-		while(lastFilters.size() > 9) {
-			lastFilters.erase(lastFilters.begin());
-		}
-		lastFilters.push_back(f);
 	}
+
 	
 	ctrlStatus.SetText(1, (TSTRING(SEARCHING_FOR) + s + _T("...")).c_str());
 	{
@@ -751,17 +746,10 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		filterLabel.MoveWindow(rc.left + lMargin, rc.top - labelH, width - rMargin, labelH-1);
 
-		// "Purge"
-		rc.right = rc.left + spacing;
-		rc.left = lMargin;
-		rc.top += 25;
-		rc.bottom = rc.top + 21;
-		ctrlPurge.MoveWindow(rc);
-
 		// "Size"
 		int w2 = width - rMargin - lMargin;
 		rc.top += spacing;
-		rc.bottom += spacing;
+		rc.bottom = rc.top + comboH;
 		rc.right = w2/3;
 		ctrlMode.MoveWindow(rc);
 
@@ -769,10 +757,12 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		rc.left = rc.right + lMargin;
 		rc.right += w2/3;
+		rc.bottom = rc.top + 21;
 		ctrlSize.MoveWindow(rc);
 
 		rc.left = rc.right + lMargin;
 		rc.right = width - rMargin;
+		rc.bottom = rc.top + comboH;
 		ctrlSizeMode.MoveWindow(rc);
 
 		// "File type"
@@ -829,7 +819,6 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 		ctrlSearchBox.MoveWindow(rc);
 		ctrlFilterBox.MoveWindow(rc);
 		ctrlMode.MoveWindow(rc);
-		ctrlPurge.MoveWindow(rc);
 		ctrlSize.MoveWindow(rc);
 		ctrlSizeMode.MoveWindow(rc);
 		ctrlFiletype.MoveWindow(rc);
@@ -927,7 +916,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 
 void SearchFrame::onTab(bool shift) {
 	HWND wnds[] = {
-		ctrlSearch.m_hWnd, ctrlFilter.m_hWnd, ctrlPurge.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
+		ctrlSearch.m_hWnd, ctrlFilter.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
 		ctrlFiletype.m_hWnd, ctrlSlots.m_hWnd, ctrlTTH.m_hWnd, ctrlDoSearch.m_hWnd, ctrlSearch.m_hWnd, 
 		ctrlResults.m_hWnd
 	};
@@ -1177,21 +1166,19 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 	return 0;
 }
 
-LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
-{
-	while(ctrlSearchBox.GetCount() > 0){
-			ctrlSearchBox.DeleteString(0);
-	}
-	while(lastSearches.size() > 0) {
-		lastSearches.erase(lastSearches.end());
-	}
-	return 0;
-}
-
-
 LRESULT SearchFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int tmp = (int)wID - (int)IDC_COPY;
 	ctrlResults.copy(tmp);
+
+	return 0;
+}
+
+LRESULT SearchFrame::onClearHistory(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(wID == IDC_SEARCH_HISTORY) {
+		ctrlSearchBox.ResetContent();
+	} else {
+		ctrlFilterBox.ResetContent();
+	}
 
 	return 0;
 }

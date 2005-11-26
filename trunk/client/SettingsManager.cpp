@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,12 +29,10 @@
 #include "CID.h"
 #include "StringTokenizer.h"
 
-StringList SettingsManager::connectionSpeeds;
-
 const string SettingsManager::settingTags[] =
 {
 	// Strings
-	"Nick", "UploadSpeed", "Description", "DownloadDirectory", "EMail", "ExternalIp",
+	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
 	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
@@ -51,7 +49,7 @@ const string SettingsManager::settingTags[] =
 	"QueueFrameVisible", "DirectoryListingFrameVisible","FinishedVisible", "FinishedULVisible",
 	"SENTRY", 
 	// Ints
-	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
+	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
@@ -72,10 +70,10 @@ const string SettingsManager::settingTags[] =
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
-	"TabHubDirty", "TabPmDirty", "TabSearchDirty", 
+	"TabHubDirty", "TabSearchDirty", 
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
-	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "PmBoldTabs", "HighPrioSample",
+	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
@@ -83,7 +81,6 @@ const string SettingsManager::settingTags[] =
 	"TabDirtyBlend", "PopupTextColor", "FreeSlotsSize", "CustomSound", "TabSize", "RemovePopups", 
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
-	"IgnoreTTHInconsistency",
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
     "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", 
 	"SENTRY",
@@ -92,23 +89,10 @@ const string SettingsManager::settingTags[] =
 	"SENTRY"
 };
 
+StringList SettingsManager::connectionSpeeds;
+
 SettingsManager::SettingsManager()
 {
-	connectionSpeeds.push_back("0.05");
-	connectionSpeeds.push_back("0.01");
-	connectionSpeeds.push_back("0.02");
-	connectionSpeeds.push_back("0.05");
-	connectionSpeeds.push_back("0.1");
-	connectionSpeeds.push_back("0.2");
-	connectionSpeeds.push_back("0.5");
-	connectionSpeeds.push_back("1");
-	connectionSpeeds.push_back("2");
-	connectionSpeeds.push_back("5");
-	connectionSpeeds.push_back("10");
-	connectionSpeeds.push_back("20");
-	connectionSpeeds.push_back("50");
-	connectionSpeeds.push_back("100");
-
 	for(int i=0; i<SETTINGS_LAST; i++)
 		isSet[i] = false;
 
@@ -151,7 +135,7 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_MAIN_CHAT, false);
 	setDefault(STATUS_IN_CHAT, true);
 	setDefault(SHOW_JOINS, false);
-	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
+//	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
 	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
 	setDefault(USE_SYSTEM_ICONS, true);
@@ -237,7 +221,6 @@ SettingsManager::SettingsManager()
 	setDefault(QUEUE_DIRTY, true);
 	setDefault(TAB_HUB_DIRTY, true);
 	setDefault(TAB_SEARCH_DIRTY, true);
-	setDefault(TAB_PM_DIRTY, true);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -246,7 +229,6 @@ SettingsManager::SettingsManager()
 	setDefault(STRIP_ISP, false);
 	setDefault(STRIP_ISP_PM, false);
 	setDefault(HUB_BOLD_TABS, true);
-	setDefault(PM_BOLD_TABS, true);
 	setDefault(HIGH_PRIO_SAMPLE, false);
 	setDefault(POPUP_TIMEOUT, 5);
 	setDefault(POPUP_AWAY, false);
@@ -285,7 +267,6 @@ SettingsManager::SettingsManager()
 	setDefault(DROP_STUPID_CONNECTION, false);
 	setDefault(FLASH_WINDOW_ON_PM, false);
 	setDefault(FLASH_WINDOW_ON_NEW_PM, false);
-	setDefault(IGNORE_TTH_INCONSISTENCY, false);
 	setDefault(DIRECTORYLISTINGFRAME_VISIBLE, "1,1,0,1,1");
 	setDefault(FINISHED_VISIBLE, "1,1,1,1,1,1,1,1");
 	setDefault(FINISHED_UL_VISIBLE, "1,1,1,1,1,1,1");

@@ -603,22 +603,20 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CONTROL         "",IDC_CH_STATUS_HUB_BOLD,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,7,7,246,10
-    CONTROL         "",IDC_CH_STATUS_PM_BOLD,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,18,246,10
     CONTROL         "",IDC_CH_ICONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,
-                    29,248,10
-    EDITTEXT        IDC_TAB_SIZE,15,59,84,14,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COLOR_COMBO,157,55,98,30,CBS_DROPDOWNLIST | 
+                    18,248,10
+    EDITTEXT        IDC_TAB_SIZE,15,49,84,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COLOR_COMBO,157,45,98,30,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,72,57,11
-    EDITTEXT        IDC_TAB_DIRTY_BLEND,15,102,84,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Select Color",IDC_BTN_COLOR,157,62,57,11
+    EDITTEXT        IDC_TAB_DIRTY_BLEND,15,92,84,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_CH_BLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,
-                    119,235,10
-    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,45,116,40
-    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,7,45,
+                    109,235,10
+    GROUPBOX        "Tab Colors",IDC_SB_TAB_COLORS,150,35,116,40
+    GROUPBOX        "Size of string to display in tabs",IDC_SB_TAB_SIZE,7,35,
                     116,40
-    GROUPBOX        "Blending",IDC_SB_TAB_DIRTY_BLEND,8,89,258,47
-    LTEXT           "%",IDC_STATIC,102,105,8,8
+    GROUPBOX        "Blending",IDC_SB_TAB_DIRTY_BLEND,8,79,258,47
+    LTEXT           "%",IDC_STATIC,102,95,8,8
 END
 
 IDD_FULPOPUPPAGE DIALOGEX 0, 0, 275, 225
@@ -632,24 +630,11 @@ BEGIN
     PUSHBUTTON      "Font",IDC_BTN_FONT,21,158,70,14
     PUSHBUTTON      "TextColor",IDC_BTN_TEXTCOLOR,21,177,70,14
     GROUPBOX        "Popup",IDC_ST_DISPLAYTIME,7,105,98,33
-    CONTROL         "Check1",IDC_POPUP_AWAY,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,7,261,10
-    CONTROL         "Check1",IDC_POPUP_MINIMIZED,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,18,261,10
-    CONTROL         "Check1",IDC_POPUP_ON_PM,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,29,261,10
-    CONTROL         "Check1",IDC_POPUP_ON_NEW_PM,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,40,261,10
-    CONTROL         "Check1",IDC_POPUP_ON_HUBSTATUS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,51,261,10
-    CONTROL         "Check1",IDC_POPUP_REMOVE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,62,261,10
     GROUPBOX        "Static",IDC_POPUP_APPEARANCE,7,145,98,52
     GROUPBOX        "Static",IDC_ST_MESSAGE_LENGTH,170,105,98,33
-    CONTROL         "Check1",IDC_POPUP_ACTIVATE_ON_CLICK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,73,261,10
-    CONTROL         "Check1",IDC_POPUP_DONT_SHOW_ACTIVE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,84,261,10
+    CONTROL         "",IDC_POPUP_ITEMS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,7,261,91
 END
 
 IDD_ADVANCED3PAGE DIALOGEX 0, 0, 275, 225
@@ -996,7 +981,7 @@ BEGIN
         VERTGUIDE, 255
         TOPMARGIN, 7
         BOTTOMMARGIN, 216
-        HORZGUIDE, 59
+        HORZGUIDE, 51
         HORZGUIDE, 93
         HORZGUIDE, 99
     END
@@ -1213,6 +1198,9 @@ BEGIN
                     IDC_DUPE_DESCRIPTION,15,67,244,20
     LTEXT           "Background color used in search window to show which files are missing a TTH",
                     IDC_NOTTH_DESCRIPTION,15,123,244,20
+    GROUPBOX        "History",IDC_HISTORY,7,169,259,40
+    PUSHBUTTON      "Clear search history",IDC_SEARCH_HISTORY,15,184,90,14
+    PUSHBUTTON      "Clear filter history",IDC_FILTER_HISTORY,123,184,90,14
 END
 
 IDD_FULIGNOREPAGE DIALOGEX 0, 0, 275, 225

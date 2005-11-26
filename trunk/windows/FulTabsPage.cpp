@@ -28,7 +28,6 @@
 
 PropPage::TextItem FulTabsPage::texts[] = {
 	{ IDC_CH_STATUS_HUB_BOLD,	ResourceManager::HUB_BOLD_TABS				},
-	{ IDC_CH_STATUS_PM_BOLD,	ResourceManager::PM_BOLD_TABS				},
 	{ IDC_CH_ICONS,				ResourceManager::TAB_SHOW_ICONS				},
 	{ IDC_CH_BLEND,				ResourceManager::BLEND_TABS					},
 	{ IDC_SB_TAB_COLORS,		ResourceManager::SETTINGS_SB_TAB_COLORS		},
@@ -40,7 +39,6 @@ PropPage::TextItem FulTabsPage::texts[] = {
 
 PropPage::Item FulTabsPage::items[] = {
 	{ IDC_CH_STATUS_HUB_BOLD,	SettingsManager::HUB_BOLD_TABS,		PropPage::T_BOOL },
-	{ IDC_CH_STATUS_PM_BOLD,	SettingsManager::PM_BOLD_TABS,		PropPage::T_BOOL },
 	{ IDC_CH_ICONS,				SettingsManager::TAB_SHOW_ICONS,	PropPage::T_BOOL },
 	{ IDC_CH_BLEND,				SettingsManager::BLEND_TABS,		PropPage::T_BOOL },
 	{ IDC_TAB_SIZE,				SettingsManager::TAB_SIZE,			PropPage::T_INT }, 

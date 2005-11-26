@@ -531,6 +531,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 				u->getIdentity().setIp(it->substr(j+1));
 				v.push_back(u);
+				// @todo v.back()->setUserIp(true);
 			}
 
 			fire(ClientListener::UsersUpdated(), this, v);

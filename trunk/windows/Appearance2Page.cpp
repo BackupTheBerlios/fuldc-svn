@@ -52,7 +52,6 @@ PropPage::ListItem Appearance2Page::listItems[] = {
 	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
 	{ SettingsManager::TAB_HUB_DIRTY, ResourceManager::SETTINGS_TAB_HUB_DIRTY },
 	{ SettingsManager::TAB_SEARCH_DIRTY, ResourceManager::SETTINGS_TAB_SEARCH_DIRTY },
-	{ SettingsManager::TAB_PM_DIRTY, ResourceManager::SETTINGS_TAB_PM_DIRTY },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

@@ -50,6 +50,7 @@ class SearchFrame : public MDITabChildWindowImpl<SearchFrame>,
 public:
 	static void openWindow(const tstring& str = Util::emptyStringW, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
 	static void closeAll();
+	static void clearHistory(WORD id);
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("SearchFrame"), IDR_SEARCH, 0, COLOR_3DFACE)
 
@@ -89,11 +90,12 @@ public:
 		COMMAND_ID_HANDLER(IDC_ONLYTTH, onTTH)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
+		COMMAND_ID_HANDLER(IDC_SEARCH_HISTORY, onClearHistory)
+		COMMAND_ID_HANDLER(IDC_FILTER_HISTORY, onClearHistory)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST+2, onCopy)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
-		COMMAND_ID_HANDLER(IDC_PURGE, onPurge)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_COMMANDS(ucBase)
@@ -110,7 +112,6 @@ public:
 	SearchFrame() : 
 	searchBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		searchContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
-		purgeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
 		sizeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
 		modeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		sizeModeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
@@ -149,9 +150,9 @@ public:
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClearHistory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -427,7 +428,6 @@ private:
 	CComboBox ctrlSizeMode;
 	CFulComboBox ctrlFiletype;
 	CButton ctrlDoSearch;
-	CButton ctrlPurge;
 	
 	CContainedWindow searchContainer;
 	CContainedWindow searchBoxContainer;
@@ -441,7 +441,6 @@ private:
 	CContainedWindow resultsContainer;
 	CContainedWindow hubsContainer;
 	CContainedWindow tthContainer;
-	CContainedWindow purgeContainer;
 	CContainedWindow filterContainer;
 	CContainedWindow filterBoxContainer;
 
@@ -477,9 +476,6 @@ private:
 	int filtered;
 
 	CriticalSection cs;
-
-	static TStringList lastSearches;
-	static TStringList lastFilters;
 
 	DWORD lastSearch;
 	bool closed;

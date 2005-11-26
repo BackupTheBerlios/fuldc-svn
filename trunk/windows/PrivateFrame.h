@@ -147,9 +147,6 @@ public:
 			CreateEx(WinUtil::mdiClient);
 		}
 		ctrlStatus.SetText(0, (_T("[") + Util::getShortTimeString() + _T("] ") + aLine).c_str());
-		
-		if(BOOLSETTING(PM_BOLD_TABS))
-			setDirty();
 	}
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };

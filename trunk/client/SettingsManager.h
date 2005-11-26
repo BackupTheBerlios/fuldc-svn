@@ -87,10 +87,10 @@ public:
 		OPEN_PUBLIC, OPEN_FAVORITE_HUBS, OPEN_FAVORITE_USERS, OPEN_QUEUE, OPEN_FINISHED_DOWNLOADS, 
 		OPEN_FINISHED_UPLOADS, OPEN_SEARCH_SPY, OPEN_NETWORK_STATISTICS, OPEN_NOTEPAD, OUTGOING_CONNECTIONS, 
 		NO_IP_OVERRIDE, SEARCH_ONLY_FREE_SLOTS, LAST_SEARCH_TYPE, FINISHED_DOWNLOAD_DIRTY, FINISHED_UPLOAD_DIRTY, QUEUE_DIRTY, 
-		TAB_HUB_DIRTY, TAB_PM_DIRTY, TAB_SEARCH_DIRTY,
+		TAB_HUB_DIRTY, TAB_SEARCH_DIRTY,
 
 		INCOMING_REFRESH_TIME, SHARE_REFRESH_TIME, CHATBUFFERSIZE, AUTO_UPDATE_INCOMING, EXPAND_QUEUE,
-		STRIP_ISP, STRIP_ISP_PM,HUB_BOLD_TABS, PM_BOLD_TABS, HIGH_PRIO_SAMPLE,
+		STRIP_ISP, STRIP_ISP_PM,HUB_BOLD_TABS, HIGH_PRIO_SAMPLE,
 		POPUP_TIMEOUT, POPUP_AWAY, POPUP_MINIMIZED, POPUP_ON_PM, POPUP_ON_NEW_PM, POPUP_ON_HUBSTATUS,
 		HUBFRAME_CONFIRMATION,
 		TAB_ACTIVE_BG, TAB_ACTIVE_TEXT, TAB_ACTIVE_BORDER, TAB_INACTIVE_BG, TAB_SHOW_ICONS, 
@@ -98,7 +98,7 @@ public:
 		TAB_DIRTY_BLEND, POPUP_TEXTCOLOR, FREE_SLOTS_SIZE, CUSTOM_SOUND, TAB_SIZE, REMOVE_POPUPS, REMOVE_TOPIC, 
 		MAX_AUTO_MATCH_SOURCES, MAX_MSG_LENGTH, BLEND_TABS, POPUP_ACTIVATE_ON_CLICK, 
 		POPUP_DONT_SHOW_ON_ACTIVE, DUPE_COLOR, NO_TTH_COLOR, DROP_STUPID_CONNECTION, FLASH_WINDOW_ON_PM,
-		FLASH_WINDOW_ON_NEW_PM, IGNORE_TTH_INCONSISTENCY,
+		FLASH_WINDOW_ON_NEW_PM,
 		REFRESH_INCOMING_BETWEEN, REFRESH_SHARE_BETWEEN, REFRESH_INCOMING_BEGIN, 
 		REFRESH_INCOMING_END, REFRESH_SHARE_BEGIN, REFRESH_SHARE_END, MUTE_ON_AWAY, 
         INT_LAST };
@@ -209,6 +209,66 @@ public:
 		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
 	}
 
+	TStringList getSearchHistory() const {
+		Lock l(cs);
+		return searchHistory;
+	}
+
+	//returns true if the search string is added to the history
+	//returns false if the search string already exists in the history.
+	bool addSearchToHistory(const tstring& search) {
+		if(search.empty())
+			return false;
+
+		Lock l(cs);
+
+		if(find(searchHistory.begin(), searchHistory.end(), search) != searchHistory.end())
+			return false;
+
+		
+		while(searchHistory.size() > static_cast<TStringList::size_type>(getInstance()->get(SEARCH_HISTORY)))
+			searchHistory.erase(searchHistory.begin());
+
+		searchHistory.push_back(search);
+
+		return true;
+	}
+
+	void clearSearchHistory() {
+		Lock l(cs);
+		searchHistory.clear();
+	}
+
+	TStringList getFilterHistory() const {
+		Lock l(cs);
+		return filterHistory;
+	}
+
+	//returns true if the filter string is added to the history
+	//returns false if the filter string already exists in the history.
+	bool addFilterToHistory(const tstring& filter) {
+		
+		if(filter.empty())
+			return false;
+
+		Lock l(cs);
+
+		if(find(filterHistory.begin(), filterHistory.end(), filter) != filterHistory.end())
+			return false;
+
+		while(filterHistory.size() > static_cast<TStringList::size_type>(getInstance()->get(SEARCH_HISTORY)))
+			filterHistory.erase(filterHistory.begin());
+
+		filterHistory.push_back(filter);
+
+		return true;
+	}
+
+	void clearFilterHistory() {
+		Lock l(cs);
+		filterHistory.clear();
+	}
+
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
@@ -225,7 +285,10 @@ private:
 	bool isSet[SETTINGS_LAST];
 
 	mutable CriticalSection cs;
-	StringPairList downloadPaths;
+
+	StringPairList	downloadPaths;
+	TStringList		searchHistory;
+	TStringList		filterHistory;
 };
 
 // Shorthand accessor macros
