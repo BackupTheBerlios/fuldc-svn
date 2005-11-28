@@ -66,8 +66,7 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); }
 	};
 
-
-	User(const string& nick) : firstNick(nick), Flags(NMDC) { }
+	User(const string& nick) : Flags(NMDC), firstNick(nick) { }
 	User(const CID& aCID) : cid(aCID) { }
 
 	virtual ~User() throw() { };

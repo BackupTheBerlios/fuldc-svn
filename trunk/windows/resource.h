@@ -587,6 +587,10 @@
 #define IDC_SETTINGS_MAX_FILELIST_SIZE  1351
 #define IDC_SETTINGS_MB                 1352
 #define IDC_SETTINGS_CONFIRM_OPTIONS    1353
+#define IDC_SOCKET_IN_BUFFER            1354
+#define IDC_SOCKET_OUT_BUFFER           1355
+#define IDC_SETTINGS_SOCKET_IN_BUFFER   1356
+#define IDC_SETTINGS_SOCKET_OUT_BUFFER  1357
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

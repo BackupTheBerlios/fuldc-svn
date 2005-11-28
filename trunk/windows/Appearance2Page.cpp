@@ -48,6 +48,7 @@ PropPage::Item Appearance2Page::items[] = {
 
 PropPage::ListItem Appearance2Page::listItems[] = {
 	{ SettingsManager::FINISHED_DOWNLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_DOWNLOAD_DIRTY },
+	{ SettingsManager::WAITING_USERS_DIRTY, ResourceManager::SETTINGS_WAITING_USERS_DIRTY },
 	{ SettingsManager::FINISHED_UPLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_UPLOAD_DIRTY },
 	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
 	{ SettingsManager::TAB_HUB_DIRTY, ResourceManager::SETTINGS_TAB_HUB_DIRTY },

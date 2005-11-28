@@ -97,6 +97,7 @@ public:
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void addLine(const User::Ptr&, const tstring& aLine);
+	void addStatus(const tstring& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
@@ -145,12 +146,12 @@ public:
 	
 	void sendMessage(const tstring& msg);
 	
-	User::Ptr& getUser() { return user; };
+	User::Ptr& getUser() { return replyTo; };
 
 	bool muted;
 	
 private:
-	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
+	PrivateFrame(const User::Ptr& replyTo_) : replyTo(replyTo_), 
 		created(false), closed(false), muted(false), doPopups(true), offline(false),
 		ctrlMessageContainer(WC_EDIT, this, PM_MESSAGE_MAP),
 		ctrlClientContainer(WC_EDIT, this, PM_MESSAGE_MAP) {
@@ -171,7 +172,7 @@ private:
 
 	StringMap ucParams;
 
-	User::Ptr user;
+	User::Ptr replyTo;
 	CContainedWindow ctrlMessageContainer;
 
 	bool closed;
@@ -187,38 +188,20 @@ private:
 	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
 	
-	void updateTitle() {
-		if(user->isOnline()) {
-			//@todo SetWindowText(Text::toT(user->getFullNick()).c_str());
-			setDisconnected(false);
-			if(offline){
-				//@todo addLine(_T("*** ") + TSTRING(USER_CAME_ONLINE), false);
-				offline = false;
-			}
-		} else {
-			/* @todo if(user->getClientName() == STRING(OFFLINE)) {
-				SetWindowText(Text::toT(user->getFullNick()).c_str());
-			} else {
-				SetWindowText((Text::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
-			}*/
-			//@todo addLine(_T("*** ") + TSTRING(USER_WENT_OFFLINE), false);
-            setDisconnected(true);
-			offline = true;
-		}
-	}
+	void updateTitle();
 
 	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-		if(aUser == user)
+		if(aUser == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
-		if(aUser == user)
+		if(aUser == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
-		if(aUser == user)
+		if(aUser == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 };

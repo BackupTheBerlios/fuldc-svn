@@ -223,7 +223,7 @@ public:
 	static string translateError(int aError) {
 #ifdef _WIN32
 		LPVOID lpMsgBuf;
-		FormatMessage( 
+		DWORD chars = FormatMessage( 
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
 			FORMAT_MESSAGE_FROM_SYSTEM | 
 			FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -234,6 +234,9 @@ public:
 			0,
 			NULL 
 			);
+		if(chars == 0) {
+			return string();
+		}
 		string tmp = Text::fromT((LPCTSTR)lpMsgBuf);
 		// Free the buffer.
 		LocalFree( lpMsgBuf );

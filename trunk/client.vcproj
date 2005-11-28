@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;;&quot;$(SolutionDir)\yassl\include&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="true"
 				MinimalRebuild="true"
@@ -129,7 +129,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;;&quot;$(SolutionDir)\yassl\include&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="true"
 				MinimalRebuild="true"
@@ -309,6 +309,10 @@
 			</File>
 			<File
 				RelativePath=".\client\Socket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\client\SSLSocket.cpp"
 				>
 			</File>
 			<File
@@ -606,6 +610,10 @@
 			</File>
 			<File
 				RelativePath="client\Speaker.h"
+				>
+			</File>
+			<File
+				RelativePath=".\client\SSLSocket.h"
 				>
 			</File>
 			<File

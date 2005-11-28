@@ -274,18 +274,11 @@ public:
 	void setDataMode(int64_t aBytes = -1) { dcassert(socket); socket->setDataMode(aBytes); }
 	void setLineMode() { dcassert(socket); socket->setLineMode(); };
 
-	void connect(const string& aServer, short aPort) throw(SocketException) { 
-		socket->connect(aServer, aPort);
-	}
-	
-	void accept(const ServerSocket& aServer) throw(SocketException) {
-		socket->accept(aServer);
-	}
+	void connect(const string& aServer, short aPort) throw(SocketException);
+	void accept(const Socket& aServer) throw(SocketException);
 	
 	void disconnect() { if(socket) socket->disconnect(); };
-	void transmitFile(InputStream* f) { 
-		socket->transmitFile(f); 
-	};
+	void transmitFile(InputStream* f) { socket->transmitFile(f); };
 
 	const string& getDirectionString() {
 		dcassert(isSet(FLAG_UPLOAD) ^ isSet(FLAG_DOWNLOAD));
@@ -340,6 +333,7 @@ public:
 private:
 	BufferedSocket* socket;
 	User::Ptr user;
+	bool secure;
 	
 	static const string UPLOAD, DOWNLOAD;
 	
@@ -349,10 +343,8 @@ private:
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection() throw(SocketException) : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), 
-		socket(BufferedSocket::getSocket(0)), download(NULL) { 
-		
-		socket->addListener(this);
+	UserConnection(bool secure_) throw() : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), 
+		socket(0), secure(secure_), download(NULL) { 
 	};
 
 	virtual ~UserConnection() throw() {

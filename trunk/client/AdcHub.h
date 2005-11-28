@@ -93,6 +93,7 @@ private:
 	string salt;
 
 	static const string CLIENT_PROTOCOL;
+	static const string SECURE_CLIENT_PROTOCOL;
 	 
 	virtual string checkNick(const string& nick);
 	

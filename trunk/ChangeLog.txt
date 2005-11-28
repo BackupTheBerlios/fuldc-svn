@@ -8,7 +8,7 @@
 * Fixed transfer list view flicker on WinXP
 * New connection settings, please check settings page
 * Connection type freely settable, and default connection strings changed
-* No longer fallbacks to passive mode on failed UPnP
+* No longer falls back to passive mode on failed UPnP
 * Janitorial cleanups (thanks garg)
 * Removed some old favorite file format compatibility code
 * Added country to search frame (thanks paka)
@@ -32,7 +32,7 @@
 * Slot grants now last one connection instead of 10 minutes
 * [bug 632] Subtotals shown when selecting users in hub frame (thanks cologic)
 * [bug 625] /u chat command opens url (thanks pur)
-* The first word of hub name is taken as short name for displaying purposes when space is limited
+* (NMDC) The first word of hub name is taken as short name for displaying purposes when space is limited
 * [bug 629] Waiting users frame added (thanks cologic)
 * Removed old versions check (thanks cologic)
 * Added option to limit maximum file list size to open (thanks paka)
@@ -41,6 +41,15 @@
 * More settings screen updates (thanks ullner)
 * Fixed linux file moving (thanks naga)
 * Added option to only download files with TTH (thanks ullner)
+* Fixed registry creation functions used (thanks ullner)
+* Updated WTL
+* Rewrote socket code to remove some old hacks and add some new (major change)
+* Now using standard windows error messages for socket errors
+* Added basic SSL support
+* Fixed a bug with file list loading and filenames differing in case only
+* Updated STLport
+* Fixed a few standard compliance issues
+* Added dirtying to waiting users frame (thanks ullner)
 
 
 -- 0.674 2005-04-10 --
@@ -1075,7 +1084,7 @@ Minor:
 * Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they
   actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents
   and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in 
-  ? (euros) now, which is, of course, my preferred currency =)
+  � (euros) now, which is, of course, my preferred currency =)
 * The forum and lichlord.org are currently down for maintenance, and the owner is waiting for new network equipment. 
   I would open an alternative forum if I could get the old posts, but because all network connections to the server are      
   broken it's difficult to get the old posts out of it for the moment (physical access to the server is somewhat 

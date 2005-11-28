@@ -66,9 +66,12 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	if(!socket) {
 		socket = BufferedSocket::getSocket(0x0a);
 	}
-	socket->setNoproxy(true);
 	socket->addListener(this);
-	socket->connect(server, port);
+	try {
+		socket->connect(server, port, false, false);
+	} catch(const ThreadException& e) {
+		dcdebug("Thread exception: %s\n", e.getError().c_str());
+	}
 }
 
 void HttpConnection::on(BufferedSocketListener::Connected) throw() { 

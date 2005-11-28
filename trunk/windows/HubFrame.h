@@ -251,8 +251,10 @@ private:
 
 	class PMInfo {
 	public:
-		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(Text::toT(m)) { };
-		User::Ptr user;
+		PMInfo(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const string& m) : from(from_), to(to_), replyTo(replyTo_), msg(Text::toT(m)) { };
+		User::Ptr from;
+		User::Ptr to;
+		User::Ptr replyTo;
 		tstring msg;
 	};
 
@@ -476,8 +478,9 @@ private:
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(GetPassword, Client*) throw();
 	virtual void on(HubUpdated, Client*) throw();
-	virtual void on(Message, Client*, const string&) throw();
-	virtual void on(PrivateMessage, Client*, const OnlineUser&, const string&) throw();
+	virtual void on(Message, Client*, const OnlineUser&, const string&) throw();
+	virtual void on(StatusMessage, Client*, const string&) throw();
+	virtual void on(PrivateMessage, Client*, const OnlineUser&, const OnlineUser&, const OnlineUser&, const string&) throw();
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
 	virtual void on(UserIp, Client*, const OnlineUser::List&) throw();
@@ -489,7 +492,7 @@ private:
 		updateList.push_back(make_pair(UpdateInfo(u), s));
 		updateUsers = true;
 	};
-	void speak(Speakers s, const OnlineUser& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u.getUser(), line)); };
+	void speak(Speakers s, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(from, to, replyTo, line)); };
 
 	void openLinksInTopic();
 	bool resolve(const wstring& aDns);

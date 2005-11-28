@@ -62,7 +62,7 @@ void Client::connect() {
 	reloadSettings();
 	setRegistered(false);
 
-	socket->connect(address, port);
+	socket->connect(address, port, false, true);
 
 	updateActivity();
 }

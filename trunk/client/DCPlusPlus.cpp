@@ -33,6 +33,7 @@
 #include "SettingsManager.h"
 #include "FinishedManager.h"
 #include "ADLSearch.h"
+#include "SSLSocket.h"
 #include "HighlightManager.h"
 #include "WebShortcuts.h"
 #include "IgnoreManager.h"
@@ -112,6 +113,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
+	SSLSocketFactory::newInstance();
 	PopupManager::newInstance();
 	WebShortcuts::newInstance();
 	IgnoreManager::newInstance();
@@ -151,6 +153,7 @@ void shutdown() {
 	IgnoreManager::deleteInstance();
 	WebShortcuts::deleteInstance();
 	PopupManager::deleteInstance();
+	SSLSocketFactory::deleteInstance();
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
 	HighlightManager::deleteInstance();

@@ -31,6 +31,7 @@
 #include "FavoriteManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
+const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.9");
 
 AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), state(STATE_PROTOCOL) {
 }
@@ -156,7 +157,12 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 	if(c.getParameters().size() < 3)
 		return;
 
-	if(c.getParam(0) != CLIENT_PROTOCOL) {
+	bool secure;
+	if(c.getParam(0) == CLIENT_PROTOCOL) {
+		secure = false;
+	} else if(c.getParam(0) == SECURE_CLIENT_PROTOCOL) {
+		secure = true;
+	} else {
 		send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown", AdcCommand::TYPE_DIRECT).setTo(c.getFrom()));
 		return;
 	}
@@ -168,7 +174,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 
 	string token;
 	c.getParam("TO", 2, token);
-	ConnectionManager::getInstance()->adcConnect(*u, (short)Util::toInt(c.getParameters()[1]), token);
+	ConnectionManager::getInstance()->adcConnect(*u, (short)Util::toInt(c.getParameters()[1]), token, secure);
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {

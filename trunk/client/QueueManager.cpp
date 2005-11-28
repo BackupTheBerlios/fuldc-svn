@@ -469,6 +469,12 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 		return;
 	}
 
+	// Check if we're trying to download a non-TTH file
+	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
+		if(BOOLSETTING(ONLY_DL_TTH_FILES))
+			throw QueueException(STRING(FILE_HAVE_NO_TTH));
+	} 
+
 	
 	if( !SETTING(SKIPLIST_DOWNLOAD).empty() ){
 		int pos = aTarget.rfind("\\")+1;

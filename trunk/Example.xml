@@ -6,8 +6,6 @@
 		<String Name="Add">&amp;Add</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="Added">Added</String>
-		<String Name="AddressAlreadyInUse">Address already in use</String>
-		<String Name="AddressNotAvailable">Address not available</String>
 		<String Name="AdlSearch">Automatic Directory Listing Search</String>
 		<String Name="AdlsDestination">Destination Directory</String>
 		<String Name="AdlsDiscard">Discard</String>
@@ -55,9 +53,6 @@
 		<String Name="ConnectingForced">Connecting (forced)...</String>
 		<String Name="ConnectingTo">Connecting to </String>
 		<String Name="Connection">Connection</String>
-		<String Name="ConnectionClosed">Connection closed</String>
-		<String Name="ConnectionRefused">Connection refused by target machine</String>
-		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
 		<String Name="ConfiguredHubLists">Configured Public Hub Lists</String>
 		<String Name="CopyHub">Copy address to clipboard</String>
@@ -123,6 +118,7 @@
 		<String Name="FavoriteUsers">Favorite Users</String>
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
+		<String Name="FileHaveNoTth">This file have no TTH</String>
 		<String Name="FileListDiff">Subtract list</String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
 		<String Name="FileListRefreshInitiated">File list refresh initiated</String>
@@ -155,7 +151,6 @@
 		<String Name="Highest">Highest</String>
 		<String Name="HitRatio">Hit Ratio: </String>
 		<String Name="Hits">Hits: </String>
-		<String Name="HostUnreachable">Host unreachable</String>
 		<String Name="Hub">Hub</String>
 		<String Name="Hubs">Hubs</String>
 		<String Name="HubAddress">Address</String>
@@ -191,7 +186,9 @@
 		<String Name="MatchQueue">Match queue</String>
 		<String Name="MatchedFiles">Matched %d file(s)</String>
 		<String Name="MaxHubs">Max Hubs</String>
+		<String Name="MaxSize">Max Size</String>
 		<String Name="MaxUsers">Max Users</String>
+		<String Name="MinSize">Min Size</String>
 		<String Name="Mib">MiB</String>
 		<String Name="Mibps">MiB/s</String>
 		<String Name="MenuAbout">About DC++...</String>
@@ -202,7 +199,7 @@
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
-		<String Name="MenuDonate">Donate ï¿½ï¿½ï¿½/$$$ (paypal)</String>
+		<String Name="MenuDonate">Donate \0xe2\0x82\0xac\0xe2\0x82\0xac\0xe2\0x82\0xac/$$$ (paypal)</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>
 		<String Name="MenuExit">&amp;Exit</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
@@ -247,7 +244,6 @@
 		<String Name="MoveDown">Move &amp;Down</String>
 		<String Name="MoveUp">Move &amp;Up</String>
 		<String Name="NetworkStatistics">Network Statistics</String>
-		<String Name="NetworkUnreachable">Network unreachable (are you connected to the internet?)</String>
 		<String Name="New">&amp;New...</String>
 		<String Name="Next">Next</String>
 		<String Name="Nick">Nick</String>
@@ -261,10 +257,7 @@
 		<String Name="NoSlotsAvailable">No slots available</String>
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
-		<String Name="NonBlockingOperation">Non-blocking operation still in progress</String>
 		<String Name="Normal">Normal</String>
-		<String Name="NotConnected">Not connected</String>
-		<String Name="NotSocket">Not a socket</String>
 		<String Name="Notepad">Notepad</String>
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
@@ -275,14 +268,12 @@
 		<String Name="OpenDownloadPage">Open download page?</String>
 		<String Name="OpenFolder">Open folder</String>
 		<String Name="OperatingSystemNotCompatible">Operating system does not match minimum requirements for feature</String>
-		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
 		<String Name="OutOfBufferSpace">Out of buffer space</String>
 		<String Name="Parts">Parts: </String>
 		<String Name="PassiveUser">Passive user</String>
 		<String Name="Password">Password</String>
 		<String Name="Path">Path</String>
 		<String Name="Paused">Paused</String>
-		<String Name="PermissionDenied">Permission denied</String>
 		<String Name="Pib">PiB</String>
 		<String Name="Picture">Picture</String>
 		<String Name="Port">Port: </String>
@@ -407,6 +398,7 @@
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNetwork">DC++\Connection settings</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
+		<String Name="SettingsOnlyDlTthFiles">Only download files that have a TTH</String>
 		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
@@ -475,6 +467,7 @@
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">DC++\Advanced\User Commands</String>
+		<String Name="SettingsWaitingUsersDirty">Set Waiting Users tab bold when contents change</String>
 		<String Name="SettingsWindows">DC++\Appearance\Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
@@ -482,13 +475,10 @@
 		<String Name="Shared">Shared</String>
 		<String Name="SharedFiles">Shared Files</String>
 		<String Name="Size">Size</String>
-		<String Name="MaxSize">Max Size</String>
-		<String Name="SizeMin">Min Size</String>
 		<String Name="SkipRename">New virtual name matches old name, skipping...</String>
 		<String Name="SlotGranted">Slot granted</String>
 		<String Name="Slots">Slots</String>
 		<String Name="SlotsSet">Slots set</String>
-		<String Name="SocketShutDown">Socket has been shut down</String>
 		<String Name="SocksAuthFailed">Socks server authentication failed (bad login / password?)</String>
 		<String Name="SocksAuthUnsupported">The socks server doesn't support login / password authentication</String>
 		<String Name="SocksFailed">The socks server failed establish a connection</String>

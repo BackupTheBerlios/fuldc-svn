@@ -46,7 +46,7 @@ static ResourceManager::Strings columnNames[] = {
 	ResourceManager::ACTIVE_SEARCH_STRING, 
 	ResourceManager::SOURCE_TYPE, 
 	ResourceManager::DESTINATION, 
-	ResourceManager::SIZE_MIN, 
+	ResourceManager::MIN_SIZE, 
 	ResourceManager::MAX_SIZE, 
 };
 

@@ -51,6 +51,8 @@ FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
 
 #endif
 
+#include "../client/SSLSocket.h"
+
 LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 {
 	Lock l(cs);

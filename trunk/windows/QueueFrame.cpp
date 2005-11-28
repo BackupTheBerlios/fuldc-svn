@@ -523,7 +523,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	
 	if(isFileList) {
 		dcassert(fileLists != NULL);
-		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(fileLists));
+		delete (tstring*)ctrlDirs.GetItemData(fileLists);
 		ctrlDirs.DeleteItem(fileLists);
 		fileLists = NULL;
 		return;
@@ -550,7 +550,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	next = parent;
 
 	while((ctrlDirs.GetChildItem(next) == NULL) && (directories.find(getDir(next)) == directories.end())) {
-		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(next));
+		delete (tstring*)ctrlDirs.GetItemData(next);
 		parent = ctrlDirs.GetParentItem(next);
 		
 		ctrlDirs.DeleteItem(next);
@@ -566,7 +566,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 		removeDirectories(next);
 		next = ctrlDirs.GetNextSiblingItem(ht);
 	}
-	delete (string*)ctrlDirs.GetItemData(ht);
+	delete (tstring*)ctrlDirs.GetItemData(ht);
 	ctrlDirs.DeleteItem(ht);
 }
 

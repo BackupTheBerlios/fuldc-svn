@@ -590,11 +590,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		}
 	} else if(wParam == PRIVATE_MESSAGE) {
 		PMInfo* i = (PMInfo*)lParam;
-		if(i->user->isOnline()) {
-			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->user)) {
-				// @todo PrivateFrame::gotMessage(i->user, i->msg);
+		if(i->replyTo->isOnline()) {
+			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->replyTo)) {
+				PrivateFrame::gotMessage(i->from, i->to, i->replyTo, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->from->getFirstNick()) + _T(": ") + i->msg);
 			}
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
@@ -602,7 +602,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
 				// @todo PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->from->getFirstNick()) + _T(": ") + i->msg);
 			}
 		}
 		delete i;
@@ -1403,7 +1403,11 @@ void HubFrame::on(GetPassword, Client*) throw() {
 void HubFrame::on(HubUpdated, Client*) throw() { 
 	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName() + " " + client->getHubDescription(), true, false) + " (" + client->getHubUrl() + ")");
 }
-void HubFrame::on(Message, Client*, const string& line) throw() { 
+void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() { 
+	speak(ADD_CHAT_LINE, Util::toDOS("<" + from.getIdentity().getNick() + "> " + msg));
+}
+
+void HubFrame::on(StatusMessage, Client*, const string& line) {
 	if(SETTING(FILTER_MESSAGES)) {
 		if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
 			// Do nothing...
@@ -1416,8 +1420,9 @@ void HubFrame::on(Message, Client*, const string& line) throw() {
 		speak(ADD_CHAT_LINE, line);
 	}
 }
-void HubFrame::on(PrivateMessage, Client*, const OnlineUser& user, const string& line) throw() { 
-	speak(PRIVATE_MESSAGE, user, line);
+
+void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() { 
+	speak(PRIVATE_MESSAGE, from, to, replyTo, Util::toDOS(line));
 }
 void HubFrame::on(NickTaken, Client*) throw() { 
 	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));

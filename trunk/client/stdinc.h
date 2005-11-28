@@ -95,7 +95,7 @@
 
 
 #ifdef HAVE_STLPORT
-using namespace _STL;
+using namespace stlport;
 #include <hash_map>
 #include <hash_set>
 
