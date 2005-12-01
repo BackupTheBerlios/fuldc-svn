@@ -453,6 +453,11 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			throw QueueException(STRING(TTH_ALREADY_SHARED));
 		}
 	}
+
+	// Check if we're trying to download a non-TTH file
+	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
+		throw QueueException(STRING(FILE_HAVE_NO_TTH));
+	} 
     
 	bool utf8 = (aFlags & QueueItem::FLAG_SOURCE_UTF8) > 0;
 	aFlags &= ~QueueItem::FLAG_SOURCE_UTF8;
@@ -492,14 +497,10 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			if(q->getSize() != aSize) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 			}
-			if(q->getTTH() != NULL && root == NULL)
+			if(!(*root == *q->getTTH())) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
-
-			if(root != NULL && q->getTTH() != NULL) {
-				if(!(*root == *q->getTTH())) {
-					throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
-				}
 			}
+
 			q->setFlag(aFlags);
 			
 			// We don't add any more sources to user list downloads...

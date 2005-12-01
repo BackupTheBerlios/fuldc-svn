@@ -135,13 +135,6 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlSlots.SetWindowText(CTSTRING(ONLY_FREE_SLOTS));
 	slotsContainer.SubclassWindow(ctrlSlots.m_hWnd);
 
-	ctrlTTH.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, NULL, IDC_ONLYTTH);
-	ctrlTTH.SetButtonStyle(BS_AUTOCHECKBOX, FALSE);
-	ctrlTTH.SetFont(WinUtil::systemFont, FALSE);
-	ctrlTTH.SetWindowText(CTSTRING(ONLY_TTH));
-	ctrlTTH.SetCheck(onlyTTH);
-	tthContainer.SubclassWindow(ctrlTTH.m_hWnd);
-
 	ctrlShowUI.Create(ctrlStatus.m_hWnd, rcDefault, _T("+/-"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUI.SetButtonStyle(BS_AUTOCHECKBOX, false);
 	ctrlShowUI.SetCheck(1);
@@ -414,7 +407,7 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	// Reject results without free slots or tth if selected
 	// but always show directories
 	if( (onlyFree && aResult->getFreeSlots() < 1) ||
-		((onlyTTH && aResult->getTTH() == NULL) && (aResult->getType() != SearchResult::TYPE_DIRECTORY))
+		(aResult->getTTH() == NULL && (aResult->getType() != SearchResult::TYPE_DIRECTORY))
 		)
 	{
 		filtered++;
@@ -763,10 +756,6 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		optionLabel.MoveWindow(rc.left + lMargin, rc.top - labelH, width - rMargin, labelH-1);
 
-		rc.top += labelH + 3;
-		rc.bottom += labelH + 3;
-		ctrlTTH.MoveWindow(rc);
-
 		// "Hubs"
 		rc.left = lMargin;
 		rc.right = width - rMargin;
@@ -856,7 +845,7 @@ LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	HDC hDC = (HDC)wParam;
 
 	if(hWnd == searchLabel.m_hWnd || hWnd == sizeLabel.m_hWnd || hWnd == optionLabel.m_hWnd || hWnd == typeLabel.m_hWnd
-		|| hWnd == hubsLabel.m_hWnd || hWnd == ctrlSlots.m_hWnd || hWnd == ctrlTTH.m_hWnd || hWnd == filterLabel.m_hWnd) {
+		|| hWnd == hubsLabel.m_hWnd || hWnd == ctrlSlots.m_hWnd || hWnd == filterLabel.m_hWnd) {
 		::SetBkColor(hDC, ::GetSysColor(COLOR_3DFACE));
 		::SetTextColor(hDC, ::GetSysColor(COLOR_BTNTEXT));
 		return (LRESULT)::GetSysColorBrush(COLOR_3DFACE);
@@ -894,7 +883,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 void SearchFrame::onTab(bool shift) {
 	HWND wnds[] = {
 		ctrlSearch.m_hWnd, ctrlFilter.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
-		ctrlFiletype.m_hWnd, ctrlSlots.m_hWnd, ctrlTTH.m_hWnd, ctrlDoSearch.m_hWnd, ctrlSearch.m_hWnd, 
+		ctrlFiletype.m_hWnd, ctrlSlots.m_hWnd, ctrlDoSearch.m_hWnd, ctrlSearch.m_hWnd, 
 		ctrlResults.m_hWnd
 	};
 	

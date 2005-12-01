@@ -508,7 +508,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 					continue;
 				v.push_back(ClientManager::getInstance()->getUser(it->substr(0, j), this));
 				v.back()->setIp(it->substr(j+1));
-				v.back()->setUserIp(true);
+				//if it's an internal ip it'll probably cause a mismatch in connection attempts.
+				if(!Util::isPrivateIp(it->substr(j+1)))
+					v.back()->setUserIp(true);
 			}
 
 			Speaker<NmdcHubListener>::fire(NmdcHubListener::UserIp(), this, v);

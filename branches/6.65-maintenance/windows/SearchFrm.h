@@ -87,7 +87,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
-		COMMAND_ID_HANDLER(IDC_ONLYTTH, onTTH)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
 		COMMAND_ID_HANDLER(IDC_SEARCH_HISTORY, onClearHistory)
@@ -123,10 +122,9 @@ public:
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		filterBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		filterContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
-		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
 		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
-		onlyTTH(BOOLSETTING(SEARCH_ONLY_TTH)), timerID(0)
+		 timerID(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
 		downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
@@ -188,11 +186,6 @@ public:
 
 	LRESULT onFreeSlots(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onlyFree = (ctrlSlots.GetCheck() == 1);
-		return 0;
-	}
-
-	LRESULT onTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		onlyTTH = (ctrlTTH.GetCheck() == BST_CHECKED);
 		return 0;
 	}
 
@@ -445,12 +438,11 @@ private:
 	CContainedWindow doSearchContainer;
 	CContainedWindow resultsContainer;
 	CContainedWindow hubsContainer;
-	CContainedWindow tthContainer;
 	CContainedWindow filterContainer;
 	CContainedWindow filterBoxContainer;
 
 	CStatic searchLabel, sizeLabel, optionLabel, typeLabel, hubsLabel, filterLabel;
-	CButton ctrlSlots, ctrlShowUI, ctrlTTH;
+	CButton ctrlSlots, ctrlShowUI;
 	bool showUI;
 
 	TypedListViewCtrl<SearchInfo, IDC_RESULTS> ctrlResults;
@@ -475,7 +467,6 @@ private:
 
 	bool onlyFree;
 	bool isHash;
-	bool onlyTTH;
 
 	int results;
 	int filtered;

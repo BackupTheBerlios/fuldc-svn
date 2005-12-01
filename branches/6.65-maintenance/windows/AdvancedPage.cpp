@@ -52,9 +52,6 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::ADD_FINISHED_INSTANTLY, ResourceManager::SETTINGS_ADD_FINISHED_INSTANTLY },
 	{ SettingsManager::SETTINGS_USE_UPNP, ResourceManager::SETTINGS_USE_UPNP },
 	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::SETTINGS_DONT_DL_ALREADY_SHARED },
-	{ SettingsManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY, ResourceManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY },
-	{ SettingsManager::SEARCH_ONLY_TTH, ResourceManager::SETTINGS_ONLY_TTH },
-	{ SettingsManager::ADVANCED_RESUME, ResourceManager::SETTINGS_ADVANCED_RESUME },
 	{ SettingsManager::TOGGLE_ACTIVE_WINDOW, ResourceManager::SETTINGS_TOGGLE_ACTIVE_WINDOW },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
