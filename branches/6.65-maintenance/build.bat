@@ -1,4 +1,4 @@
-@ECHO OFF
+rem @ECHO OFF
 rem CONFIG START
 rem ----------------------------------------------------
 

@@ -494,6 +494,10 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			updateTotalSize(q->getTarget(), q->getSize(), true);
 			fire(QueueManagerListener::Added(), q);
 		} else {
+			// We don't add any more sources to user list downloads...
+			if(q->isSet(QueueItem::FLAG_USER_LIST))
+				return;
+
 			if(q->getSize() != aSize) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 			}
@@ -502,10 +506,6 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			}
 
 			q->setFlag(aFlags);
-			
-			// We don't add any more sources to user list downloads...
-			if(q->isSet(QueueItem::FLAG_USER_LIST))
-				return;
 		}
 
 		wantConnection = addSource(q, aFile, aUser, addBad ? QueueItem::Source::FLAG_MASK : 0, utf8);
@@ -1122,8 +1122,8 @@ void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
 			}
 		}
 		
-		qi = userQueue.getRunning(aUser);
-		if(qi != NULL) {
+		
+		while( (qi = userQueue.getRunning(aUser)) != NULL) {
 			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 				remove(qi->getTarget());
 			} else {

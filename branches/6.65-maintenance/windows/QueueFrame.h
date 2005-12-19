@@ -330,7 +330,7 @@ private:
 	CMenu browseMenu;
 
 	CMenu removeMenu;
-	CMenu removeAllMenu;
+	CMenu removeQueueMenu;
 	CMenu pmMenu;
 	CMenu priorityMenu;
 	CMenu readdMenu;
