@@ -252,8 +252,17 @@ private:
 
 		// TypedListViewCtrl functions
 		const tstring& getText(int col) {
+			dcassert(col >= 0 && col < COLUMN_LAST);
 			return getDisplay()->columns[col];
 		}
+
+		const tstring& copy(int col) {
+			if(col >= 0 && col < COLUMN_LAST)
+				return getText(col);
+
+			return Util::emptyStringT;
+		}
+
 		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
 			switch(col) {
 				case COLUMN_SIZE: case COLUMN_EXACT_SIZE: return compare(a->getSize(), b->getSize());

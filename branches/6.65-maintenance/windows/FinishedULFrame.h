@@ -117,9 +117,16 @@ private:
 		}
 		tstring columns[COLUMN_LAST];
 
-		tstring& getText(int col) {
+		const tstring& getText(int col) const {
 			dcassert(col >= 0 && col < COLUMN_LAST);
 			return columns[col];
+		}
+
+		const tstring& copy(int col) {
+			if(col >= 0 && col < COLUMN_LAST)
+				return getText(col);
+
+			return Util::emptyStringT;
 		}
 
 		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {

@@ -291,6 +291,7 @@ private:
 		};
 
 		const tstring& getText(int col) const {
+			dcassert(col >= 0 && col < COLUMN_LAST);
 			switch(col) {
 				case COLUMN_NICK: return nick;
 				case COLUMN_FILENAME: return fileName;
@@ -305,6 +306,13 @@ private:
 				case COLUMN_TTH: return tth;
 				default: return Util::emptyStringT;
 			}
+		}
+
+		const tstring& copy(int col) {
+			if(col >= 0 && col < COLUMN_LAST)
+				return getText(col);
+
+			return Util::emptyStringT;
 		}
 
 		static int compareItems(SearchInfo* a, SearchInfo* b, int col) {

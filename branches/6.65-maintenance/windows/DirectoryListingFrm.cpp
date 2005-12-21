@@ -961,28 +961,6 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 	return;
 }
 
-void DirectoryListingFrame::copy(UINT wID) {
-	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
-
-	int tmp = wID - IDC_COPY;
-	tstring buf;
-	if((tmp) == COLUMN_LAST) {
-		if(ii->type == ItemInfo::FILE) {
-			buf = Text::toT(dl->getPath(ii->file) + ii->file->getName());
-		} else {
-			buf = Text::toT(dl->getPath(ii->dir));
-			if(buf[buf.length()-1] == _T('\\'))
-				buf.erase(buf.length()-1);
-		}
-	} else {
-		ctrlList.copy(tmp);
-	}
-	
-	
-	if(!buf.empty())
-		WinUtil::setClipboard(buf);
-}
-
 LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring searchTerm;
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
@@ -1016,8 +994,7 @@ LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARA
 		if(fileMenu.m_hMenu == menu) {
 			fileMenu.GetMenuItemInfo(pos, TRUE, &inf);
 		} else if(copyMenu.m_hMenu == menu) {
-			copyMenu.GetMenuItemInfo(pos, TRUE, &inf);
-			copy(inf.wID);
+			ctrlList.copy(copyMenu, pos);
 			return 0;
 		} else if(targetMenu.m_hMenu == menu) {
 			targetMenu.GetMenuItemInfo(pos, TRUE, &inf);

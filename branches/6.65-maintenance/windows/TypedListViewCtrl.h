@@ -301,27 +301,26 @@ public:
 		menu.AppendMenu(MF_STRING, IDC_COPY+1+i, CTSTRING(ALL));
 	}
 
-	void copy(int col) {
+	void copy(const CMenu& menu,  int col) {
 		tstring buf;
 		int i = -1;
 		//avoid an unsigned mismatch and save a few calls to size() =)
-		int size = static_cast<int>(columnList.size());
+		int size = menu.GetMenuItemCount();
 
 		T* item = NULL;
 
 		while(( i = GetNextItem(i, LVNI_SELECTED)) != -1) {
 			item = getItemData(i);
-			if(col >= size) {
+			if(!item)
+				continue;
+
+			if(col == size - 1) {
 				for(int j = 0; j < size; ++j) {
-					if(item){
-						buf +=  item->getText(j) + _T(" ");
-					}
+					buf +=  item->copy(j) + _T(" ");
 				}
 				buf.erase(buf.size()-1, 1);
 			} else {
-				if(item) {
-					buf += item->getText(col);
-				}
+				buf += item->copy(col);
 			}
 
 			buf += _T("\r\n");

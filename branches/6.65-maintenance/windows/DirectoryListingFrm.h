@@ -135,8 +135,6 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
 	void selectItem(const tstring& name);
 
-	void copy(UINT wID);
-	
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
 		return 0;
@@ -281,7 +279,8 @@ private:
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		};
 
-		const tstring& getText(int col) {
+		const tstring& getText(int col) const {
+			dcassert(col >= 0 && col < COLUMN_LAST);
 			return columns[col];
 		}
 		
@@ -311,6 +310,26 @@ private:
 				default: return lstrcmp(a->columns[col].c_str(), b->columns[col].c_str());
 				}
 			}
+		}
+
+		const tstring copy(int col) {
+			if(col >= 0 && col < COLUMN_LAST)
+				return getText(col);
+
+			if(col == COLUMN_LAST) {
+				tstring buf;
+				if(type == ItemInfo::FILE) {
+					buf = Text::toT(file->getPath() + file->getName());
+				} else {
+					buf = Text::toT(dir->getPath());
+					if(buf[buf.length()-1] == _T('\\'))
+						buf.erase(buf.length()-1);
+				}
+
+				return buf;
+			}
+
+			return Util::emptyStringT;
 		}
 		
 		bool isDupe() const { return dupe; }

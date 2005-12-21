@@ -1382,7 +1382,7 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 				WinUtil::setClipboard( *name );
 		}
 	} else {
-		ctrlQueue.copy(tmp);
+		ctrlQueue.copy(copyMenu, tmp);
 	}
 	return 0;
 }

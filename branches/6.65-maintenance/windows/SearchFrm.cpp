@@ -1133,8 +1133,7 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 }
 
 LRESULT SearchFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int tmp = (int)wID - (int)IDC_COPY;
-	ctrlResults.copy(tmp);
+	ctrlResults.copy(copyMenu, wID - IDC_COPY);
 
 	return 0;
 }

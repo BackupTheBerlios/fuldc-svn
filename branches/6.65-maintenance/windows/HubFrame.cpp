@@ -1387,8 +1387,7 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 }
 
 LRESULT HubFrame::onCopyUserList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int id = wID - IDC_COPY;
-	ctrlUsers.copy(id);
+	ctrlUsers.copy(copyMenu, wID - IDC_COPY);
 	
 	return 0;
 }
