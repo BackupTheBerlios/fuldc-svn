@@ -52,11 +52,20 @@ public:
 		log(path, msg);
 	}
 
+	deque<string> getLastLogs() { Lock l(cs); return lastLogs; }
+
 	void message(const string& msg) {
 		if(BOOLSETTING(LOG_SYSTEM)) {
 			StringMap params;
 			params["message"] = msg;
 			log(LogManager::SYSTEM, params);
+		}
+		{
+			Lock l(cs);
+			// Keep the last 100 messages (completely arbitrary number...)
+			while(lastLogs.size() > 100)
+				lastLogs.pop_front();
+			lastLogs.push_back(msg);
 		}
 		fire(LogManagerListener::Message(), msg);
 	}
@@ -94,6 +103,7 @@ private:
 
 	friend class Singleton<LogManager>;
 	CriticalSection cs;
+	deque<string> lastLogs;
 
 	int logOptions[LAST][2];
 

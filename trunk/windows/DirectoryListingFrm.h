@@ -160,7 +160,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 
 	void setWindowTitle() {
 		if(error.empty())
-			SetWindowText(Text::toT(dl->getUser()->getFirstNick()).c_str());
+			SetWindowText((WinUtil::getNicks(dl->getUser()) + _T(" - ") + WinUtil::getHubNames(dl->getUser()).first).c_str());
 		else
 			SetWindowText(error.c_str());
 	}
@@ -338,9 +338,6 @@ private:
 	CButton ctrlFind, ctrlFindNext;
 	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
-
-	/** Parameter map for user commands */
-	StringMap ucParams;
 
 	string findStr;
 	tstring error;

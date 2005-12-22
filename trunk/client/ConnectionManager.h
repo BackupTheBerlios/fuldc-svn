@@ -84,15 +84,10 @@ public:
 	/** Find a suitable port to listen on, and start doing it */
 	void listen() throw(Exception);
 	void disconnect() throw() {
-		if(server) {
-			server->shutdown();
-			server = 0;
-		}
-		if(secureServer) {
-			secureServer->shutdown();
-			secureServer = 0;
-		}
+		delete server;
+		delete secureServer;
 
+		server = secureServer = 0;
 		port = securePort = 0;
 	}
 
@@ -108,7 +103,7 @@ private:
 	class Server : public Thread {
 	public:
 		Server(bool secure_, short port, const string& ip = "0.0.0.0");
-		void shutdown() { die = true;}
+		virtual ~Server() { die = true; join(); }
 	private:
 		virtual int run() throw();
 

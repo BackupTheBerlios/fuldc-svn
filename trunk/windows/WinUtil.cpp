@@ -220,6 +220,7 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, IDC_NOTEPAD, CTSTRING(MENU_NOTEPAD));
 	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
 	view.AppendMenu(MF_STRING, IDC_HASH_PROGRESS, CTSTRING(MENU_HASH_PROGRESS));
+	view.AppendMenu(MF_STRING, IDC_SYSTEM_LOG, CTSTRING(MENU_SYSTEM_LOG));
 	view.AppendMenu(MF_SEPARATOR);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
@@ -910,6 +911,19 @@ int WinUtil::getOsMinor()
 	GetVersionEx((OSVERSIONINFO*)&ver);
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	return ver.dwMinorVersion;
+}
+
+tstring WinUtil::getNicks(const CID& cid) throw() {
+	return Text::toT(Util::toString(ClientManager::getInstance()->getNicks(cid)));
+}
+
+pair<tstring, bool> WinUtil::getHubNames(const CID& cid) throw() {
+	StringList hubs = ClientManager::getInstance()->getHubNames(cid);
+	if(hubs.empty()) {
+		return make_pair(TSTRING(OFFLINE), false);
+	} else {
+		return make_pair(Text::toT(Util::toString(hubs)), true);
+	}
 }
 
 void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {

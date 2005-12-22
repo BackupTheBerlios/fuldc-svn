@@ -33,9 +33,11 @@
 #define _ATL_NO_OLD_NAMES
 
 #if _MSC_VER == 1400
-#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
+//#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
 //disable the deperecated warnings for the crt functions.
-#pragma warning(disable: 4996)
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _ATL_SECURE_NO_DEPRECATE 1
+#define _CRT_NON_CONFORMING_SWPRINTFS 1
 #endif
 
 #include <Winsock2.h>
@@ -63,6 +65,7 @@
 #include <deque>
 #include <list>
 #include <utility>
+#include <functional>
 
 // Use maps if hash_maps aren't available
 #ifdef HAVE_HASH
@@ -95,13 +98,14 @@
 
 
 #ifdef HAVE_STLPORT
-using namespace stlport;
+using namespace _STL;
 #include <hash_map>
 #include <hash_set>
 
 #elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #include <ext/hash_map>
 #include <ext/hash_set>
+#include <ext/functional>
 using namespace std;
 using namespace __gnu_cxx;
 

@@ -579,16 +579,13 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	} else {
 		size = -1;
 	}
-	/** @todo 
-	if(oneHub && hub.empty()) {
-		hub = Text::toT(si->sr->getUser()->getClientAddressPort());
-	} else if(hub != Text::toT(si->sr->getUser()->getClientAddressPort())) {
-		oneHub = false;
-		hub.clear();
+ 
+	if(firstHubs && hubs.empty()) {
+		hubs = ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID());
+		firstHubs = false;
+	} else if(!hubs.empty()) {
+		Util::intersect(hubs, ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID()));
 	}
-	if(op)
-		op = si->sr->getUser()->isClientOp();
-		*/
 }
 
 LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -841,35 +838,33 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 }
 
 void SearchFrame::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
-	set<User::Ptr> nicks;
+	set<CID> users;
 
 	int sel = -1;
 	while((sel = ctrlResults.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = ctrlResults.getItemData(sel)->sr;
-		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
-			if(nicks.find(sr->getUser()) != nicks.end())
-				continue;
-			nicks.insert(sr->getUser());
-		}
+
 		if(!sr->getUser()->isOnline())
-			return;
-		/** @todo
-		ucParams["mynick"] = sr->getUser()->getClientNick();
-		ucParams["mycid"] = sr->getUser()->getClientCID().toBase32();
-		*/
-		ucParams["file"] = sr->getFile();
-		ucParams["filesize"] = Util::toString(sr->getSize());
-		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());
-		if(sr->getTTH() != NULL) {
-			ucParams["tth"] = sr->getTTH()->toBase32();
+			continue;
+
+		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
+			if(users.find(sr->getUser()->getCID()) != users.end())
+				continue;
+			users.insert(sr->getUser()->getCID());
 		}
 
-/**		StringMap tmp = ucParams;
-		sr->getUser()->getParams(tmp);
-		sr->getUser()->clientEscapeParams(tmp);
-		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
+		ucParams["fileFN"] = sr->getFile();
+		ucParams["fileSI"] = Util::toString(sr->getSize());
+		ucParams["fileSIshort"] = Util::formatBytes(sr->getSize());
+		if(sr->getTTH() != NULL) {
+			ucParams["fileTR"] = sr->getTTH()->toBase32();
+		}
+
+		StringMap tmp = ucParams;
+		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp);
 	}
 	return;
 };
@@ -960,10 +955,10 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			for(int i = 0, j = ctrlResults.GetItemCount(); i < j; ++i) {
 				SearchInfo* si2 = ctrlResults.getItemData(i);
 				SearchResult* sr2 = si2->sr;
-/**@todo				if((sr->getUser()->getNick() == sr2->getUser()->getNick()) && (sr->getFile() == sr2->getFile())) {
+				if((sr->getUser()->getCID() == sr2->getUser()->getCID()) && (sr->getFile() == sr2->getFile())) {
 					delete si;
 					return 0;
-				} */
+				} 
 			}
 
 			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(Text::toT(sr->getFile())) : WinUtil::getDirIconIndex();
@@ -1065,7 +1060,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_GRAYED);
 		}
 		
-		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);
+		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hubs);
 		checkAdcItems(resultsMenu);
 		resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(resultsMenu);
@@ -1202,6 +1197,41 @@ LRESULT SearchFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 	return CDRF_DODEFAULT;
 }
+
+void SearchFrame::SearchInfo::update() { 
+	if(sr->getType() == SearchResult::TYPE_FILE) {
+		if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
+			fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+		} else {
+			fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+			path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+		}
+
+		type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
+		if(!type.empty() && type[0] == _T('.'))
+			type.erase(0, 1);
+		size = Text::toT(Util::formatBytes(sr->getSize()));
+		exactSize = Util::formatExactSize(sr->getSize());
+	} else {
+		fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
+		path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+		type = TSTRING(DIRECTORY);
+	}
+	nick = Text::toT(sr->getUser()->getFirstNick());
+	/// @todo connection = Text::toT(sr->getUser()->getConnection());
+	hubName = Text::toT(sr->getHubName());
+	slots = Text::toT(sr->getSlotString());
+	ip = Text::toT(sr->getIP());
+	if (!ip.empty()) {
+		// Only attempt to grab a country mapping if we actually have an IP address
+		tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+		if(!tmpCountry.empty())
+			ip = tmpCountry + _T(" (") + ip + _T(")");
+	}
+	if(sr->getTTH() != NULL)
+		setTTH(Text::toT(sr->getTTH()->toBase32()));
+}
+
 /**
  * @file
  * $Id: SearchFrm.cpp,v 1.8 2004/02/14 13:55:25 trem Exp $

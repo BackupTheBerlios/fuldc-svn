@@ -29,11 +29,13 @@
 #include "Util.h"
 #include "UserCommand.h"
 #include "FavoriteManager.h"
+#include "SSLSocket.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.9");
+const string AdcHub::ADCS_FEATURE("ADC0");
 
-AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), state(STATE_PROTOCOL) {
+AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), state(STATE_PROTOCOL) {
 }
 
 AdcHub::~AdcHub() throw() {
@@ -87,7 +89,6 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	if(c.getParameters().empty())
 		return;
 
-	
 	OnlineUser& u = getUser(c.getFrom());
 
 	for(StringIterC i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
@@ -97,9 +98,21 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u.getIdentity().set(i->c_str(), i->substr(2));
 	}
 
+	if(u.getUser()->getFirstNick().empty()) {
+		u.getUser()->setFirstNick(u.getIdentity().getNick());
+	}
+
+	if(u.getIdentity().supports(ADCS_FEATURE)) {
+		u.getUser()->setFlag(User::SSL);
+	}
+
 	if(u.getIdentity().isHub())
 		setHubIdentity(u.getIdentity());
 
+	dcdebug("%s %s\n", u.getUser()->getCID().toBase32().c_str(), ClientManager::getInstance()->getMe()->getCID().toBase32().c_str());
+	if(u.getUser() == ClientManager::getInstance()->getMe()) {
+		state = STATE_NORMAL;
+	}
 	fire(ClientListener::UserUpdated(), this, u);
 }
 
@@ -121,12 +134,13 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 	OnlineUser* from = findUser(c.getFrom());
 	if(!from)
 		return;
-	OnlineUser* to = findUser(c.getTo());
-	if(!to)
-		return;
 
 	string pmFrom;
 	if(c.getParam("PM", 1, pmFrom)) { // add PM<group-cid> as well
+		OnlineUser* to = findUser(c.getTo());
+		if(!to)
+			return;
+
 		OnlineUser* replyTo = findUser(CID(pmFrom));
 		if(!replyTo)
 			return;
@@ -183,11 +197,11 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 	OnlineUser* u = findUser(c.getFrom());
 	if(!u || u->getUser() == ClientManager::getInstance()->getMe())
 		return;
-	if(c.getParameters().empty() || c.getParameters()[0] != CLIENT_PROTOCOL)
+	if(c.getParameters().empty() || (c.getParameters()[0] != CLIENT_PROTOCOL && c.getParameters()[0] != SECURE_CLIENT_PROTOCOL))
 		return;
 	string token;
 	c.getParam("TO", 1, token);
-    connect(*u, token);
+    connect(*u, token, c.getParameters()[0] == SECURE_CLIENT_PROTOCOL);
 }
 
 void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
@@ -248,6 +262,7 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	if(!u)
 		return;
 
+	// @todo Check for invalid protocol and unset SSL if necessary
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
 
@@ -257,17 +272,20 @@ void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
 
 void AdcHub::connect(const OnlineUser& user) {
 	u_int32_t r = Util::rand();
-	connect(user, Util::toString(r));
+	connect(user, Util::toString(r), user.getUser()->isSet(User::SSL));
 }
 
-void AdcHub::connect(const OnlineUser& user, string const& token) {
+void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	if(state != STATE_NORMAL)
 		return;
 
+	const string& proto = secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL;
+	short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
+
 	if(ClientManager::getInstance()->isActive()) {
-		send(AdcCommand(AdcCommand::CMD_CTM, user.getUser()->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(TCP_PORT))).addParam(token));
+		send(AdcCommand(AdcCommand::CMD_CTM, user.getUser()->getCID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
 	} else {
-		send(AdcCommand(AdcCommand::CMD_RCM, user.getUser()->getCID()).addParam(CLIENT_PROTOCOL));
+		send(AdcCommand(AdcCommand::CMD_RCM, user.getUser()->getCID()).addParam(proto));
 	}
 }
 
@@ -289,15 +307,14 @@ void AdcHub::hubMessage(const string& aMessage) {
 void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) { 
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, user.getUser()->getCID()).addParam(aMessage).addParam("PM", SETTING(CLIENT_ID))); 
+	send(AdcCommand(AdcCommand::CMD_MSG, user.getUser()->getCID()).addParam(aMessage).addParam("PM", getMyIdentity().getUser()->getCID().toBase32())); 
 }
 
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) { 
 	if(state != STATE_NORMAL)
 		return;
 
-
-	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_UDP);
+	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_BROADCAST);
 
 	if(aFileType == SearchManager::TYPE_TTH) {
 		c.addParam("TR", aString);
@@ -316,10 +333,10 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	if(!aToken.empty())
 		c.addParam("TO", aToken);
 
-	sendUDP(c);
-
 	if(ClientManager::getInstance()->isActive()) {
-		c.setType(AdcCommand::TYPE_PASSIVE);
+		send(c);
+	} else {
+		c.setType(AdcCommand::TYPE_TCP_ACTIVE);
 		send(c);
 	}
 }
@@ -332,7 +349,8 @@ void AdcHub::password(const string& pwd) {
 		AutoArray<u_int8_t> buf(saltBytes);
 		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
-		th.update(SETTING(CLIENT_ID).c_str(), SETTING(CLIENT_ID).length());
+		string cid = getMyIdentity().getUser()->getCID().toBase32();
+		th.update(cid.c_str(), cid.length());
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
@@ -375,6 +393,13 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
+
+	if(SSLSocketFactory::getInstance()->hasCerts()) {
+		ADDPARAM("SU", ADCS_FEATURE);
+	} else {
+		ADDPARAM("SU", Util::emptyString);
+	}
+	
 	if(ClientManager::getInstance()->isActive()) {
 		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
 			ADDPARAM("I4", Socket::resolve(SETTING(EXTERNAL_IP)));

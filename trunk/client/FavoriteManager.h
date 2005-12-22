@@ -31,6 +31,8 @@
 #include "UserCommand.h"
 #include "FavoriteUser.h"
 #include "Singleton.h"
+#include "ClientManagerListener.h"
+#include "ClientManager.h"
 
 class HubEntry {
 public:
@@ -134,6 +136,7 @@ public:
 	typedef X<4> FavoriteRemoved;
 	typedef X<5> UserAdded;
 	typedef X<6> UserRemoved;
+	typedef X<7> StatusChanged;
 
 	virtual void on(DownloadStarting, const string&) throw() { }
 	virtual void on(DownloadFailed, const string&) throw() { }
@@ -142,6 +145,7 @@ public:
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry*) throw() { }
 	virtual void on(UserAdded, const FavoriteUser&) throw() { }
 	virtual void on(UserRemoved, const FavoriteUser&) throw() { }
+	virtual void on(StatusChanged, const User::Ptr&) throw() { }
 };
 
 class SimpleXML;
@@ -150,7 +154,7 @@ class SimpleXML;
  * Public hub list, favorites (hub&user). Assumed to be called only by UI thread.
  */
 class FavoriteManager : public Speaker<FavoriteManagerListener>, private HttpConnectionListener, public Singleton<FavoriteManager>,
-	private SettingsManagerListener
+	private SettingsManagerListener, private ClientManagerListener
 {
 public:
 // Public Hubs
@@ -170,21 +174,18 @@ public:
 	bool isDownloading() { return running; };
 
 // Favorite Users
-	FavoriteUser::List& getFavoriteUsers() { return users; };
+	typedef HASH_MAP_X(CID, FavoriteUser, CID::Hash, equal_to<CID>, less<CID>) FavoriteMap;
+	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; };
 	
 	void addFavoriteUser(User::Ptr& aUser);
-	bool isFavoriteUser(const User::Ptr& aUser) const {
-		return find(users.begin(), users.end(), aUser) != users.end();
-	}
+	bool isFavoriteUser(const User::Ptr& aUser) const { Lock l(cs); return users.find(aUser->getCID()) != users.end(); }
 	void removeFavoriteUser(User::Ptr& aUser);
 
-	bool hasSlot(const User::Ptr& aUser) const { 
-		FavoriteUser::List::const_iterator i = find(users.begin(), users.end(), aUser);
-		if(i == users.end())
-			return false;
-		return i->isSet(FavoriteUser::FLAG_GRANTSLOT);
-	}
-
+	bool hasSlot(const User::Ptr& aUser) const;
+	void setUserDescription(const User::Ptr& aUser, const string& description);
+	void setAutoGrant(const User::Ptr& aUser, bool grant);
+	void userUpdated(const OnlineUser& info);
+	time_t getLastSeen(const User::Ptr& aUser) const;
 // Favorite Hubs
 	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
 
@@ -219,7 +220,7 @@ public:
 	void removeHubUserCommands(int ctx, const string& hub);
 
 	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; };
-	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
+	UserCommand::List getUserCommands(int ctx, const StringList& hub);
 
 	void load();
 	void save();
@@ -230,9 +231,9 @@ private:
 	UserCommand::List userCommands;
 	int lastId;
 
-	FavoriteUser::List users;
+	FavoriteMap users;
 
-	CriticalSection cs;
+	mutable CriticalSection cs;
 
 	// Public Hubs
 	typedef map<string, HubEntry::List> PubListMap;
@@ -251,9 +252,11 @@ private:
 	
 	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
+		ClientManager::getInstance()->addListener(this);
 	}
 
 	virtual ~FavoriteManager() throw() {
+		ClientManager::getInstance()->removeListener(this);
 		SettingsManager::getInstance()->removeListener(this);
 		if(c) {
 			c->removeListener(this);
@@ -274,6 +277,11 @@ private:
 	}
 
 	void loadXmlList(const string& xml);
+
+	// ClientManagerListener
+	virtual void on(UserUpdated, const OnlineUser& user) throw();
+	virtual void on(UserConnected, const User::Ptr& user) throw();
+	virtual void on(UserDisconnected, const User::Ptr& user) throw();
 
 	// HttpConnectionListener
 	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw();

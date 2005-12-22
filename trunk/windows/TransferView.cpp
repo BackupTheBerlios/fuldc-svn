@@ -157,8 +157,8 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			itemI = ctrlTransfers.getItemData(i);
 			bCustomMenu = true;
 
-			///@todo prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
-			//userMenu.AppendMenu(MF_SEPARATOR);
+			prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(itemI->user->getCID()));
+			userMenu.AppendMenu(MF_SEPARATOR);
 		}
 
 		if(ctrlTransfers.GetSelectedCount() == 1) {
@@ -192,7 +192,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		if ( bCustomMenu ) {
-			//userMenu.DeleteMenu(userMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+			userMenu.DeleteMenu(userMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 			cleanMenu(userMenu);
 		}
 		return TRUE; 
@@ -202,6 +202,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 void TransferView::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
@@ -211,14 +212,9 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		if(!itemI->user->isOnline())
 			return;
 
-		/** @todo ucParams["mynick"] = itemI->user->getClientNick();
-		ucParams["mycid"] = itemI->user->getClientCID().toBase32(); 
-		ucParams["file"] = Text::fromT(itemI->path) + Text::fromT(itemI->file);
-
 		StringMap tmp = ucParams;
-		itemI->user->getParams(tmp);
-		itemI->user->clientEscapeParams(tmp);
-		itemI->user->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
+		tmp["fileFN"] = Text::fromT(itemI->path + itemI->file);
+		ClientManager::getInstance()->userCommand(itemI->user, uc, tmp);
 	}
 	return;
 };
@@ -440,10 +436,10 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		columns[COLUMN_USER] = Text::toT(user->getFirstNick());
+		columns[COLUMN_USER] = WinUtil::getNicks(user);
 	}
 	if(colMask & MASK_HUB) {
-		/// @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
+		columns[COLUMN_HUB] = WinUtil::getHubNames(user).first;
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;
@@ -590,11 +586,23 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 			i->totalTimeLeft = d->getTotalSecondsLeft();
 			i->speed = d->getRunningAverage();
 
-			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-				i->statusString = _T("* ") + tstring(buf);
-			} else {
-				i->statusString = buf;
+			i->statusString.clear();
+			if(d->getUserConnection()->isSecure()) {
+				i->statusString += _T("[S]");
 			}
+			if(d->isSet(Download::FLAG_TTH_CHECK)) {
+				i->statusString += _T("[T]");
+			}
+			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+				i->statusString += _T("[Z]");
+			} 
+			if(d->isSet(Download::FLAG_ROLLBACK)) {
+				i->statusString += _T("[R]");
+			}
+			if(!i->statusString.empty()) {
+				i->statusString += _T(" ");
+			}
+			i->statusString += buf;
 			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_TOTALTIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 
 			v->push_back(i);
@@ -682,11 +690,19 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
 				(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
 
-			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
-				i->statusString = _T("* ") + tstring(buf);
-			} else {
-				i->statusString = buf;
+			i->statusString.clear();
+
+			if(u->getUserConnection()->isSecure()) {
+				i->statusString += _T("[S]");
 			}
+			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
+				i->statusString += _T("[Z]");
+			}
+			if(!i->statusString.empty()) {
+				i->statusString += _T(" ");
+			}
+			i->statusString += buf;
+			
 
 			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 			v->push_back(i);

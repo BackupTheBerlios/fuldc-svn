@@ -28,9 +28,8 @@
 
 #include "../client/StringTokenizer.h"
 #include "../client/ShareManager.h"
+#include "../client/ClientManager.h"
 #include "../client/version.h"
-
-#include <stack>
 
 #define FILE_LIST_NAME _T("File Lists")
 
@@ -200,7 +199,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(j->getUser()->isOnline())
 					online++;
 
-				tmp += Text::toT(j->getUser()->getFirstNick());
+				tmp += WinUtil::getNicks(j->getUser());
 			}
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
@@ -268,7 +267,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");
-						tmp += Text::toT(j->getUser()->getFirstNick());
+					tmp += WinUtil::getNicks(j->getUser());
 					tmp += _T(" (");
 					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
 						tmp += TSTRING(FILE_NOT_AVAILABLE);
@@ -687,7 +686,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			
 			delete ii;
 			updateStatus();
-			if (BOOLSETTING(QUEUE_DIRTY)) {
+			if (BOOLSETTING(BOLD_QUEUE)) {
 				setDirty();
 			}
 			dirty = true;
@@ -813,7 +812,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					if(!i->getUser()) {
 						continue;
 					}
-					tstring nick = Text::toT(i->getUser()->getFirstNick());
+					tstring nick = WinUtil::getNicks(i->getUser());
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -837,7 +836,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					if(!i->getUser()) {
 						continue;
 					}
-					/* @todo tstring nick = Text::toT(i->getUser()->getNick());
+					tstring nick = WinUtil::getNicks(i->getUser());
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -847,7 +846,6 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					mi.wID = IDC_READD_QUEUE + 1 + readdItems; // "All" is before sources
 					readdQueueMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);
 					readdItems++;
-					*/
 				}
 			}
 
@@ -1036,7 +1034,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		
 		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		// @todo PrivateFrame::openWindow(s->getUser());
+		PrivateFrame::openWindow(s->getUser());
 	}
 	return 0;
 }

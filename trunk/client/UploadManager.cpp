@@ -313,16 +313,16 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 	if(BOOLSETTING(LOG_UPLOADS) && !u->isSet(Upload::FLAG_TTH_LEAVES) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
 		StringMap params;
 		params["source"] = u->getFileName();
-		params["user"] = aSource->getUser()->getFirstNick();
-		params["userip"] = aSource->getRemoteIp();
+		params["userNI"] = aSource->getUser()->getFirstNick();
+		params["userI4"] = aSource->getRemoteIp();
 		/// @todo params["hub"] = aSource->getUser()->getLastHubName();
 		/// @todo params["hubip"] = aSource->getUser()->getLastHubAddress();
-		params["size"] = Util::toString(u->getSize());
-		params["sizeshort"] = Util::formatBytes(u->getSize());
-		params["chunksize"] = Util::toString(u->getTotal());
-		params["chunksizeshort"] = Util::formatBytes(u->getTotal());
-		params["actualsize"] = Util::toString(u->getActual());
-		params["actualsizeshort"] = Util::formatBytes(u->getActual());
+		params["fileSI"] = Util::toString(u->getSize());
+		params["fileSIshort"] = Util::formatBytes(u->getSize());
+		params["fileSIchunk"] = Util::toString(u->getTotal());
+		params["fileSIchunkshort"] = Util::formatBytes(u->getTotal());
+		params["fileSIactual"] = Util::toString(u->getActual());
+		params["fileSIactualshort"] = Util::formatBytes(u->getActual());
 		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
 

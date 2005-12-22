@@ -40,7 +40,7 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>,
 {
 public:
 	static void gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
-	static void openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& aMessage = Util::emptyStringT);
+	static void openWindow(const User::Ptr& replyTo, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 	static void closeAll();
 
@@ -170,8 +170,6 @@ private:
 
 	CMenu tabMenu;
 
-	StringMap ucParams;
-
 	User::Ptr replyTo;
 	CContainedWindow ctrlMessageContainer;
 
@@ -192,8 +190,8 @@ private:
 
 	
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-		if(aUser == replyTo)
+	virtual void on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw() {
+		if(aUser.getUser() == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {

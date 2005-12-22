@@ -241,7 +241,7 @@ LRESULT FinishedULFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 	if(wParam == SPEAK_ADD_LINE) {
 		FinishedItem* entry = reinterpret_cast<FinishedItem*>(lParam);
 		addEntry(entry);
-		if(BOOLSETTING(FINISHED_UPLOAD_DIRTY))
+		if(BOOLSETTING(BOLD_FINISHED_UPLOADS))
 			setDirty();
 		updateStatus();
 	} else if(wParam == SPEAK_REMOVE) {

@@ -95,15 +95,17 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
-	FrameIter i = frames.find(replyTo);
-	if(i != frames.end()) {
+	const User::Ptr& user = (from == ClientManager::getInstance()->getMe()) ? to : replyTo;
+	
+	FrameIter i = frames.find(user);
+	if(i == frames.end()) {
 		if(!IgnoreManager::getInstance()->isIgnored(from->getFirstNick())) {
-			p = new PrivateFrame(replyTo);
-			frames[replyTo] = p;
+			p = new PrivateFrame(user);
+			frames[user] = p;
 			p->readLog();
-			p->addLine(from, aMessage);
+			p->addLine(user, aMessage);
 			if(Util::getAway()) {
-				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && replyTo->isSet(User::BOT)))
+				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
 					p->sendMessage(Text::toT(Util::getAwayMessage()));
 			}
 
@@ -144,12 +146,12 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 	}
 }
 
-void PrivateFrame::openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& msg) {
+void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
 	PrivateFrame* p = NULL;
-	FrameIter i = frames.find(to);
+	FrameIter i = frames.find(replyTo);
 	if(i == frames.end()) {
-		p = new PrivateFrame(to);
-		frames[to] = p;
+		p = new PrivateFrame(replyTo);
+		frames[replyTo] = p;
 		p->CreateEx(WinUtil::mdiClient);
 	} else {
 		p = i->second;
@@ -380,13 +382,11 @@ void PrivateFrame::addLine(const User::Ptr& from, const tstring& aLine) {
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		/** @todo 
-		params["user"] = user->getNick();
-		params["hub"] = user->getClientName();
-		params["hubaddr"] = user->getClientAddressPort();
-		params["mynick"] = user->getClientNick(); 
-		params["mycid"] = user->getClientCID().toBase32(); */
-		params["cid"] = replyTo->getCID().toBase32(); 
+		params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+		params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+		params["userCID"] = replyTo->getCID().toBase32(); 
+		params["userNI"] = replyTo->getFirstNick();
+		params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 		LOG(LogManager::PM, params);
 	}
 
@@ -396,7 +396,7 @@ void PrivateFrame::addLine(const User::Ptr& from, const tstring& aLine) {
 	} else {
 		line = _T("\r\n");
 	}
-	line += Text::toT('<' + from->getFirstNick() + "> ") + aLine;
+	line += aLine;
 
 	if(ctrlClient.AddLine(aLine, BOOLSETTING(TIME_STAMPS)))
 		setNotify();
@@ -428,7 +428,7 @@ void PrivateFrame::addStatus(const tstring& aLine) {
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	/// @todo prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	
 	if(IgnoreManager::getInstance()->isUserIgnored(replyTo->getFirstNick())) {
 		tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
@@ -448,20 +448,12 @@ LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 void PrivateFrame::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
-/** @todo
-	ucParams["mynick"] = user->getClientNick();
-	ucParams["mycid"] = user->getClientCID().toBase32();
-	user->getParams(ucParams);
-	user->clientEscapeParams(ucParams);
 
-	user->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
-	*/
-	return;
+	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams);
 };
-
-
 
 LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	try {
@@ -564,7 +556,8 @@ LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 void PrivateFrame::updateTitle() {
-	if(replyTo->isOnline()) {
+	pair<tstring, bool> hubs = WinUtil::getHubNames(replyTo);
+	if(hubs.second) {
 		//@todo SetWindowText(Text::toT(user->getFullNick()).c_str());
 		setDisconnected(false);
 		if(offline){
@@ -581,6 +574,7 @@ void PrivateFrame::updateTitle() {
         setDisconnected(true);
 		offline = true;
 	}
+	SetWindowText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first).c_str());
 }
 
 
@@ -624,12 +618,13 @@ void PrivateFrame::closeAll(){
 
 void PrivateFrame::readLog() {
 	StringMap params;	
-	params["user"] = replyTo->getFirstNick();	
-	/** @todo params["hub"] = user->getClientName();
-	params["mynick"] = user->getClientNick();	
-	params["mycid"] = user->getClientCID().toBase32();	
-	params["cid"] = user->getCID().toBase32();	
-	params["hubaddr"] = user->getClientAddressPort();	
+
+	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+	params["userCID"] = replyTo->getCID().toBase32(); 
+	params["userNI"] = replyTo->getFirstNick();
+	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
+
 	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params));
 
 	try {
@@ -659,8 +654,8 @@ void PrivateFrame::readLog() {
 			ctrlClient.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB);
 
 			for(; i < linesCount; ++i){
-				//@todo if(!lines[i].empty())
-					//@todo addLine(Text::toT(lines[i]));
+				if(!lines[i].empty())
+					addStatus(_T("- ") + Text::toT(lines[i]));
 			}
 			ctrlClient.AddLine(tstring(_T(" ")), false);
 
@@ -670,10 +665,8 @@ void PrivateFrame::readLog() {
 			//LogManager from being able to write back to the log
 			f.close();
 		}
-	} catch(const FileException& ){
+	} catch(const FileException&){
 	}
-
-	*/
 }
 
 /**

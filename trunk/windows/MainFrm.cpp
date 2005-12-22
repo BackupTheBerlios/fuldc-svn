@@ -41,6 +41,7 @@
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 #include "UPnP.h"
+#include "SystemFrame.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
 
@@ -235,6 +236,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	//c->addListener(this);
 	//c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
+	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
 	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_FILE_CONNECT);
 	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
@@ -587,6 +589,7 @@ LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		case IDC_SEARCH_SPY:			SpyFrame::openWindow(); break;
 		case IDC_NOTEPAD:				NotepadFrame::openWindow(); break;
 		case IDC_NET_STATS:				StatsFrame::openWindow(); break;
+		case IDC_SYSTEM_LOG:			SystemFrame::openWindow();
 	}
 	return 0;
 }

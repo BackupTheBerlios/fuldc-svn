@@ -488,6 +488,20 @@ public:
 		return buf;
 	}
 
+	static string toString(const StringList& lst) {
+		if(lst.size() == 1)
+			return lst[0];
+		string tmp("[");
+		for(StringList::const_iterator i = lst.begin(); i != lst.end(); ++i) {
+			tmp += *i + ',';
+		}
+		if(tmp.length() == 1)
+			tmp.push_back(']');
+		else
+			tmp[tmp.length()-1] = ']';
+		return tmp;
+	}
+
 	static wstring toStringW( long val ) {
 		wchar_t buf[32];
 		swprintf(buf, L"%ld", val);
@@ -519,7 +533,7 @@ public:
 	}
 
 	static string toHexEscape(char val) {
-		char buf[sizeof(int)*2+2];
+		char buf[sizeof(int)*2+1+1];
 		sprintf(buf, "%%%X", val&0x0FF);
 		return buf;
 	}
@@ -527,6 +541,17 @@ public:
 		unsigned int res = 0;
 		sscanf(aString.c_str(), "%X", &res);
 		return static_cast<char>(res);
+	}
+
+	template<typename T>
+	static T& intersect(T& t1, const T& t2) {
+		for(typename T::iterator i = t1.begin(); i != t1.end();) {
+			if(find_if(t2.begin(), t2.end(), bind1st(equal_to<typename T::value_type>(), *i)) == t2.end())
+				i = t1.erase(i);
+			else
+				++i;
+		}
+		return t1;
 	}
 
 	static string encodeURI(const string& /*aString*/, bool reverse = false);

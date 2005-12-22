@@ -23,11 +23,13 @@
 #include "UsersFrame.h"
 
 #include "../client/StringTokenizer.h"
+#include "../client/ClientManager.h"
+
 #include "LineDlg.h"
 
-int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION };
-int UsersFrame::columnSizes[] = { 200, 150, 300, 125, 200 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::STATUS, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION };
+int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION };
+int UsersFrame::columnSizes[] = { 200, 300, 150, 200 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION };
 
 LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -58,10 +60,10 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	FavoriteManager::getInstance()->addListener(this);
 
-	FavoriteUser::List ul = FavoriteManager::getInstance()->getFavoriteUsers();
+	FavoriteManager::FavoriteMap ul = FavoriteManager::getInstance()->getFavoriteUsers();
 	ctrlUsers.SetRedraw(FALSE);
-	for(FavoriteUser::Iter i = ul.begin(); i != ul.end(); ++i) {
-		addUser(*i);
+	for(FavoriteManager::FavoriteMap::iterator i = ul.begin(); i != ul.end(); ++i) {
+		addUser(i->second);
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
@@ -129,10 +131,9 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		dlg.title = ui->columns[COLUMN_NICK];
 		dlg.line = ui->columns[COLUMN_DESCRIPTION];
 		if(dlg.DoModal(m_hWnd)) {
-			/// @todo ui->user->setUserDescription(Text::fromT(dlg.line));
-			/// @todo ui->update();
+			FavoriteManager::getInstance()->setUserDescription(ui->user, Text::fromT(dlg.line));
+			ui->columns[COLUMN_DESCRIPTION] = dlg.line;
 			ctrlUsers.updateItem(i);
-			FavoriteManager::getInstance()->save();
 		}
 	}
 	return 0;
@@ -141,8 +142,7 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
-		/// @todo ctrlUsers.getItemData(l->iItem)->user->setFavoriteGrantSlot(ctrlUsers.GetCheckState(l->iItem) != FALSE);
-		FavoriteManager::getInstance()->save();
+		FavoriteManager::getInstance()->setAutoGrant(ctrlUsers.getItemData(l->iItem)->user, ctrlUsers.GetCheckState(l->iItem) != FALSE);
 	}
 	return 0;
 } 
@@ -153,11 +153,11 @@ void UsersFrame::addUser(const FavoriteUser& aUser) {
 	ctrlUsers.SetCheckState(i, b);
 }
 
-void UsersFrame::updateUser(const FavoriteUser& aUser) {
+void UsersFrame::updateUser(const User::Ptr& aUser) {
 	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
-		if(ui->user == aUser.getUser()) {
-			ui->update(aUser);
+		if(ui->user == aUser) {
+			ui->columns[COLUMN_SEEN] = aUser->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", FavoriteManager::getInstance()->getLastSeen(aUser)));
 			ctrlUsers.updateItem(i);
 		}
 	}
@@ -194,12 +194,19 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 }
 
-LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
+void UsersFrame::UserInfo::update(const FavoriteUser& u) {
+	columns[COLUMN_NICK] = Text::toT(u.getNick());
+	columns[COLUMN_HUB] = user->isOnline() ? WinUtil::getHubNames(u.getUser()).first : Text::toT(u.getUrl());
+	columns[COLUMN_SEEN] = user->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
+	columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
+}
 
-	if(kd->wVKey == VK_DELETE) {
-		PostMessage(WM_COMMAND, IDC_REMOVE);
-	} 
+LRESULT UsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if(wParam == USER_UPDATED) {
+		UserInfoBase* uib = (UserInfoBase*)lParam;
+		updateUser(uib->user);
+		delete uib;
+	}
 	return 0;
 }
 

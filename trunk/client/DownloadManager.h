@@ -58,7 +58,8 @@ public:
 		FLAG_UTF8 = 0x80,
 		FLAG_TREE_DOWNLOAD = 0x100,
 		FLAG_TREE_TRIED = 0x200,
-		FLAG_PARTIAL_LIST = 0x400
+		FLAG_PARTIAL_LIST = 0x400,
+		FLAG_TTH_CHECK = 0x800
 	};
 
 	Download() throw();

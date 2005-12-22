@@ -126,6 +126,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	}
 
 	FavoriteManager::getInstance()->load();
+	SSLSocketFactory::getInstance()->loadCertificates();
 
 	if(f != NULL)
 		(*f)(p, tku[index], TSTRING(HASH_DATABASE));
@@ -144,10 +145,11 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 }
 
 void shutdown() {
-	ConnectionManager::getInstance()->shutdown();
-	HashManager::getInstance()->shutdown();
-
 	TimerManager::getInstance()->removeListeners();
+
+	HashManager::getInstance()->shutdown();
+	ConnectionManager::getInstance()->shutdown();
+
 	SettingsManager::getInstance()->save();
 	
 	IgnoreManager::deleteInstance();
@@ -164,8 +166,8 @@ void shutdown() {
 	QueueManager::deleteInstance();
 	ConnectionManager::deleteInstance();
 	SearchManager::deleteInstance();
-	ClientManager::deleteInstance();
 	FavoriteManager::deleteInstance();
+	ClientManager::deleteInstance();
 	HashManager::deleteInstance();
 	LogManager::deleteInstance();
 	SettingsManager::deleteInstance();

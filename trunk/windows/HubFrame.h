@@ -376,6 +376,7 @@ private:
 	}
 
 	TStringList tabList;
+	const tstring& getNick(const User::Ptr& u);
 
 	Client* client;
 	tstring server;
@@ -412,7 +413,6 @@ private:
 	static bool closing;
 	bool logMainChat;
 
-	StringMap ucParams;
 	TStringMap tabParams;
 	bool tabMenuShown;
 

@@ -31,6 +31,8 @@
 
 #include "ClientManagerListener.h"
 
+class UserCommand;
+
 class ClientManager : public Speaker<ClientManagerListener>, 
 	private ClientListener, public Singleton<ClientManager>, 
 	private TimerManagerListener, private SettingsManagerListener
@@ -39,36 +41,13 @@ public:
 	Client* getClient(const string& aHubURL);
 	void putClient(Client* aClient);
 
-	size_t getUserCount() {
-		Lock l(cs);
+	size_t getUserCount();
+	int64_t getAvailable();
+	StringList getHubs(const CID& cid);
+	StringList getHubNames(const CID& cid);
+	StringList getNicks(const CID& cid);
 
-		size_t c = 0;
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			c+=(*i)->getUserCount();
-		}
-		return c;
-	}
-
-	int64_t getAvailable() {
-		Lock l(cs);
-		
-		int64_t c = 0;
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			c+=(*i)->getAvailable();
-		}
-		return c;
-	}
-
-	bool isConnected(const string& aAddress, short port) {
-		Lock l(cs);
-
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if(((*i)->getAddress() == aAddress || (*i)->getIp() == aAddress) && (*i)->getPort() == port) {
-				return true;
-			}
-		}
-		return false;
-	}
+	bool isConnected(const string& aUrl);
 	
 	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
@@ -88,8 +67,6 @@ public:
 
 	bool isOp(const User::Ptr& aUser, const string& aHubUrl);
 
-	string getHubUrl(const User::Ptr& user);
-
 	/** Constructs a synthetic, hopefully unique CID */
 	CID makeCid(const string& nick, const string& hubUrl) throw();
 
@@ -102,10 +79,14 @@ public:
 	void send(AdcCommand& c);
 	void privateMessage(const User::Ptr& p, const string& msg);
 
+	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params);
+
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 	
 	void lock() throw() { cs.enter(); }
 	void unlock() throw() { cs.leave(); }
+
+	Identity getIdentity(const User::Ptr& aUser);
 
 	Client::List& getClients() { return clients; }
 
@@ -160,6 +141,7 @@ private:
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
+	virtual void on(UserUpdated, Client*, const OnlineUser& user) throw() { fire(ClientManagerListener::UserUpdated(), user); }
 	virtual void on(UsersUpdated, Client* c, const User::List&) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }

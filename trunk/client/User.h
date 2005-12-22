@@ -40,7 +40,8 @@ public:
 		BOT_BIT,
 		HUB_BIT,
 		TTH_GET_BIT,
-		SAVE_NICK_BIT
+		SAVE_NICK_BIT,
+		SSL_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -52,7 +53,8 @@ public:
 		BOT = 1<<BOT_BIT,
 		HUB = 1<<HUB_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
-		SAVE_NICK = 1<<SAVE_NICK_BIT	//< Save cid->nick association
+		SAVE_NICK = 1<<SAVE_NICK_BIT,	//< Save cid->nick association
+		SSL = 1<<SSL_BIT				//< Client supports SSL
 	};
 
 	typedef Pointer<User> Ptr;
@@ -122,6 +124,7 @@ public:
 			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 	}
 
+	const bool supports(const string& name) const;
 	const bool isHub() const { return !get("HU").empty(); }
 	const bool isOp() const { return !get("OP").empty(); }
 	const bool isHidden() const { return !get("HI").empty(); }

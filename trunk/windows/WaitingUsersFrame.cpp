@@ -169,7 +169,7 @@ LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 LRESULT WaitingUsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();
 	if (user) {
-		// @todo PrivateFrame::openWindow(user);
+		PrivateFrame::openWindow(user);
 	}
 	return 0;
 }
@@ -199,8 +199,7 @@ void WaitingUsersFrame::LoadAll()
 	UserVect users = UploadManager::getInstance()->getWaitingUsers();
 	for (UserVect::const_iterator uit = users.begin(); uit != users.end(); ++uit) {
 		HTREEITEM lastInserted = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT,
-			/** @todo add hubname */ /* sigh. I knew I should have waited another few months to merge CVS. */
-			Text::toT((*uit)->getFirstNick() + " (" /* + (*uit)->getLastHubName() */ + ")").c_str(),
+			(WinUtil::getNicks(*uit) + _T(" - ") + WinUtil::getHubNames(*uit).first).c_str(),
 			0, 0, 0, 0, (LPARAM)(new UserPtr(*uit)), TVI_ROOT, TVI_LAST);
 		UploadManager::FileSet files = UploadManager::getInstance()->getWaitingUserFiles(*uit);
 		for (UploadManager::FileSet::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
@@ -261,10 +260,8 @@ void WaitingUsersFrame::onAddFile(const User::Ptr aUser, const string& aFile) {
 	}
 
 	string aNick = aUser->getFirstNick();
-	userNode = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT, Text::toT(aNick + " (" +
-		/* ClientManager::getInstance()->getUser(aNick)->getLastHubName() + */ ")").c_str(), 0, 0, 0, 0, (LPARAM)new UserPtr(aUser),
-		//re getLastHubName, see comment elsewhere.
-		TVI_ROOT, TVI_LAST);
+	userNode = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT, (WinUtil::getNicks(aUser) + _T(" - ") + WinUtil::getHubNames(aUser).first).c_str(), 
+		0, 0, 0, 0, (LPARAM)new UserPtr(aUser),	TVI_ROOT, TVI_LAST);
 	ctrlQueued.InsertItem(Text::toT(aFile).c_str(), userNode, TVI_LAST);
 	ctrlQueued.Expand(userNode);
 }
@@ -279,12 +276,12 @@ LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		const pair<User::Ptr, string> *p = (pair<User::Ptr, string> *)lParam;
 		onAddFile(p->first, p->second);
 		delete p;
-		if(BOOLSETTING(WAITING_USERS_DIRTY))
+		if(BOOLSETTING(BOLD_WAITING_USERS))
 			setDirty();
 	} else if(wParam == SPEAK_REMOVE_USER) {
 		onRemoveUser(reinterpret_cast<UserPtr *>(lParam)->u);
 		delete reinterpret_cast<UserPtr *>(lParam);
-		if(BOOLSETTING(WAITING_USERS_DIRTY))
+		if(BOOLSETTING(BOLD_WAITING_USERS))
 			setDirty();
 	}
 	return 0;

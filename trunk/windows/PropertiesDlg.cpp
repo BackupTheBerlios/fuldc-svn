@@ -33,6 +33,7 @@
 #include "Advanced3Page.h"
 #include "NetworkPage.h"
 #include "WindowsPage.h"
+#include "CertificatesPage.h"
 #include "FulHighlightPage.h"
 #include "FulSharePage.h"
 #include "FulDownloadPage.h"
@@ -57,6 +58,7 @@ TreePropertySheet(_T("icons\\settings_tree.bmp"), CTSTRING(SETTINGS))
 	pages[n++]  = new AdvancedPage(s);
 	pages[n++]  = new Advanced3Page(s);
 	pages[n++]  = new UCPage(s);
+	pages[n++]  = new CertificatesPage(s);
 	pages[n++] = new FulAdvancedPage(s);
 	pages[n++] = new FulDownloadPage(s);
 	pages[n++] = new FulSharePage(s);

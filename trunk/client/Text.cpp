@@ -126,6 +126,8 @@ string& Text::acpToUtf8(const string& str, string& tmp) throw() {
 }
 
 wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
+	if(str.empty())
+		return tmp;
 #ifdef _WIN32
 	int n = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), (int)str.length(), NULL, 0);
 	if(n == 0) {
@@ -180,6 +182,8 @@ string& Text::wideToUtf8(const wstring& str, string& tgt) throw() {
 }
 
 string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
+	if(str.empty())
+		return tmp;
 #ifdef _WIN32
 	int n = WideCharToMultiByte(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0, NULL, NULL);
 	if(n == 0) {

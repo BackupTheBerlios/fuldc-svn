@@ -27,7 +27,8 @@ class SSLSocket;
 namespace yaSSL {
 	class SSL;
 	class SSL_CTX;
-};
+	struct DH;
+}
 
 using namespace yaSSL;
 
@@ -36,28 +37,37 @@ public:
 	SSLSocketFactory();
 	virtual ~SSLSocketFactory();
 
-	SSLSocket* getClientSocket();
-	SSLSocket* getServerSocket();
+	SSLSocket* getClientSocket() throw(SocketException);
+	SSLSocket* getServerSocket() throw(SocketException);
+
+	void loadCertificates() throw();
+	bool hasCerts() const { return certsLoaded; }
 private:
 	SSL_CTX* clientContext;
 	SSL_CTX* serverContext;
+	DH* dh;
+	bool certsLoaded;
 };
 
 class SSLSocket : public Socket {
 public:
-	virtual ~SSLSocket() {}
+	virtual ~SSLSocket() throw() {}
 
 	virtual void accept(const Socket& listeningSocket) throw(SocketException);
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);
 	virtual int read(void* aBuffer, int aBufLen) throw(SocketException);
 	virtual int write(const void* aBuffer, int aLen) throw(SocketException);
+	virtual int wait(u_int32_t millis, int waitFor) throw(SocketException);
 	virtual void shutdown() throw();
 	virtual void close() throw();
 private:
 	friend class SSLSocketFactory;
 
-	SSLSocket(SSL_CTX* context);
+	SSLSocket(SSL_CTX* context) throw(SocketException);
+	SSLSocket(const SSLSocket&);
+	SSLSocket& operator=(const SSLSocket&);
 
+	SSL_CTX* ctx;
 	SSL* ssl;
 
 	int checkSSL(int ret) throw(SocketException);

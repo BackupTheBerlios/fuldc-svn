@@ -591,6 +591,12 @@
 #define IDC_SOCKET_OUT_BUFFER           1355
 #define IDC_SETTINGS_SOCKET_IN_BUFFER   1356
 #define IDC_SETTINGS_SOCKET_OUT_BUFFER  1357
+#define IDC_CLIENT_ID                   1358
+#define IDC_SYSTEM_LOG                  1359
+#define IDD_CERTIFICATESPAGE            1360
+#define IDC_SSL_CERTIFICATE_FILE        1361
+#define IDC_SSL_PRIVATE_KEY_FILE        1362
+#define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1363
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

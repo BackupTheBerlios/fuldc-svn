@@ -397,13 +397,23 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 	if(i == usermap.end())
 		return -1;
 
+	UserInfo* ui = i->second;
+
 	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
 		// Sort order of the other columns changes too late when the user's updated
-		UserInfo* ui = i->second;
 		dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
 		return ctrlUsers.getSortPos(ui);
 	}
-	return ctrlUsers.findItem(i->second);
+	return ctrlUsers.findItem(ui);
+}
+
+const tstring& HubFrame::getNick(const User::Ptr& aUser) {
+	//@todo UserIter i = usermap.find(aUser->getFirstNick());
+	//if(i == usermap.end())
+		return Util::emptyStringT;
+
+	//UserInfo* ui = i->second;
+	//return ui->columns[COLUMN_NICK];
 }
 
 void HubFrame::addAsFavorite() {
@@ -594,15 +604,15 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->replyTo)) {
 				PrivateFrame::gotMessage(i->from, i->to, i->replyTo, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->from->getFirstNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(i->from) + _T(": ") + i->msg);
 			}
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
 				addClientLine(TSTRING(IGNORED_MESSAGE) + i->msg, false);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
-				// @todo PrivateFrame::gotMessage(i->user, i->msg);
+				PrivateFrame::gotMessage(i->from, i->to, i->replyTo, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->from->getFirstNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(i->from) + _T(": ") + i->msg);
 			}
 		}
 		delete i;
@@ -779,7 +789,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 		} else {
 			string::size_type end = x.find_first_of(_T(" >\t\r"), start+1);
 
-			if(end == string::npos) // get EOL as well
+			if(end == tstring::npos) // get EOL as well
 				end = x.length();
 			else if(end == start + 1)
 				return 0;
@@ -789,10 +799,10 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			if(pos != -1) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					// @todo PrivateFrame::openWindow((ctrlUsers.getItemData(pos))->user);
+					PrivateFrame::openWindow(ctrlUsers.getItemData(pos)->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
-						QueueManager::getInstance()->addList((ctrlUsers.getItemData(pos))->user, QueueItem::FLAG_CLIENT_VIEW);
+						QueueManager::getInstance()->addList(ctrlUsers.getItemData(pos)->user, QueueItem::FLAG_CLIENT_VIEW);
 					} catch(const Exception& e) {
 						addClientLine(Text::toT(e.getError()));
 					}
@@ -815,9 +825,9 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 	if(logMainChat) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		params["hub"] = client->getHubName();
-		params["hubaddr"] = client->getHubUrl();
-		params["mynick"] = client->getMyNick(); 
+		client->getHubIdentity().getParams(params, "hub");
+		params["hubURL"] = client->getHubUrl();
+		client->getMyIdentity().getParams(params, "my");
 		LOG(LogManager::CHAT, params);
 	}
 	
@@ -831,7 +841,7 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	tabMenuShown = true;
-	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, Text::toT(client->getHubUrl()), client->getMyIdentity().isOp());
+	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, client->getHubUrl());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -858,7 +868,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		tstring::size_type start = x.find_last_of(_T(" <\t\r"), ch) + 1;
 
 
-		string::size_type end = x.find_first_of(_T(" >\t"), start+1);
+		tstring::size_type end = x.find_first_of(_T(" >\t"), start+1);
 		if(end == string::npos) // get EOL as well
 			end = x.length();
 		else if(end == start + 1) {
@@ -920,7 +930,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		}
 
 		tabMenuShown = false;
-		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getHubUrl()), client->getMyIdentity().isOp());
+		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
 		checkAdcItems(userMenu);
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(userMenu);
@@ -937,10 +947,12 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 }
 
 void HubFrame::runUserCommand(::UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
 	client->getMyIdentity().getParams(ucParams, "my");
+	client->getHubIdentity().getParams(ucParams, "hub");
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
@@ -1232,12 +1244,8 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 }
 
 LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
 	if(!redirect.empty()) {
-		string s, f;
-		u_int16_t p = 411;
-		Util::decodeUrl(Text::fromT(redirect), s, p, f);
-		if(ClientManager::getInstance()->isConnected(s, p)) {
+		if(ClientManager::getInstance()->isConnected(Text::fromT(redirect))) {
 			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
 			return 0;
 		}
@@ -1294,7 +1302,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 		lastLinesList.erase(lastLinesList.begin());
 	lastLinesList.push_back(line);
 
-	if (BOOLSETTING(TAB_HUB_DIRTY)) {
+	if (BOOLSETTING(BOLD_HUB)) {
 		setDirty();
 	}
 	
@@ -1309,8 +1317,9 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		StringMap params;
-		params["hub"] = client->getHubName();
-		params["hubaddr"] = client->getHubUrl();
+		client->getHubIdentity().getParams(params, "hub");
+		params["hubURL"] = client->getHubUrl();
+		client->getMyIdentity().getParams(params, "my");
 		params["message"] = Text::fromT(aLine);
 		LOG(LogManager::STATUS, params);
 	}
@@ -1378,10 +1387,7 @@ void HubFrame::on(UserRemoved, Client*, const OnlineUser& user) throw() {
 }
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() { 
-	string s, f;
-	u_int16_t p = 411;
-	Util::decodeUrl(line, s, p, f);
-	if(ClientManager::getInstance()->isConnected(s, p)) {
+	if(ClientManager::getInstance()->isConnected(line)) {
 		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
 		return;
 	}
@@ -1422,7 +1428,7 @@ void HubFrame::on(StatusMessage, Client*, const string& line) {
 }
 
 void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() { 
-	speak(PRIVATE_MESSAGE, from, to, replyTo, Util::toDOS(line));
+	speak(PRIVATE_MESSAGE, from, to, replyTo, Util::toDOS("<" + from.getIdentity().getNick() + "> " + line));
 }
 void HubFrame::on(NickTaken, Client*) throw() { 
 	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));

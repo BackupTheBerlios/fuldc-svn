@@ -378,6 +378,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\CertificatesPage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\CommandDlg.cpp"
 				>
 			</File>
@@ -538,6 +542,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\windows\SystemFrame.cpp"
+				>
+			</File>
+			<File
 				RelativePath="windows\TextFrame.cpp"
 				>
 			</File>
@@ -624,6 +632,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\AppearancePage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\CertificatesPage.h"
 				>
 			</File>
 			<File
@@ -812,6 +824,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\SystemFrame.h"
 				>
 			</File>
 			<File

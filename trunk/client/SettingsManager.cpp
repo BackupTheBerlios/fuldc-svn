@@ -43,7 +43,8 @@ const string SettingsManager::settingTags[] =
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
-	
+	"SslPrivateKeyFile", "SslCertificateFile", "SslTrustedCertificatesPath",
+
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
 	"QueueFrameVisible", "DirectoryListingFrameVisible","FinishedVisible", "FinishedULVisible",
@@ -70,8 +71,8 @@ const string SettingsManager::settingTags[] =
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
-	"TabHubDirty", "TabPmDirty", "TabSearchDirty", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
-	"OpenWaitingUsers", "WaitingUsersDirty", 
+	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
+	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "HighPrioSample",
@@ -94,6 +95,21 @@ StringList SettingsManager::connectionSpeeds;
 
 SettingsManager::SettingsManager()
 {
+	connectionSpeeds.push_back("0.05");
+	connectionSpeeds.push_back("0.01");
+	connectionSpeeds.push_back("0.02");
+	connectionSpeeds.push_back("0.05");
+	connectionSpeeds.push_back("0.1");
+	connectionSpeeds.push_back("0.2");
+	connectionSpeeds.push_back("0.5");
+	connectionSpeeds.push_back("1");
+	connectionSpeeds.push_back("2");
+	connectionSpeeds.push_back("5");
+	connectionSpeeds.push_back("10");
+	connectionSpeeds.push_back("20");
+	connectionSpeeds.push_back("50");
+	connectionSpeeds.push_back("100");
+
 	for(int i=0; i<SETTINGS_LAST; i++)
 		isSet[i] = false;
 
@@ -136,22 +152,22 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_MAIN_CHAT, false);
 	setDefault(STATUS_IN_CHAT, true);
 	setDefault(SHOW_JOINS, false);
-//	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
+	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
 	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
 	setDefault(USE_SYSTEM_ICONS, true);
 	setDefault(USE_OEM_MONOFONT, false);
 	setDefault(POPUP_PMS, true);
 	setDefault(MIN_UPLOAD_SPEED, 0);
-	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
-	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
+	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time]");
+	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time]");
 	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_STATUS, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_SYSTEM, "[%Y-%m-%d %H:%M] %[message]");
-	setDefault(LOG_FILE_MAIN_CHAT, "%[hubaddr].log");
-	setDefault(LOG_FILE_STATUS, "%[hubaddr]_status.log");
-	setDefault(LOG_FILE_PRIVATE_CHAT, "%[user].log");
+	setDefault(LOG_FILE_MAIN_CHAT, "%[hubURL].log");
+	setDefault(LOG_FILE_STATUS, "%[hubURL]_status.log");
+	setDefault(LOG_FILE_PRIVATE_CHAT, "%[userNI].%[userCID].log");
 	setDefault(LOG_FILE_UPLOAD, "Uploads.log");
 	setDefault(LOG_FILE_DOWNLOAD, "Downloads.log");
 	setDefault(LOG_FILE_SYSTEM, "system.log");
@@ -216,17 +232,20 @@ SettingsManager::SettingsManager()
 	setDefault(NO_IP_OVERRIDE, false);
 	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
 	setDefault(LAST_SEARCH_TYPE, 0);
-	setDefault(FINISHED_DOWNLOAD_DIRTY, true);
-	setDefault(FINISHED_UPLOAD_DIRTY, true);
-	setDefault(QUEUE_DIRTY, true);
-	setDefault(TAB_HUB_DIRTY, true);
-	setDefault(TAB_SEARCH_DIRTY, true);
-	setDefault(TAB_PM_DIRTY, true);
 	setDefault(SOCKET_IN_BUFFER, 8192);
 	setDefault(SOCKET_OUT_BUFFER, 8192);
 	setDefault(ONLY_DL_TTH_FILES, false);
 	setDefault(OPEN_WAITING_USERS, false);
-	setDefault(WAITING_USERS_DIRTY, true);
+	setDefault(OPEN_SYSTEM_LOG, true);
+	setDefault(SSL_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "certs" PATH_SEPARATOR_STR);
+	setDefault(BOLD_FINISHED_DOWNLOADS, true);
+	setDefault(BOLD_FINISHED_UPLOADS, true);
+	setDefault(BOLD_QUEUE, true);
+	setDefault(BOLD_HUB, true);
+	setDefault(BOLD_PM, true);
+	setDefault(BOLD_SEARCH, true);
+	setDefault(BOLD_WAITING_USERS, true);
+	setDefault(BOLD_SYSTEM_LOG, true);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -348,8 +367,24 @@ void SettingsManager::load(string const& aFileName)
 		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
 
-		if(v <= 0.674 || CID(SETTING(CLIENT_ID)).isZero())
+		if(v <= 0.674 || CID(SETTING(CLIENT_ID)).isZero()) {
 			set(CLIENT_ID, CID::generate().toBase32());
+
+			// Formats changed, might as well remove these...
+			set(LOG_FORMAT_POST_DOWNLOAD, Util::emptyString);
+			set(LOG_FORMAT_POST_UPLOAD, Util::emptyString);
+			set(LOG_FORMAT_MAIN_CHAT, Util::emptyString);
+			set(LOG_FORMAT_PRIVATE_CHAT, Util::emptyString);
+			set(LOG_FORMAT_STATUS, Util::emptyString);
+			set(LOG_FORMAT_SYSTEM, Util::emptyString);
+			set(LOG_FILE_MAIN_CHAT, Util::emptyString);
+			set(LOG_FILE_STATUS, Util::emptyString);
+			set(LOG_FILE_PRIVATE_CHAT, Util::emptyString);
+			set(LOG_FILE_UPLOAD, Util::emptyString);
+			set(LOG_FILE_DOWNLOAD, Util::emptyString);
+			set(LOG_FILE_SYSTEM, Util::emptyString);
+		}
+
 
 #ifdef _DEBUG
 		set(CLIENT_ID, CID::generate().toBase32());

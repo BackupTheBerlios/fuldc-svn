@@ -52,7 +52,6 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
-		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDown)
 		CHAIN_MSG_MAP(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -63,18 +62,11 @@ public:
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		if(wParam == USER_UPDATED) {
-			///updateUser(((UserInfoBase*)lParam)->user);
-			delete (UserInfoBase*)lParam;
-		}
-		return 0;
-	}
-
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlUsers.SetFocus();
 		return 0;
@@ -88,7 +80,6 @@ private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_NICK = COLUMN_FIRST,
-		COLUMN_STATUS,
 		COLUMN_HUB,
 		COLUMN_SEEN,
 		COLUMN_DESCRIPTION,
@@ -115,16 +106,7 @@ private:
 
 		void remove() { FavoriteManager::getInstance()->removeFavoriteUser(user); }
 
-		void update(const FavoriteUser& u) {
-			columns[COLUMN_NICK] = Text::toT(u.getLastIdentity().getNick());
-			columns[COLUMN_STATUS] = u.getUser()->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
-			/** @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
-			if(!user->getLastHubAddress().empty()) {
-				columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
-			}
-			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));*/
-			columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
-		}
+		void update(const FavoriteUser& u);
 
 		tstring columns[COLUMN_LAST];
 	};
@@ -143,9 +125,10 @@ private:
 	// FavoriteManagerListener
 	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
 	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
+	virtual void on(StatusChanged, const User::Ptr& aUser) throw() { PostMessage(WM_SPEAKER, (WPARAM)USER_UPDATED, (LPARAM)new UserInfoBase(aUser)); }
 
 	void addUser(const FavoriteUser& aUser);
-	void updateUser(const FavoriteUser& aUser);
+	void updateUser(const User::Ptr& aUser);
 	void removeUser(const FavoriteUser& aUser);
 };
 

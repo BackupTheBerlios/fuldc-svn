@@ -826,7 +826,7 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 
 			xml->addTag("FileListing");
 			xml->addChildAttrib("Version", 1);
-			xml->addChildAttrib("CID", SETTING(CLIENT_ID));
+			xml->addChildAttrib("CID", ClientManager::getInstance()->getMe()->getCID().toBase32());
 			xml->addChildAttrib("Base", string("/"));
 			xml->addChildAttrib("Generator", string(APPNAME " " VERSIONSTRING));
 			xml->stepIn();
@@ -927,7 +927,7 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 
 	xml->addTag("FileListing");
 	xml->addChildAttrib("Version", 1);
-	xml->addChildAttrib("CID", SETTING(CLIENT_ID));
+	xml->addChildAttrib("CID", ClientManager::getInstance()->getMe()->getCID().toBase32());
 	xml->addChildAttrib("Base", dir);
 	xml->addChildAttrib("Generator", string(APPNAME " " VERSIONSTRING));
 	xml->stepIn();
