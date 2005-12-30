@@ -44,6 +44,7 @@ public:
 	static void openWindow(const User::Ptr& aUser, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 	static void closeAll();
+	static void closeAllOffline();
 
 	enum {
 		USER_UPDATED

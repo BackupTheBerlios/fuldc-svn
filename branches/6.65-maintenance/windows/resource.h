@@ -563,6 +563,7 @@
 #define IDC_SET_MINISLOT_SIZE           1330
 #define IDC_SETTINGS_TEXT_MINISLOT      1331
 #define IDC_SETTINGS_KB2                1332
+#define IDC_CLOSE_ALL_OFFLINE_PM        1333
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

@@ -732,6 +732,7 @@ string ResourceManager::strings[] = {
 "Re-add user to queue", 
 "Mute sounds when away mode is enabled", 
 "Detected a user trying to connect using a fake nick, nick=%s ip=%s", 
+"Close all offline PM windows", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1464,4 +1465,5 @@ string ResourceManager::names[] = {
 "ReaddSourceToQueue", 
 "MuteOnAway", 
 "DropFakeNickConnectionLog", 
+"MenuCloseAllOfflinePm", 
 };

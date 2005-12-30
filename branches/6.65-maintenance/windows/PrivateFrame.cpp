@@ -601,9 +601,15 @@ LRESULT PrivateFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 }
 
 void PrivateFrame::closeAll(){
-	FrameMap::iterator i = frames.begin();
-	for(; i != frames.end(); ++i)
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
 		i->second->PostMessage(WM_CLOSE, 0, 0);
+}
+
+void PrivateFrame::closeAllOffline() {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i) {
+		if(i->second->offline)
+			i->second->PostMessage(WM_CLOSE, 0, 0);
+	}
 }
 
 void PrivateFrame::readLog() {
