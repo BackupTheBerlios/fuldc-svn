@@ -80,7 +80,7 @@ const string& QueueItem::getTempTarget() {
 			if(target.length() >= 3 && target[1] == ':' && target[2] == '\\')
 				sm["targetdrive"] = target.substr(0, 3);
 			else
-				sm["targetdrive"] = Util::getAppPath().substr(0, 3);
+				sm["targetdrive"] = Util::getConfigPath().substr(0, 3);
 			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
 #else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
@@ -101,7 +101,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 		if( (aTarget.find("sample") != string::npos || aTarget.find("subs") != string::npos) && (p !=  QueueItem::HIGHEST) )
 			p = QueueItem::HIGH;
 	}
-
+	
 	QueueItem* qi = new QueueItem(aTarget, aSize, p, aFlags, aDownloadedBytes, aAdded, root);
 
 	if(!qi->isSet(QueueItem::FLAG_USER_LIST)) {
@@ -323,7 +323,7 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queue.xml"), dirty(true), nextSearch(0),
+QueueManager::QueueManager() : lastSave(0), queueFile(Util::getConfigPath() + "Queue.xml"), dirty(true), nextSearch(0),
 	lastSearchAlternates(0){ 
 
 	TimerManager::getInstance()->addListener(this); 
@@ -331,7 +331,7 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queu
 	ClientManager::getInstance()->addListener(this);
 
 	regexp.Init("[Rr0-9][Aa0-9][Rr0-9]");
-	File::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
+	File::ensureDirectory(Util::getConfigPath() + FILELISTS_DIR);
 }
 
 QueueManager::~QueueManager() throw() { 
@@ -342,7 +342,7 @@ QueueManager::~QueueManager() throw() {
 	saveQueue();
 
 	if(!BOOLSETTING(KEEP_LISTS)) {
-		string path = Util::getAppPath() + FILELISTS_DIR;
+		string path = Util::getConfigPath() + FILELISTS_DIR;
 
 #ifdef _WIN32
 		WIN32_FIND_DATA data;
@@ -421,7 +421,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 }
 
 void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
-	string target = Util::getAppPath() + "FileLists\\" + Util::validateFileName(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
+	string target = Util::getConfigPath() + FILELISTS_DIR + Util::validateFileName(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
 
 	add(target, -1, NULL, aUser, USER_LIST_NAME, true, QueueItem::FLAG_USER_LIST | aFlags);
 }

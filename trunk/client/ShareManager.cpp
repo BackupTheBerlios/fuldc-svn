@@ -72,7 +72,7 @@ ShareManager::~ShareManager() {
 	WIN32_FIND_DATA data;
 	HANDLE hFind;
 
-	hFind = FindFirstFile(Text::toT(Util::getAppPath() + "files*.xml.bz2").c_str(), &data);
+	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "files*.xml.bz2").c_str(), &data);
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if(_tcslen(data.cFileName) > 13) // length of "files.xml.bz2"
@@ -82,7 +82,7 @@ ShareManager::~ShareManager() {
 		FindClose(hFind);
 	}
 
-	hFind = FindFirstFile(Text::toT(Util::getAppPath() + "MyList*.DcLst").c_str(), &data);
+	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "MyList*.DcLst").c_str(), &data);
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			File::deleteFile(Util::getAppPath() + Text::fromT(data.cFileName));			
@@ -97,7 +97,7 @@ ShareManager::~ShareManager() {
 		while (struct dirent* ent = readdir(dir)) {
 			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0 ||
 				fnmatch("MyList*.DcLst", ent->d_name, 0) == 0) {
-					File::deleteFile(Util::getAppPath() + ent->d_name);	
+					File::deleteFile(Util::getConfigPath() + ent->d_name);	
 				}
 		}
 		closedir(dir);
@@ -835,7 +835,7 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 				i->second->toXml(xml, true);
 			}
 			
-			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
+			string newXmlName = Util::getConfigPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
 				File f(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE);
 				// We don't care about the leaves...
@@ -862,8 +862,8 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 				File::deleteFile(getBZXmlFile());
 			}
 			try {
-				File::renameFile(newXmlName, Util::getAppPath() + "files.xml.bz2");
-				newXmlName = Util::getAppPath() + "files.xml.bz2";
+				File::renameFile(newXmlName, Util::getConfigPath() + "files.xml.bz2");
+				newXmlName = Util::getConfigPath() + "files.xml.bz2";
 			} catch(const FileException&) {
 				// Ignore, this is for caching only...
 			}
@@ -892,7 +892,7 @@ void ShareManager::generateNmdcList(bool force /* = false */) {
 				i->second->toNmdc(tmp, indent, tmp2);
 			}
 
-			string newName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".DcLst";
+			string newName = Util::getConfigPath() + "MyList" + Util::toString(listN) + ".DcLst";
 			tmp2.clear();
 			CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 			File(newName, File::WRITE, File::CREATE | File::TRUNCATE).write(tmp2);
@@ -903,8 +903,8 @@ void ShareManager::generateNmdcList(bool force /* = false */) {
 				File::deleteFile(getListFile());
 			}
 			try {
-				File::renameFile(newName, Util::getAppPath() + "MyList.DcLst");
-				newName = Util::getAppPath() + "MyList.DcLst";
+				File::renameFile(newName, Util::getConfigPath() + "MyList.DcLst");
+				newName = Util::getConfigPath() + "MyList.DcLst";
 			} catch(const FileException&) {
 			}
 			lFile = new File(newName, File::READ, File::OPEN);
@@ -1511,7 +1511,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const T
         Directory::File::Iter i = d->findFile(Util::getFileName(fname));
 		if(i != d->files.end()) {
 			if(root != i->getTTH())
-			removeTTH(i->getTTH(), i);
+				removeTTH(i->getTTH(), i);
 			// Get rid of false constness...
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
 			f->setTTH(root);

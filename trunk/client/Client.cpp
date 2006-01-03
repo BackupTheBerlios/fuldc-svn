@@ -52,6 +52,8 @@ void Client::reloadSettings() {
 	} else {
 		getMyIdentity().setNick(checkNick(SETTING(NICK)));
 	}
+	getMyIdentity().setUser(ClientManager::getInstance()->getMe());
+	getMyIdentity().setHubUrl(getHubUrl());
 }
 
 void Client::connect() {

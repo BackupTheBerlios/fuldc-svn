@@ -111,6 +111,7 @@ public:
 	GS(Ip, "I4")
 	GS(UdpPort, "U4")
 	GS(Email, "EM")
+	GS(Connection, "CO")
 
 	void setBytesShared(const string& bs) { set("SS", bs); }
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
@@ -118,6 +119,8 @@ public:
 	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 
 	string getTag() const { 
+		if(!get("TA").empty())
+			return get("TA");
 		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
 			return Util::emptyString;
 		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" + 
@@ -142,8 +145,9 @@ public:
 		else
 			info[*(short*)name] = val;
 	}
-	
-	void getParams(StringMap& map, const string& prefix) const;
+
+	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
+	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubUrl, HubUrl);
 	//oops same as a macro, well it works for now since they're equal

@@ -128,7 +128,7 @@ private:
 				StringComp& operator=(const StringComp&);
 			};
 			struct FileLess {
-				bool operator()(const File& a, const File& b) const { return (Util::stricmp(a.getName(), b.getName()) == -1); }
+				bool operator()(const File& a, const File& b) const { return (Util::stricmp(a.getName(), b.getName()) < 0); }
 			};
 			typedef set<File, FileLess> Set;
 			typedef Set::iterator Iter;

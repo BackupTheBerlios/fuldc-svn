@@ -430,7 +430,7 @@ void DirectoryListingFrame::downloadList(const tstring& aTarget, bool view /* = 
 				if(view) {
 					File::deleteFile(Text::fromT(target) + Util::validateFileName(ii->file->getName()));
 				}
-				dl->download(ii->file, Text::fromT(target + ii->getText(COLUMN_FILENAME)), view, WinUtil::isShift());
+				dl->download(ii->file, Text::fromT(target + ii->getText(COLUMN_FILENAME)), view, WinUtil::isShift() || view);
 			} else if(!view) {
 				dl->download(ii->dir, Text::fromT(target), WinUtil::isShift());
 			} 
@@ -504,7 +504,7 @@ LRESULT DirectoryListingFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 LRESULT DirectoryListingFrame::onListDiff(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring file;
-	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getAppPath() + "FileLists\\"), _T("File Lists\0*.xml.bz2\0All Files\0*.*\0"))) {
+	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), _T("File Lists\0*.xml.bz2\0All Files\0*.*\0"))) {
 		DirectoryListing dirList(dl->getUser());
 		dirList.loadFile(Text::fromT(file));
 		dl->getRoot()->filterList(dirList);
@@ -527,7 +527,7 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 		fullPath = Text::toT(dl->getPath(ii->file));
 		DirectoryListing::Directory* pd = ii->file->getParent();
 		while(pd != NULL && pd != dl->getRoot()) {
-			fullPath = _T("\\") + Text::toT(pd->getName()) + fullPath;
+			fullPath = Text::toT(pd->getName()) + _T("\\") + fullPath;
 			pd = pd->getParent();
 		}
 		fullPath.erase(0, 1);
@@ -969,9 +969,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 			if(hash != NULL) {
 				ucParams["fileTR"] = hash->toBase32();
 			}
-		}
-		else
-		{
+		} else {
 			ucParams["type"] = "Directory";
 			ucParams["fileFN"] = dl->getPath(ii->dir) + ii->dir->getName();
 			ucParams["fileSI"] = Util::toString(ii->dir->getTotalSize());
@@ -980,7 +978,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 		StringMap tmp = ucParams;
 		User::Ptr tmpPtr = dl->getUser();
-		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp);
+		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
 	}
 }
 

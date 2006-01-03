@@ -88,7 +88,7 @@ void Util::initialize() {
 	try {
 		// This product includes GeoIP data created by MaxMind, available from http://maxmind.com/
 		// Updates at http://www.maxmind.com/app/geoip_country
-		string file = Util::getAppPath() + "GeoIpCountryWhois.csv";
+		string file = Util::getDataPath() + "GeoIpCountryWhois.csv";
 		string data = File(file, File::READ, File::OPEN).read();
 
 		const char* start = data.c_str();
@@ -122,12 +122,31 @@ string Util::getConfigPath() {
 		char* home = getenv("HOME");
 		if (home) {
 #ifdef __APPLE__
+/// @todo Verify this for apple?
 			return string(home) + "/Library/Application Support/Mac DC++/";
 #else
 			return string(home) + "/.dc++/";
 #endif // __APPLE__
 		}
 		return emptyString;
+#endif // _WIN32
+}
+
+string Util::getDataPath() {
+#ifdef _WIN32
+	return getAppPath();
+#else
+	// This probably ought to be /usr/share/*...
+	char* home = getenv("HOME");
+	if (home) {
+#ifdef __APPLE__
+		/// @todo Verify this for apple?
+		return string(home) + "/Library/Application Support/Mac DC++/";
+#else
+		return string(home) + "/.dc++/";
+#endif // __APPLE__
+	}
+	return emptyString;
 #endif // _WIN32
 }
 
@@ -970,7 +989,7 @@ string Util::toDOS(const string& tmp) {
 	return tmp2;
 }
 
-wstring Util::getShortTimeString() {
+wstring Util::getShortTimeString(time_t t) {
 	if(SETTING(TIME_STAMPS_FORMAT).empty())
 		return Util::emptyStringW;
 
@@ -981,8 +1000,7 @@ wstring Util::getShortTimeString() {
 
 	AutoArray<wchar_t> buf(bufSize);
 
-	time_t _tt = time(NULL);
-	tm* _tm = localtime(&_tt);
+	tm* _tm = localtime(&t);
 	if(_tm == NULL) {
 		return Util::emptyStringW;
 	} else {

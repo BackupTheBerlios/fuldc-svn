@@ -75,7 +75,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 
 	if(firstException) {
-		File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
+		File::deleteFile(Util::getConfigPath() + "exceptioninfo.txt");
 		firstException = false;
 	}
 
@@ -89,7 +89,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 	}
 
-	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
+	File f(Util::getConfigPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
 	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
@@ -120,7 +120,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
     f.write(LIT("\r\n"));
 
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
-	
+
+	f.write(LIT("\r\n"));
+
 	f.close();
 
 	MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of fulDC. A file named \"exceptioninfo.txt\" has been generated in the same directory as fulDC. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed."), _T("fulDC Has Crashed"), MB_OK | MB_ICONERROR);

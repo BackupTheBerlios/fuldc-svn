@@ -346,7 +346,7 @@ private:
 		removeListeners();
 		BufferedSocket::putSocket(socket);
 	};
-	friend struct DeleteFunction<UserConnection*>;
+	friend struct DeleteFunction;
 
 	UserConnection(const UserConnection&);
 	UserConnection& operator=(const UserConnection&);

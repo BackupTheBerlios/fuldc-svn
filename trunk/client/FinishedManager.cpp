@@ -24,8 +24,8 @@
 
 FinishedManager::~FinishedManager() throw() {
 	Lock l(cs);
-	for_each(downloads.begin(), downloads.end(), DeleteFunction<FinishedItem*>());
-	for_each(uploads.begin(), uploads.end(), DeleteFunction<FinishedItem*>());
+	for_each(downloads.begin(), downloads.end(), DeleteFunction());
+	for_each(uploads.begin(), uploads.end(), DeleteFunction());
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
 
@@ -53,7 +53,7 @@ void FinishedManager::removeAll(bool upload /* = false */) {
 	{
 		Lock l(cs);
 		FinishedItem::List *listptr = upload ? &uploads : &downloads;
-		for_each(listptr->begin(), listptr->end(), DeleteFunction<FinishedItem*>());
+		for_each(listptr->begin(), listptr->end(), DeleteFunction());
 		listptr->clear();
 	}
 	if (!upload)

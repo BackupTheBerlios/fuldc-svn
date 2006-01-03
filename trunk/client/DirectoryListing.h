@@ -93,8 +93,8 @@ public:
 			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
 		
 		virtual ~Directory() {
-			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
-			for_each(files.begin(), files.end(), DeleteFunction<File*>());
+			for_each(directories.begin(), directories.end(), DeleteFunction());
+			for_each(files.begin(), files.end(), DeleteFunction());
 		}
 
 		size_t getTotalFileCount(bool adls = false);		

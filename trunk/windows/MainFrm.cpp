@@ -531,9 +531,9 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
 	} else if(wParam == STATUS_MESSAGE) {
-		tstring* msg = (tstring*)lParam;
+		auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)lParam);
 		if(ctrlStatus.IsWindow()) {
-			tstring line = _T("[") + Util::getShortTimeString() + _T("] ") + *msg;
+			tstring line = _T("[") + Util::getShortTimeString(msg->first) + _T("] ") + msg->second;
 
 			ctrlStatus.SetText(0, line.c_str());
 			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
@@ -544,7 +544,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 				lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
 			}
 		}
-		delete msg;
 	} else if(wParam == DOWNLOAD_COMPLETE) {
 		PopupManager::getInstance()->ShowDownloadComplete((tstring*)lParam);
 	} else if(wParam == WM_CLOSE) {
@@ -991,7 +990,7 @@ static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0
 
 LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring file;
-	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getAppPath() + "FileLists\\"), types)) {
+	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), types)) {
 		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if(u) {
 			DirectoryListingFrame::openWindow(file, u);

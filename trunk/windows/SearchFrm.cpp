@@ -461,15 +461,14 @@ LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
 
 		ctrlStatus.SetText(1, buf);
-
 		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
 	} else {
 		if(timerID != 0) {
 			KillTimer(timerID);
 			timerID = 0;
 		}
-		ctrlStatus.SetText(1, (TSTRING(SEARCHING_READY)).c_str());
 
+		ctrlStatus.SetText(1, (TSTRING(SEARCHING_READY)).c_str());
 		SetWindowText((TSTRING(SEARCH) + _T(" - ") + TSTRING(SEARCHING_READY)).c_str());
 	}
 	return 0;
@@ -864,7 +863,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		}
 
 		StringMap tmp = ucParams;
-		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp);
+		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp, true);
 	}
 	return;
 };

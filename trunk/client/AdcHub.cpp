@@ -112,6 +112,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	dcdebug("%s %s\n", u.getUser()->getCID().toBase32().c_str(), ClientManager::getInstance()->getMe()->getCID().toBase32().c_str());
 	if(u.getUser() == ClientManager::getInstance()->getMe()) {
 		state = STATE_NORMAL;
+		setMyIdentity(u.getIdentity());
 	}
 	fire(ClientListener::UserUpdated(), this, u);
 }

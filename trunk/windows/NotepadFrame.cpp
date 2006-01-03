@@ -43,7 +43,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	string tmp;
 	try {
-		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ, File::OPEN).read();
+		tmp = File(Util::getNotepadFile(), File::READ, File::OPEN).read();
 	} catch(const FileException&) {
 		// ...
 	}
@@ -73,7 +73,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {
 			string tmp( Text::wideToAcp(  tstring( buf, ctrlPad.GetWindowTextLength() ) ) );
-			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
+			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
 		} catch(const FileException&) {
 			// Oops...
 		}

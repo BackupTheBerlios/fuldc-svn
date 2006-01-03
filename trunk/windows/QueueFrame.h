@@ -411,7 +411,7 @@ private:
 			clearTree(next);
 			next = ctrlDirs.GetNextSiblingItem(next);
 		}
-		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(item));
+		delete (tstring*)ctrlDirs.GetItemData(item);
 	}
 
 	void removeSelected() {

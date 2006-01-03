@@ -98,11 +98,13 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 			return *i->second;
 
 		User::Ptr p;
-		if(aNick == getMyNick())
+		if(aNick == getMyNick()) {
 			p = ClientManager::getInstance()->getMe();
-		else
+			getMyIdentity().setUser(p);
+			getMyIdentity().setHubUrl(getHubUrl());
+		} else {
 			p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
-
+		}
 		u = users.insert(make_pair(aNick, new OnlineUser(p, *this))).first->second;
 		u->getIdentity().setNick(aNick);
 		u->getIdentity().setShortNick(aNick);
@@ -166,8 +168,17 @@ void NmdcHub::updateFromTag(Identity& id, const string& tag) {
 			string::size_type j = i->find("V:");
 			i->erase(i->begin() + j, i->begin() + j + 2);
 			id.set("VE", *i);
+		} else if(i->compare(0, 2, "M:") == 0) {
+			if(i->size() == 3) {
+				if((*i)[2] == 'A')
+					id.getUser()->unsetFlag(User::PASSIVE);
+				else
+					id.getUser()->setFlag(User::PASSIVE);
+			}
 		}
 	}
+	/// @todo Think about this
+	id.set("TA", tag);
 }
 
 void NmdcHub::onLine(const string& aLine) throw() {
@@ -323,7 +334,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(j == string::npos)
 			return;
 
-		/// @todo u->setConnection(param.substr(i, j-i-1));
+		u.getIdentity().setConnection(param.substr(i, j-i-1));
 		i = j + 1;
 		j = param.find('$', i);
 
@@ -338,6 +349,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		u.getIdentity().setBytesShared(param.substr(i, j-i));
 
+		if(u.getUser() == getMyIdentity().getUser())
+			setMyIdentity(u.getIdentity());
+		
 		fire(ClientListener::UserUpdated(), this, u);
 	} else if(cmd == "$Quit") {
 		if(!param.empty()) {

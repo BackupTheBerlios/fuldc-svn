@@ -218,7 +218,7 @@ private:
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const UpdateInfo& u, bool aStripIsp) : UserInfoBase(u.user), op(false), hidden(false), stripIsp(aStripIsp) { 
+		UserInfo(const UpdateInfo& u, bool aStripIsp) : UserInfoBase(u.user), stripIsp(aStripIsp) { 
 			update(u.identity, -1); 
 		};
 
@@ -228,9 +228,9 @@ private:
 
 		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
 			if(col == COLUMN_NICK) {
-				if(a->getOp() && !b->getOp()) {
+				if(a->getIdentity().isOp() && !b->getIdentity().isOp()) {
 					return -1;
-				} else if(!a->getOp() && b->getOp()) {
+				} else if(!a->getIdentity().isOp() && b->getIdentity().isOp()) {
 					return 1;
 				}
 			}
@@ -244,8 +244,6 @@ private:
 
 		tstring columns[COLUMN_LAST];
 		GETSET(Identity, identity, Identity);
-		GETSET(bool, op, Op);
-		GETSET(bool, hidden, Hidden);
 		bool stripIsp;
 	};
 
@@ -443,6 +441,7 @@ private:
 	void updateUserList();
 	bool parseFilter(int& mode, int64_t& size);
 	void addAsFavorite();
+	void removeFavoriteHub();
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);
 
 	void clearUserList();

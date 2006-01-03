@@ -279,6 +279,8 @@ void HubFrame::onEnter() {
 				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + Util::toString(SearchManager::getInstance()->getPort()))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
+			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
+				removeFavoriteHub();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
 				UserInfo * ui = findUser(param);
 				if(ui != NULL)
@@ -434,6 +436,16 @@ void HubFrame::addAsFavorite() {
 	}
 }
 
+void HubFrame::removeFavoriteHub() {
+	FavoriteHubEntry* removeHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
+	if(removeHub) {
+		FavoriteManager::getInstance()->removeFavorite(removeHub);
+		addClientLine(TSTRING(FAVORITE_HUB_REMOVED));
+	} else {
+		addClientLine(TSTRING(FAVORITE_HUB_DOES_NOT_EXIST));
+	}
+}
+
 LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	if(client->isConnected() && item->iItem != -1) {
@@ -495,7 +507,7 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 }
 
 bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
-	bool needsSort = (op != identity.isOp());
+	bool needsSort = (getIdentity().isOp() != identity.isOp());
 	tstring old;
 	if(sortCol != -1)
 		old = columns[sortCol];
@@ -506,11 +518,8 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	columns[COLUMN_TAG] = Text::toT(identity.getTag());
 	columns[COLUMN_ISP] = Text::toT(identity.getISP());
 	columns[COLUMN_IP] = Text::toT(identity.getIp());
-	/// @todo columns[COLUMN_CONNECTION] = Text::toT(i->getConnection());
+	columns[COLUMN_CONNECTION] = Text::toT(identity.getConnection());
 	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
-
-	op = identity.isOp();
-	hidden = identity.isHidden();
 
 	if(sortCol != -1) {
 		needsSort = needsSort || (old != columns[sortCol]);
@@ -825,9 +834,9 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 	if(logMainChat) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		client->getHubIdentity().getParams(params, "hub");
+		client->getHubIdentity().getParams(params, "hub", false);
 		params["hubURL"] = client->getHubUrl();
-		client->getMyIdentity().getParams(params, "my");
+		client->getMyIdentity().getParams(params, "my", true);
 		LOG(LogManager::CHAT, params);
 	}
 	
@@ -951,8 +960,8 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
-	client->getMyIdentity().getParams(ucParams, "my");
-	client->getHubIdentity().getParams(ucParams, "hub");
+	client->getMyIdentity().getParams(ucParams, "my", true);
+	client->getHubIdentity().getParams(ucParams, "hub", false);
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
@@ -963,7 +972,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
 			StringMap tmp = ucParams;
 
-			u->getIdentity().getParams(tmp, "user");
+			u->getIdentity().getParams(tmp, "user", true);
 			client->escapeParams(tmp);
 			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); 
 		}
@@ -1317,9 +1326,9 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		StringMap params;
-		client->getHubIdentity().getParams(params, "hub");
+		client->getHubIdentity().getParams(params, "hub", false);
 		params["hubURL"] = client->getHubUrl();
-		client->getMyIdentity().getParams(params, "my");
+		client->getMyIdentity().getParams(params, "my", true);
 		params["message"] = Text::fromT(aLine);
 		LOG(LogManager::STATUS, params);
 	}

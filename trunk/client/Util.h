@@ -178,18 +178,7 @@ public:
 #endif // _WIN32
 	}	
 
-	/**
-	 * Get the path to where the applications settings.
-	 * 
-	 * @return Path to settings directory.
-	 */
-	static string getConfigPath();
-
-	/**
-	 * Get the directory for temporary files.
-	 *
-	 * @return Path to temp directory.
-	 */
+	/** Path of temporary storage */
 	static string getTempPath() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
@@ -200,24 +189,19 @@ public:
 #endif
 	}
 
-	/**
-	 * Get the directory to the application resources.
-	 *
-	 * @todo On non Windows system this still returns the path to the
-	 * configuration directory. Later this will be completed with a patch for
-	 * Mac OS X. And the Linux(?) implementation is also wrong right now.
-	 * @return Path to resource directory.
-	 */
-	static string getDataPath() {
-#ifdef _WIN32
-		return getAppPath();
-#else
-		char* home = getenv("HOME");
-		if (home) {
-			return string(home) + "/.dc++/";
-		}
-		return emptyString;
-#endif
+	/** Path of resource directory */
+	static string getDataPath();
+
+	/** Path of configuration files */
+	static string getConfigPath();
+
+	/** Path of file lists */
+	static string getListPath() {
+		return getConfigPath() + "FileLists" PATH_SEPARATOR_STR;
+	}
+	/** Notepad filename */
+	static string getNotepadFile() {
+		return getConfigPath() + "Notepad.txt";
 	}
 
 	static string translateError(int aError) {
@@ -301,7 +285,7 @@ public:
 
 	static string toDOS(const string& tmp);
 
-	static wstring getShortTimeString();
+	static wstring getShortTimeString(time_t t = time(NULL) );
 
 	static tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
 	static string replace(const string& aString, const string& fStr, const string& rStr);

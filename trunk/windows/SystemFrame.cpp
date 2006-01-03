@@ -34,12 +34,12 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
 
-	deque<string> oldMessages = LogManager::getInstance()->getLastLogs();
+	deque<pair<time_t, string> > oldMessages = LogManager::getInstance()->getLastLogs();
 	// Technically, we might miss a message or two here, but who cares...
 	LogManager::getInstance()->addListener(this);
 
-	for(deque<string>::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
-		addLine(Text::toT(*i));
+	for(deque<pair<time_t, string> >::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
+		addLine(i->first, Text::toT(i->second));
 	}
 
 	bHandled = FALSE;
@@ -87,16 +87,16 @@ LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 }
 
 LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	auto_ptr<tstring> msg((tstring*)wParam);
+	auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)wParam);
 	
-	addLine(*msg);
+	addLine(msg->first, msg->second);
 	if(BOOLSETTING(BOLD_SYSTEM_LOG))
 		setDirty();
 	return 0;
 }
 
-void SystemFrame::addLine(const tstring& msg) {
-	ctrlPad.AppendText((_T("\r\n[") + Util::getShortTimeString() + _T("] ") + msg).c_str());
+void SystemFrame::addLine(time_t t, const tstring& msg) {
+	ctrlPad.AppendText((_T("\r\n[") + Util::getShortTimeString(t) + _T("] ") + msg).c_str());
 
 }
 /**

@@ -73,13 +73,13 @@ public:
 	void putOnline(OnlineUser& ou) throw();
 	void putOffline(OnlineUser& ou) throw();
 
-	User::Ptr& getMe() { return me; }
+	User::Ptr& getMe();
 	
 	void connect(const User::Ptr& p);
 	void send(AdcCommand& c);
 	void privateMessage(const User::Ptr& p, const string& msg);
 
-	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params);
+	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility);
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 	
@@ -133,7 +133,7 @@ private:
 		TimerManager::getInstance()->removeListener(this); 
 	}
 
-	string getUsersFile() { return Util::getAppPath() + "Users.xml"; }
+	string getUsersFile() { return Util::getConfigPath() + "Users.xml"; }
 
 	// SettingsManagerListener
 	virtual void on(Load, SimpleXML*) throw();

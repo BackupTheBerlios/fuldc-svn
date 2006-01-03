@@ -105,6 +105,9 @@
 		<String Name="EnterServer">Please enter a destination server</String>
 		<String Name="Errors">Errors</String>
 		<String Name="ErrorCreatingHashDataFile">Error creating hash data file: </String>
+		<String Name="ErrorCreatingRegistryKeyAdc">Error creating adc registry key</String>
+		<String Name="ErrorCreatingRegistryKeyDchub">Error creating dchub registry key</String>
+		<String Name="ErrorCreatingRegistryKeyMagnet">Error creating magnet registry key</String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
@@ -113,8 +116,10 @@
 		<String Name="FavoriteDirNameLong">Under what name you see the directory</String>
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
 		<String Name="FavoriteHubAlreadyExists">Hub already exists as a favorite</String>
+		<String Name="FavoriteHubDoesNotExist">This hub is not a favorite hub</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
+		<String Name="FavoriteHubRemoved">Favorite hub removed</String>
 		<String Name="FavoriteHubs">Favorite Hubs</String>
 		<String Name="FavoriteUserAdded">Favorite user added</String>
 		<String Name="FavoriteUsers">Favorite Users</String>
@@ -147,7 +152,9 @@
 		<String Name="HashProgressBackground">Run in background</String>
 		<String Name="HashProgressStats">Statistics</String>
 		<String Name="HashProgressText">Please wait while DC++ indexes your files (they won't be shared until they've been indexed)...</String>
+		<String Name="HashReadFailed">Unable to read hash data file</String>
 		<String Name="HashRebuilt">Hash database rebuilt</String>
+		<String Name="HashingFailed">Hashing failed: </String>
 		<String Name="HashingFinished">Finished hashing: </String>
 		<String Name="High">High</String>
 		<String Name="Highest">Highest</String>
@@ -166,7 +173,7 @@
 		<String Name="InvalidListname">Invalid file list name</String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>
-		<String Name="InvalidTree">Downloaded tree does not match TTH root</String>
+		<String Name="InvalidTree">Full tree does not match TTH root</String>
 		<String Name="Ip">IP: </String>
 		<String Name="IpBare">IP</String>
 		<String Name="Items">Items</String>
@@ -341,8 +348,8 @@
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
-		<String Name="SettingsAutoUpdateList">Automatically refresh share</String>
 		<String Name="SettingsAutoOpen">Auto-open at startup</String>
+		<String Name="SettingsAutoRefreshTime">Auto refresh time</String>
 		<String Name="SettingsBindAddress">Bind address</String>
 		<String Name="SettingsBoldOptions">Tab bolding on content change</String>
 		<String Name="SettingsCertificates">DC++\Advanced\Security Certificates</String>
@@ -587,6 +594,7 @@
 		<String Name="SettingsFulTabs">fulDC\Appearance\Tabs</String>
 		<String Name="SettingsFulPopup">fulDC\Appearance\Popups</String>
 		<String Name="SettingsAutoUpdateIncoming">Automatically refresh incoming</String>
+		<String Name="SettingsAutoUpdateList">Automatically refresh share</String>
 		<String Name="SettingsSbSkiplistDownload">Skiplist</String>
 		<String Name="SettingsStSkiplistDownload">Skiplist (separate files with |):</String>
 		<String Name="SettingsSbSkiplistShare">Skiplist</String>
