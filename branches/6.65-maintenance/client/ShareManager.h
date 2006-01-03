@@ -158,6 +158,14 @@ private:
 		typedef HASH_MAP<string, Ptr> Map;
 		typedef Map::iterator MapIter;
 
+		struct StringComp {
+			StringComp(const string& match): a(match) { }
+			bool operator () (const pair<string, Ptr>& b) const { return Util::stricmp(a, b.first) == 0; }
+		private:
+			const string& a;
+			StringComp& operator=(const StringComp&);
+		};
+
 		int64_t size;
 		Map directories;
 		File::Set files;

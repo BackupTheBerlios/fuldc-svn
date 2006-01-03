@@ -310,7 +310,11 @@ public:
 		T* item = NULL;
 
 		while(( i = GetNextItem(i, LVNI_SELECTED)) != -1) {
+			if(i < 0 || i >= GetItemCount())
+				return;
+
 			item = getItemData(i);
+			
 			if(!item)
 				continue;
 
@@ -326,8 +330,10 @@ public:
 			buf += _T("\r\n");
 		}
 
-		buf.erase(buf.size()-2, 2);
-		WinUtil::setClipboard(buf);
+		if(!buf.empty()) {
+				buf.erase(buf.size()-2, 2);
+			WinUtil::setClipboard(buf);
+		}
 	}
 
 	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {

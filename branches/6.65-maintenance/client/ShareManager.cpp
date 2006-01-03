@@ -694,15 +694,12 @@ int ShareManager::run() {
 			{
 				RLock<> l(cs);
 				for(StringIter j = refreshPaths.begin(); j != refreshPaths.end(); ++j){
-					//find() is case sensitive...
-					Directory::MapIter i = directories.begin();
-					for(; i != directories.end(); ++i) {
-						if(Util::stricmp(i->first, *j) == 0) {
-							Directory* dp = buildTree(i->first, NULL);
-							dp->setName(findVirtual(i->first)->first);
-							newDirs.insert(make_pair(i->first, dp));
-							break;
-						}
+					Directory::MapIter i = find_if(directories.begin(), directories.end(), Directory::StringComp(*j));
+					if(i != directories.end()) {
+						dcdebug("Found a matching dir( %s ), refreshing it now\r\n", i->first.c_str());
+						Directory* dp = buildTree(i->first, NULL);
+						dp->setName(findVirtual(i->first)->first);
+						newDirs.insert(make_pair(i->first, dp));
 					}
 				}
 			}
@@ -1753,11 +1750,7 @@ bool ShareManager::refresh( const string& aDir ){
 	{
 		RLock<> l(cs);
 
-		Directory::MapIter i = directories.begin();
-		for(; i != directories.end(); ++i) {
-			if(Util::stricmp(i->first, path) == 0)
-				break;
-		}
+		Directory::MapIter i = find_if(directories.begin(), directories.end(), Directory::StringComp(path));
 
 		if( i == directories.end() ) {
 			for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
