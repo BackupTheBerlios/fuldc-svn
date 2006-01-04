@@ -438,7 +438,7 @@ private:
 
 	bool updateUser(const User::Ptr& u);
 	void removeUser(const User::Ptr& u);
-	void updateUserList();
+	void updateUserList(UserInfo* ui = NULL);
 	bool parseFilter(int& mode, int64_t& size);
 	void addAsFavorite();
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);

@@ -447,7 +447,7 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 			//the user might have updated something that should
 			//be filtered
 			if(!filter.empty())
-				updateUserList();
+				updateUserList(ui);
 
 			return false;
 		}
@@ -464,22 +464,8 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 	
 	UserInfo *ui = new UserInfo(u, stripIsp);
 	usermap.insert( UserPair(Text::toT(Text::toLower(u->getShortNick())), ui) );
-	bool add = false;
 	
-	if(filter.empty()){
-		add = true;
-	}else {
-		int64_t size;
-		int mode;
-		int sel = ctrlFilterSel.GetCurSel();
-		bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
-		
-		add = matchFilter(*ui, sel, doSizeCompare, mode, size);
-	}
-	
-	if( add ){
-		ctrlUsers.insertItem(ui, getImage(u));
-	}
+	updateUserList(ui);
 
 	return true;
 }
@@ -1543,11 +1529,8 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 	return true;
 }
 
-void HubFrame::updateUserList() {
+void HubFrame::updateUserList(UserInfo* ui) {
 	Lock l(updateCS);
-
-	ctrlUsers.SetRedraw(FALSE);
-	ctrlUsers.DeleteAllItems();
 
 	int64_t size = -1;
 	int mode = -1;
@@ -1556,24 +1539,46 @@ void HubFrame::updateUserList() {
 
 	bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
 
-	if(filter.empty()) {
-		for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
-			if(i->second != NULL)
-				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
-		}
-		ctrlUsers.SetRedraw(TRUE);
-		return;
-	}
-	
-	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
-		if( i->second != NULL ) {
-			if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
-				ctrlUsers.insertItem(i->second, getImage(i->second->user));	
+	//single update?
+	//avoid refreshing the whole list and just update the current item
+	//instead
+	if(ui != NULL) {
+		if(filter.empty()) {
+			if(ctrlUsers.findItem(ui) == -1) {
+				ctrlUsers.insertItem(ui, getImage(ui->user));
+			}
+		} else {
+			if(matchFilter(*ui, sel, doSizeCompare, mode, size)) {
+				if(ctrlUsers.findItem(ui) == -1) {
+					ctrlUsers.insertItem(ui, getImage(ui->user));
+				}
+			} else {
+				//deleteItem checks to see that the item exists in the list
+				//unnecessary to do it twice.
+				ctrlUsers.deleteItem(ui);
 			}
 		}
-	}
+	} else {
+		ctrlUsers.SetRedraw(FALSE);
+		ctrlUsers.DeleteAllItems();
 
-	ctrlUsers.SetRedraw(TRUE);
+		if(filter.empty()) {
+			for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
+				if(i->second != NULL)
+					ctrlUsers.insertItem(i->second, getImage(i->second->user));	
+			}
+		} else {
+			for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
+				if( i->second != NULL ) {
+					if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
+						ctrlUsers.insertItem(i->second, getImage(i->second->user));	
+					}
+				}
+			}
+		}
+
+		ctrlUsers.SetRedraw(TRUE);
+	}
 }
 
 LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

@@ -274,12 +274,14 @@ tstring::size_type CFulEditCtrl::TextUnderCursor(POINT mousePT, tstring& x) {
 		rEnd = GetTextLengthEx(GTL_NUMCHARS);
 	}
 
-	TCHAR *buf = new TCHAR[(rEnd-begin)+1];
+	if(rEnd > begin) {
+		TCHAR *buf = new TCHAR[(rEnd-begin)+1];
 
-	GetTextRange(begin, rEnd, buf);
+		GetTextRange(begin, rEnd, buf);
 
-	x = buf;
-	delete[] buf;
+		x = buf;
+		delete[] buf;
+	}
 
 	start = ch - begin;
 
