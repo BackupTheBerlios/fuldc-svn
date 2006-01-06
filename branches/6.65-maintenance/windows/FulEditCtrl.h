@@ -32,6 +32,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onDoubleClick)
 		MESSAGE_HANDLER(WM_FINDREPLACE, onFind)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, onMouseMove)
 		MESSAGE_HANDLER(WM_SETCURSOR, onSetCursor)
@@ -41,20 +42,21 @@ public:
 	~CFulEditCtrl(void);
 
 	enum {
-		STRIP_ISP		= 1, //Activate strip isp
-		HANDLE_SCROLL	= 2, //Determines if the richedit will handle scrolling
-		POPUP			= 4, //if not set, will not popup messages on matches
-		SOUND			= 8, //if not set, will not play sound on matches
-		TAB				= 16, //if not set, will not color the tab on matches
-		HANDLE_URLS		= 32, //if not set, will not handle urls on LButtonDown
+		STRIP_ISP			= 1, //Activate strip isp
+		HANDLE_SCROLL		= 2, //Determines if the richedit will handle scrolling
+		POPUP				= 4, //if not set, will not popup messages on matches
+		SOUND				= 8, //if not set, will not play sound on matches
+		TAB					= 16, //if not set, will not color the tab on matches
+		URL_SINGLE_CLICK	= 32, //if not set, will not handle urls on LButtonDown
+		URL_DOUBLE_CLICK	= 64, //if not set, will not handle urls on double click
 		
 		//determines which choices should be shown in the context menu
 		//these need to be set before calling create
-		MENU_COPY			= 64,
-		MENU_PASTE			= 128,
-		MENU_SEARCH			= 256,
-		MENU_SEARCH_TTH		= 512,
-		MENU_SEARCH_MENU	= 1024
+		MENU_COPY			= 128,
+		MENU_PASTE			= 256,
+		MENU_SEARCH			= 512,
+		MENU_SEARCH_TTH		= 1024,
+		MENU_SEARCH_MENU	= 2048
 	};
 
 	bool	AddLine(const tstring & line, bool timeStamps = false);
@@ -74,6 +76,7 @@ public:
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onDoubleClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -98,6 +101,7 @@ private:
 	void	CheckAction(ColorSettings* cs, const tstring& line);
 	void	CheckUrls(const tstring &line, const int &lineIndex);
 	void	UpdateUrlRanges(int pos);
+	BOOL	HandleUrl(POINT& pt);
 
 	bool		matchedSound;
 	bool		matchedPopup;

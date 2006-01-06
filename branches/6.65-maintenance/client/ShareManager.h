@@ -58,8 +58,8 @@ public:
 	void renameDirectory(const string& path, const string& nName) throw(ShareException);
 	string translateFileName(const string& aFile) throw(ShareException);
 	bool getTTH(const string& aFile, TTHValue& tth) throw();
-	void refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
-	bool refresh( const string& aDir );
+	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
+	int refresh(const string& aDir);
 	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
@@ -113,6 +113,8 @@ public:
 	void setIncoming(const string& aDir, bool incoming = true);
 
 	StringList getVirtualDirectories();
+
+	enum { REFRESH_STARTED, REFRESH_PATH_NOT_FOUND, REFRESH_IN_PROGRESS };
 
 private:
 	struct AdcSearch;

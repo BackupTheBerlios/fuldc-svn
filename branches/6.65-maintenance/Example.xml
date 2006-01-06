@@ -125,6 +125,7 @@
 		<String Name="Files">Files</String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
 		<String Name="FileListRefreshInitiated">File list refresh initiated</String>
+		<String Name="FileListRefrreshInProgress">File list refresh in progress, please wait for it to finish before trying to refresh again</String>
 		<String Name="FileNotAvailable">File not available</String>
 		<String Name="FileType">File type</String>
 		<String Name="FileWithDifferentSize">A file with a different size already exists in the queue</String>

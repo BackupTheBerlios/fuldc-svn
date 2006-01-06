@@ -129,6 +129,7 @@ enum Strings { // @DontAdd
 	FILES, // "Files"
 	FILE_LIST_REFRESH_FINISHED, // "File list refresh finished"
 	FILE_LIST_REFRESH_INITIATED, // "File list refresh initiated"
+	FILE_LIST_REFRRESH_IN_PROGRESS, // "File list refresh in progress, please wait for it to finish before trying to refresh again"
 	FILE_NOT_AVAILABLE, // "File not available"
 	FILE_TYPE, // "File type"
 	FILE_WITH_DIFFERENT_SIZE, // "A file with a different size already exists in the queue"

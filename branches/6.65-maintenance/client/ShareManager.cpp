@@ -665,12 +665,13 @@ void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& i
 	}
 }
 
-void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, 
+int ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, 
 						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) 
 {
-	if(Thread::safeInc(refreshing) == 2) {
+	if(Thread::safeInc(refreshing) > 1) {
 		Thread::safeDec(refreshing);
-		return;
+		LogManager::getInstance()->message(STRING(FILE_LIST_REFRRESH_IN_PROGRESS));
+		return REFRESH_IN_PROGRESS;
 	}
 
 	update = aUpdate;
@@ -684,6 +685,8 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, b
 	} else {
 		setThreadPriority(Thread::LOW);
 	}
+
+	return REFRESH_STARTED;
 }
 
 int ShareManager::run() {
@@ -1740,35 +1743,44 @@ void ShareManager::setIncoming( const string& aDir, bool incoming /*= true*/ ) {
 	incomingMap[tmp] = incoming;
 }
 
-bool ShareManager::refresh( const string& aDir ){
-	bool result = false;
-	string path = Text::toLower(aDir);
+int ShareManager::refresh( const string& aDir ){
+	int result = REFRESH_PATH_NOT_FOUND;
 
-	if(path[ path.length() -1 ] != PATH_SEPARATOR)
-		path += PATH_SEPARATOR;
+	if(Thread::safeInc(refreshing) == 1) {
+		string path = Text::toLower(aDir);
 
-	{
-		RLock<> l(cs);
+		if(path[ path.length() -1 ] != PATH_SEPARATOR)
+			path += PATH_SEPARATOR;
 
-		Directory::MapIter i = find_if(directories.begin(), directories.end(), Directory::StringComp(path));
+		{
+			WLock<> l(cs);
+			refreshPaths.clear();
 
-		if( i == directories.end() ) {
-			for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
-				if( Util::stricmp( j->first, aDir ) == 0 ) {
-					refreshPaths.push_back( j->second );
-					result = true;
+			Directory::MapIter i = find_if(directories.begin(), directories.end(), Directory::StringComp(path));
+
+			if( i == directories.end() ) {
+				for( StringPairIter j = virtualMap.begin(); j != virtualMap.end(); ++j ){
+					if( Util::stricmp( j->first, aDir ) == 0 ) {
+						refreshPaths.push_back( j->second );
+						result = REFRESH_STARTED;
+					}
 				}
+			} else {
+				refreshPaths.push_back( path );
+				result = REFRESH_STARTED;
 			}
-		} else {
-			refreshPaths.push_back( path );
-			result = true;
 		}
+
+		Thread::safeDec(refreshing);
+		if(result == REFRESH_STARTED)
+			result = refresh(false, true, false, false, true);
+
+		return result;
 	}
 
-	if(result)
-		refresh(false, true, false, false, true);
-	
-	return result;
+	Thread::safeDec(refreshing);
+	LogManager::getInstance()->message(STRING(FILE_LIST_REFRRESH_IN_PROGRESS));
+	return REFRESH_IN_PROGRESS;
 }
 
 StringList ShareManager::getVirtualDirectories() {

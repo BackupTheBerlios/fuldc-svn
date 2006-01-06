@@ -576,7 +576,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		try {
 			ShareManager::getInstance()->setDirty();
 			if(!param.empty()) {
-				if( !ShareManager::getInstance()->refresh( Text::fromT(param) ) )
+				if( ShareManager::REFRESH_PATH_NOT_FOUND == ShareManager::getInstance()->refresh( Text::fromT(param) ) )
 					status = TSTRING(DIRECTORY_NOT_FOUND);
 			} else {
 				ShareManager::getInstance()->refresh(true);
