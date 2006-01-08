@@ -1401,6 +1401,25 @@ void HubFrame::openLinksInTopic() {
 			urls.push_back(topic.substr(pos, pos2-pos));
 		}
 	}
+
+	pos = -1;
+	while( (pos = topic.find(_T("https://"), pos+1)) != string::npos ){
+		int pos2 = topic.find(_T(" "), pos+1);
+		urls.push_back(topic.substr(pos, pos2-pos));
+	}
+
+	pos = -1;
+	while( (pos = topic.find(_T("mms://"), pos+1)) != string::npos ){
+		int pos2 = topic.find(_T(" "), pos+1);
+		urls.push_back(topic.substr(pos, pos2-pos));
+	}
+
+	pos = -1;
+	while( (pos = topic.find(_T("ftp://"), pos+1)) != string::npos ){
+		int pos2 = topic.find(_T(" "), pos+1);
+		urls.push_back(topic.substr(pos, pos2-pos));
+	}
+
 	for( TStringIter i = urls.begin(); i != urls.end(); ++i ) {
 		WinUtil::openLink((*i));
 	}
