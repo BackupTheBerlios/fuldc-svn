@@ -243,7 +243,6 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					dcassert(cqi->getConnection());
 					dcassert(cqi->getConnection()->getCQI() == cqi);
 					cqi->setState(ConnectionQueueItem::ACTIVE);
-					cqi->getConnection()->removeListener(this);
 					added.push_back(cqi->getConnection());
 
 					pendingAdd.erase(it);
@@ -324,6 +323,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	}
 
 	for(UserConnection::Iter i = added.begin(); i != added.end(); ++i) {
+		(*i)->removeListener(this);
 		DownloadManager::getInstance()->addConnection(*i);
 	}
 }
@@ -484,15 +484,15 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
 		// Try to guess where this came from...
-		ExpectMap::iterator i = expectedConnections.find(aNick);
-		if(i == expectedConnections.end()) {
+		pair<string, string> i = expectedConnections.remove(aNick);
+		if(i.second.empty()) {
+			dcassert(i.first.empty());
 			dcdebug("Unknown incoming connection from %s\n", aNick.c_str());
 			putConnection(aSource);
 			return;
 		}
-        aSource->setToken(i->second.first);	
-		aSource->setHubUrl(i->second.second);	
-		expectedConnections.erase(i);
+        aSource->setToken(i.first);	
+		aSource->setHubUrl(i.second);
 	}
 	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
 
@@ -578,7 +578,6 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser() && !aSource->getUser()->isSet(User::DCPLUSPLUS)) {
 			aSource->getUser()->setFlag(User::DCPLUSPLUS);
-			// @todo User::updated(aSource->getUser());
 		}
 		StringList defFeatures = features;
 		if(BOOLSETTING(COMPRESS_TRANSFERS)) {

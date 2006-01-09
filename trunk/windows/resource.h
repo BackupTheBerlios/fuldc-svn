@@ -598,6 +598,11 @@
 #define IDC_SSL_PRIVATE_KEY_FILE        1362
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1363
 #define IDC_CLOSE_ALL_OFFLINE_PM        1364
+#define IDD_FAVORITE_DIRSPAGE           1365
+#define IDD_QUEUEPAGE                   1366
+#define IDC_FAVORITE_DIRECTORIES        1367
+#define IDC_OTHER_QUEUE_OPTIONS         1368
+#define IDC_SETTINGS_FAVORITE_DIRECTORIES 1369
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

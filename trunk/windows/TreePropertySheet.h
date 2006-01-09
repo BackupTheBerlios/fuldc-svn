@@ -34,9 +34,10 @@ public:
 		iconPath(icons)
 	{
 		m_psh.pfnCallback = &PropSheetProc;
+		m_psh.dwFlags |= PSH_RTLREADING;
 	}
-
-    typedef CPropertySheetImpl<TreePropertySheet> baseClass;
+	
+	typedef CPropertySheetImpl<TreePropertySheet> baseClass;
 	BEGIN_MSG_MAP(TreePropertySheet)
 		MESSAGE_HANDLER(WM_COMMAND, baseClass::OnCommand)
 		MESSAGE_HANDLER(WM_USER_INITDIALOG, onInitDialog)

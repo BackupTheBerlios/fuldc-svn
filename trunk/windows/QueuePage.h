@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(CERTIFICATES_PAGE_H)
-#define CERTIFICATES_PAGE_H
+#if !defined(QUEUE_PAGE_H)
+#define QUEUE_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -27,17 +27,18 @@
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
-class CertificatesPage : public CPropertyPage<IDD_CERTIFICATESPAGE>, public PropPage
+class QueuePage : public CPropertyPage<IDD_QUEUEPAGE>, public PropPage
 {
 public:
-	CertificatesPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_CERTIFICATES));
+	QueuePage(SettingsManager *s) : PropPage(s) {
+		SetTitle(CTSTRING(SETTINGS_QUEUE));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
-	virtual ~CertificatesPage() { };
+	virtual ~QueuePage() { 
+	};
 
-	BEGIN_MSG_MAP(CertificatesPage)
+	BEGIN_MSG_MAP(QueuePage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
@@ -52,14 +53,12 @@ public:
 	virtual void write();
 	
 protected:
-
-	static Item items[];
-	static TextItem texts[];
+	static ListItem optionItems[];
 };
 
-#endif // !defined(CERTIFICATES_PAGE_H)
+#endif // !defined(QUEUE_PAGE_H)
 
 /**
  * @file
- * $Id: CertificatesPage.h,v 1.1 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: QueuePage.h,v 1.4 2006/01/05 00:11:31 arnetheduck Exp $
  */

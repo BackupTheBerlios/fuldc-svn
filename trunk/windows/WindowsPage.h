@@ -31,7 +31,7 @@ class WindowsPage : public CPropertyPage<IDD_WINDOWSPAGE>, public PropPage
 public:
 	WindowsPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle(CTSTRING(SETTINGS_WINDOWS));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~WindowsPage() { 

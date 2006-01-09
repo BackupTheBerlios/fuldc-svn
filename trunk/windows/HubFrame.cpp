@@ -224,7 +224,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
 				if(!param.empty()) {
 					redirect = param;
-					if(BOOLSETTING(SETTINGS_OPEN_NEW_WINDOW)) {
+					if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
 						HubFrame::openWindow(param);
 					} else {
 						BOOL whatever = FALSE;
@@ -448,6 +448,18 @@ void HubFrame::removeFavoriteHub() {
 	} else {
 		addClientLine(TSTRING(FAVORITE_HUB_DOES_NOT_EXIST));
 	}
+}
+
+int HubFrame::getImage(const Identity& u) {
+	int image = u.isOp() ? IMAGE_OP : IMAGE_USER;
+
+	if(u.getUser()->isSet(User::DCPLUSPLUS))
+		image+=2;
+	if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !u.isTcpActive()) {
+		// Users we can't connect to...
+		image+=4;
+	}
+	return image;	
 }
 
 LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {

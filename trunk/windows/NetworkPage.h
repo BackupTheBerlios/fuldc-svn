@@ -31,7 +31,7 @@ class NetworkPage : public CPropertyPage<IDD_NETWORKPAGE>, public PropPage
 public:
 	NetworkPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_NETWORK));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	virtual ~NetworkPage() { };
 

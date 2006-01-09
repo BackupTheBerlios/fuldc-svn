@@ -29,7 +29,7 @@
 class PropertiesDlg : public TreePropertySheet
 {
 public:
-	enum { numPages = 20 };
+	enum { numPages = 22 };
 
 	BEGIN_MSG_MAP(PropertiesDlg)
 		COMMAND_ID_HANDLER(IDOK, onOK)
@@ -38,7 +38,7 @@ public:
 		MESSAGE_HANDLER(TCM_SETCURSEL, TreePropertySheet::onSetCurSel)
 	END_MSG_MAP()
 
-	PropertiesDlg(SettingsManager *s);
+	PropertiesDlg(HWND parent, SettingsManager *s);
 	virtual ~PropertiesDlg();
 
 	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

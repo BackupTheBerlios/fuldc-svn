@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(CERTIFICATES_PAGE_H)
-#define CERTIFICATES_PAGE_H
+#if !defined(FAVORITE_DIRS_PAGE_H)
+#define FAVORITE_DIRS_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -26,40 +26,53 @@
 #include <atlcrack.h>
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
+#include "WinUtil.h"
 
-class CertificatesPage : public CPropertyPage<IDD_CERTIFICATESPAGE>, public PropPage
+class FavoriteDirsPage : public CPropertyPage<IDD_FAVORITE_DIRSPAGE>, public PropPage
 {
 public:
-	CertificatesPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_CERTIFICATES));
+	FavoriteDirsPage(SettingsManager *s) : PropPage(s) {
+		SetTitle(CTSTRING(SETTINGS_FAVORITE_DIRS_PAGE));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
+	virtual ~FavoriteDirsPage() {
+		ctrlDirectories.Detach();
+	};
 
-	virtual ~CertificatesPage() { };
-
-	BEGIN_MSG_MAP(CertificatesPage)
+	BEGIN_MSG_MAP(FavoriteDirsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
-		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
+		MESSAGE_HANDLER(WM_DROPFILES, onDropFiles)
+		NOTIFY_HANDLER(IDC_FAVORITE_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
+		COMMAND_ID_HANDLER(IDC_ADD, onClickedAdd)
+		COMMAND_ID_HANDLER(IDC_REMOVE, onClickedRemove)
+		COMMAND_ID_HANDLER(IDC_RENAME, onClickedRename)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
+	LRESULT onItemchangedDirectories(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
 	
 protected:
-
-	static Item items[];
 	static TextItem texts[];
+	ExListViewCtrl ctrlDirectories;
+
+	void addDirectory(const tstring& aPath);
 };
 
-#endif // !defined(CERTIFICATES_PAGE_H)
+#endif // !defined(FAVORITE_DIR_SPAGE_H)
 
 /**
  * @file
- * $Id: CertificatesPage.h,v 1.1 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: FavoriteDirsPage.h,v 1.7 2006/01/05 00:11:31 arnetheduck Exp $
  */

@@ -178,7 +178,7 @@ void NmdcHub::updateFromTag(Identity& id, const string& tag) {
 		}
 	}
 	/// @todo Think about this
-	id.set("TA", tag);
+	id.set("TA", '<' + tag + '>');
 }
 
 void NmdcHub::onLine(const string& aLine) throw() {

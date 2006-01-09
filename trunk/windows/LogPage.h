@@ -32,7 +32,7 @@ class LogPage : public CPropertyPage<IDD_LOGPAGE>, public PropPage
 public:
 	LogPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_LOGS));
-		 m_psp.dwFlags |= PSP_HASHELP;
+		 m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~LogPage() { };

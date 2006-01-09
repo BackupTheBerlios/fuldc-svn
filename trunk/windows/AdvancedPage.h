@@ -31,7 +31,7 @@ class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
 public:
 	AdvancedPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_ADVANCED));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~AdvancedPage() {

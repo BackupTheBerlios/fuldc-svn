@@ -34,7 +34,7 @@ class UCPage : public CPropertyPage<IDD_UCPAGE>, public PropPage
 public:
 	UCPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_USER_COMMANDS));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~UCPage() {

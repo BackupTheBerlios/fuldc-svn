@@ -470,7 +470,11 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 
 	// Check if we're trying to download a non-TTH file
 	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
-		throw QueueException(STRING(FILE_HAVE_NO_TTH)); 
+		throw QueueException(STRING(FILE_HAS_NO_TTH)); 
+	} 
+
+	if(aUser->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
+		throw QueueException(STRING(NO_DOWNLOADS_FROM_PASSIVE));
 	}
 	
 	if( !SETTING(SKIPLIST_DOWNLOAD).empty() ){
@@ -985,7 +989,7 @@ void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
 	try {
 		dirList.loadFile(name);
 	} catch(const Exception&) {
-		/** @todo Log this */
+		LogManager::getInstance()->message(STRING(UNABLE_TO_OPEN_FILELIST) + name);
 		return;
 	}
 

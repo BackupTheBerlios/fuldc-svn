@@ -1199,9 +1199,13 @@ void SearchFrame::SearchInfo::update() {
 		fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
 		path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 		type = TSTRING(DIRECTORY);
+		if(sr->getSize() > 0) {
+			size = Text::toT(Util::formatBytes(sr->getSize()));
+			exactSize = Util::formatExactSize(sr->getSize());
+		}
 	}
-	nick = Text::toT(sr->getUser()->getFirstNick());
-	/// @todo connection = Text::toT(sr->getUser()->getConnection());
+	nick = WinUtil::getNicks(sr->getUser());
+	connection = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
 	hubName = Text::toT(sr->getHubName());
 	slots = Text::toT(sr->getSlotString());
 	ip = Text::toT(sr->getIP());
