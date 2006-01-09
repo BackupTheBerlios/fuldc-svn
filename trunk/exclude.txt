@@ -7,6 +7,7 @@ regex\doc\.svn
 res\.svn
 windows\.svn
 zlib\.svn
+vc7.1.project\.svn
 fulDC.rar
 fulDC-src.rar
 DCPlusPlus.ncb

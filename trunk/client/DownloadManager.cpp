@@ -239,7 +239,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		}
 
-		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && start > 0) {
+		if(d->getTreeValid() && start > 0 && 
+		(d->getTigerTree().getLeaves().size() > 1 || aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL))) {
 			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), start));
 		} else {
 			int rollback = SETTING(ROLLBACK);

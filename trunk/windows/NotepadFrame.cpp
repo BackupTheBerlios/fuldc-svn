@@ -27,7 +27,8 @@
 LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	//needs to be set before calling create otherwise the menu won't be created correctly
-	ctrlPad.setFlag( CFulEditCtrl::MENU_PASTE );
+	ctrlPad.unsetFlag( CFulEditCtrl::URL_SINGLE_CLICK );
+	ctrlPad.setFlag( CFulEditCtrl::MENU_PASTE | CFulEditCtrl::URL_DOUBLE_CLICK );
 
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);

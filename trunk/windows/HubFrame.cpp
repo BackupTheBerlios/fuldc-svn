@@ -429,6 +429,10 @@ void HubFrame::addAsFavorite() {
 		aEntry.setDescription(Text::fromT(buf));
 		aEntry.setConnect(false);
 		aEntry.setNick(client->getMyNick());
+		aEntry.setShowJoins(showJoins);
+		aEntry.setShowUserlist(showUserList);
+		aEntry.setStripIsp(stripIsp);
+		aEntry.setLogMainChat(logMainChat);
 		FavoriteManager::getInstance()->addFavorite(aEntry);
 		addClientLine(TSTRING(FAVORITE_HUB_ADDED));
 	} else {
@@ -469,7 +473,7 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 			//the user might have updated something that should
 			//be filtered
 			if(!filter.empty())
-				updateUserList();
+				updateUserList(ui);
 
 			return false;
 		}
@@ -488,20 +492,7 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 	usermap.insert( UserPair(Text::toT(Text::toLower(u.identity.getShortNick())), ui) );
 	bool add = false;
 	
-	if(filter.empty()){
-		add = true;
-	}else {
-		int64_t size;
-		int mode;
-		int sel = ctrlFilterSel.GetCurSel();
-		bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
-		
-		add = matchFilter(*ui, sel, doSizeCompare, mode, size);
-	}
-	
-	if( add ){
-		//@todo ctrlUsers.insertItem(ui, getImage(u.user));
-	}
+	updateUserList(ui);
 
 	return true;
 }
@@ -1156,7 +1147,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				}
 				break;
 		case VK_UP:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING( SETTINGS_USE_CTRL_FOR_LINE_HISTORY ) == true) ) ) {
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	(GetKeyState(VK_CONTROL) & 0x8000) ) {
 				//scroll up in chat command history
 				//currently beyond the last command?
 				if (curCommandPosition > 0) {
@@ -1179,7 +1170,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 			break;
 		case VK_DOWN:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING( SETTINGS_USE_CTRL_FOR_LINE_HISTORY ) == true) ) ) {
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	(GetKeyState(VK_CONTROL) & 0x8000) ) {
 				//scroll down in chat command history
 
 				//currently beyond the last command?
@@ -1448,8 +1439,7 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 }
 
 LRESULT HubFrame::onCopyUserList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int id = wID - IDC_COPY;
-	ctrlUsers.copy(id);
+	ctrlUsers.copy(copyMenu, wID - IDC_COPY);
 	
 	return 0;
 }
@@ -1477,6 +1467,25 @@ void HubFrame::openLinksInTopic() {
 			urls.push_back(topic.substr(pos, pos2-pos));
 		}
 	}
+
+	pos = -1;
+	while( (pos = topic.find(_T("https://"), pos+1)) != string::npos ){
+		int pos2 = topic.find(_T(" "), pos+1);
+		urls.push_back(topic.substr(pos, pos2-pos));
+	}
+
+	pos = -1;
+	while( (pos = topic.find(_T("mms://"), pos+1)) != string::npos ){
+		int pos2 = topic.find(_T(" "), pos+1);
+		urls.push_back(topic.substr(pos, pos2-pos));
+	}
+
+	pos = -1;
+	while( (pos = topic.find(_T("ftp://"), pos+1)) != string::npos ){
+		int pos2 = topic.find(_T(" "), pos+1);
+		urls.push_back(topic.substr(pos, pos2-pos));
+	}
+
 	for( TStringIter i = urls.begin(); i != urls.end(); ++i ) {
 		WinUtil::openLink((*i));
 	}
@@ -1599,11 +1608,8 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 	return true;
 }
 
-void HubFrame::updateUserList() {
+void HubFrame::updateUserList(UserInfo* ui) {
 	Lock l(updateCS);
-
-	ctrlUsers.SetRedraw(FALSE);
-	ctrlUsers.DeleteAllItems();
 
 	int64_t size = -1;
 	int mode = -1;
@@ -1612,25 +1618,46 @@ void HubFrame::updateUserList() {
 
 	bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
 
-	if(filter.empty()) {
-		for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
-			if(i->second != NULL)
-				;
-				//@todo ctrlUsers.insertItem(i->second, getImage(i->second->user));	
-		}
-		ctrlUsers.SetRedraw(TRUE);
-		return;
-	}
-	
-	for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
-		if( i->second != NULL ) {
-			if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
-				//@todo ctrlUsers.insertItem(i->second, getImage(i->second->user));	
+	//single update?
+	//avoid refreshing the whole list and just update the current item
+	//instead
+	if(ui != NULL) {
+		if(filter.empty()) {
+			if(ctrlUsers.findItem(ui) == -1) {
+				ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
+			}
+		} else {
+			if(matchFilter(*ui, sel, doSizeCompare, mode, size)) {
+				if(ctrlUsers.findItem(ui) == -1) {
+					ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
+				}
+			} else {
+				//deleteItem checks to see that the item exists in the list
+				//unnecessary to do it twice.
+				ctrlUsers.deleteItem(ui);
 			}
 		}
-	}
+	} else {
+		ctrlUsers.SetRedraw(FALSE);
+		ctrlUsers.DeleteAllItems();
 
-	ctrlUsers.SetRedraw(TRUE);
+		if(filter.empty()) {
+			for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
+				if(i->second != NULL)
+					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
+			}
+		} else {
+			for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
+				if( i->second != NULL ) {
+					if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
+						ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
+					}
+				}
+			}
+		}
+
+		ctrlUsers.SetRedraw(TRUE);
+	}
 }
 
 LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -1772,14 +1799,14 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int 
 
 	bool insert = false;
 	if(doSizeCompare) {
-		/* @todo switch(mode) {
-			case 0: insert = (size == ui.user->getBytesShared()); break;
-			case 1: insert = (size <=  ui.user->getBytesShared()); break;
-			case 2: insert = (size >=  ui.user->getBytesShared()); break;
-			case 3: insert = (size < ui.user->getBytesShared()); break;
-			case 4: insert = (size > ui.user->getBytesShared()); break;
-			case 5: insert = (size != ui.user->getBytesShared()); break;
-		} */
+		switch(mode) {
+			case 0: insert = (size == ui.getIdentity().getBytesShared()); break;
+			case 1: insert = (size <=  ui.getIdentity().getBytesShared()); break;
+			case 2: insert = (size >=  ui.getIdentity().getBytesShared()); break;
+			case 3: insert = (size < ui.getIdentity().getBytesShared()); break;
+			case 4: insert = (size > ui.getIdentity().getBytesShared()); break;
+			case 5: insert = (size != ui.getIdentity().getBytesShared()); break;
+		}
 	} else {
 		if(Util::findSubString(ui.getText(sel), filter) != string::npos)
 			insert = true;

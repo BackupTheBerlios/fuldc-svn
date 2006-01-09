@@ -99,7 +99,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	multiMenu.CreatePopupMenu();
 	browseMenu.CreatePopupMenu();
 	removeMenu.CreatePopupMenu();
-	removeAllMenu.CreatePopupMenu();
+	removeQueueMenu.CreatePopupMenu();
 	pmMenu.CreatePopupMenu();
 	priorityMenu.CreatePopupMenu();
 	dirMenu.CreatePopupMenu();
@@ -119,7 +119,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)copyMenu, CTSTRING(COPY_TO_CLIPBOARD));
 	singleMenu.AppendMenu(MF_SEPARATOR);
 	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeMenu, CTSTRING(REMOVE_SOURCE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeAllMenu, CTSTRING(REMOVE_FROM_ALL));
+	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeQueueMenu, CTSTRING(REMOVE_FROM_ALL));
 	singleMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
 	multiMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
@@ -148,6 +148,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	removeMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCES, CTSTRING(ALL));
 	removeMenu.AppendMenu(MF_SEPARATOR);
+
+	removeQueueMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCES, CTSTRING(ALL));
+	removeQueueMenu.AppendMenu(MF_SEPARATOR);
 
 	readdMenu.AppendMenu(MF_STRING, IDC_READD, CTSTRING(ALL));
 	readdMenu.AppendMenu(MF_SEPARATOR);
@@ -791,8 +794,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		while(removeMenu.GetMenuItemCount() > 2) {
 			removeMenu.RemoveMenu(2, MF_BYPOSITION);
 		}
-		while(removeAllMenu.GetMenuItemCount() > 0) {
-			removeAllMenu.RemoveMenu(0, MF_BYPOSITION);
+		while(removeQueueMenu.GetMenuItemCount() > 2) {
+			removeQueueMenu.RemoveMenu(2, MF_BYPOSITION);
 		}
 		while(pmMenu.GetMenuItemCount() > 0) {
 			pmMenu.RemoveMenu(0, MF_BYPOSITION);
@@ -821,8 +824,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
 					mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
 					removeMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
-					mi.wID = IDC_REMOVE_SOURCES + menuItems;
-					removeAllMenu.InsertMenuItem(menuItems, TRUE, &mi);
+					mi.wID = IDC_REMOVE_SOURCES + 1 + menuItems; // "All" is before sources
+					removeQueueMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
 					if(i->getUser()->isOnline()) {
 						mi.wID = IDC_PM + menuItems;
 						pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
@@ -852,12 +855,12 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			if(menuItems == 0) {
 				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MFS_GRAYED);
 				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MFS_GRAYED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MFS_GRAYED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeQueueMenu, MFS_GRAYED);
 			}
 			else {
 				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MFS_ENABLED);
 				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MFS_ENABLED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MFS_ENABLED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeQueueMenu, MFS_ENABLED);
 			}
 
 			if(pmItems == 0) {
@@ -1018,12 +1021,22 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 }
 
 LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int id = wID - IDC_REMOVE_SOURCES;
-	CMenuItemInfo mi;
-	mi.fMask = MIIM_DATA;
-	removeAllMenu.GetMenuItemInfo(id, TRUE, &mi);
-	QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-	//@todo QueueManager::getInstance()->removeSource(s->getUser(), QueueItem::Source::FLAG_REMOVED);
+	if(ctrlQueue.GetSelectedCount() == 1) {
+		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
+		QueueItemInfo* ii = ctrlQueue.getItemData(i);
+		if(wID == IDC_REMOVE_SOURCES) {
+			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
+				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			}
+		} else {
+			CMenuItemInfo mi;
+			mi.fMask = MIIM_DATA;
+
+			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
+			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
+			QueueManager::getInstance()->removeSources(s->getUser(), QueueItem::Source::FLAG_REMOVED);
+		}
+	}	
 	return 0;
 }
 
@@ -1368,7 +1381,7 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 				WinUtil::setClipboard( *name );
 		}
 	} else {
-		ctrlQueue.copy(tmp);
+		ctrlQueue.copy(copyMenu, tmp);
 	}
 	return 0;
 }

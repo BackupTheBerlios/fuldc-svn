@@ -809,8 +809,7 @@ LRESULT TransferView::onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 }
 
 LRESULT TransferView::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-	int tmp = wID - IDC_COPY;
-	ctrlTransfers.copy(tmp);
+	ctrlTransfers.copy(copyMenu, wID - IDC_COPY);
 
 	return 0;
 }

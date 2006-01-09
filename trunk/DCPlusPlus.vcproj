@@ -208,6 +208,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="res\dcplusplus.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

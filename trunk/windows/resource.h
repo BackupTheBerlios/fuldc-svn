@@ -597,6 +597,7 @@
 #define IDC_SSL_CERTIFICATE_FILE        1361
 #define IDC_SSL_PRIVATE_KEY_FILE        1362
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1363
+#define IDC_CLOSE_ALL_OFFLINE_PM        1364
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -647,7 +648,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        311
+#define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           137

@@ -68,6 +68,10 @@ public:
 			delete tthRoot;
 		}
 
+		string getPath() {
+			return getParent()->getPath();
+		}
+
 		GETSET(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
@@ -111,6 +115,15 @@ public:
 				x+=(*i)->getSize();
 			}
 			return x;
+		}
+
+		string getPath() {
+			string tmp;
+			//make sure to not try and get the name of the root dir
+			if(getParent() != NULL && getParent()->getParent() != NULL)
+				return getParent()->getPath() +  getName() + '\\';
+			
+			return getName() + '\\';
 		}
 
 		GETSET(string, name, Name);

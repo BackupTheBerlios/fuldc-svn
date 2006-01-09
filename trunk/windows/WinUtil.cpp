@@ -240,6 +240,7 @@ void WinUtil::init(HWND hWnd) {
 	window.AppendMenu(MF_SEPARATOR);
 	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CTSTRING(MENU_CLOSE_DISCONNECTED));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_PM, CTSTRING(MENU_CLOSE_ALL_PM));
+	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_OFFLINE_PM, CTSTRING(MENU_CLOSE_ALL_OFFLINE_PM));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_DIR_LIST, CTSTRING(MENU_CLOSE_ALL_DIR_LIST));
 	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_SEARCH_FRAME, CTSTRING(MENU_CLOSE_ALL_SEARCHFRAME));
 
@@ -575,7 +576,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		try {
 			ShareManager::getInstance()->setDirty();
 			if(!param.empty()) {
-				if( !ShareManager::getInstance()->refresh( Text::fromT(param) ) )
+				if( ShareManager::REFRESH_PATH_NOT_FOUND == ShareManager::getInstance()->refresh( Text::fromT(param) ) )
 					status = TSTRING(DIRECTORY_NOT_FOUND);
 			} else {
 				ShareManager::getInstance()->refresh(true);

@@ -162,7 +162,7 @@ LRESULT FulHighlightPage::onUpdate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		ctrlStrings.SelectItem(sel);
 		
 	}
-	return true;
+	return TRUE;
 }
 
 LRESULT FulHighlightPage::onMove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

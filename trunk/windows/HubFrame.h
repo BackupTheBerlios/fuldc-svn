@@ -223,7 +223,15 @@ private:
 		};
 
 		const tstring& getText(int col) const {
+			dcassert(col >= 0 && col < COLUMN_LAST);
 			return columns[col];
+		}
+
+		const tstring& copy(int col) {
+			if(col >= 0 && col < COLUMN_LAST)
+				return getText(col);
+
+			return Util::emptyStringT;
 		}
 
 		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
@@ -317,6 +325,7 @@ private:
 		tabList.push_back(_T("/ts"));
 		tabList.push_back(_T("/unshare"));
 		tabList.push_back(_T("/uptime"));
+		tabList.push_back(_T("/userlist"));
 	}
 
 	virtual ~HubFrame() {
@@ -438,7 +447,7 @@ private:
 	bool updateUser(const UpdateInfo& u);
 	void removeUser(const UpdateInfo& u);
 
-	void updateUserList();
+	void updateUserList(UserInfo* ui = NULL);
 	bool parseFilter(int& mode, int64_t& size);
 	void addAsFavorite();
 	void removeFavoriteHub();

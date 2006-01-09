@@ -454,9 +454,8 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 
 	// Check if we're not downloading something already in our share
 	if(BOOLSETTING(DONT_DL_ALREADY_SHARED) && root != NULL){
-		if (ShareManager::getInstance()->isTTHShared(*root)){
+		if (ShareManager::getInstance()->isTTHShared(*root))
 			throw QueueException(STRING(TTH_ALREADY_SHARED));
-		}
 	}
 
 	string target = checkTarget(aTarget, aSize, aFlags);
@@ -471,10 +470,8 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 
 	// Check if we're trying to download a non-TTH file
 	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
-		if(BOOLSETTING(ONLY_DL_TTH_FILES))
-			throw QueueException(STRING(FILE_HAVE_NO_TTH));
-	} 
-
+		throw QueueException(STRING(FILE_HAVE_NO_TTH)); 
+	}
 	
 	if( !SETTING(SKIPLIST_DOWNLOAD).empty() ){
 		int pos = aTarget.rfind("\\")+1;
@@ -1133,8 +1130,8 @@ void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
 			}
 		}
 		
-		qi = userQueue.getRunning(aUser);
-		if(qi != NULL) {
+		
+		while( (qi = userQueue.getRunning(aUser)) != NULL) {
 			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 				remove(qi->getTarget());
 			} else {

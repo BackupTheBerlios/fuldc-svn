@@ -59,8 +59,8 @@ public:
 	string translateTTH(const string& TTH) throw(ShareException);
 	string translateFileName(const string& aFile) throw(ShareException);
 	bool getTTH(const string& aFile, TTHValue& tth) throw();
-	void refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
-	bool refresh( const string& aDir );
+	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
+	int refresh(const string& aDir);
 	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
@@ -115,6 +115,8 @@ public:
 
 	StringList getVirtualDirectories();
 
+	enum { REFRESH_STARTED, REFRESH_PATH_NOT_FOUND, REFRESH_IN_PROGRESS };
+
 private:
 	struct AdcSearch;
 	class Directory : public FastAlloc<Directory> {
@@ -158,6 +160,14 @@ private:
 		typedef Directory* Ptr;
 		typedef HASH_MAP<string, Ptr> Map;
 		typedef Map::iterator MapIter;
+
+		struct StringComp {
+			StringComp(const string& match): a(match) { }
+			bool operator () (const pair<string, Ptr>& b) const { return Util::stricmp(a, b.first) == 0; }
+		private:
+			const string& a;
+			StringComp& operator=(const StringComp&);
+		};
 
 		int64_t size;
 		Map directories;

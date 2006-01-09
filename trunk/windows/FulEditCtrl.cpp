@@ -43,7 +43,7 @@ CFulEditCtrl::CFulEditCtrl(void): matchedPopup(false), nick(Util::emptyStringT),
 
 	fontHeight = static_cast<int>(WinUtil::getTextHeight(m_hWnd, WinUtil::font) * 1.5);
 
-	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | HANDLE_URLS | MENU_COPY | 
+	setFlag(HANDLE_SCROLL | POPUP | TAB | SOUND | URL_SINGLE_CLICK | MENU_COPY | 
 			MENU_SEARCH | MENU_SEARCH_TTH | MENU_SEARCH_MENU );
 
 }
@@ -230,7 +230,7 @@ void CFulEditCtrl::SetTextColor( COLORREF color ) {
 
 //
 // Input:
-// POINT mousPT = the cursor position in client coordinates, that is after a ScreenToClient conversion
+// POINT mousePT = the cursor position in client coordinates, that is after a ScreenToClient conversion
 //				  if necessary
 // tstring& x = the buffer to hold the line if/when it's copied, the buffer is left untouched in case
 //				of errors
@@ -252,11 +252,11 @@ tstring::size_type CFulEditCtrl::TextUnderCursor(POINT mousePT, tstring& x) {
 
 	//check xpos
 	if( mousePT.x > ( charPT.x + 3 ) ) 
-		start;
+		return start;
 
 	//check ypos
 	if( mousePT.y > (charPT.y + fontHeight ) )
-		start;
+		return start;
 
 	FINDTEXT ft;
 	ft.chrg.cpMin = ch;
@@ -274,15 +274,15 @@ tstring::size_type CFulEditCtrl::TextUnderCursor(POINT mousePT, tstring& x) {
 		rEnd = GetTextLengthEx(GTL_NUMCHARS);
 	}
 
-	TCHAR *buf = new TCHAR[(rEnd-begin)+1];
-
-	GetTextRange(begin, rEnd, buf);
-
-	x = buf;
-	delete[] buf;
-
-	start = ch - begin;
-
+	if(rEnd > begin) {
+		TCHAR *buf = new TCHAR[(rEnd-begin)+1];
+		if(buf) {
+			GetTextRange(begin, rEnd, buf);
+			x = buf;
+			delete[] buf;
+			start = ch - begin;
+		}
+	}
 	return start;
 }
 
@@ -527,7 +527,7 @@ LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	//set this here since it will always be false
 	bHandled = FALSE;
 
-	if(!isSet(HANDLE_URLS)){
+	if(!isSet(URL_SINGLE_CLICK) && !isSet(URL_DOUBLE_CLICK)){
 		return 1;
 	}
 
@@ -575,35 +575,29 @@ LRESULT CFulEditCtrl::onMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 }
 
 LRESULT CFulEditCtrl::onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	
-	//set this here since it will be false in most cases anyway
-	bHandled = FALSE;
-
-	if(!isSet(HANDLE_URLS)){
+	if(!isSet(URL_SINGLE_CLICK)){
+		bHandled = FALSE;
 		return 1;
 	}
 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	tstring tmp;
+	bHandled = HandleUrl(pt);
 
-	tstring::size_type ch = TextUnderCursor(pt, tmp);
-	if(ch == tstring::npos) {
+	return bHandled = TRUE ? 0: 1;
+}
+
+LRESULT CFulEditCtrl::onDoubleClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	//check that single click is not set to avoid opening the url twice/three times on accidental
+	//double clicks.
+	if(!isSet(URL_DOUBLE_CLICK) || isSet(URL_SINGLE_CLICK)){
+		bHandled = FALSE;
 		return 1;
 	}
-	
-	int start = tmp.find_last_of(_T(" \t\r"), ch) +1;
-	int end = tmp.find_first_of(_T(" \t\r"), start+1);
-	if(end == tstring::npos)
-		end = tmp.length();
-	tstring url = tmp.substr(start, end-start);
-	
-	PME regexp(_T("^(https?://|ftps?://|mms://|www\\.|dchub://)"), _T("ims"));
-	if(regexp.match(url) > 0) {
-		WinUtil::openLink(url);
-		bHandled = TRUE;
-	}
 
-	return 0;
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	bHandled = HandleUrl(pt);
+
+	return bHandled = TRUE ? 0: 1;
 }
 
 LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
@@ -853,6 +847,29 @@ void CFulEditCtrl::Clear() {
 	urlRanges.clear();
 	SetWindowText(_T(""));
 	lastlog.clear();
+}
+
+BOOL CFulEditCtrl::HandleUrl(POINT& pt) {
+	tstring tmp;
+
+	tstring::size_type ch = TextUnderCursor(pt, tmp);
+	if(ch == tstring::npos) {
+		return FALSE;
+	}
+
+	int start = tmp.find_last_of(_T(" \t\r"), ch) +1;
+	int end = tmp.find_first_of(_T(" \t\r"), start+1);
+	if(end == tstring::npos)
+		end = tmp.length();
+	tstring url = tmp.substr(start, end-start);
+
+	PME regexp(_T("^(https?://|ftps?://|mms://|www\\.|dchub://)"), _T("ims"));
+	if(regexp.match(url) > 0) {
+		WinUtil::openLink(url);
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 #ifdef DEBUG

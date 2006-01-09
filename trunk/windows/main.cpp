@@ -125,7 +125,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 	f.close();
 
-	MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of fulDC. A file named \"exceptioninfo.txt\" has been generated in the same directory as fulDC. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed."), _T("fulDC Has Crashed"), MB_OK | MB_ICONERROR);
+	if( IDYES == MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an error and will terminate. If you would like to report this error, click yes and follow the steps on the website that you're taken to."), _T("fulDC Has Crashed"), MB_YESNO | MB_ICONERROR)) {
+		WinUtil::openLink(_T("http://paxi.myftp.org/crash/"));
+	}
 
 #ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
@@ -250,7 +252,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		ES_CENTER | ES_READONLY | ES_MULTILINE, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	
-	rc.bottom = rc.top + 3*WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
+	rc.bottom = rc.top + 2*WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
 	splash.HideCaret();
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
 	splash.SetFocus();
@@ -299,7 +301,15 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
 #ifndef _DEBUG
-	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}"));
+	tstring appPath;
+	TCHAR buf[MAX_PATH+1];
+	GetModuleFileName(NULL, buf, MAX_PATH);
+	appPath = buf;
+	appPath.erase(appPath.rfind('\\'));
+	appPath = _T("{FULDC-PATH-") + appPath + _T("}");
+	appPath = Util::replace(appPath, _T("\\"), _T("_"));
+	appPath = Util::replace(appPath, _T(":"), _T("_"));
+	SingleInstance dcapp(appPath.c_str());
 
 	if(dcapp.IsAnotherInstanceRunning()) {
 		HWND hOther = NULL;

@@ -1090,10 +1090,11 @@ LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT MainFrame::onCloseWindows(WORD , WORD wID, HWND , BOOL& ) {
 	switch(wID) {
-	case IDC_CLOSE_DISCONNECTED:		HubFrame::closeDisconnected(); break;
-	case IDC_CLOSE_ALL_PM:				PrivateFrame::closeAll(); break;
-	case IDC_CLOSE_ALL_DIR_LIST:		DirectoryListingFrame::closeAll(); break;
-	case IDC_CLOSE_ALL_SEARCH_FRAME:	SearchFrame::closeAll(); break;
+	case IDC_CLOSE_DISCONNECTED:		HubFrame::closeDisconnected();		break;
+	case IDC_CLOSE_ALL_PM:				PrivateFrame::closeAll();			break;
+	case IDC_CLOSE_ALL_OFFLINE_PM:		PrivateFrame::closeAllOffline();	break;
+	case IDC_CLOSE_ALL_DIR_LIST:		DirectoryListingFrame::closeAll();	break;
+	case IDC_CLOSE_ALL_SEARCH_FRAME:	SearchFrame::closeAll();			break;
 	}
 	return 0;
 }

@@ -551,6 +551,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				u->getIdentity().setIp(it->substr(j+1));
 				v.push_back(u);
 				// @todo v.back()->setUserIp(true);
+				//if it's an internal ip it'll probably cause a mismatch in connection attempts.
+				//if(!Util::isPrivateIp(it->substr(j+1)))
+				//	v.back()->setUserIp(true);
 			}
 
 			fire(ClientListener::UsersUpdated(), this, v);

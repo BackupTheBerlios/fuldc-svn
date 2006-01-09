@@ -578,7 +578,7 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser() && !aSource->getUser()->isSet(User::DCPLUSPLUS)) {
 			aSource->getUser()->setFlag(User::DCPLUSPLUS);
-			/// @todo User::updated(aSource->getUser());
+			// @todo User::updated(aSource->getUser());
 		}
 		StringList defFeatures = features;
 		if(BOOLSETTING(COMPRESS_TRANSFERS)) {

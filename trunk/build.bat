@@ -1,7 +1,8 @@
-@ECHO OFF
+rem @ECHO OFF
 rem CONFIG START
 rem ----------------------------------------------------
-set NET="C:\Program Files\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.exe"
+
+set NET="C:\Program Files\Microsoft Visual Studio 8\Common7\IDE\devenv.exe"
 set OPTS=dcplusplus.sln /build release
 set CLEAN=dcplusplus.sln /clean release
 

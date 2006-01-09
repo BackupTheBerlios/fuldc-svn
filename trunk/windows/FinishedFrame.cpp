@@ -275,7 +275,7 @@ LRESULT FinishedFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*
 }
 
 LRESULT FinishedFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	ctrlList.copy(wID - IDC_COPY);
+	ctrlList.copy(copyMenu, wID - IDC_COPY);
 	return 0;
 }
 
