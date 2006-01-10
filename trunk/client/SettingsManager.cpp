@@ -392,31 +392,6 @@ void SettingsManager::load(string const& aFileName)
 		setDefault(UDP_PORT, SETTING(TCP_PORT));
 
 		xml.resetCurrentChild();
-		if(xml.findChild("DownloadPaths")) {
-			xml.stepIn();
-			Lock l(cs);
-			while(xml.findChild("DownloadPath")){
-				string name = xml.getChildAttrib("Name");
-				string path = xml.getChildData();
-				downloadPaths.push_back(StringPair(name, path));
-			}
-			xml.stepOut();
-		} else {
-			xml.resetCurrentChild();
-			if(xml.findChild("DownloadToPaths")){
-				Lock l(cs);
-				string paths = xml.getChildData();
-				StringTokenizer<string> t(paths, '|');
-				StringList s = t.getTokens();
-				for(StringIter i = s.begin(); i != s.end(); ++i){
-					downloadPaths.push_back(StringPair(Util::getLastDir(*i), *i));
-				}
-			}
-		}
-		
-		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
-
-		xml.resetCurrentChild();
 		if(xml.findChild("SearchHistory")) {
 			xml.stepIn();
 			while(xml.findChild("Search")) {
@@ -483,18 +458,6 @@ void SettingsManager::save(string const& aFileName) {
 		{
 			xml.addTag(settingTags[i], get(Int64Setting(i), false));
 			xml.addChildAttrib(type, curType);
-		}
-	}
-	xml.stepOut();
-
-	xml.addTag("DownloadPaths");
-	xml.stepIn();
-
-	{
-		Lock l(cs);
-		for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i ) {
-			xml.addTag( "DownloadPath", i->second );
-			xml.addChildAttrib( "Name", i->first );
 		}
 	}
 	xml.stepOut();

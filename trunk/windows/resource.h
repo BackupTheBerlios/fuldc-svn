@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by f:\Programmering\C++\fuldc\branches\6.65-maintenance\DCPlusPlus.rc
+// Used by f:\Programmering\C++\fuldc\trunk\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_SLOTSPIN                    101
@@ -497,7 +497,6 @@
 #define IDC_SB_TIME_STAMPS              1278
 #define IDC_ST_MINISLOTS_EXT            1279
 #define IDC_ST_MINISLOTS_SIZE           1280
-#define IDC_SB_PATHS                    1281
 #define IDC_ST_PATHS                    1282
 #define IDC_SB_MAX_SOURCES              1283
 #define IDC_SB_WEB_SHORTCUTS            1284
@@ -506,9 +505,7 @@
 #define IDC_ST_MATCH_TYPE               1287
 #define IDC_EDIT_TIME_STAMPS            1288
 #define IDC_BTN_TIME_STAMP_HELP         1289
-#define IDC_DOWNLOAD_LIST               1290
 #define IDC_TAB_DIRTY_BLEND             1292
-#define IDC_SB_                         1293
 #define IDC_SB_TAB_DIRTY_BLEND          1293
 #define IDC_CH_STATUS_HUB_BOLD          1294
 #define IDC_CH_STATUS_PM_BOLD           1295
@@ -522,18 +519,14 @@
 #define IDC_POPUP_REMOVE                1300
 #define IDC_APPEARANCE                  1301
 #define IDC_POPUP_APPEARANCE            1301
-#define IDC_                            1302
 #define IDC_STRIP_ISP                   1302
 #define IDC_POPUP_ACTIVATE_ON_CLICK     1302
 #define IDC_FH_STRIP_ISP                1303
-#define IDC_POPUP_REMOVE3               1303
 #define IDC_POPUP_DONT_SHOW_ACTIVE      1303
 #define IDC_FH_LOG_MAIN_CHAT            1304
 #define IDC_DUPES                       1304
-#define IDC_BUTTON1                     1305
 #define IDC_DUPE_COLOR                  1305
 #define IDC_NOTTH_BOX                   1306
-#define IDC_DUPE_COLOR2                 1307
 #define IDC_NOTTH                       1307
 #define IDC_LOG_OPTIONS                 1308
 #define IDC_IGNORE                      1309
@@ -603,6 +596,8 @@
 #define IDC_FAVORITE_DIRECTORIES        1367
 #define IDC_OTHER_QUEUE_OPTIONS         1368
 #define IDC_SETTINGS_FAVORITE_DIRECTORIES 1369
+#define IDC_DOWNLOAD_FAVORITE_DIRS      1370
+#define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 1371
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -610,9 +605,9 @@
 #define IDC_DOWNLOAD_TARGET             5000
 #define IDC_DOWNLOAD_TARGET_DIR         5500
 #define IDC_SELECT_WINDOW               6000
+#define IDC_USER_COMMAND                6500
 #define IDC_VIEW_WAITING_USERS          6628
 #define IDR_WAITING_USERS               6629
-#define IDC_USER_COMMAND                6500
 #define IDC_PRIORITY_PAUSED             7000
 #define IDC_PRIORITY_LOWEST             7001
 #define IDC_PRIORITY_LOW                7002

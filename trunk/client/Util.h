@@ -88,6 +88,12 @@ public:
 	bool operator()(const pair<T1, T2>&p1, const pair<T1, T2>&p2) { return op()(p1.first, p2.first); };
 };
 
+template<class T1, class T2, class op= less_equal<T1> >
+class SortSecond {
+public:
+	bool operator()(const pair<T1, T2>&p1, const pair<T1, T2>&p2) { return op()(p1.second, p2.second); };
+};
+
 template<class T>
 struct PointerHash {
 #if _MSC_VER >= 1300 

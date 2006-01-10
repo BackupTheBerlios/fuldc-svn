@@ -199,6 +199,7 @@ bool FavoriteManager::addFavoriteDir(const string& aDirectory, const string & aN
 		}
 	}
 	favoriteDirs.push_back(make_pair(aDirectory, aName));
+	sort(favoriteDirs.begin(), favoriteDirs.end(), SortSecond<string, string>());
 	save();
 	return true;
 }
@@ -224,6 +225,7 @@ bool FavoriteManager::renameFavoriteDir(const string& aName, const string& anoth
 	for(StringPairIter j = favoriteDirs.begin(); j != favoriteDirs.end(); ++j) {
 		if(Util::stricmp(j->second.c_str(), aName.c_str()) == 0) {
 			j->second = anotherName;
+			sort(favoriteDirs.begin(), favoriteDirs.end(), SortSecond<string, string>());
 			save();
 			return true;
 		}
@@ -503,6 +505,19 @@ void FavoriteManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
+
+	//compatibility with old fuldc favorite dirs, they're stored in dcplusplus.xml
+	aXml->resetCurrentChild();
+	if(aXml->findChild("DownloadPaths")) {
+		aXml->stepIn();
+		while(aXml->findChild("DownloadPath")){
+			string name = aXml->getChildAttrib("Name");
+			string path = aXml->getChildData();
+			addFavoriteDir(path, name);
+		}
+		aXml->stepOut();
+	} 
+
 	//Favorite download to dirs
 	aXml->resetCurrentChild();
 	if(aXml->findChild("FavoriteDirs")) {

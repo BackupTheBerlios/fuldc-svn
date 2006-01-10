@@ -379,7 +379,7 @@
 		<String Name="SettingsExampleText">Donate â‚¬â‚¬â‚¬:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsExternalIp">External / WAN IP</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
-		<String Name="SettingsFavoriteDirsPage">Downloads\Favorites</String>
+		<String Name="SettingsFavoriteDirsPage">DC++\Downloads\Favorites</String>
 		<String Name="SettingsFavoriteDirs">Favorite download directories</String>
 		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
@@ -430,7 +430,7 @@
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
-		<String Name="SettingsQueue">Downloads\Queue</String>
+		<String Name="SettingsQueue">DC++\Downloads\Queue</String>
 		<String Name="SettingsRenameFolder">Rename</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>

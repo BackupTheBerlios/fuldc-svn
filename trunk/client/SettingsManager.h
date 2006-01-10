@@ -199,17 +199,6 @@ public:
 	void load(const string& aFileName);
 	void save(const string& aFileName);
 
-	StringPairList& getDownloadPaths() {
-		Lock l(cs);
-		return downloadPaths;
-	}
-
-	void setDownloadPaths( const StringPairList& dl ) {
-		Lock l(cs);
-		downloadPaths = dl;
-		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
-	}
-
 	TStringList getSearchHistory() const {
 		Lock l(cs);
 		return searchHistory;
@@ -287,7 +276,6 @@ private:
 
 	mutable CriticalSection cs;
 
-	StringPairList	downloadPaths;
 	TStringList		searchHistory;
 	TStringList		filterHistory;
 };

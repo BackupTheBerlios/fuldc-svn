@@ -619,30 +619,39 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	dcassert(wID >= IDC_DOWNLOAD_TARGET);
 	size_t newId = (size_t)wID - IDC_DOWNLOAD_TARGET;
 
-	if(newId < downloadPaths.size()){
-		StringPairIter j = downloadPaths.begin();
-		for(size_t i = 0; i < newId; ++i, ++j);
-		ctrlResults.forEachSelectedT( SearchInfo::Download( Text::toT(j->second) ) );
-	}else if((newId - downloadPaths.size()) < WinUtil::lastDirs.size()) {
-		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId - downloadPaths.size()]));
+	if(newId < WinUtil::lastDirs.size()) {
+		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId]));
 	} else {
-		dcassert((newId - WinUtil::lastDirs.size() - downloadPaths.size()) < targets.size());
-		dcassert((newId - WinUtil::lastDirs.size() - downloadPaths.size()) >= 0);
-		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(Text::toT(targets[newId - WinUtil::lastDirs.size() - downloadPaths.size()])));
+		dcassert((newId - WinUtil::lastDirs.size()) < targets.size());
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(Text::toT(targets[newId - WinUtil::lastDirs.size()])));
 	}
 	return 0;
 }
 
 LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	dcassert((wID-IDC_DOWNLOAD_WHOLE_TARGET) < (int)WinUtil::lastDirs.size());
-	size_t newId = wID-IDC_DOWNLOAD_WHOLE_TARGET;
-	if(newId < downloadPaths.size()){
-		StringPairIter j = downloadPaths.begin();
-		for(size_t i = 0; i < newId; ++i, ++j);
-		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole( Text::toT(j->second) ));
-	}else {
-		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(WinUtil::lastDirs[newId - downloadPaths.size()]));
+	ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(WinUtil::lastDirs[wID-IDC_DOWNLOAD_WHOLE_TARGET]));
+	return 0;
+}
+
+LRESULT SearchFrame::onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	dcassert(wID >= IDC_DOWNLOAD_FAVORITE_DIRS);
+	size_t newId = (size_t)wID - IDC_DOWNLOAD_FAVORITE_DIRS;
+
+	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
+	if(newId < spl.size()) {
+		ctrlResults.forEachSelectedT(SearchInfo::Download(Text::toT(spl[newId].first)));
+	} else {
+		dcassert((newId - spl.size()) < targets.size());
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(Text::toT(targets[newId - spl.size()])));
 	}
+	return 0;
+}
+
+LRESULT SearchFrame::onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
+	dcassert((wID-IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS) < (int)spl.size());
+	ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(Text::toT(spl[wID-IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS].first)));
 	return 0;
 }
 
@@ -984,13 +993,17 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 
 		int n = 0;
 		
-		if(downloadPaths.size() > 0){
-			for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
-				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, Text::toT(i->first).c_str() );
-				++n;
+		//Append favorite download dirs
+		StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
+		if (spl.size() > 0) {
+			for(StringPairIter i = spl.begin(); i != spl.end(); i++) {
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
+				n++;
 			}
 			targetMenu.AppendMenu(MF_SEPARATOR);
 		}
+
+		n = 0;
 		targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CTSTRING(BROWSE));
 		if(WinUtil::lastDirs.size() > 0) {
 			targetMenu.AppendMenu(MF_SEPARATOR);
@@ -1020,13 +1033,16 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 		}
 
 		n = 0;
-		if(downloadPaths.size() > 0){
-			for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i){
-				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_TARGET + n, Text::toT(i->first).c_str() );
-				++n;
+		//Append favorite download dirs
+		if (spl.size() > 0) {
+			for(StringPairIter i = spl.begin(); i != spl.end(); ++i) {
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
+				n++;
 			}
 			targetDirMenu.AppendMenu(MF_SEPARATOR);
 		}
+
+		n = 0;
 		targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
 		if(WinUtil::lastDirs.size() > 0) {
 			targetDirMenu.AppendMenu(MF_SEPARATOR);
