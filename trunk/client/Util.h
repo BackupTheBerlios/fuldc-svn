@@ -82,10 +82,16 @@ private:
 	const T2& a;
 };
 
+template<class T>
+class LessIgnoreCase {
+public:
+	bool operator() (const T& t1, const T& t2) const { return Util::stricmp(t1, t2) < 0; }
+};
+
 template<class T1, class T2, class op= less_equal<T1> >
 class SortFirst {
 public:
-	bool operator()(const pair<T1, T2>&p1, const pair<T1, T2>&p2) { return op()(p1.first, p2.first); };
+	bool operator() (const pair<T1, T2>&p1, const pair<T1, T2>&p2) const { return op()(p1.first, p2.first); };
 };
 
 template<class T1, class T2, class op= less_equal<T1> >

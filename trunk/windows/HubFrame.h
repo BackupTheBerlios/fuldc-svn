@@ -39,8 +39,9 @@
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 #define FILTER_MESSAGE_MAP 8
-
 #define RESOLVE_IP WM_APP+1
+
+struct CompareItems;
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
 	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
@@ -401,10 +402,10 @@ private:
 
 	tstring searchTerm;
 	tstring filter;
-	typedef multimap< tstring, UserInfo* > UserMap;
-	typedef pair< tstring, UserInfo* > UserPair;
-	typedef UserMap::iterator UserIter;
-	UserMap usermap; //save all userinfo items that don't match the filter here
+	typedef pair<tstring, User::Ptr> NickTabPair;
+	typedef multiset<NickTabPair , SortFirst<tstring, User::Ptr, LessIgnoreCase<tstring> > > NickTabList;
+	typedef NickTabList::iterator NickTabIter;
+	NickTabList nickTabList;
 	tstring curNick;
 	
 	CButton ctrlShowUsers;
@@ -425,6 +426,10 @@ private:
 
 	typedef vector<pair<UpdateInfo, Speakers> > UpdateList;
 	typedef UpdateList::iterator UpdateIter;
+	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
+	typedef UserMap::iterator UserMapIter;
+
+	UserMap userMap;
 	UpdateList updateList;
 	CriticalSection updateCS;
 	bool updateUsers;
@@ -445,7 +450,7 @@ private:
 	UserInfo* findUser(tstring & nick);
 
 	bool updateUser(const UpdateInfo& u);
-	void removeUser(const UpdateInfo& u);
+	void removeUser(const User::Ptr& aUser);
 
 	void updateUserList(UserInfo* ui = NULL);
 	bool parseFilter(int& mode, int64_t& size);

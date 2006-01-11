@@ -40,7 +40,9 @@ LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(timerId != 0)
 		KillTimer(timerId);
+	
 	checkButton(false);	
+	frame = NULL;
 	
 	bHandled = FALSE;
 	return 0;

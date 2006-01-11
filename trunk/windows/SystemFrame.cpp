@@ -26,13 +26,19 @@
 
 LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	//needs to be set before calling create otherwise the menu won't be created correctly
+	//ctrlPad.unsetFlag( CFulEditCtrl::URL_SINGLE_CLICK );
+	//ctrlPad.setFlag( CFulEditCtrl::MENU_PASTE | CFulEditCtrl::URL_DOUBLE_CLICK );
+
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
-	
-	ctrlPad.SetReadOnly(TRUE);
-	ctrlPad.SetFont(WinUtil::font);
 
-	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
+	ctrlPad.LimitText(0);
+	ctrlPad.SetFont(WinUtil::font);
+	ctrlPad.SetTextColor(WinUtil::textColor);
+	ctrlPad.SetBackgroundColor(WinUtil::bgColor);
+	ctrlPad.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB | CFulEditCtrl::STRIP_ISP |
+		CFulEditCtrl::HANDLE_SCROLL );
 
 	deque<pair<time_t, string> > oldMessages = LogManager::getInstance()->getLastLogs();
 	// Technically, we might miss a message or two here, but who cares...
@@ -42,6 +48,8 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		addLine(i->first, Text::toT(i->second));
 	}
 
+	WinUtil::SetIcon(m_hWnd, _T("notepad.ico"));
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -49,6 +57,10 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT SystemFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 
 	LogManager::getInstance()->removeListener(this);
+
+	checkButton(false);
+	frame = NULL;
+
 	bHandled = FALSE;
 	return 0;
 	
@@ -68,24 +80,6 @@ void SystemFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	
 }
 
-LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	HWND focus = GetFocus();
-	bHandled = false;
-	if(focus == ctrlPad.m_hWnd) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		tstring x;
-		/*@ todo tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlPad, x);
-		tstring::size_type end = x.find(_T(" "), start);
-
-		if(end == tstring::npos)
-			end = x.length();
-		
-		bHandled = WinUtil::parseDBLClick(x, start, end);
-		*/
-	}
-	return 0;
-}
-
 LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)wParam);
 	
@@ -96,7 +90,7 @@ LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 }
 
 void SystemFrame::addLine(time_t t, const tstring& msg) {
-	ctrlPad.AppendText((_T("\r\n[") + Util::getShortTimeString(t) + _T("] ") + msg).c_str());
+	ctrlPad.AddLine((_T("[") + Util::getShortTimeString(t) + _T("] ") + msg).c_str(), false);
 
 }
 /**

@@ -225,6 +225,7 @@ LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 			SettingsManager::FINISHED_UL_WIDTHS, SettingsManager::FINISHED_UL_VISIBLE);
 		
 		checkButton(false);
+		frame = NULL;
 
 		//cleanup to avoid memory leak
 		for(int i = 0; i < ctrlList.GetItemCount(); ++i) {

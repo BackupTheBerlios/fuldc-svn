@@ -191,7 +191,10 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 			delete ctrlUsers.getItemData(i);
 		}
+		
 		checkButton(false);
+		frame = NULL;
+
 		bHandled = FALSE;
 		return 0;
 	}

@@ -107,7 +107,6 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 		}
 		u = users.insert(make_pair(aNick, new OnlineUser(p, *this))).first->second;
 		u->getIdentity().setNick(aNick);
-		u->getIdentity().setShortNick(aNick);
 	}
 
 	ClientManager::getInstance()->putOnline(*u);

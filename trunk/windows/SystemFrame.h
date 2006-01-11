@@ -36,7 +36,7 @@ class SystemFrame : public MDITabChildWindowImpl<SystemFrame>, public StaticFram
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("SystemFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
-	SystemFrame() : ctrlClientContainer(_T("edit"), this, SYSTEM_LOG_MESSAGE_MAP) { }
+	SystemFrame() { }
 	virtual ~SystemFrame() { }
 	
 	typedef MDITabChildWindowImpl<SystemFrame> baseClass;
@@ -48,8 +48,6 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(SYSTEM_LOG_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -77,8 +75,7 @@ public:
 	}
 	
 private:
-	CEdit ctrlPad;
-	CContainedWindow ctrlClientContainer;
+	CFulEditCtrl ctrlPad;
 
 	void addLine(time_t t, const tstring& msg);
 

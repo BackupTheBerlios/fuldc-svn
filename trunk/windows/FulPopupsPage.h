@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2003-2005 Pär Björklund, per.bjorklund@gmail.com
+* Copyright (C) 2003-2006 Pär Björklund, per.bjorklund@gmail.com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef FULPOPUPSPAGE_H
+#if !defined(FULPOPUPSPAGE_H)
 #define FULPOPUPSPAGE_H
 
 #if _MSC_VER > 1000
@@ -32,7 +32,7 @@ class FulPopupsPage: public CPropertyPage<IDD_FULPOPUPPAGE>, public PropPage
 public:
 	FulPopupsPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle( CTSTRING(SETTINGS_FUL_POPUP) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	~FulPopupsPage() { };

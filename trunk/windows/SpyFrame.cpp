@@ -74,14 +74,16 @@ LRESULT SpyFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		bHandled = TRUE;
 		closed = true;
 		PostMessage(WM_CLOSE);
-		checkButton(false);
-		return 0;
 	} else {
 		WinUtil::saveHeaderOrder(ctrlSearches, SettingsManager::SPYFRAME_ORDER, SettingsManager::SPYFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		
+		checkButton(false);
+		frame = NULL;
 
 		bHandled = FALSE;
-		return 0;
 	}
+	
+	return 0;
 }
 
 LRESULT SpyFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {

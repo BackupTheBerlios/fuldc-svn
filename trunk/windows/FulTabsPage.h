@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2003-2005 Pär Björklund, per.bjorklund@gmail.com
+* Copyright (C) 2003-2006 Pär Björklund, per.bjorklund@gmail.com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef FULTABSPAGE_H
+#if !defined(FULTABSPAGE_H)
 #define FULTABSPAGE_H
 
 #if _MSC_VER > 1000
@@ -31,7 +31,7 @@ class FulTabsPage: public CPropertyPage<IDD_FULTABSPAGE>, public PropPage
 public:
 	FulTabsPage(SettingsManager *s) : PropPage(s) {	
 		SetTitle( CTSTRING(SETTINGS_FUL_TABS) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	~FulTabsPage() { };
 

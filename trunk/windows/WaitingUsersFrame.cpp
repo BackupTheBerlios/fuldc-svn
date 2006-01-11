@@ -73,6 +73,7 @@ LRESULT WaitingUsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		}
 
 		checkButton(false);
+		frame = NULL;
 
 		bHandled = FALSE;
 		return 0;

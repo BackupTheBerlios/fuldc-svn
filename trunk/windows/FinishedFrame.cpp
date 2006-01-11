@@ -229,6 +229,7 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		ctrlList.DeleteAllItems();
 		
 		checkButton(false);
+		frame = NULL;
 
 		bHandled = FALSE;
 		return 0;

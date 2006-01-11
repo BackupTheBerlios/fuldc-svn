@@ -267,6 +267,7 @@ LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 			SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 		
 		checkButton(false);
+		frame = NULL;
 
 		bHandled = FALSE;
 		return 0;

@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2003-2005 Pär Björklund, per.bjorklund@gmail.com
+* Copyright (C) 2003-2006 Pär Björklund, per.bjorklund@gmail.com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef FULAPPEARANCEPAGE_H
+#if !defined(FULAPPEARANCEPAGE_H)
 #define FULAPPEARANCEPAGE_H
 
 #if _MSC_VER > 1000
@@ -31,7 +31,7 @@ class FulAppearancePage : public CPropertyPage<IDD_FULAPPEARANCEPAGE>, public Pr
 public:
 	FulAppearancePage(SettingsManager *s) : PropPage(s) {	
 		SetTitle( CTSTRING(SETTINGS_FUL_APPEARANCE) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	~FulAppearancePage() {};
 

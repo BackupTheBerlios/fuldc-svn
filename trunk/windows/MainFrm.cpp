@@ -361,7 +361,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolBar.SetImageList(largeImages);
 	ctrlToolBar.SetHotImageList(largeImagesHot);
 
-	const int numButtons = 23;
+	const int numButtons = 24;
 
 
 	TBBUTTON tb[numButtons];
@@ -477,6 +477,12 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_SYSTEM_LOG;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].iBitmap = bitmap++;
