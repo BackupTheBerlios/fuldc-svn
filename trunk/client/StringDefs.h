@@ -618,7 +618,6 @@ enum Strings { // @DontAdd
 	SETTINGS_BTN_FONT, // "Font"
 	SETTINGS_BTN_TEXTCOLOR, // "Text Color"
 	SETTINGS_SB_MINISLOTS, // "Minislots"
-	SETTINGS_SB_PATHS, // "Static \"download to\" directories"
 	SETTINGS_SB_MAX_SOURCES, // "Max sources for match queue"
 	SETTINGS_ST_MINISLOTS_EXT, // "Minislots file extensions"
 	SETTINGS_ST_MINISLOTS_SIZE, // "Minislots file size in KiB"
@@ -756,5 +755,6 @@ enum Strings { // @DontAdd
 	MUTE_ON_AWAY, // "Mute sounds when away mode is enabled"
 	DROP_FAKE_NICK_CONNECTION_LOG, // "Detected a user trying to connect using a fake nick, nick=%s ip=%s"
 	MENU_CLOSE_ALL_OFFLINE_PM, // "Close all offline PM windows"
+	USER_NOT_AVAILABLE, // "User not available, could be because he is offline"
 	LAST // @DontAdd
 };

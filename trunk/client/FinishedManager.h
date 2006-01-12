@@ -36,10 +36,10 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FinishedItem(string const& aTarget, string const& aUser, string const& aHub, 
+	FinishedItem(string const& aTarget, string const& aUser, CID const& aCID, string const& aHub, 
 		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, u_int32_t aTime,
 		bool aCrc32 = false) : 
-		target(aTarget), user(aUser), hub(aHub), size(aSize), chunkSize(aChunkSize),
+		target(aTarget), user(aUser), cid(aCID), hub(aHub), size(aSize), chunkSize(aChunkSize),
 		milliSeconds(aMSeconds), time(aTime), crc32Checked(aCrc32) 
 	{
 	}
@@ -48,6 +48,7 @@ public:
 
 	GETSET(string, target, Target);
 	GETSET(string, user, User);
+	GETSET(CID, cid, CID);
 	GETSET(string, hub, Hub);
 	GETSET(int64_t, size, Size);
 	GETSET(int64_t, chunkSize, ChunkSize);

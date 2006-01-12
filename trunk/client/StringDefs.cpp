@@ -615,7 +615,6 @@ string ResourceManager::strings[] = {
 "Font", 
 "Text Color", 
 "Minislots", 
-"Static \"download to\" directories", 
 "Max sources for match queue", 
 "Minislots file extensions", 
 "Minislots file size in KiB", 
@@ -753,6 +752,7 @@ string ResourceManager::strings[] = {
 "Mute sounds when away mode is enabled", 
 "Detected a user trying to connect using a fake nick, nick=%s ip=%s", 
 "Close all offline PM windows", 
+"User not available, could be because he is offline", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1368,7 +1368,6 @@ string ResourceManager::names[] = {
 "SettingsBtnFont", 
 "SettingsBtnTextcolor", 
 "SettingsSbMinislots", 
-"SettingsSbPaths", 
 "SettingsSbMaxSources", 
 "SettingsStMinislotsExt", 
 "SettingsStMinislotsSize", 
@@ -1506,4 +1505,5 @@ string ResourceManager::names[] = {
 "MuteOnAway", 
 "DropFakeNickConnectionLog", 
 "MenuCloseAllOfflinePm", 
+"UserNotAvailable", 
 };

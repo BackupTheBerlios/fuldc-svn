@@ -32,7 +32,7 @@
 #include "NotepadFrame.h"
 #include "QueueFrame.h"
 #include "SpyFrame.h"
-#include "FinishedFrame.h"
+#include "FinishedDLFrame.h"
 #include "ADLSearchFrame.h"
 #include "FinishedULFrame.h"
 #include "TextFrame.h"
@@ -142,7 +142,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
 		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
@@ -172,7 +172,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
 		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
@@ -241,7 +241,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
 	if(BOOLSETTING(OPEN_QUEUE)) PostMessage(WM_COMMAND, IDC_QUEUE);
-	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED);
+	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_DL);
 	if(BOOLSETTING(OPEN_WAITING_USERS)) PostMessage(WM_COMMAND, IDC_VIEW_WAITING_USERS);
 	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_UL);
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
@@ -420,7 +420,7 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FINISHED;
+	tb[n].idCommand = IDC_FINISHED_DL;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
@@ -587,7 +587,7 @@ LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		case IDC_FAVUSERS:				UsersFrame::openWindow(); break;
 		case IDC_QUEUE:					QueueFrame::openWindow(); break;
 		case IDC_VIEW_WAITING_USERS:	WaitingUsersFrame::openWindow(); break;
-		case IDC_FINISHED:				FinishedFrame::openWindow(); break;
+		case IDC_FINISHED_DL:			FinishedDLFrame::openWindow(); break;
 		case IDC_FINISHED_UL:			FinishedULFrame::openWindow(); break;
 		case ID_FILE_SEARCH:			SearchFrame::openWindow(); break;
 		case IDC_FILE_ADL_SEARCH:		ADLSearchFrame::openWindow(); break;
@@ -755,7 +755,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_FAVORITES: stringId = ResourceManager::MENU_FAVORITE_HUBS; break;
 			case IDC_FAVUSERS: stringId = ResourceManager::MENU_FAVORITE_USERS; break;
 			case IDC_QUEUE: stringId = ResourceManager::MENU_DOWNLOAD_QUEUE; break;
-			case IDC_FINISHED: stringId = ResourceManager::FINISHED_DOWNLOADS; break;
+			case IDC_FINISHED_DL: stringId = ResourceManager::FINISHED_DOWNLOADS; break;
 			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
 			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;

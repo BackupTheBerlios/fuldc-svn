@@ -291,7 +291,7 @@
 #define IDC_LOG_FORMAT                  1081
 #define IDC_NEXT                        1082
 #define IDC_PRIVATE_CHAT                1083
-#define IDC_FINISHED                    1084
+#define IDC_FINISHED_DL                 1084
 #define IDC_TEMP_DOWNLOAD_DIRECTORY     1084
 #define IDC_BROWSETEMPDIR               1085
 #define IDC_AUTO_AWAY                   1086

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FINISHED_UL_FRAME_H)
-#define FINISHED_UL_FRAME_H
+#if !defined(FINISHED_DL_FRAME_H)
+#define FINISHED_DL_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,38 +25,38 @@
 
 #include "FinishedFrameBase.h"
 
-class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, ResourceManager::FINISHED_UPLOADS, IDC_FINISHED_UL>
+class FinishedDLFrame : public FinishedFrameBase<FinishedDLFrame, ResourceManager::FINISHED_DOWNLOADS, IDC_FINISHED_DL>
 {
 public:
-	FinishedULFrame() {
-		upload = true;
-		iconName = _T("FinishedUL.ico");
-		columnWidth   = SettingsManager::FINISHED_UL_WIDTHS;
-		columnOrder   = SettingsManager::FINISHED_UL_ORDER;
-		columnVisible = SettingsManager::FINISHED_UL_VISIBLE;
+	FinishedDLFrame() {
+		upload = false;
+		columnOrder   = SettingsManager::FINISHED_ORDER;
+		columnWidth   = SettingsManager::FINISHED_WIDTHS;
+		columnVisible = SettingsManager::FINISHED_VISIBLE;
+		iconName = _T("FinishedDL.ico");
 	};
-	virtual ~FinishedULFrame() { };
+	virtual ~FinishedDLFrame() { };
 
-	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedDLFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
 		
-	virtual void on(AddedUl, FinishedItem* entry) throw() {
+	virtual void on(AddedDl, FinishedItem* entry) throw() {
 		PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (WPARAM)entry);
 	}
-	virtual void on(RemovedUl, FinishedItem* entry) throw() { 
+	virtual void on(RemovedDl, FinishedItem* entry) throw() { 
 		totalBytes -= entry->getChunkSize();
 		totalTime -= entry->getMilliSeconds();
 		PostMessage(WM_SPEAKER, SPEAK_REMOVE);
 	}
-	virtual void on(RemovedAllUl) throw() { 
+	virtual void on(RemovedAllDl) throw() { 
 		PostMessage(WM_SPEAKER, SPEAK_REMOVE_ALL);
 		totalBytes = 0;
 		totalTime = 0;
 	}
 };
 
-#endif // !defined(FINISHED_UL_FRAME_H)
+#endif // !defined(FINISHED_DL_FRAME_H)
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.4 2004/01/06 01:52:10 trem Exp $
+ * $Id: FinishedFrame.h,v 1.2 2004/01/06 01:52:10 trem Exp $
  */

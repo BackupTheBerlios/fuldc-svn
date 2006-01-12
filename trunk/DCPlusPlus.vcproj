@@ -415,14 +415,6 @@
 				>
 			</File>
 			<File
-				RelativePath="windows\FinishedFrame.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\windows\FinishedULFrame.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\windows\FulAdvancedPage.cpp"
 				>
 			</File>
@@ -680,7 +672,11 @@
 				>
 			</File>
 			<File
-				RelativePath="windows\FinishedFrame.h"
+				RelativePath=".\windows\FinishedDLFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\FinishedFrameBase.h"
 				>
 			</File>
 			<File

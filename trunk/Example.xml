@@ -614,7 +614,6 @@
 		<String Name="SettingsBtnFont">Font</String>
 		<String Name="SettingsBtnTextcolor">Text Color</String>
 		<String Name="SettingsSbMinislots">Minislots</String>
-		<String Name="SettingsSbPaths">Static \"download to\" directories</String>
 		<String Name="SettingsSbMaxSources">Max sources for match queue</String>
 		<String Name="SettingsStMinislotsExt">Minislots file extensions</String>
 		<String Name="SettingsStMinislotsSize">Minislots file size in KiB</String>
@@ -752,5 +751,6 @@
 		<String Name="MuteOnAway">Mute sounds when away mode is enabled</String>
 		<String Name="DropFakeNickConnectionLog">Detected a user trying to connect using a fake nick, nick=%s ip=%s</String>
 		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
+		<String Name="UserNotAvailable">User not available, could be because he is offline</String>
 	</Strings>
 </Language>
