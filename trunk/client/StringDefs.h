@@ -138,7 +138,7 @@ enum Strings { // @DontAdd
 	FILE_NOT_AVAILABLE, // "File not available"
 	FILE_TYPE, // "File type"
 	FILE_WITH_DIFFERENT_SIZE, // "A file with a different size already exists in the queue"
-	FILE_WITH_DIFFERENT_TTH, // "A file with diffent tth root already exists in the queue"
+	FILE_WITH_DIFFERENT_TTH, // "A file with different tth root already exists in the queue"
 	FILENAME, // "Filename"
 	FILES_LEFT, // "files left"
 	FILES_PER_HOUR, // "files/h"

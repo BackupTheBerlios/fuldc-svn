@@ -135,7 +135,7 @@ string ResourceManager::strings[] = {
 "File not available", 
 "File type", 
 "A file with a different size already exists in the queue", 
-"A file with diffent tth root already exists in the queue", 
+"A file with different tth root already exists in the queue", 
 "Filename", 
 "files left", 
 "files/h", 

@@ -108,6 +108,19 @@ public:
 		int cnt;
 	};
 
+	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
+			int count = GetItemCount();
+			for(int i = 0; i < count; ++i)
+				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
+
+			return 0;
+		}
+
+		bHandled = FALSE;
+		return 1;
+	}
+
 	LRESULT onGetDispInfo(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
 		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
 		if(di->item.mask & LVIF_TEXT) {
@@ -490,19 +503,6 @@ public:
 			lvc.iOrder = columnList[i]->pos = piArray[i];
 			SetColumn(i, &lvc);
 		}
-	}
-
-	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
-			int count = GetItemCount();
-			for(int i = 0; i < count; ++i)
-				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
-
-			return 0;
-		}
-		
-		bHandled = FALSE;
-		return 1;
 	}
 
 	//find the current position for the column that was inserted at the specified pos

@@ -46,8 +46,8 @@
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
-	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20),
-	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false), refreshing(0)
+	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), refreshing(0),
+	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -693,7 +693,7 @@ int ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bo
 		LogManager::getInstance()->message(STRING(FILE_LIST_REFRRESH_IN_PROGRESS));
 		return REFRESH_IN_PROGRESS;
 	}
-
+	
 	update = aUpdate;
 	refreshDirs = dirs;
 	refreshIncoming = incoming;

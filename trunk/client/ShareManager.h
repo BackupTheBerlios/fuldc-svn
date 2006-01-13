@@ -283,8 +283,7 @@ private:
 	bool refreshIncoming;
 	bool refreshDir;
 	
-	//used to check if we've already started a refresh
-	__declspec(align(4)) volatile long refreshing;
+	volatile long refreshing;
 
 	StringList refreshPaths;
 	
