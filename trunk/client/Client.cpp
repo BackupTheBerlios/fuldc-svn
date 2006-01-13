@@ -51,6 +51,7 @@ void Client::reloadSettings() {
 		setPassword(hub->getPassword());
 	} else {
 		getMyIdentity().setNick(checkNick(SETTING(NICK)));
+		getMyIdentity().setDescription(SETTING(DESCRIPTION));
 	}
 	getMyIdentity().setUser(ClientManager::getInstance()->getMe());
 	getMyIdentity().setHubUrl(getHubUrl());

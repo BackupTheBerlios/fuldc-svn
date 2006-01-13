@@ -178,10 +178,8 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	vector<u_int8_t> buf;
 
 	while(true) {
-		size_t bytesRead = 0;
-
 		buf.resize(SETTING(SOCKET_OUT_BUFFER));
-		bytesRead = buf.size();
+		size_t bytesRead = buf.size();
 		size_t actual = file->read(&buf[0], bytesRead);
 		if(actual == 0) {
 			fire(BufferedSocketListener::TransmitDone());

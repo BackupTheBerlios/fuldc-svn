@@ -1606,8 +1606,6 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 }
 
 void HubFrame::updateUserList(UserInfo* ui) {
-	Lock l(updateCS);
-
 	int64_t size = -1;
 	int mode = -1;
 

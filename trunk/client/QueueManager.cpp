@@ -1289,6 +1289,8 @@ int QueueManager::countOnlineSources(const string& aTarget) {
 	Lock l(cs);
 
 	QueueItem* qi = fileQueue.find(aTarget);
+	if(qi == NULL)
+		return 0;
 	int onlineSources = 0;
 	for(QueueItem::Source::Iter i = qi->getSources().begin(); i != qi->getSources().end(); ++i) {
 		if((*i)->getUser()->isOnline())

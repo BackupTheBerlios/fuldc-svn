@@ -854,7 +854,15 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		ucParams["fileSIshort"] = Util::formatBytes(sr->getSize());
 		if(sr->getTTH() != NULL) {
 			ucParams["fileTR"] = sr->getTTH()->toBase32();
+		} else {
+			ucParams["fileTR"] = "NONE";
 		}
+
+		// compatibility with 0.674 and earlier
+		ucParams["file"] = ucParams["fileFN"];
+		ucParams["filesize"] = ucParams["fileSI"];
+		ucParams["filesizeshort"] = ucParams["fileSIshort"];
+		ucParams["tth"] = ucParams["fileTR"];
 
 		StringMap tmp = ucParams;
 		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp, true);

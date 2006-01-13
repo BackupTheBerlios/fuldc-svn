@@ -209,6 +209,10 @@ void TransferView::runUserCommand(UserCommand& uc) {
 
 		StringMap tmp = ucParams;
 		tmp["fileFN"] = Text::fromT(itemI->path + itemI->file);
+
+		// compatibility with 0.674 and earlier
+		ucParams["file"] = ucParams["fileFN"];
+
 		ClientManager::getInstance()->userCommand(itemI->user, uc, tmp, true);
 	}
 	return;

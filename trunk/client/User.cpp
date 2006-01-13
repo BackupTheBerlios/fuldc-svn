@@ -33,6 +33,8 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 	}
 	if(user) {
 		sm[prefix + "CID"] = user->getCID().toBase32();
+		sm[prefix + "TAG"] = getTag();
+		sm[prefix + "SSshort"] = Util::formatBytes(get("SS"));
 
 		if(compatibility) {
 			if(prefix == "my") {
@@ -41,6 +43,12 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 			} else {
 				sm["nick"] = getNick();
 				sm["cid"] = user->getCID().toBase32();
+				sm["ip"] = get("I4");
+				sm["tag"] = getTag();
+				sm["description"] = get("DE");
+				sm["email"] = get("EM");
+				sm["share"] = get("SS");
+				sm["shareshort"] = Util::formatBytes(get("SS"));
 			}
 		}
 	}
