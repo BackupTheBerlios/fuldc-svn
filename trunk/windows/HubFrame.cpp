@@ -308,13 +308,13 @@ void HubFrame::onEnter() {
 				if(ui != NULL){
 					if(!msg.empty()){
 						if (BOOLSETTING(POPUP_PMS) ) {
-							//@todo PrivateFrame::openWindow(ui->user, msg);
+							PrivateFrame::openWindow(ui->user, msg);
 						} else {
-							//ui->user->privateMessage("<" + client->getMyNick() + "> " + Text::fromT(msg));
 							ClientManager::getInstance()->privateMessage(ui->user, Text::fromT(msg));
 						}
-					} //else
-						//@todo PrivateFrame::openWindow(ui->user);
+					} else {
+						PrivateFrame::openWindow(ui->user);
+					}
 				}
 			}else if(Util::stricmp(cmd.c_str(), _T("topic")) == 0) {
 				addLine(_T("*** ") + Text::toT(client->getHubNameWithDescription()));
@@ -1393,7 +1393,7 @@ void HubFrame::on(UserIp, Client*, const OnlineUser::List& aList) throw() {
 	Lock l(updateCS);
 	updateList.reserve(aList.size());
 	for(OnlineUser::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-		// @todo if(!(*i)->isSet(User::HIDDEN))
+		if(!(*i)->getIdentity().isHidden())
 			updateList.push_back(make_pair(UpdateInfo(*(*i)), UPDATE_USERS));
 	}
 	if(!updateList.empty()) {
@@ -1655,11 +1655,10 @@ void HubFrame::updateUserList(UserInfo* ui) {
 }
 
 LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
 	StringMap params;
-	// @todo params["hub"] = client->getName();
-	// @todo params["hubaddr"] = client->getAddressPort();
-	// @todo params["mynick"] = client->getNick(); 
+	params["hubNI"] = client->getHubName();
+	params["hubURL"] = client->getHubUrl();
+	params["myNI"] = client->getMyNick(); 
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::CHAT, params));
 	if(!path.empty()) {

@@ -32,56 +32,58 @@
 void UserInfoBase::matchQueue() {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
 }
 void UserInfoBase::getList() {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
 }
-void UserInfoBase::addFav() {
-	FavoriteManager::getInstance()->addFavoriteUser(user);
-}
-void UserInfoBase::pm() {
-	//@todo PrivateFrame::openWindow(user);
-}
-
-void UserInfoBase::pm(const tstring& aMsg) {
-	//@todo PrivateFrame::openWindow(user, aMsg);
-}
-void UserInfoBase::grant() {
-	UploadManager::getInstance()->reserveSlot(user);
-}
-void UserInfoBase::removeAll() {
-	// @todo QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
-}
-
-void UserInfoBase::ignore() {
-	//@todo IgnoreManager::getInstance()->ignore(user->getNick());
-}
-void UserInfoBase::unignore() {
-	//@todo IgnoreManager::getInstance()->unignore(user->getNick());
-}
-
 void UserInfoBase::browseList() {
 	if(user->getCID().isZero())
 		return;
 	try {
 		QueueManager::getInstance()->addPfs(user, "");
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
+}
+
+void UserInfoBase::addFav() {
+	FavoriteManager::getInstance()->addFavoriteUser(user);
+}
+void UserInfoBase::pm() {
+	PrivateFrame::openWindow(user);
+}
+
+void UserInfoBase::pm(const tstring& aMsg) {
+	PrivateFrame::openWindow(user, aMsg);
+}
+void UserInfoBase::grant() {
+	UploadManager::getInstance()->reserveSlot(user);
+}
+void UserInfoBase::removeAll() {
+	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+}
+
+void UserInfoBase::ignore() {
+	IgnoreManager::getInstance()->ignore(Text::fromT(WinUtil::getNicks(user)));
+}
+void UserInfoBase::unignore() {
+	IgnoreManager::getInstance()->unignore(Text::fromT(WinUtil::getNicks(user)));
 }
 
 void UserInfoBase::showLog() {
 	StringMap params;
-	//@todo params["user"] = user->getNick();
-	//@todo params["hub"] = user->getClientName();
-	//@todo params["hubaddr"] = user->getClientAddressPort();
-	//@todo params["mynick"] = user->getClientNick(); 
-	//@todo params["mycid"] = user->getClientCID().toBase32(); 
-	//@todo params["cid"] = user->getCID().toBase32(); 
+	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(user->getCID()));
+	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(user->getCID()));
+	params["userCID"] = user->getCID().toBase32(); 
+	params["userNI"] = user->getFirstNick();
+	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())

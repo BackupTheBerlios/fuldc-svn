@@ -41,7 +41,7 @@ LRESULT WaitingUsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	// Create context menu
 	contextMenu.CreatePopupMenu();
 	contextMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
-	//@todo contextMenu.AppendMenu(MF_STRING, IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME));
+	contextMenu.AppendMenu(MF_STRING, IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME));
 	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 	contextMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
 	contextMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));

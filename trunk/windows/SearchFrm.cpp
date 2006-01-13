@@ -665,8 +665,7 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	if(!closed) {
 		TimerManager::getInstance()->removeListener(this);
 		SearchManager::getInstance()->removeListener(this);
- 		ClientManager* clientMgr = ClientManager::getInstance();
- 		clientMgr->removeListener(this);
+ 		ClientManager::getInstance()->removeListener(this);
 
 		frames.erase(m_hWnd);
 
@@ -1197,8 +1196,6 @@ LRESULT SearchFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 		if(si->isDupe()) {
 			plvcd->clrTextBk = SETTING(DUPE_COLOR);
-		} else if(si->sr->getType() == SearchResult::TYPE_FILE && si->sr->getTTH() == NULL) {
-			plvcd->clrTextBk = SETTING(NO_TTH_COLOR);
 		}
 	}
 

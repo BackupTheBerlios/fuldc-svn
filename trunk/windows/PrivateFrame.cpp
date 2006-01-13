@@ -87,7 +87,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	if(BOOLSETTING(STRIP_ISP_PM))
 		ctrlClient.setFlag(CFulEditCtrl::STRIP_ISP);
 
-	//@todo ctrlClient.SetNick(Text::toT(user->getClientNick()));
+	ctrlClient.SetNick(WinUtil::getNicks(replyTo));
 
 	bHandled = FALSE;
 	return 1;
@@ -118,7 +118,7 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 				}
 			}
 			if(BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
-				//@todo PopupManager::getInstance()->ShowPm(Text::toT(aUser->getNick()), aMessage, p->m_hWnd);
+				PopupManager::getInstance()->ShowPm(WinUtil::getNicks(replyTo), aMessage, p->m_hWnd);
 			}
 
 			if(BOOLSETTING(FLASH_WINDOW_ON_PM) && !BOOLSETTING(FLASH_WINDOW_ON_NEW_PM)) {
@@ -371,7 +371,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 }
 
-void PrivateFrame::addLine(const tstring& aLine) {
+void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 	if(!created) {
 		if(BOOLSETTING(POPUNDER_PM))
 			WinUtil::hiddenCreateEx(this);
@@ -403,8 +403,8 @@ void PrivateFrame::addLine(const tstring& aLine) {
 	
 	addClientLine(TSTRING(LAST_CHANGE) + Util::getTimeStringW());
 
-	//@todo if(bold)
-	//@todo		setDirty();
+	if(bold)
+		setDirty();
 }
 
 void PrivateFrame::addStatus(const tstring& aLine) {
@@ -558,34 +558,30 @@ LRESULT PrivateFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 void PrivateFrame::updateTitle() {
 	pair<tstring, bool> hubs = WinUtil::getHubNames(replyTo);
 	if(hubs.second) {
-		//@todo SetWindowText(Text::toT(user->getFullNick()).c_str());
+		SetWindowText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first).c_str());
 		setDisconnected(false);
 		if(offline){
-			//@todo addLine(_T("*** ") + TSTRING(USER_CAME_ONLINE), false);
+			addLine(_T("*** ") + TSTRING(USER_CAME_ONLINE), false);
 			offline = false;
 		}
 	} else {
-		/* @todo if(user->getClientName() == STRING(OFFLINE)) {
-			SetWindowText(Text::toT(user->getFullNick()).c_str());
-		} else {
-			SetWindowText((Text::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
-		}*/
-		//@todo addLine(_T("*** ") + TSTRING(USER_WENT_OFFLINE), false);
+		SetWindowText((WinUtil::getNicks(replyTo) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
+		
+		addLine(_T("*** ") + TSTRING(USER_WENT_OFFLINE), false);
         setDisconnected(true);
 		offline = true;
 	}
-	SetWindowText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first).c_str());
 }
 
 
 LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	StringMap params;
-	//@todo params["user"] = replyTo->getFirstNick();
-	//@todo params["hub"] = user->getClientName();
-	//@todo params["hubaddr"] = user->getClientAddressPort();
-	//@todo params["mynick"] = user->getClientNick(); 
-	//@todo params["mycid"] = user->getClientCID().toBase32(); 
-	//@todo params["cid"] = user->getCID().toBase32(); 
+	StringMap params;	
+
+	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+	params["userCID"] = replyTo->getCID().toBase32(); 
+	params["userNI"] = replyTo->getFirstNick();
+	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 	
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())
@@ -594,18 +590,18 @@ LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 }
 
 LRESULT PrivateFrame::onIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	IgnoreManager::getInstance()->ignore(replyTo->getFirstNick());
+	IgnoreManager::getInstance()->ignore(Text::fromT(WinUtil::getNicks(replyTo)));
 
 	return 0;
 }
 LRESULT PrivateFrame::onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	IgnoreManager::getInstance()->unignore(replyTo->getFirstNick());
+	IgnoreManager::getInstance()->unignore(Text::fromT(WinUtil::getNicks(replyTo)));
 
 	return 0;
 }
 
 LRESULT PrivateFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	//@todo QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
+	QueueManager::getInstance()->removeSources(replyTo, QueueItem::Source::FLAG_REMOVED);
 
 	return 0;
 }

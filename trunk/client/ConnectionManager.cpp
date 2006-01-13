@@ -520,7 +520,8 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 			return;
 		}
 
-		/* @todo if( BOOLSETTING(DROP_STUPID_CONNECTION) ) {
+		/* @todo possibly remove this and rely on the ip-check instead.
+		if( BOOLSETTING(DROP_STUPID_CONNECTION) ) {
 			if(Util::stricmp(aSource->getUser()->getNick(), aSource->getUser()->getClientNick()) == 0){
 				dcdebug("CM::onMyNick Incoming connection from stupid user %s\n", aSource->getUser()->getNick());
 				LogManager::getInstance()->message(STRING(DROP_STUPID_CONNECTION_LOG) + aSource->getRemoteIp());
@@ -529,8 +530,9 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 			}
 		}*/
 
-		/* @todo if(aSource->getUser()->getUserIp()) {
-			if(Util::stricmp(aSource->getUser()->getIp(), aSource->getRemoteIp()) != 0) {
+		if(ClientManager::getInstance()->getIdentity(aSource->getUser()).getUserIp()) {
+			if(Util::stricmp(ClientManager::getInstance()->getIdentity(aSource->getUser()).getIp(),
+					aSource->getRemoteIp()) != 0) {
 				dcdebug("CM::onMyNick Incoming connection using fake nick(%s) %s\n", aNick, aSource->getRemoteIp());
                 char * tmp = new char[STRING(DROP_FAKE_NICK_CONNECTION_LOG).length() + aSource->getRemoteIp().length() +
 					aNick.length()];
@@ -544,7 +546,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 				putConnection(aSource);
 				return;
 			}
-		} */
+		}
 
 		// We don't need this connection for downloading...make it an upload connection instead...
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);

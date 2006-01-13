@@ -60,6 +60,7 @@ enum Strings { // @DontAdd
 	CONNECTION_CLOSED, // "Connection closed"
 	CONNECTION_TIMEOUT, // "Connection timeout"
 	CONFIGURED_HUB_LISTS, // "Configured Public Hub Lists"
+	COPY_FILENAME, // "Copy Filename"
 	COPY_HUB, // "Copy address to clipboard"
 	COPY_MAGNET, // "Copy magnet link to clipboard"
 	COPY_NICK, // "Copy nick to clipboard"

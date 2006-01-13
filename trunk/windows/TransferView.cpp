@@ -160,14 +160,13 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			int pos = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
 			if(pos != -1) {
 				ItemInfo* ii = (ItemInfo*)ctrlTransfers.getItemData(pos);
-				/* @todo 
-				if(IgnoreManager::getInstance()->isUserIgnored(ii->user->getNick())) {
+				if(IgnoreManager::getInstance()->isUserIgnored(Text::fromT(WinUtil::getNicks(ii->user)))) {
 					userMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
 					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
 				} else {
 					userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
 					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
-				}*/
+				}
 				
 				
 				//check that we have a filename and that it's not a file list
@@ -223,11 +222,13 @@ LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo *ii = ctrlTransfers.getItemData(i);
-		ii->statusString = CTSTRING(CONNECTING_FORCED);
-		ii->updateMask |= ItemInfo::MASK_STATUS;
-		ii->update();
-		ctrlTransfers.updateItem( ii );
-		//@todo ii->user->connect();
+		if(ii != NULL) {
+			ii->statusString = CTSTRING(CONNECTING_FORCED);
+			ii->updateMask |= ItemInfo::MASK_STATUS;
+			ii->update();
+			ctrlTransfers.updateItem( ii );
+			ClientManager::getInstance()->connect(ii->user);
+		}
 	}
 	return 0;
 }
@@ -464,7 +465,7 @@ void TransferView::ItemInfo::update() {
 		}
 	}
 	if(colMask & MASK_FILE) {
-		//@todo fileList = (Util::stricmp(Text::toT(user->getNick()), file) == 0);
+		fileList = (Util::stricmp(WinUtil::getNicks(user), file) == 0);
 		columns[COLUMN_FILE] = file;
 	}
 	if(colMask & MASK_SIZE) {

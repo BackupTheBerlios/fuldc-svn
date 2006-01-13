@@ -56,6 +56,7 @@
 		<String Name="ConnectionClosed">Connection closed</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
 		<String Name="ConfiguredHubLists">Configured Public Hub Lists</String>
+		<String Name="CopyFilename">Copy Filename</String>
 		<String Name="CopyHub">Copy address to clipboard</String>
 		<String Name="CopyMagnet">Copy magnet link to clipboard</String>
 		<String Name="CopyNick">Copy nick to clipboard</String>
