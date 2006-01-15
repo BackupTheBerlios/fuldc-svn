@@ -206,7 +206,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
-	if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
+	if(ClientManager::getInstance()->isActive())
 		return;
 	User::Ptr p = cidMap[c.getFrom()];
 	if(!p || p == getMe())
@@ -258,8 +258,8 @@ void AdcHub::connect(const User* user, string const& token) {
 	if(state != STATE_NORMAL)
 		return;
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		send(AdcCommand(AdcCommand::CMD_CTM, user->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))).addParam(token));
+	if(ClientManager::getInstance()->isActive()) {
+		send(AdcCommand(AdcCommand::CMD_CTM, user->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(TCP_PORT))).addParam(token));
 	} else {
 		send(AdcCommand(AdcCommand::CMD_RCM, user->getCID()).addParam(CLIENT_PROTOCOL));
 	}
@@ -312,7 +312,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 
 	sendUDP(c);
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+	if(ClientManager::getInstance()->isActive()) {
 		c.setType(AdcCommand::TYPE_PASSIVE);
 		send(c);
 	}
@@ -369,7 +369,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+	if(ClientManager::getInstance()->isActive()) {
 		ADDPARAM("I4", "0.0.0.0");
 		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
 	} else {

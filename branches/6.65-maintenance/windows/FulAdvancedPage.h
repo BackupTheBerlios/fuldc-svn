@@ -34,7 +34,7 @@ class FulAdvancedPage : public CPropertyPage<IDD_FULADVANCEDPAGE>, public PropPa
 public:
 	FulAdvancedPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle( CTSTRING(SETTINGS_FUL_ADVANCED) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	~FulAdvancedPage() { 

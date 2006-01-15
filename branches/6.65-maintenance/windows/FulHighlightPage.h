@@ -34,7 +34,7 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	public:
 	FulHighlightPage(SettingsManager *s) : PropPage(s), bgColor(RGB(255,255,255)), fgColor(RGB(0, 0, 0)) {
 		SetTitle( CTSTRING(SETTINGS_FUL_HIGHLIGHT) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	virtual ~FulHighlightPage();
 

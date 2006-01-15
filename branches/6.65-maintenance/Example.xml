@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.674" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.68" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -292,7 +292,6 @@
 		<String Name="Pib">PiB</String>
 		<String Name="Picture">Picture</String>
 		<String Name="Port">Port: </String>
-		<String Name="PortIsBusy">Port %d is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++</String>
 		<String Name="PreparingFileList">Preparing file list...</String>
 		<String Name="PressFollow">Press the follow redirect button to connect to </String>
 		<String Name="Priority">Priority</String>
@@ -370,7 +369,6 @@
 		<String Name="SettingsConfirmExit">Confirm application exit</String>
 		<String Name="SettingsConfirmHubRemoval">Confirm favorite hub removal</String>
 		<String Name="SettingsConfirmItemRemoval">Confirm item removal in download queue</String>
-		<String Name="SettingsConnectionSettings">Connection Settings (see the help file if unsure)</String>
 		<String Name="SettingsConnectionType">Connection Type</String>
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>
 		<String Name="SettingsDirect">Direct connection</String>
@@ -397,7 +395,6 @@
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
 		<String Name="SettingsIncoming">Incoming connection settings (see Help/FAQ if unsure)</String>
-		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
 		<String Name="SettingsListDupes">Keep duplicate files in your file list</String>
@@ -424,7 +421,6 @@
 		<String Name="SettingsOptions">Options</String>
 		<String Name="SettingsOutgoing">Outgoing connection settings</String>
 		<String Name="SettingsOverride">Don't allow hub/UPnP to override</String>
-		<String Name="SettingsPassive">Passive</String>
 		<String Name="SettingsPersonalInformation">Personal Information</String>
 		<String Name="SettingsPmBeep">Make an annoying sound every time a private message is received</String>
 		<String Name="SettingsPmBeepOpen">Make an annoying sound when a private message window is opened</String>
@@ -480,7 +476,6 @@
 		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// and adc:// URL links</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
-		<String Name="SettingsUseUpnp">Use UPnP Control</String>
 		<String Name="SettingsUserCommands">DC++\Advanced\User Commands</String>
 		<String Name="SettingsWindows">DC++\Appearance\Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>

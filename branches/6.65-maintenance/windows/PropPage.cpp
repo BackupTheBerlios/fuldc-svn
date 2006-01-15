@@ -42,7 +42,7 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 				Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
 				break;
 			case T_INT:
-				if(settings->isDefault(i->setting) && i->setting == SettingsManager::IN_PORT)
+				if(settings->isDefault(i->setting) && i->setting == SettingsManager::TCP_PORT)
 					break;
 				if(settings->isDefault(i->setting) && i->setting == SettingsManager::UDP_PORT)
 					break;

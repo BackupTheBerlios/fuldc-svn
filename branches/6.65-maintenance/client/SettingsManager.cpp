@@ -29,6 +29,8 @@
 #include "CID.h"
 #include "StringTokenizer.h"
 
+StringList SettingsManager::connectionSpeeds;
+
 const string SettingsManager::settingTags[] =
 {
 	// Strings
@@ -49,27 +51,27 @@ const string SettingsManager::settingTags[] =
 	"QueueFrameVisible", "DirectoryListingFrameVisible","FinishedVisible", "FinishedULVisible",
 	"SENTRY", 
 	// Ints
-	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
+	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
-	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
+	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
-	"SkipZeroByte", "AdlsBreakOnFirst",
+	"SkipZeroByte", "AdlsBreakOnFirst", 
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
-	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
+	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "MaxFilelistSize", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
-	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad",
-	"SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
+	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
+	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
 
@@ -90,11 +92,23 @@ const string SettingsManager::settingTags[] =
 	"SENTRY"
 };
 
-const string SettingsManager::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", 
-"Satellite", "Cable", "DSL", "LAN(T1)", "LAN(T3)" };
-
 SettingsManager::SettingsManager()
 {
+	connectionSpeeds.push_back("0.005");
+	connectionSpeeds.push_back("0.01");
+	connectionSpeeds.push_back("0.02");
+	connectionSpeeds.push_back("0.05");
+	connectionSpeeds.push_back("0.1");
+	connectionSpeeds.push_back("0.2");
+	connectionSpeeds.push_back("0.5");
+	connectionSpeeds.push_back("1");
+	connectionSpeeds.push_back("2");
+	connectionSpeeds.push_back("5");
+	connectionSpeeds.push_back("10");
+	connectionSpeeds.push_back("20");
+	connectionSpeeds.push_back("50");
+	connectionSpeeds.push_back("100");
+
 	for(int i=0; i<SETTINGS_LAST; i++)
 		isSet[i] = false;
 
@@ -110,9 +124,10 @@ SettingsManager::SettingsManager()
 	setDefault(DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Downloads" PATH_SEPARATOR_STR);
 	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
-	//setDefault(SERVER, Util::getLocalIp());
-	setDefault(IN_PORT, Util::rand(1025, 32000));
-	setDefault(UDP_PORT, Util::rand(1025, 32000));
+	setDefault(TCP_PORT, 0);
+	setDefault(UDP_PORT, 0);
+	setDefault(INCOMING_CONNECTIONS, INCOMING_DIRECT);
+	setDefault(OUTGOING_CONNECTIONS, OUTGOING_DIRECT);
 	setDefault(ROLLBACK, 4096);
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
@@ -136,7 +151,7 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_MAIN_CHAT, false);
 	setDefault(STATUS_IN_CHAT, true);
 	setDefault(SHOW_JOINS, false);
-	setDefault(CONNECTION, connectionSpeeds[0]);
+	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
 	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
 	setDefault(USE_SYSTEM_ICONS, true);
@@ -158,7 +173,6 @@ SettingsManager::SettingsManager()
 	setDefault(GET_USER_INFO, true);
 	setDefault(URL_HANDLER, false);
 	setDefault(AUTO_AWAY, false);
-	setDefault(SMALL_SEND_BUFFER, false);
 	setDefault(BIND_ADDRESS, "0.0.0.0");
 	setDefault(SOCKS_PORT, 1080);
 	setDefault(SOCKS_RESOLVE, 1);
@@ -180,7 +194,7 @@ SettingsManager::SettingsManager()
 	setDefault(ADLS_BREAK_ON_FIRST, false);
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, false);
-	setDefault(LOG_FILELIST_TRANSFERS, true);
+	setDefault(LOG_FILELIST_TRANSFERS, false);
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, false);
 	setDefault(MAX_HASH_SPEED, 0);
@@ -194,7 +208,6 @@ SettingsManager::SettingsManager()
 	setDefault(POPUNDER_PM, false);
 	setDefault(POPUNDER_FILELIST, false);
 	setDefault(ADD_FINISHED_INSTANTLY, false);
-	setDefault(SETTINGS_USE_UPNP, false);
 	setDefault(DONT_DL_ALREADY_SHARED, false);
 	setDefault(CONFIRM_HUB_REMOVAL, false);
 	setDefault(USE_CTRL_FOR_LINE_HISTORY, true);
@@ -215,6 +228,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_SEARCH_SPY, false);
 	setDefault(OPEN_NETWORK_STATISTICS, false);
 	setDefault(OPEN_NOTEPAD, false);
+	setDefault(NO_IP_OVERRIDE, false);
 	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
 	setDefault(LAST_SEARCH_TYPE, 0);
 	setDefault(SOCKET_IN_BUFFER, 64*1024);
@@ -351,9 +365,7 @@ void SettingsManager::load(string const& aFileName)
 
 		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
-		if(v < 0.668 && isSet[IN_PORT]) {
-			set(UDP_PORT, SETTING(IN_PORT));
-		}
+
 
 		if(CID(SETTING(CLIENT_ID)).isZero())
 			set(CLIENT_ID, CID::generate().toBase32());
@@ -361,7 +373,7 @@ void SettingsManager::load(string const& aFileName)
 #ifdef _DEBUG
 		set(CLIENT_ID, CID::generate().toBase32());
 #endif
-		setDefault(UDP_PORT, SETTING(IN_PORT));
+		setDefault(UDP_PORT, SETTING(TCP_PORT));
 
 		xml.resetCurrentChild();
 		if(xml.findChild("SearchHistory")) {
@@ -407,7 +419,7 @@ void SettingsManager::save(string const& aFileName) {
 	for(i=STR_FIRST; i<STR_LAST; i++)
 	{
 		if(i == CONFIG_VERSION) {
-			xml.addTag(settingTags[i], string(VERSIONSTRING) );
+			xml.addTag(settingTags[i], VERSIONSTRING);
 			xml.addChildAttrib(type, curType);
 		} else if(isSet[i]) {
 			xml.addTag(settingTags[i], get(StrSetting(i), false));

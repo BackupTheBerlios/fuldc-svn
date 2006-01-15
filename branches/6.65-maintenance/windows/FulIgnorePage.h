@@ -32,7 +32,7 @@ class FulIgnorePage: public CPropertyPage<IDD_FULIGNOREPAGE>, public PropPage
 public:
 	FulIgnorePage(SettingsManager *s) : PropPage(s) { 
 		SetTitle( CTSTRING(SETTINGS_FUL_IGNORE) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	~FulIgnorePage(void) {

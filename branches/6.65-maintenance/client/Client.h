@@ -104,17 +104,18 @@ public:
 	virtual User::NickMap& lockUserList() = 0;
 	virtual void unlockUserList() = 0;
 
+	short getPort() const { return port; }
 	const string& getAddress() const { return address; }
 	const string& getAddressPort() const { return addressPort; }
-	short getPort() const { return port; }
 
-	const string& getIp() const {	return socket->getIp().empty() ? getAddress() : socket->getIp(); };
-	string getIpPort() const { return port == 411 ? getIp() : getIp() + ':' + Util::toString(port); };
+
+	const string& getIp() const { return socket->getIp().empty() ? getAddress() : socket->getIp(); };
+	string getIpPort() const { return getIp() + ':' + Util::toString(port); };
 	string getLocalIp() const;
 
 	virtual void connect();
 	bool isConnected() const { return socket->isConnected(); }
-	void disconnect() { socket->disconnect(); }
+	void disconnect() { if(socket) socket->disconnect(); }
 
 	void updated(User::Ptr& aUser) { 
 		fire(ClientListener::UserUpdated(), this, aUser);
@@ -132,8 +133,6 @@ public:
 	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
 	void setDescription(const string& aDesc) { description = aDesc; };
 
-	void scheduleDestruction() const { socket->shutdown(); }
-
 	virtual string escape(string const& str) const { return str; };
 	StringMap& escapeParams(StringMap& sm) {
 		for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
@@ -141,6 +140,11 @@ public:
 		}
 		return sm;
 	}
+	GETSET(string, nick, Nick);
+	GETSET(string, defpassword, Password);
+	GETSET(u_int32_t, reconnDelay, ReconnDelay);
+	GETSET(u_int32_t, lastActivity, LastActivity);
+	GETSET(bool, registered, Registered);
 
 protected:
 	struct Counts {
@@ -158,19 +162,14 @@ protected:
 	Counts lastCounts;
 
 	void updateCounts(bool aRemove);
+	void updateActivity();
 
-	void setPort(short aPort) { port = aPort; }
-
-	// reload nick from settings, other details from FavoriteManager
+	// reload nick from settings, other details from favmanager
 	void reloadSettings();
 
 	virtual string checkNick(const string& nick) = 0;
 	virtual string getHubURL() = 0;
 
-	GETSET(string, nick, Nick);
-	GETSET(string, defpassword, Password);
-	GETSET(u_int32_t, reconnDelay, ReconnDelay);
-	GETSET(bool, registered, Registered);
 private:
 
 	enum CountType {
@@ -184,18 +183,13 @@ private:
 	Client& operator=(const Client&);
 
 	string description;
-
+	string hubUrl;
 	string address;
 	string addressPort;
 	u_int16_t port;
 
 	CountType countType;
 
-	// BufferedSocketListener
-	virtual void on(BufferedSocketListener::Shutdown) throw() {
-		removeListeners();
-		delete this;
-	}
 };
 
 #endif // !defined(CLIENT_H)

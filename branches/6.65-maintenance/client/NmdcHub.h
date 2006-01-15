@@ -153,7 +153,7 @@ public:
 	void connectToMe(const User::Ptr& aUser) {
 		checkstate(); 
 		dcdebug("NmdcHub::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)) + "|");
+		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(TCP_PORT)) + "|");
 	}
 
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {

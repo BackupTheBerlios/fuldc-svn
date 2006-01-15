@@ -27,7 +27,7 @@
 
 #include "Client.h"
 #include "Singleton.h"
-
+#include "SettingsManager.h"
 #include "ClientManagerListener.h"
 
 class ClientManager : public Speaker<ClientManagerListener>, 
@@ -107,6 +107,8 @@ public:
  			client->removeListener(listener);
  		}
  	}
+
+	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 
 private:
 	typedef HASH_MULTIMAP_X(string, User::Ptr, noCaseStringHash, noCaseStringEq, noCaseStringLess) UserMap;

@@ -56,35 +56,35 @@ public:
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubIpPort, const string& aIp, bool aUtf8) :
-	file(aFile), hubName(aUser->getClientName()), hubIpPort(aHubIpPort), user(aUser), 
+		const string& aHubURL, const string& aIp, bool aUtf8) :
+	file(aFile), hubName(aUser->getClientName()), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 
 		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), utf8(aUtf8), ref(1) { }
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, 
-		const string& aHubIpPort, TTHValue* aTTH, bool aUtf8) :
-	file(aFile), hubName(aUser->getClientName()), hubIpPort(aHubIpPort), user(aUser), 
+		const string& aHubURL, TTHValue* aTTH, bool aUtf8) :
+	file(aFile), hubName(aUser->getClientName()), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
 		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), utf8(aUtf8), ref(1) { }
 
 	string getFileName() const;
-	string toSR() const;
+	string toSR(const Client& client) const;
 	AdcCommand toRES(char type) const;
 
 	User::Ptr& getUser() { return user; }
 	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
 
 	const string& getFile() const { return file; }
-	const string& getHubIpPort() const { return hubIpPort; }
+	const string& getHubURL() const { return hubURL; }
 	const string& getHubName() const { return hubName.empty() ? user->getClientName() : hubName; }
 	int64_t getSize() const { return size; }
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
-	const string& getIP() const { return IP; }
 	TTHValue* getTTH() const { return tth; }
 	bool getUtf8() const { return utf8; }
+	const string& getIP() const { return IP; }
 
 	void incRef() { Thread::safeInc(ref); }
 	void decRef() { 
@@ -102,7 +102,7 @@ private:
 
 	string file;
 	string hubName;
-	string hubIpPort;
+	string hubURL;
 	User::Ptr user;
 	int64_t size;
 	Types type;
@@ -158,7 +158,7 @@ public:
 		return port;
 	}
 
-	void setPort(short aPort) throw(SocketException);
+	void listen() throw(Exception);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);

@@ -31,7 +31,7 @@ class FulTabsPage: public CPropertyPage<IDD_FULTABSPAGE>, public PropPage
 public:
 	FulTabsPage(SettingsManager *s) : PropPage(s) {	
 		SetTitle( CTSTRING(SETTINGS_FUL_TABS) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	~FulTabsPage() { };
 

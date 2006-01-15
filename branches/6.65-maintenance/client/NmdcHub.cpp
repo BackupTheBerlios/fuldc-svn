@@ -50,33 +50,22 @@ NmdcHub::~NmdcHub() throw() {
 }
 
 void NmdcHub::connect() {
-	setRegistered(false);
-	setReconnDelay(120 + Util::rand(0, 60));
 	reconnect = true;
 	supportFlags = 0;
 	lastMyInfoA.clear();
- 	lastMyInfoB.clear();
+	lastMyInfoB.clear();
 	lastUpdate = 0;
-
-	if(socket->isConnected()) {
-		disconnect();
-	}
-
-	reloadSettings();
 
 	state = STATE_LOCK;
 
-	if(getPort() == 0) {
-		setPort(411);
-	}
-	socket->connect(getAddress(), getPort());
+	Client::connect();
 }
 
 void NmdcHub::connect(const User* aUser) {
 	checkstate(); 
 	dcdebug("NmdcHub::connectToMe %s\n", aUser->getNick().c_str());
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)) + "|");
+	if(ClientManager::getInstance()->isActive()) {
+		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(TCP_PORT)) + "|");
 	} else {
 		send("$RevConnectToMe " + toNmdc(getNick()) + " " + toNmdc(aUser->getNick())  + "|");
 	}
@@ -152,7 +141,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		string seeker = fromNmdc(param.substr(i, j-i));
 
 		// Filter own searches
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+		if(ClientManager::getInstance()->isActive()) {
 			if(seeker == (getLocalIp() + ":" + Util::toString(SETTING(UDP_PORT)))) {
 				return;
 			}
@@ -323,7 +312,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getNick()); 
+		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getNick(), getHubURL()); 
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::ConnectToMe(), this, server, (short)Util::toInt(port));
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_CONNECTED) {
@@ -351,7 +340,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		}
 
 		if(u) {
-			if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+			if(ClientManager::getInstance()->isActive()) {
 				connectToMe(u);
 				Speaker<NmdcHubListener>::fire(NmdcHubListener::RevConnectToMe(), this, u);
 			} else {
@@ -470,7 +459,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				setMe(u);
 
 				u->setFlag(User::DCPLUSPLUS);
-				if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
+				if(!ClientManager::getInstance()->isActive())
 					u->setFlag(User::PASSIVE);
 				else
 					u->unsetFlag(User::PASSIVE);
@@ -633,18 +622,18 @@ void NmdcHub::myInfo(bool alwaysSend) {
 		tmp2[i]++; tmp3[i]++; tmp4[i]++; tmp5[i]++;
 	}
 	char modeChar = '?';
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE)
-		modeChar = 'A';
-	else if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
-		modeChar = 'P';
-	else if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5)
+	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)
 		modeChar = '5';
+	else if(ClientManager::getInstance()->isActive())
+		modeChar = 'A';
+	else 
+		modeChar = 'P';
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	string myInfoA = 
 		"$MyINFO $ALL " + toNmdc(checkNick(getNick())) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
-		">$ $" + toNmdc(Util::validateMessage(SETTING(CONNECTION), false)) + "\x01$" + 
+		">$ $" + toNmdc(Util::validateMessage(SETTING(UPLOAD_SPEED), false)) + "\x01$" + 
 		toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$';
 	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
  	
@@ -676,7 +665,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 		tmp[i] = '$';
 	}
 	int chars = 0;
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+	if(ClientManager::getInstance()->isActive()) {
 		string x = getLocalIp();
 		buf = new char[x.length() + aString.length() + 64];
 		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(UDP_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());

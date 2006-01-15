@@ -31,7 +31,7 @@ class FulSharePage : public CPropertyPage<IDD_FULSHAREPAGE>, public PropPage
 public:
 	FulSharePage(SettingsManager *s) : PropPage(s) {
 		SetTitle( CTSTRING(SETTINGS_FUL_SHARE) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	~FulSharePage() {};
 

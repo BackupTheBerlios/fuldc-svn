@@ -31,7 +31,7 @@ class FulDownloadPage : public CPropertyPage<IDD_FULDOWNLOADPAGE>, public PropPa
 public:
 	FulDownloadPage(SettingsManager *s) : PropPage(s) {
 		SetTitle( CTSTRING(SETTINGS_FUL_DOWNLOAD) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	~FulDownloadPage() { };
 

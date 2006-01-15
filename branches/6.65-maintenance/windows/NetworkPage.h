@@ -31,15 +31,18 @@ class NetworkPage : public CPropertyPage<IDD_NETWORKPAGE>, public PropPage
 public:
 	NetworkPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_NETWORK));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	virtual ~NetworkPage() { };
 
 	BEGIN_MSG_MAP(NetworkPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_ACTIVE, onClickedActive)
-		COMMAND_ID_HANDLER(IDC_PASSIVE, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_DIRECT, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_FIREWALL_UPNP, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_FIREWALL_NAT, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_FIREWALL_PASSIVE, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_DIRECT_OUT, onClickedActive)
 		COMMAND_ID_HANDLER(IDC_SOCKS5, onClickedActive)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()

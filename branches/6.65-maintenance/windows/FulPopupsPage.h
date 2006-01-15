@@ -32,7 +32,7 @@ class FulPopupsPage: public CPropertyPage<IDD_FULPOPUPPAGE>, public PropPage
 public:
 	FulPopupsPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle( CTSTRING(SETTINGS_FUL_POPUP) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	~FulPopupsPage() { };

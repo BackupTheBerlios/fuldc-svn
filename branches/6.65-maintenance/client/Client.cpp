@@ -54,8 +54,21 @@ void Client::reloadSettings() {
 }
 
 void Client::connect() {
+	if(socket)
+		BufferedSocket::putSocket(socket);
+
+	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings();
-	socket->connect(address, port);
+	setRegistered(false);
+
+	socket = BufferedSocket::getSocket('|');
+	socket->addListener(this);
+	socket->connect(address, port, true);
+	updateActivity();
+}
+
+void Client::updateActivity() {
+	lastActivity = GET_TICK();
 }
 
 void Client::updateCounts(bool aRemove) {
@@ -84,15 +97,19 @@ void Client::updateCounts(bool aRemove) {
 }
 
 string Client::getLocalIp() const { 
-	if(!SETTING(SERVER).empty()) {
-		return Socket::resolve(SETTING(SERVER));
-	}
-	if(getMe() && !getMe()->getIp().empty())
+	// Best case - the server detected it
+	if((!BOOLSETTING(NO_IP_OVERRIDE) || SETTING(EXTERNAL_IP).empty()) && !getMe()->getIp().empty()) {
 		return getMe()->getIp();
+	}
 
-	if(socket == NULL)
-		return Util::getLocalIp();
-	string lip = socket->getLocalIp();
+	if(!SETTING(EXTERNAL_IP).empty()) {
+		return Socket::resolve(SETTING(EXTERNAL_IP));
+	}
+
+	string lip;
+	if(socket)
+		lip = socket->getLocalIp();
+
 	if(lip.empty())
 		return Util::getLocalIp();
 	return lip;

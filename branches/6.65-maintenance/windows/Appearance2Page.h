@@ -32,7 +32,7 @@ class Appearance2Page : public CPropertyPage<IDD_APPEARANCE2PAGE>, public PropPa
 public:
 	Appearance2Page(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_APPEARANCE2));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~Appearance2Page();

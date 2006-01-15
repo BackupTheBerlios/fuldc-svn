@@ -68,7 +68,7 @@ void ClientManager::putClient(Client* aClient) {
 			}
 		}
 	}
-	aClient->scheduleDestruction();
+	delete aClient;
 }
 
 void ClientManager::infoUpdated() {
@@ -88,7 +88,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	bool isPassive = (aSeeker.compare(0, 4, "Hub:") == 0);
 
 	// We don't wan't to answer passive searches if we're in passive mode...
-	if(isPassive && SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) {
+	if(isPassive && !ClientManager::getInstance()->isActive()) {
 		return;
 	}
 	
@@ -102,7 +102,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 			string str;
 			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 				SearchResult* sr = *i;
-				str += sr->toSR();
+				str += sr->toSR(*aClient);
 				str[str.length()-1] = 5;
 				str += name;
 				str += '|';
@@ -122,7 +122,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 				if(port == 0) port = 412;
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					s.writeTo(ip, port, sr->toSR());
+					s.writeTo(ip, port, sr->toSR(*aClient));
 					sr->decRef();
 				}
 			} catch(const SocketException& /* e */) {

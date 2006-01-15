@@ -24,9 +24,10 @@
 
 #include "ClientManager.h"
 #include "ShareManager.h"
+#include "ResourceManager.h"
 
 SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH, bool aUtf8) :
-	file(aFile), hubName(aClient->getName()), hubIpPort(aClient->getIpPort()), user(aClient->getMe()), 
+	file(aFile), hubName(aClient->getName()), hubURL(aClient->getIpPort()), user(aClient->getMe()), 
 	size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
 	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(aUtf8), ref(1) { }
 
@@ -34,7 +35,7 @@ SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, cons
 	file(aFile), size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
 	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(true), ref(1) { }
 
-string SearchResult::toSR() const {
+string SearchResult::toSR(const Client& c) const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
 	// Directory:	"$SR %s %s %d/%d%c%s (%s)|"
 	string tmp;
@@ -56,12 +57,12 @@ string SearchResult::toSR() const {
 	tmp.append(Util::toString(slots));
 	tmp.append(1, '\x05');
 	if(getTTH() == NULL) {
-		tmp.append(Text::utf8ToAcp(hubName));
+		tmp.append(Text::utf8ToAcp(c.getNameWithTopic()));
 	} else {
 		tmp.append("TTH:" + getTTH()->toBase32());
 	}
 	tmp.append(" (", 2);
-	tmp.append(hubIpPort);
+	tmp.append(c.getIpPort());
 	tmp.append(")|", 2);
 	return tmp;
 }
@@ -105,16 +106,37 @@ string SearchResult::getFileName() const {
 	return getFile().substr(i + 1);
 }
 
-void SearchManager::setPort(short aPort) throw(SocketException) {
-	port = aPort;
-	if(socket != NULL) {
-		disconnect();
-	} else {
-		socket = new Socket();
+void SearchManager::listen() throw(Exception) {
+	short lastPort = (short)SETTING(UDP_PORT);
+
+	if(lastPort == 0)
+		lastPort = (short)Util::rand(1025, 32000);
+
+	short firstPort = lastPort;
+
+	disconnect();
+
+	while(true) {
+		try {
+			if(socket != NULL) {
+				disconnect();
+			} else {
+				socket = new Socket();
+			}
+
+			socket->create(Socket::TYPE_UDP);
+			socket->bind(lastPort);
+			port = lastPort;
+			break;
+		} catch(const Exception&) {
+			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+			if(!SettingsManager::getInstance()->isDefault(SettingsManager::UDP_PORT) || (firstPort == newPort)) {
+				throw Exception("Could not find a suitable free port");
+			}
+			lastPort = newPort;
+		}
 	}
 
-	socket->create(Socket::TYPE_UDP, true);
-	socket->bind(aPort);
 	start();
 }
 
@@ -122,6 +144,7 @@ void SearchManager::disconnect() throw() {
 	if(socket != NULL) {
 		stop = true;
 		socket->disconnect();
+		port = 0;
 #ifdef _WIN32
 		join();
 #endif
@@ -151,7 +174,7 @@ int SearchManager::run() {
 
 		try {
 			socket->disconnect();
-			socket->create(Socket::TYPE_UDP, true);
+			socket->create(Socket::TYPE_UDP);
 			socket->bind(port);
 		} catch(const SocketException& e) {
 			// Oops, fatal this time...
@@ -163,7 +186,7 @@ int SearchManager::run() {
 	return 0;
 }
 
-void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& address) {
+void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remoteIp) {
 	string x((char*)buf, aLen);
 	if(x.compare(0, 4, "$SR ") == 0) {
 		string::size_type i, j;
@@ -198,12 +221,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 			if(j < i + 1) {
 				return;
 			}
-			file = x.substr(i, j-i) + '\\';
+			file = Text::acpToUtf8(x.substr(i, j-i) + '\\');
 		} else if(cnt == 2) {
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
 			}
-			file = x.substr(i, j-i);
+			file = Text::acpToUtf8(x.substr(i, j-i));
 			i = j + 1;
 			if( (j = x.find(' ', i)) == string::npos) {
 				return;
@@ -225,7 +248,6 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		if( (j = x.rfind(" (")) == string::npos) {
 			return;
 		}
-		// the hub's name will get replaced later (with a UTF-8 version) if there's a TTH in the result
 		string hubName = Text::acpToUtf8(x.substr(i, j-i));
 		i = j + 2;
 		if( (j = x.rfind(')')) == string::npos) {
@@ -235,7 +257,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
 
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, hubIpPort, address, false);
+			file, hubName, hubIpPort, remoteIp, false);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	} else if(x.compare(1, 4, "RES ") == 0 && x[x.length() - 1] == 0x0a) {

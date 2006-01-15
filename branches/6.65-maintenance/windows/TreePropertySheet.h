@@ -34,6 +34,7 @@ public:
 		iconPath(icons)
 	{
 		m_psh.pfnCallback = &PropSheetProc;
+		m_psh.dwFlags |= PSH_RTLREADING;
 	}
 	
 	typedef CPropertySheetImpl<TreePropertySheet> baseClass;

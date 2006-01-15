@@ -55,7 +55,8 @@
 
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
-closing(false), missedAutoConnect(false), hashProgress(false)
+closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL),
+ hashProgress(false)
 { 
 	memset(statusSizes, 0, sizeof(statusSizes));
 	
@@ -107,10 +108,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	LogManager::getInstance()->addListener(this);
 
 	WinUtil::init(m_hWnd);
-
-	// Register server socket message
-	WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(),
-		m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
 
 	trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
 
@@ -263,59 +260,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 
 	startSocket();
-	// we should have decided what ports we are using by now
-	// so if we are using UPnP lets open the ports.
 	
-	// Initialize (no more need for all these elses)
-	UPnP_TCPConnection = UPnP_UDPConnection = NULL;
-	
-	if( BOOLSETTING( SETTINGS_USE_UPNP ) )
-	{
-		 if (
-			 ( WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 ) //WinXP & WinSvr2003
-			 || WinUtil::getOsMajor() >= 6 )  //Longhorn
-		 {
-			UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(ConnectionManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
-			UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", APPNAME " Search Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " UDP)", SearchManager::getInstance()->getPort() );
-		
-			if ( FAILED(UPnP_UDPConnection->OpenPorts()) || FAILED(UPnP_TCPConnection->OpenPorts()) )
-			{
-				LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
-				MessageBox(CTSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
-				
-				// fall-back to passive mode
-				SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, SettingsManager::CONNECTION_PASSIVE);
-
-				// We failed! thus reset the objects
-				delete UPnP_TCPConnection;
-				delete UPnP_UDPConnection;
-				UPnP_TCPConnection = UPnP_UDPConnection = NULL;
-			}
-			else
-			{
-				// now lets configure the external IP (connect to me) address
-				string ExternalIP = UPnP_TCPConnection->GetExternalIP();
-				if ( ExternalIP.empty() == false )
-				{
-					// woohoo, we got the external IP from the UPnP framework
-					SettingsManager::getInstance()->set(SettingsManager::SERVER, ExternalIP );
-					SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, SettingsManager::CONNECTION_ACTIVE);
-				}
-				else
-				{
-					//:-(  Looks like we have to rely on the user setting the external IP manually
-					// no need to do cleanup here because the mappings work
-					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
-					MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
-				}
-			}
-		}
-		else
-		{
-			LogManager::getInstance()->message(STRING(OPERATING_SYSTEM_NOT_COMPATIBLE));
-		}
-	}
-
 	if(SETTING(NICK).empty()) {
 		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
@@ -332,56 +277,79 @@ void MainFrame::startSocket() {
 	SearchManager::getInstance()->disconnect();
 	ConnectionManager::getInstance()->disconnect();
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-
-		short lastPort = (short)SETTING(IN_PORT);
-		short firstPort = lastPort;
-
-		while(true) {
-			try {
-				ConnectionManager::getInstance()->setPort(lastPort);
-				WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(), m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
-				break;
-			} catch(const Exception& e) {
-				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-				SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
-				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
-					// Changing default didn't change port, a fixed port must be in use...(or we
-					// tried all ports
-					AutoArray<TCHAR> buf(STRING(PORT_IS_BUSY).size() + 8);
-					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
-					MessageBox(buf, _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONSTOP | MB_OK);
-					break;
-				}
-				lastPort = newPort;
-			}
+	if(ClientManager::getInstance()->isActive()) {
+		try {
+			ConnectionManager::getInstance()->listen();
+		} catch(const Exception&) {
+			MessageBox(CTSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 		}
-
-		lastPort = (short)SETTING(UDP_PORT);
-		firstPort = lastPort;
-
-		while(true) {
-			try {
-				SearchManager::getInstance()->setPort(lastPort);
-				break;
-			} catch(const Exception& e) {
-				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-				SettingsManager::getInstance()->setDefault(SettingsManager::UDP_PORT, newPort);
-				if(SETTING(UDP_PORT) == lastPort || (firstPort == newPort)) {
-					// Changing default didn't change port, a fixed port must be in use...(or we
-					// tried all ports
-					AutoArray<TCHAR> buf(STRING(PORT_IS_BUSY).size() + 8);
-					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(UDP_PORT));
-					MessageBox(buf, _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
-					break;
-				}
-				lastPort = newPort;
-			}
+		try {
+			SearchManager::getInstance()->listen();
+		} catch(const Exception&) {
+			MessageBox(CTSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 		}
-
 	}
+
+	startUPnP();
+}
+
+void MainFrame::startUPnP() {
+	stopUPnP();
+
+	if( SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_UPNP ) {
+		UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(ConnectionManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
+		UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", APPNAME " Search Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " UDP)", SearchManager::getInstance()->getPort() );
+
+		if ( FAILED(UPnP_UDPConnection->OpenPorts()) || FAILED(UPnP_TCPConnection->OpenPorts()) )
+		{
+			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
+			MessageBox(CTSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+
+			// We failed! thus reset the objects
+			delete UPnP_TCPConnection;
+			delete UPnP_UDPConnection;
+			UPnP_TCPConnection = UPnP_UDPConnection = NULL;
+		}
+		else
+		{
+			if(!BOOLSETTING(NO_IP_OVERRIDE)) {
+				// now lets configure the external IP (connect to me) address
+				string ExternalIP = UPnP_TCPConnection->GetExternalIP();
+				if ( !ExternalIP.empty() ) {
+					// woohoo, we got the external IP from the UPnP framework
+					SettingsManager::getInstance()->set(SettingsManager::EXTERNAL_IP, ExternalIP );
+				} else {
+					//:-(  Looks like we have to rely on the user setting the external IP manually
+					// no need to do cleanup here because the mappings work
+					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
+					MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+				}
+			}
+		}
+	}
+}
+
+void MainFrame::stopUPnP() {
+	// Just check if the port mapping objects are initialized (NOT NULL)
+	if ( UPnP_TCPConnection != NULL )
+	{
+		if (FAILED(UPnP_TCPConnection->ClosePorts()) )
+		{
+			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
+		}
+		delete UPnP_TCPConnection;
+	}
+	if ( UPnP_UDPConnection != NULL )
+	{
+		if (FAILED(UPnP_UDPConnection->ClosePorts()) )
+		{
+			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
+		}
+		delete UPnP_UDPConnection;
+	}
+	// Not sure this is required (i.e. Objects are checked later in execution)
+	// But its better being on the save side :P
+	UPnP_TCPConnection = UPnP_UDPConnection = NULL;
 }
 
 HWND MainFrame::createToolbar() {
@@ -651,9 +619,9 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	PropertiesDlg dlg(m_hWnd, SettingsManager::getInstance());
 
-	short lastPort = (short)SETTING(IN_PORT);
+	short lastPort = (short)SETTING(TCP_PORT);
 	short lastUDP = (short)SETTING(UDP_PORT);
-	int lastConn = SETTING(CONNECTION_TYPE);
+	int lastConn = SETTING(INCOMING_CONNECTIONS);
 
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
@@ -661,7 +629,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		if(missedAutoConnect && !SETTING(NICK).empty()) {
 			PostMessage(WM_SPEAKER, AUTO_CONNECT);
 		}
-		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort || SETTING(UDP_PORT) != lastUDP) {
+		if(SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastPort || SETTING(UDP_PORT) != lastUDP) {
 			startSocket();
 		}
 		ClientManager::getInstance()->infoUpdated();
@@ -758,11 +726,6 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 	} catch (const Exception&) {
 		// ...
 	}
-}
-
-LRESULT MainFrame::onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	ConnectionManager::getInstance()->getServerSocket().incoming();
-	return 0;
 }
 
 LRESULT MainFrame::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -960,26 +923,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			SearchManager::getInstance()->disconnect();
 			ConnectionManager::getInstance()->disconnect();
 
-			// Just check if the port mapping objects are initialized (NOT NULL)
-			if ( UPnP_TCPConnection != NULL )
-			{
-				if (FAILED(UPnP_TCPConnection->ClosePorts()) )
-				{
-					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
-				}
-				delete UPnP_TCPConnection;
-			}
-			if ( UPnP_UDPConnection != NULL )
-			{
-				if (FAILED(UPnP_UDPConnection->ClosePorts()) )
-				{
-					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
-				}
-				delete UPnP_UDPConnection;
-			}
-			// Not sure this is required (i.e. Objects are checked later in execution)
-			// But its better being on the save side :P
-			UPnP_TCPConnection = UPnP_UDPConnection = NULL;
+			stopUPnP();
 
 			DWORD id;
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);

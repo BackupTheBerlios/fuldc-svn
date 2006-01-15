@@ -43,7 +43,8 @@ public:
 		QUIT_HUB_BIT,
 		HIDDEN_BIT,
 		HUB_BIT,
-		BOT_BIT
+		BOT_BIT,
+		TTH_GET_BIT
 	};
 
 	enum {
@@ -54,7 +55,8 @@ public:
 		QUIT_HUB = 1<<QUIT_HUB_BIT,
 		HIDDEN = 1<<HIDDEN_BIT,
 		HUB = 1<<HUB_BIT,
-		BOT = 1<<BOT_BIT
+		BOT = 1<<BOT_BIT,
+		TTH_GET = 1<<TTH_GET_BIT
 	};
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;

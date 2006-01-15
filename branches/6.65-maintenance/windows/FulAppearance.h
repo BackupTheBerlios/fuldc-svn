@@ -31,7 +31,7 @@ class FulAppearancePage : public CPropertyPage<IDD_FULAPPEARANCEPAGE>, public Pr
 public:
 	FulAppearancePage(SettingsManager *s) : PropPage(s) {	
 		SetTitle( CTSTRING(SETTINGS_FUL_APPEARANCE) );
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	~FulAppearancePage() {};
 

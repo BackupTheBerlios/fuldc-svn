@@ -31,9 +31,8 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : port(0), securePort(0), server(0), secureServer(0), floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
-	socket.addListener(this);
 
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
 	features.push_back(UserConnection::FEATURE_XML_BZLIST);
@@ -41,7 +40,49 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
 
-	adcFeatures.push_back("+BASE");
+	adcFeatures.push_back("+BAS0");
+}
+// @todo clean this up
+void ConnectionManager::listen() throw(Exception){
+	short lastPort = (short)SETTING(TCP_PORT);
+	
+	if(lastPort == 0)
+		lastPort = (short)Util::rand(1025, 32000);
+
+	short firstPort = lastPort;
+
+	disconnect();
+
+	while(true) {
+		try {
+			server = new Server(false, lastPort, SETTING(BIND_ADDRESS));
+			port = lastPort;
+			break;
+		} catch(const Exception&) {
+			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
+				throw Exception("Could not find a suitable free port");
+			}
+			lastPort = newPort;
+		}
+	}
+
+	lastPort++;
+	firstPort = lastPort;
+
+	while(true) {
+		try {
+			secureServer = new Server(true, lastPort, SETTING(BIND_ADDRESS));
+			securePort = lastPort;
+			break;
+		} catch(const Exception&) {
+			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
+				throw Exception("Could not find a suitable free port");
+			}
+			lastPort = newPort;
+		}
+	}
 }
 
 /**
@@ -202,12 +243,19 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					dcassert(cqi->getConnection());
 					dcassert(cqi->getConnection()->getCQI() == cqi);
 					cqi->setState(ConnectionQueueItem::ACTIVE);
-					cqi->getConnection()->removeListener(this);
 					added.push_back(cqi->getConnection());
 
 					pendingAdd.erase(it);
 				}
 			} else {
+				if(cqi->getState() == ConnectionQueueItem::WAITING) {
+					UserConnection::List::iterator it = find(pendingDelete.begin(), pendingDelete.end(), cqi->getConnection());
+					if(it != pendingDelete.end()) {
+						cqi->setConnection(NULL);
+						removed.push_back(cqi);
+						continue;
+					}
+				} 
 				
 				if(!cqi->getUser()->isOnline()) {
 					// Not online anymore...remove it from the pending...
@@ -215,7 +263,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					continue;
 				} 
 				
-				if(cqi->getUser()->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)) {
+				if(cqi->getUser()->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
 					passiveUsers.push_back(cqi->getUser());
 					removed.push_back(cqi);
 					continue;
@@ -275,6 +323,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	}
 
 	for(UserConnection::Iter i = added.begin(); i != added.end(); ++i) {
+		(*i)->removeListener(this);
 		DownloadManager::getInstance()->addConnection(*i);
 	}
 }
@@ -292,11 +341,31 @@ void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw(
 static const u_int32_t FLOOD_TRIGGER = 20000;
 static const u_int32_t FLOOD_ADD = 2000;
 
+ConnectionManager::Server::Server(bool secure_, short port, const string& ip /* = "0.0.0.0" */) : secure(secure_), die(false) {
+	sock.create();
+	sock.bind(port, ip);
+	sock.listen();
+
+	start();
+}
+
+
+static const u_int32_t POLL_TIMEOUT = 250;
+
+int ConnectionManager::Server::run() throw() {
+	while(!die) {
+		if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
+			ConnectionManager::getInstance()->accept(sock);
+		}
+	}
+	return 0;
+}
+
 /**
  * Someone's connecting, accept the connection and wait for identification...
  * It's always the other fellow that starts sending if he made the connection.
  */
-void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
+void ConnectionManager::accept(const Socket& sock) throw() {
 	UserConnection* uc = NULL;
 	u_int32_t now = GET_TICK();
 
@@ -306,7 +375,7 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 		if(now + FLOOD_TRIGGER < floodCounter) {
 			Socket s;
 			try {
-				s.accept(socket);
+				s.accept(sock);
 			} catch(const SocketException&) {
 				// ...
 			}
@@ -322,7 +391,7 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->setState(UserConnection::STATE_SUPNICK);
 		uc->setLastActivity(GET_TICK());
-		uc->accept(socket);
+		uc->accept(sock);
 	} catch(const SocketException& e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		if(uc)
@@ -330,7 +399,7 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	}
 }
 
-void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick) {
+void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick, const string& hubUrl) {
 	if(shuttingDown)
 		return;
 
@@ -338,6 +407,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 	try {
 		uc = getConnection(true);
 		uc->setNick(aNick);
+		uc->setHubUrl(hubUrl);
 		uc->setState(UserConnection::STATE_CONNECT);
 		uc->setFlag(UserConnection::FLAG_NMDC);
 		uc->connect(aServer, aPort);
@@ -350,11 +420,13 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 void ConnectionManager::adcConnect(const string& aServer, short aPort, const string& aToken) {
 	if(shuttingDown)
 		return;
+	
+	aToken; //avoid warning
 
 	UserConnection* uc = NULL;
 	try {
 		uc = getConnection(false);
-		uc->setToken(aToken);
+		//uc->setToken(aToken);
 		uc->setState(UserConnection::STATE_CONNECT);
 		uc->connect(aServer, aPort);
 	} catch(const SocketException&) {
@@ -398,11 +470,7 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
 	aSource->setState(UserConnection::STATE_SUPNICK);
 }
 
-/**
- * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
- */
 void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSource, const string& aNick) throw() {
-
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
@@ -665,7 +733,7 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 			dcassert(cqi->getState() == ConnectionQueueItem::IDLE);
 			cqi->setState(ConnectionQueueItem::WAITING);
 			cqi->setLastAttempt(GET_TICK());
-			cqi->setConnection(NULL);
+			//cqi->setConnection(NULL);
 			aSource->setCQI(NULL);
 		}
 	}
@@ -685,8 +753,7 @@ void ConnectionManager::removeConnection(const User::Ptr& aUser, int isDownload)
 
 void ConnectionManager::shutdown() {
 	shuttingDown = true;
-	socket.removeListener(this);
-	socket.disconnect();
+	disconnect();
 	{
 		Lock l(cs);
 		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
@@ -708,20 +775,22 @@ void ConnectionManager::shutdown() {
 // UserConnectionListener
 void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
 	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-		if(*i == UserConnection::FEATURE_GET_ZBLOCK)
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
-		else if(*i == UserConnection::FEATURE_MINISLOTS)
+		if(*i == UserConnection::FEATURE_GET_ZBLOCK) {
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK); 
+		} else if(*i == UserConnection::FEATURE_MINISLOTS) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
-		else if(*i == UserConnection::FEATURE_XML_BZLIST)
+		} else if(*i == UserConnection::FEATURE_XML_BZLIST) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
-		else if(*i == UserConnection::FEATURE_ADCGET)
+		} else if(*i == UserConnection::FEATURE_ADCGET) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_ADCGET);
-		else if(*i == UserConnection::FEATURE_ZLIB_GET)
+		} else if(*i == UserConnection::FEATURE_ZLIB_GET) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
-		else if(*i == UserConnection::FEATURE_TTHL)
+		} else if(*i == UserConnection::FEATURE_TTHL) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHL);
-		else if(*i == UserConnection::FEATURE_TTHF)
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF);
+		} else if(*i == UserConnection::FEATURE_TTHF) {
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF); 
+			conn->getUser()->setFlag(User::TTH_GET);
+		}
 	}
 }
 
