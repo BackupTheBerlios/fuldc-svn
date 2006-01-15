@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include "FavHubProperties.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/ResourceManager.h"
 
 LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
@@ -74,12 +74,16 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	if(wID == IDOK)
 	{
 		TCHAR buf[256];
+		GetDlgItemText(IDC_HUBADDR, buf, 256);
+		if(buf[0] == _T('\0')) {
+			MessageBox(CTSTRING(INCOMPLETE_FAV_HUB), _T(""), MB_ICONWARNING | MB_OK);
+			return 0;
+		}
+		entry->setServer(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBNAME, buf, 256);
 		entry->setName(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBDESCR, buf, 256);
 		entry->setDescription(Text::fromT(buf));
-		GetDlgItemText(IDC_HUBADDR, buf, 256);
-		entry->setServer(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBNICK, buf, 256);
 		entry->setNick(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBPASS, buf, 256);
@@ -89,7 +93,7 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		entry->setStripIsp(IsDlgButtonChecked(IDC_STRIPISP) == BST_CHECKED);
 		entry->setLogMainChat(IsDlgButtonChecked(IDC_LOGMAINCHAT) == BST_CHECKED);
 
-		HubManager::getInstance()->save();
+		FavoriteManager::getInstance()->save();
 	}
 	EndDialog(wID);
 	return 0;

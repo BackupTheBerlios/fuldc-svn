@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
-#define AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_
+#if !defined(SPY_FRAME_H)
+#define SPY_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -56,8 +56,6 @@ public:
 	static int columnSizes[COLUMN_LAST];
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("SpyFrame"), IDR_SPY, 0, COLOR_3DFACE)
-
-	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	typedef MDITabChildWindowImpl<SpyFrame> baseClass;
 	BEGIN_MSG_MAP(SpyFrame)
@@ -114,10 +112,9 @@ private:
 	virtual void on(TimerManagerListener::Second, u_int32_t) throw();
 };
 
-#endif // !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
+#endif // !defined(SPY_FRAME_H)
 
 /**
  * @file
  * $Id: SpyFrame.h,v 1.2 2004/01/06 01:52:16 trem Exp $
  */
-

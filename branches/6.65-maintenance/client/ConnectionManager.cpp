@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -268,7 +268,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 
 	}
 
-	for_each(penDel.begin(), penDel.end(), DeleteFunction<UserConnection*>());
+	for_each(penDel.begin(), penDel.end(), DeleteFunction());
 
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);

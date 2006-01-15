@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 
 FinishedManager::~FinishedManager() throw() {
 	Lock l(cs);
-	for_each(downloads.begin(), downloads.end(), DeleteFunction<FinishedItem*>());
-	for_each(uploads.begin(), uploads.end(), DeleteFunction<FinishedItem*>());
+	for_each(downloads.begin(), downloads.end(), DeleteFunction());
+	for_each(uploads.begin(), uploads.end(), DeleteFunction());
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
 
@@ -52,7 +52,7 @@ void FinishedManager::removeAll(bool upload /* = false */) {
 	{
 		Lock l(cs);
 		FinishedItem::List *listptr = upload ? &uploads : &downloads;
-		for_each(listptr->begin(), listptr->end(), DeleteFunction<FinishedItem*>());
+		for_each(listptr->begin(), listptr->end(), DeleteFunction());
 		listptr->clear();
 	}
 	if (!upload)
@@ -63,7 +63,6 @@ void FinishedManager::removeAll(bool upload /* = false */) {
 
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
-	
 	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItem *item = new FinishedItem(
 			d->getTarget(), d->getUserConnection()->getUser()->getNick(),

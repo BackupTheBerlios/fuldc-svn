@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -150,3 +150,7 @@ LRESULT NetworkPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_NETWORKPAGE);
 	return 0;
 }
+/**
+ * @file
+ * $Id: NetworkPage.cpp,v 1.7 2005/04/24 08:13:05 arnetheduck Exp $
+ */

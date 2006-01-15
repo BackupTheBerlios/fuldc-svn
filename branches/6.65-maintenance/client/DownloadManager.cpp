@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -45,8 +45,8 @@ Download::Download() throw() : file(NULL),
 crcCalc(NULL), tth(NULL), treeValid(false) { 
 }
 
-Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
-	target(qi->getTarget()), tempTarget(qi->getTempTarget()), file(NULL),
+Download::Download(QueueItem* qi) throw() : 
+	tempTarget(qi->getTempTarget()), file(NULL),
 	crcCalc(NULL), tth(qi->getTTH()), treeValid(false) { 
 	
 	setSize(qi->getSize());
@@ -54,8 +54,6 @@ Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 		setFlag(Download::FLAG_USER_LIST);
 	if(qi->isSet(QueueItem::FLAG_RESUME))
 		setFlag(Download::FLAG_RESUME);
-	if(qi->getCurrent()->isSet(QueueItem::Source::FLAG_UTF8))
-		setFlag(Download::FLAG_UTF8);
 }
 
 AdcCommand Download::getCommand(bool zlib, bool tthf) {
@@ -216,11 +214,6 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		return;
 	}
 
-	{
-		Lock l(cs);
-		downloads.push_back(d);
-	}
-
 	d->setUserConnection(aConn);
 	aConn->setDownload(d);
 
@@ -264,13 +257,16 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
-			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
-				d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 
+	{
+		Lock l(cs);
+		downloads.push_back(d);
+	}
+
 	// File ok for adcget in nmdc-conns
-	bool adcOk = d->isSet(Download::FLAG_UTF8) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) && d->getTTH() != NULL);
+	bool adcOk = (aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) && d->getTTH() != NULL);
 
 	if(!aConn->isSet(UserConnection::FLAG_NMDC) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && adcOk)) {
 		aConn->send(d->getCommand(
@@ -278,15 +274,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			aConn->isSet(!aConn->isSet(UserConnection::FLAG_NMDC) || UserConnection::FLAG_SUPPORTS_TTHF)
 			));
 	} else {
-		if(BOOLSETTING(COMPRESS_TRANSFERS) && aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) && d->getSize() != -1 ) {
-			// This one, we'll download with a zblock download instead...
-			d->setFlag(Download::FLAG_ZDOWNLOAD);
-			aConn->getZBlock(d->getSource(), d->getPos(), d->getBytesLeft(), d->isSet(Download::FLAG_UTF8));
-		} else if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST) && d->isSet(Download::FLAG_UTF8)) {
-			aConn->uGetBlock(d->getSource(), d->getPos(), d->getBytesLeft());
-		} else {
-			aConn->get(d->getSource(), d->getPos());
-		}
+		dcdebug("remote client too old\r\n");
 	}
 }
 
@@ -500,10 +488,11 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			d->setFile(crc);
 		}
 
-		/** @todo something when resuming... */
+		/** @todo check the rest of the file when resuming? */
 		if(d->getTreeValid()) {
 			if((d->getPos() % d->getTigerTree().getBlockSize()) == 0) {
 				d->setFile(new MerkleCheckOutputStream<TigerTree, true>(d->getTigerTree(), d->getFile(), d->getPos()));
+				d->setFlag(Download::FLAG_TTH_CHECK);
 			}
 		}
 		if(d->isSet(Download::FLAG_ROLLBACK)) {
@@ -908,7 +897,6 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);
 }
-
 
 /**
  * @file

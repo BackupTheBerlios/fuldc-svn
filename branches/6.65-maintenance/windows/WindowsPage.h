@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef WINDOWSPAGE_H
-#define WINDOWSPAGE_H
+#if !defined(WINDOWS_PAGE_H)
+#define WINDOWS_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -53,15 +53,16 @@ public:
 	
 protected:
 
+	static TextItem textItem[];
 	static Item items[];
 	static ListItem listItems[];
 	static ListItem optionItems[];
+	static ListItem confirmItems[];
 };
 
-#endif //ADVANCEDPAGE_H
+#endif // !defined(WINDOWS_PAGE_H)
 
 /**
  * @file
  * $Id: WindowsPage.h,v 1.2 2005/03/19 13:38:12 arnetheduck Exp $
  */
-

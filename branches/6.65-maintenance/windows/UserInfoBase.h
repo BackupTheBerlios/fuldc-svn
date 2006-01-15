@@ -31,7 +31,6 @@ public:
 	UserInfoBase(const User::Ptr& u) : user(u) { };
 
 	void getList();
-	void browseList();
 	void matchQueue();
 	void pm();
 	void pm(const tstring& aMsg);
@@ -51,7 +50,6 @@ class UserInfoBaseHandler {
 public:
 	BEGIN_MSG_MAP(UserInfoBaseHandler)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
@@ -68,10 +66,6 @@ public:
 	}
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::getList);
-		return 0;
-	}
-	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		((T*)this)->getUserList().forEachSelected(&UserInfoBase::browseList);
 		return 0;
 	}
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -111,21 +105,10 @@ public:
 
 		bool nmdcOnly;
 	};
-	void checkAdcItems(CMenu& menu) {
-
-		MENUITEMINFO mii = { 0 };
-		mii.cbSize = sizeof(mii);
-		mii.fMask = MIIM_STATE;
-		if(((T*)this)->getUserList().forEachSelectedT(NmdcOnly()).nmdcOnly) {
-			menu.EnableMenuItem(IDC_BROWSELIST, MFS_DISABLED);
-		} else {
-			menu.EnableMenuItem(IDC_BROWSELIST, MFS_ENABLED);
-		}
-	}
+	void checkAdcItems(CMenu& menu) { }
 
 	void appendUserItems(CMenu& menu) {
 		menu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
-		menu.AppendMenu(MF_STRING, IDC_BROWSELIST, CTSTRING(BROWSE_FILE_LIST));
 		menu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE));
 		menu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
 		menu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));

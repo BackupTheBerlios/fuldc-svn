@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,12 @@
 #include "AdvancedPage.h"
 #include "LogPage.h"
 #include "UCPage.h"
+#include "FavoriteDirsPage.h"
 #include "Appearance2Page.h"
 #include "Advanced3Page.h"
 #include "NetworkPage.h"
 #include "WindowsPage.h"
+#include "QueuePage.h"
 #include "FulHighlightPage.h"
 #include "FulSharePage.h"
 #include "FulDownloadPage.h"
@@ -42,21 +44,23 @@
 #include "FulPopupsPage.h"
 #include "FulIgnorePage.h"
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : 
-TreePropertySheet(_T("icons\\settings_tree.bmp"), CTSTRING(SETTINGS))
+PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : 
+TreePropertySheet(_T("icons\\settings_tree.bmp"), CTSTRING(SETTINGS), 0, parent)
 {
 	int n = 0;
-	pages[n++]  = new GeneralPage(s);
-	pages[n++]  = new NetworkPage(s);
-	pages[n++]  = new DownloadPage(s);
-	pages[n++]  = new UploadPage(s);
-	pages[n++]  = new AppearancePage(s);
-	pages[n++]  = new Appearance2Page(s);
-	pages[n++]  = new WindowsPage(s);
-	pages[n++]  = new LogPage(s);
-	pages[n++]  = new AdvancedPage(s);
-	pages[n++]  = new Advanced3Page(s);
-	pages[n++]  = new UCPage(s);
+	pages[n++] = new GeneralPage(s);
+	pages[n++] = new NetworkPage(s);
+	pages[n++] = new DownloadPage(s);
+	pages[n++] = new UploadPage(s);
+	pages[n++] = new AppearancePage(s);
+	pages[n++] = new Appearance2Page(s);
+	pages[n++] = new WindowsPage(s);
+	pages[n++] = new LogPage(s);
+	pages[n++] = new AdvancedPage(s);
+	pages[n++] = new Advanced3Page(s);
+	pages[n++] = new UCPage(s);
+	pages[n++] = new FavoriteDirsPage(s);
+	pages[n++] = new QueuePage(s);
 	pages[n++] = new FulAdvancedPage(s);
 	pages[n++] = new FulDownloadPage(s);
 	pages[n++] = new FulSharePage(s);

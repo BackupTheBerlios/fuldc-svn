@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include "../client/LogManager.h"
 #include "../client/UploadManager.h"
 #include "../client/ShareManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
 #include "../client/File.h"
 #include "../client/StringTokenizer.h"
@@ -39,7 +39,6 @@
 
 #include <MMSystem.h>
 
-CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
 
 LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -96,7 +95,6 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
-	Lock l(cs);
 	FrameIter i = frames.find(aUser);
 	if(i == frames.end()) {
 		bool found = false;
@@ -183,7 +181,6 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 
 void PrivateFrame::openWindow(const User::Ptr& aUser, const tstring& msg) {
 	PrivateFrame* p = NULL;
-	Lock l(cs);
 	FrameIter i = frames.find(aUser);
 	if(i == frames.end()) {
 		p = new PrivateFrame(aUser);
@@ -333,7 +330,7 @@ void PrivateFrame::onEnter()
 			} else if(Util::stricmp(s.c_str(), _T("close")) == 0) {
 				PostMessage(WM_CLOSE);
 			} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
-				HubManager::getInstance()->addFavoriteUser(getUser());
+				FavoriteManager::getInstance()->addFavoriteUser(getUser());
 				addLine(TSTRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 				BOOL bTmp;
@@ -394,7 +391,6 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		Lock l(cs);
 		frames.erase(user);
 
 		bHandled = FALSE;
@@ -492,7 +488,7 @@ LRESULT PrivateFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 }
 
 LRESULT PrivateFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	HubManager::getInstance()->addFavoriteUser(user);
+	FavoriteManager::getInstance()->addFavoriteUser(user);
 	return 0;
 }
 

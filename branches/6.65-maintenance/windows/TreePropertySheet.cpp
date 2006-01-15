@@ -1,26 +1,26 @@
-/* 
-* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 
 #include "TreePropertySheet.h"
-
+#include "../client/ResourceManager.h"
 static const TCHAR SEPARATOR = _T('\\');
 
 int TreePropertySheet::PropSheetProc(HWND hwndDlg, UINT uMsg, LPARAM lParam) {
@@ -55,8 +55,8 @@ void TreePropertySheet::hideTab() {
 	tab.GetWindowRect(&rcTab);
 	page.GetClientRect(&rcPage);
 	page.MapWindowPoints(m_hWnd,&rcPage);
-	GetWindowRect(&rcWindow);
-	ScreenToClient(&rcTab);
+	GetWindowRect(&rcWindow);	
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rcTab, 2);
 
 	ScrollWindow(SPACE_LEFT + TREE_WIDTH + SPACE_MID-rcPage.left, SPACE_TOP-rcPage.top);
 	rcWindow.right += SPACE_LEFT + TREE_WIDTH + SPACE_MID - rcPage.left - (rcClient.Width()-rcTab.right) + SPACE_RIGHT;
@@ -76,11 +76,10 @@ void TreePropertySheet::addTree()
 
 	HWND page = IndexToHwnd(0);
 	::GetWindowRect(page, &rcPage);
-	ScreenToClient(&rcPage);
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rcPage, 2);
 
 	CRect rc(SPACE_LEFT, rcPage.top, TREE_WIDTH, rcPage.bottom);
 	ctrlTree.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_PAGE);
-
 }
 
 void TreePropertySheet::fillTree() {
@@ -210,6 +209,6 @@ LRESULT TreePropertySheet::onSetCurSel(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lP
 }
 
 /**
-* @file
-* $Id: TreePropertySheet.cpp,v 1.3 2003/12/30 13:31:47 trem Exp $
-*/
+ * @file
+ * $Id: TreePropertySheet.cpp,v 1.10 2005/04/24 08:13:03 arnetheduck Exp $
+ */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_PUBLICHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
-#define AFX_PUBLICHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_
+#if !defined(PUBLIC_HUBS_FRM_H)
+#define PUBLIC_HUBS_FRM_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -26,17 +26,17 @@
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/StringSearch.h"
 
 #include "WinUtil.h"
 
 #define FILTER_MESSAGE_MAP 8
 class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS, ID_FILE_CONNECT>, 
-	private HubManagerListener
+	private FavoriteManagerListener
 {
 public:
-	PublicHubsFrame() : users(0), hubs(0), closed(false), filter(""),
+	PublicHubsFrame() : users(0), hubs(0), closed(false), 
 		filterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP) {
 	};
 
@@ -45,10 +45,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("PublicHubsFrame"), IDR_PUBLICHUBS, 0, COLOR_3DFACE);
 		
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-	
 	typedef MDITabChildWindowImpl<PublicHubsFrame> baseClass;
 	BEGIN_MSG_MAP(PublicHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -95,7 +91,7 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlPubLists.m_hWnd || hWnd == ctrlFilter.m_hWnd) {
+		if(hWnd == ctrlPubLists.m_hWnd || hWnd == ctrlFilter.m_hWnd || hWnd == ctrlFilterSel.m_hWnd) {
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);
 			return (LRESULT)WinUtil::bgBrush;
@@ -142,13 +138,14 @@ private:
 	CButton ctrlFilterDesc;
 	CEdit ctrlFilter;
 	CMenu hubsMenu;
-	
-	CContainedWindow filterContainer;	
+
+	CContainedWindow filterContainer;
 	CComboBox ctrlPubLists;
+	CComboBox ctrlFilterSel;
 	ExListViewCtrl ctrlHubs;
 
 	HubEntry::List hubs;
-	StringSearch filter;
+	string filter;
 
 	bool closed;
 	
@@ -166,9 +163,12 @@ private:
 	void updateStatus();
 	void updateList();
 	void updateDropDown();
+
+	bool parseFilter(int& mode, double& size);
+	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const int& mode, const double& size);
 };
 
-#endif // !defined(AFX_PUBLICHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
+#endif // !defined(PUBLIC_HUBS_FRM_H)
 
 /**
  * @file

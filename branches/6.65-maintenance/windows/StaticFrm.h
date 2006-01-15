@@ -29,23 +29,21 @@
 template<class T, int title, int ID>
 class StaticFrame {
 public:
-	~StaticFrame() { frame = NULL; };
+	virtual ~StaticFrame() { frame = NULL; };
 
 	static T* frame;
 	static void openWindow() {
 		if(frame == NULL) {
 			frame = new T();
 			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, CTSTRING_I(ResourceManager::Strings(title)));
-			::SendMessage(WinUtil::mainWnd, WM_USER, ID, TRUE);
+			frame->checkButton(true);
 		} else {
-			
 			if( (HWND)::SendMessage(WinUtil::mdiClient, WM_MDIGETACTIVE, 0, 0) == frame->m_hWnd){
 				frame->PostMessage(WM_CLOSE);
 			} else {
 				frame->SendMessage(WM_MDIACTIVATE, (WPARAM)frame->m_hWnd, 0);
 				::SetWindowPos(frame->m_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-				::SendMessage(WinUtil::mainWnd, WM_USER, ID, TRUE );
-				
+				frame->checkButton(true);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
-#define AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_
+#if !defined(USERS_FRAME_H)
+#define USERS_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -28,10 +28,10 @@
 #include "WinUtil.h"
 
 #include "../client/ClientManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 
 class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS, IDC_FAVUSERS>,
-	private HubManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
+	private FavoriteManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
 	UsersFrame() : closed(false), startup(true)	{ };
@@ -39,11 +39,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("UsersFrame"), IDR_USERS, 0, COLOR_3DFACE);
 		
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		frame = NULL;
-		delete this;
-	}
-
 	typedef MDITabChildWindowImpl<UsersFrame> baseClass;
 	typedef UserInfoBaseHandler<UsersFrame> uibBase;
 
@@ -120,7 +115,7 @@ private:
 			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 		}
 
-		void remove() { HubManager::getInstance()->removeFavoriteUser(user); }
+		void remove() { FavoriteManager::getInstance()->removeFavoriteUser(user); }
 
 		void update() {
 			columns[COLUMN_STATUS] = user->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
@@ -146,7 +141,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	// HubManagerListener
+	// FavoriteManagerListener
 	virtual void on(UserAdded, const User::Ptr& aUser) throw() { addUser(aUser); }
 	virtual void on(UserRemoved, const User::Ptr& aUser) throw() { removeUser(aUser); }
 
@@ -162,10 +157,9 @@ private:
 	void removeUser(const User::Ptr& aUser);
 };
 
-#endif // !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
+#endif // !defined(USERS_FRAME_H)
 
 /**
  * @file
  * $Id: UsersFrame.h,v 1.4 2004/01/06 01:52:18 trem Exp $
  */
-

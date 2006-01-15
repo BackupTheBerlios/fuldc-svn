@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,6 @@
 #include "../client/StringTokenizer.h"
 #include "../client/ShareManager.h"
 #include "../client/version.h"
-
-#include <stack>
 
 #define FILE_LIST_NAME _T("File Lists")
 
@@ -526,7 +524,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	
 	if(isFileList) {
 		dcassert(fileLists != NULL);
-		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(fileLists));
+		delete (tstring*)ctrlDirs.GetItemData(fileLists);
 		ctrlDirs.DeleteItem(fileLists);
 		fileLists = NULL;
 		return;
@@ -553,7 +551,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	next = parent;
 
 	while((ctrlDirs.GetChildItem(next) == NULL) && (directories.find(getDir(next)) == directories.end())) {
-		delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(next));
+		delete (tstring*)ctrlDirs.GetItemData(next);
 		parent = ctrlDirs.GetParentItem(next);
 		
 		ctrlDirs.DeleteItem(next);
@@ -569,7 +567,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 		removeDirectories(next);
 		next = ctrlDirs.GetNextSiblingItem(ht);
 	}
-	delete reinterpret_cast<tstring*>(ctrlDirs.GetItemData(ht));
+	delete (tstring*)ctrlDirs.GetItemData(ht);
 	ctrlDirs.DeleteItem(ht);
 }
 
@@ -690,7 +688,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			
 			delete ii;
 			updateStatus();
-			if (BOOLSETTING(QUEUE_DIRTY)) {
+			if (BOOLSETTING(BOLD_QUEUE)) {
 				setDirty();
 			}
 			dirty = true;
@@ -1268,6 +1266,7 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 		ctrlQueue.saveHeaderOrder(SettingsManager::QUEUEFRAME_ORDER, 
 			SettingsManager::QUEUEFRAME_WIDTHS, SettingsManager::QUEUEFRAME_VISIBLE);
+
 		checkButton(false);
 		bHandled = FALSE;
 		return 0;
@@ -1410,5 +1409,3 @@ void QueueFrame::on(QueueManagerListener::SearchAlternates, string aMsg, int nr)
  * @file
  * $Id: QueueFrame.cpp,v 1.8 2004/01/06 01:52:14 trem Exp $
  */
-
-

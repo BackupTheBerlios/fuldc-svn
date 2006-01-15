@@ -21,7 +21,7 @@
 #include "UserInfoBase.h"
 #include "PrivateFrame.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
 #include "../client/User.h"
@@ -32,17 +32,20 @@
 void UserInfoBase::matchQueue() {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
 }
 void UserInfoBase::getList() {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
 }
+
 void UserInfoBase::addFav() {
-	HubManager::getInstance()->addFavoriteUser(user);
+	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 void UserInfoBase::pm() {
 	PrivateFrame::openWindow(user);
@@ -63,15 +66,6 @@ void UserInfoBase::ignore() {
 }
 void UserInfoBase::unignore() {
 	IgnoreManager::getInstance()->unignore(user->getNick());
-}
-
-void UserInfoBase::browseList() {
-	if(user->getCID().isZero())
-		return;
-	try {
-		QueueManager::getInstance()->addPfs(user, "");
-	} catch(const Exception&) {
-	}
 }
 
 void UserInfoBase::showLog() {

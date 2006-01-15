@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include "../client/ShareManager.h"
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/LogManager.h"
 #include "../client/AdcCommand.h"
 #include "../client/version.h"
@@ -93,7 +93,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.SetCheck(showUserList ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
-	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 
 	if(fhe) {
 		WinUtil::splitTokens(columnIndexes, fhe->getHeaderOrder(), COLUMN_LAST);
@@ -222,7 +222,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
 				if(!param.empty()) {
 					redirect = param;
-					if(BOOLSETTING(SETTINGS_OPEN_NEW_WINDOW)) {
+					if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
 						HubFrame::openWindow(param);
 					} else {
 						BOOL whatever = FALSE;
@@ -417,7 +417,7 @@ void HubFrame::addAsFavorite() {
 	aEntry.setStripIsp(stripIsp);
 	aEntry.setLogMainChat(logMainChat);
 
-	HubManager::getInstance()->addFavorite(aEntry);
+	FavoriteManager::getInstance()->addFavorite(aEntry);
 	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
 }
 
@@ -652,12 +652,12 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	} else {
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
-		HubManager::getInstance()->removeUserCommand(Text::fromT(server));
+		FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
 		string tmp, tmp2, tmp3;
 		ctrlUsers.saveHeaderOrder(tmp, tmp2, tmp3);
 
-		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 		if(fhe != NULL){
 			CRect rc;
 			
@@ -684,7 +684,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			fhe->setHeaderVisible(tmp3);
 			
 
-			HubManager::getInstance()->setDirty();
+			FavoriteManager::getInstance()->setDirty();
 		} else {
 			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, tmp);
 			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, tmp2);

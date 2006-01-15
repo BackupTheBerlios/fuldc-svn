@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ void TextFrame::openWindow(deque<tstring>* aLog) {
 
 LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 	
 	ctrlPad.LimitText(0);
@@ -132,5 +132,3 @@ LRESULT TextFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
  * @file
  * $Id: TextFrame.cpp,v 1.3 2004/01/08 11:27:05 trem Exp $
  */
-
-

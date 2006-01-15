@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,11 @@
 #include "SearchManager.h"
 #include "CryptoManager.h"
 #include "ConnectionManager.h"
-#include "HubManager.h"
+#include "FavoriteManager.h"
 
 #include "AdcHub.h"
 #include "NmdcHub.h"
+
 
 Client* ClientManager::getClient(const string& aHubURL) {
 	Client* c;
@@ -341,16 +342,16 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 }
 
 void ClientManager::on(Failed, Client* client, const string&) throw() { 
-	HubManager::getInstance()->removeUserCommand(client->getAddressPort());
+	FavoriteManager::getInstance()->removeUserCommand(client->getAddressPort());
 	fire(ClientManagerListener::ClientDisconnected(), client);
 }
 
 void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() { 
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
  		if(aType == ::UserCommand::TYPE_CLEAR) {
- 			HubManager::getInstance()->removeHubUserCommands(ctx, client->getAddressPort());
+ 			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getAddressPort());
  		} else {
- 			HubManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
+ 			FavoriteManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
  		}
 	}
 }

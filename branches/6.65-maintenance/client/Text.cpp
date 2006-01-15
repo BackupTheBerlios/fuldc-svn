@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 char Text::asciiLower[128];
 wchar_t Text::lower[65536];
 
-// When using GNU C library; setlocale should be called before Text::initialize 
+// When using GNU C library; setlocale should be called before Text::initialize
 
 void Text::initialize() {
 	for(size_t i = 0; i < 65536; ++i) {
@@ -126,6 +126,8 @@ string& Text::acpToUtf8(const string& str, string& tmp) throw() {
 }
 
 wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
+	if(str.empty())
+		return tmp;
 #ifdef _WIN32
 	int n = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), (int)str.length(), NULL, 0);
 	if(n == 0) {
@@ -151,7 +153,7 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	if (n < 1) {
 		tmp.clear();
 		return tmp;
-	} 
+	}
 	return tmp;
 #endif
 }
@@ -180,6 +182,8 @@ string& Text::wideToUtf8(const wstring& str, string& tgt) throw() {
 }
 
 string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
+	if(str.empty())
+		return tmp;
 #ifdef _WIN32
 	int n = WideCharToMultiByte(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0, NULL, NULL);
 	if(n == 0) {

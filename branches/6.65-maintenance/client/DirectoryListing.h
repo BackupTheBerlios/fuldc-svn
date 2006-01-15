@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_)
-#define AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_
+#if !defined(DIRECTORY_LISTING_H)
+#define DIRECTORY_LISTING_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -97,12 +97,15 @@ public:
 			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
 		
 		virtual ~Directory() {
-			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
-			for_each(files.begin(), files.end(), DeleteFunction<File*>());
+			for_each(directories.begin(), directories.end(), DeleteFunction());
+			for_each(files.begin(), files.end(), DeleteFunction());
 		}
 
 		size_t getTotalFileCount(bool adls = false);		
 		int64_t getTotalSize(bool adls = false);
+		void filterList(DirectoryListing& dirList);
+		void filterList(const HASH_SET<TTHValue, TTHValue::Hash>& l);
+		void getHashList(HASH_SET<TTHValue, TTHValue::Hash>& l);
 		
 		size_t getFileCount() { return files.size(); };
 		
@@ -135,37 +138,36 @@ public:
 
 	class AdlDirectory : public Directory {
 	public:
-		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true, true), fullPath(aFullPath) { };
+		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true, true), fullPath(aFullPath) { }
 
 		GETSET(string, fullPath, FullPath);
 	};
 
-	DirectoryListing(const User::Ptr& aUser) : user(aUser), utf8(false), root(new Directory(NULL, Util::emptyString, false, false)) {
-	};
-	
+	DirectoryListing(const User::Ptr& aUser) : user(aUser), root(new Directory(NULL, Util::emptyString, false, false)) {
+	}
+
 	~DirectoryListing() {
 		delete root;
-	};
+	}
 
 	void loadFile(const string& name);
 
-	void load(const string& i);
 	string loadXML(const string& xml, bool updating);
 
 	void download(const string& aDir, const string& aTarget, bool highPrio);
 	void download(Directory* aDir, const string& aTarget, bool highPrio);
 	void download(File* aFile, const string& aTarget, bool view, bool highPrio);
 	
-	string getPath(Directory* d);
-	string getPath(File* f) { return getPath(f->getParent()); };
+	string getPath(const Directory* d) const;
+	string getPath(const File* f) const { return getPath(f->getParent()); }
 
-	int64_t getTotalSize(bool adls = false) { return root->getTotalSize(adls); };
-	size_t getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
+	int64_t getTotalSize(bool adls = false) { return root->getTotalSize(adls); }
+	size_t getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); }
 
-	Directory* getRoot() { return root; };
+	const Directory* getRoot() const { return root; }
+	Directory* getRoot() { return root; }
 
 	GETSET(User::Ptr, user, User);
-	GETSET(bool, utf8, Utf8);
 
 private:
 	friend class ListLoader;
@@ -182,7 +184,7 @@ private:
 inline bool operator==(DirectoryListing::Directory::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
 inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
 
-#endif // !defined(AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_)
+#endif // !defined(DIRECTORY_LISTING_H)
 
 /**
  * @file

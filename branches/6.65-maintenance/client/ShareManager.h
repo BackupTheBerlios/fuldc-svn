@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
-#define AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_
+#if !defined(SHARE_MANAGER_H)
+#define SHARE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -50,7 +50,7 @@ class ShareManager : public Singleton<ShareManager>, private SettingsManagerList
 {
 public:
 	/**
-	 * @param aDirectory Physical directory localtion
+	 * @param aDirectory Physical directory location
 	 * @param aName Virtual name
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
@@ -129,7 +129,7 @@ private:
 				StringComp& operator=(const StringComp&);
 			};
 			struct FileLess {
-				int operator()(const File& a, const File& b) const { return Util::stricmp(a.getName(), b.getName()); }
+				bool operator()(const File& a, const File& b) const { return (Util::stricmp(a.getName(), b.getName()) < 0); }
 			};
 			typedef set<File, FileLess> Set;
 			typedef Set::iterator Iter;
@@ -279,8 +279,7 @@ private:
 	bool refreshIncoming;
 	bool refreshDir;
 	
-	//used to check if we've already started a refresh
-	__declspec(align(4)) volatile long refreshing;
+	volatile long refreshing;
 
 	StringList refreshPaths;
 	
@@ -352,10 +351,9 @@ private:
 	Directory* addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName, string & aPath);
 };
 
-#endif // !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
+#endif // !defined(SHARE_MANAGER_H)
 
 /**
  * @file
  * $Id: ShareManager.h,v 1.6 2004/02/21 10:47:46 trem Exp $
  */
-

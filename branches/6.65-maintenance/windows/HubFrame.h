@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
-#define AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_
+#if !defined(HUB_FRAME_H)
+#define HUB_FRAME_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -96,13 +96,6 @@ public:
 		MESSAGE_HANDLER(WM_KEYUP, onFilterChar)
 		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
 	END_MSG_MAP()
-
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		dcassert(frames.find(server) != frames.end());
-		dcassert(frames[server] == this);
-		frames.erase(server);
-		delete this;
-	}
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -290,7 +283,7 @@ private:
 		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
 		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
 	{
-		FavoriteHubEntry* fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(aServer));
+		FavoriteHubEntry* fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(aServer));
 		if(fhe != NULL) {
 			stripIsp     = fhe->getStripIsp();
 			showJoins    = fhe->getShowJoins();
@@ -345,7 +338,11 @@ private:
 		tabList.push_back(_T("/userlist"));
 	}
 
-	~HubFrame() {
+	virtual ~HubFrame() {
+		dcassert(frames.find(server) != frames.end());
+		dcassert(frames[server] == this);
+		frames.erase(server);
+
 		ClientManager::getInstance()->putClient(client);
 
 		if(resolveBuffer)

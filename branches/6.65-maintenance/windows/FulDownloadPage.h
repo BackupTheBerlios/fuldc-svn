@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2003-2005 Pär Björklund, per.bjorklund@gmail.com
+* Copyright (C) 2003-2006 Pär Björklund, per.bjorklund@gmail.com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef FULPAGE2_H
-#define FULPAGE2_H
+#if !defined(FULDOWNLOADPAGE_H)
+#define FULDOWNLOADPAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,7 +25,6 @@
 
 #include <atlcrack.h>
 #include "PropPage.h"
-#include "ExListViewCtrl.h"
 
 class FulDownloadPage : public CPropertyPage<IDD_FULDOWNLOADPAGE>, public PropPage
 {
@@ -34,21 +33,15 @@ public:
 		SetTitle( CTSTRING(SETTINGS_FUL_DOWNLOAD) );
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
-	~FulDownloadPage() {
-		ctrlDownload.Detach();
-	};
+	~FulDownloadPage() { };
 
 	BEGIN_MSG_MAP(FulDownloadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
-	LRESULT onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 		
@@ -59,11 +52,6 @@ public:
 protected:
 	static Item items[];
 	static TextItem texts[];
-
-	//just save the copy here to avoid searching the list
-	StringPairList download;
-
-	ExListViewCtrl ctrlDownload;
 };
 
 #endif

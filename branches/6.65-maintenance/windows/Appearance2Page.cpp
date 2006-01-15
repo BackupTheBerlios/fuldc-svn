@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include "WinUtil.h"
 
 PropPage::TextItem Appearance2Page::texts[] = {
+	{ IDC_SETTINGS_BOLD_CONTENTS, ResourceManager::SETTINGS_BOLD_OPTIONS },
 	{ IDC_SETTINGS_COLORS, ResourceManager::SETTINGS_COLORS },
 	{ IDC_SELWINCOLOR, ResourceManager::SETTINGS_SELECT_WINDOW_COLOR },
 	{ IDC_SELTEXT, ResourceManager::SETTINGS_SELECT_TEXT_FACE },
@@ -45,6 +46,17 @@ PropPage::Item Appearance2Page::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
+PropPage::ListItem Appearance2Page::listItems[] = {
+	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
+	{ SettingsManager::BOLD_FINISHED_UPLOADS, ResourceManager::FINISHED_UPLOADS },
+	{ SettingsManager::BOLD_QUEUE, ResourceManager::DOWNLOAD_QUEUE },
+	{ SettingsManager::BOLD_HUB, ResourceManager::HUB },
+	{ SettingsManager::BOLD_SEARCH, ResourceManager::SEARCH },
+	{ SettingsManager::BOLD_WAITING_USERS, ResourceManager::WAITING_USERS },
+	{ SettingsManager::BOLD_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 Appearance2Page::~Appearance2Page()
 {
 	::DeleteObject(bgbrush);
@@ -56,7 +68,7 @@ LRESULT Appearance2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	PropPage::translate((HWND)(*this), texts);
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
-	PropPage::read((HWND)*this, items, 0,GetDlgItem(IDC_APPEARANCE_BOOLEANS));
+	PropPage::read((HWND)*this, items, listItems,GetDlgItem(IDC_BOLD_BOOLEANS));
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
 
 	// Do specialized reading here
@@ -71,7 +83,7 @@ LRESULT Appearance2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 void Appearance2Page::write()
 {
-	PropPage::write((HWND)*this, items, 0,GetDlgItem(IDC_APPEARANCE_BOOLEANS));
+	PropPage::write((HWND)*this, items, listItems,GetDlgItem(IDC_BOLD_BOOLEANS));
 
 	settings->set(SettingsManager::TEXT_COLOR, (int)fg);
 	settings->set(SettingsManager::BACKGROUND_COLOR, (int)bg);
@@ -163,3 +175,7 @@ LRESULT Appearance2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCE2PAGE);
 	return 0;
 }
+/**
+ * @file
+ * $Id: Appearance2Page.cpp,v 1.3 2005/04/24 08:13:07 arnetheduck Exp $
+ */

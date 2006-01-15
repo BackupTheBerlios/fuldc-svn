@@ -73,6 +73,14 @@
 			<param name="Name" value="What do the units mean?">
 			<param name="Local" value="faq_units.html">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How do I install/uninstall/upgrade DC++?">
+			<param name="Local" value="faq_install.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="What secret stuff are there?">
+			<param name="Local" value="faq_secret.html">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Settings">
@@ -91,6 +99,18 @@
 				<param name="Name" value="Downloads">
 				<param name="Local" value="settings_downloads.html">
 				</OBJECT>
+        <UL>
+          <LI>
+            <OBJECT type="text/sitemap">
+              <param name="Name" value="Favorites">
+                <param name="Local" value="settings_favoritedirs.html">
+                </OBJECT>
+          <LI>
+              <OBJECT type="text/sitemap">
+                <param name="Name" value="Queue">
+                  <param name="Local" value="settings_queue.html">
+                  </OBJECT>
+        </UL>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Sharing">
 				<param name="Local" value="settings_sharing.html">
@@ -98,63 +118,67 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Appearance">
 				<param name="Local" value="settings_appearance.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Colors and sounds">
-				<param name="Local" value="settings_colors_and_sounds.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Logs">
-				<param name="Local" value="settings_logs.html">
-				</OBJECT>
+			</OBJECT>
+        <UL>
+          <LI> <OBJECT type="text/sitemap">
+              <param name="Name" value="Colors and sounds">
+              <param name="Local" value="settings_colors_and_sounds.html">
+          </OBJECT>
+          <LI> <OBJECT type="text/sitemap">
+              <param name="Name" value="Windows">
+              <param name="Local" value="settings_windows.html">
+          </OBJECT>
+        </UL>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Advanced">
 				<param name="Local" value="settings_advanced.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="User Commands">
-					<param name="Local" value="settings_usercommands.html">
+			</OBJECT>
+			  <UL>
+          <LI> <OBJECT type="text/sitemap">
+              <param name="Name" value="Logs">
+              <param name="Local" value="settings_logs.html">
+          </OBJECT>
+				  <LI> <OBJECT type="text/sitemap">
+					  <param name="Name" value="User Commands">
+					  <param name="Local" value="settings_usercommands.html">
 					</OBJECT>
-			</UL>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Experts only">
-					<param name="Local" value="settings_expert.html">
+			    <LI> <OBJECT type="text/sitemap">
+					  <param name="Name" value="Experts only">
+					  <param name="Local" value="settings_expert.html">
 					</OBJECT>
-			</UL>
+			  </UL>
 		</UL>
-		<LI> <OBJECT <TYPE="text/sitemap">
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="fulDC">
 			<param name="Local" value"settings_fuldc.html">
 			</OBJECT>
 		<UL>
-			<LI> <OBJECT <TYPE="text/sitemap">
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Downloads">
 				<param name="Local" value"settings_fuldc_downloads.html">
 				</OBJECT>
-			<LI> <OBJECT <TYPE="text/sitemap">
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Sharing">
 				<param name="Local" value"settings_fuldc_sharing.html">
 				</OBJECT>
-			<LI> <OBJECT <TYPE="text/sitemap">
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Ignore">
 				<param name="Local" value"settings_fuldc_ignore.html">
 				</OBJECT>
-			<LI> <OBJECT <TYPE="text/sitemap">
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Appearance">
 				<param name="Local" value"settings_fuldc_appearance.html">
 				</OBJECT>
 			<UL>
-				<LI> <OBJECT <TYPE="text/sitemap">
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Highlight">
 					<param name="Local" value"settings_fuldc_highlight.html">
 					</OBJECT>
-				<LI> <OBJECT <TYPE="text/sitemap">
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Popups">
 					<param name="Local" value"settings_fuldc_popups.html">
 					</OBJECT>
-				<LI> <OBJECT <TYPE="text/sitemap">
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Tabs">
 					<param name="Local" value"settings_fuldc_tabs.html">
 					</OBJECT>

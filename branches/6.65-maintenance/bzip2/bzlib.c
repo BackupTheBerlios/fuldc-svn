@@ -130,8 +130,7 @@ void BZ2_bz__AssertH__fail ( int errcode )
 }
 #endif
 
-//bah won't compile without this
-void bz_internal_error ( int errcode ) { errcode; };
+
 /*---------------------------------------------------*/
 static
 int bz_config_ok ( void )
@@ -598,7 +597,7 @@ Bool unRLE_obuf_to_output_FAST ( DState* s )
             s->strm->total_out_lo32++;
             if (s->strm->total_out_lo32 == 0) s->strm->total_out_hi32++;
          }
-
+   
          /* can a new run be started? */
          if (s->nblock_used == s->save_nblock+1) return False;
                
@@ -770,7 +769,7 @@ Bool unRLE_obuf_to_output_SMALL ( DState* s )
    
          /* can a new run be started? */
          if (s->nblock_used == s->save_nblock+1) return False;
-
+               
          /* Only caused by corrupt data stream? */
          if (s->nblock_used > s->save_nblock+1)
             return True;

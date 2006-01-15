@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CLIENTMANAGERLISTENER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
-#define AFX_CLIENTMANAGERLISTENER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_
+#if !defined(CLIENT_MANAGER_LISTENER_H)
+#define CLIENT_MANAGER_LISTENER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -40,7 +40,7 @@ public:
 	virtual void on(ClientDisconnected, Client*) throw() { }
 };
 
-#endif
+#endif // !defined(CLIENT_MANAGER_LISTENER_H)
 
 /**
  * @file

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _Z_UTILS
-#define _Z_UTILS
+#if !defined(Z_UTILS_H)
+#define Z_UTILS_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -79,7 +79,7 @@ private:
 	u_int32_t crc;
 };
 
-#endif // _Z_UTILS
+#endif // !defined(_Z_UTILS_H)
 
 /**
  * @file

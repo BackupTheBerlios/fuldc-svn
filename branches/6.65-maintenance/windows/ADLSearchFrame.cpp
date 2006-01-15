@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ static ResourceManager::Strings columnNames[] = {
 	ResourceManager::ACTIVE_SEARCH_STRING, 
 	ResourceManager::SOURCE_TYPE, 
 	ResourceManager::DESTINATION, 
-	ResourceManager::SIZE_MIN, 
+	ResourceManager::MIN_SIZE, 
 	ResourceManager::MAX_SIZE, 
 };
 

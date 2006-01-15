@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
-#define AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_
+#if !defined(MAIN_FRM_H)
+#define MAIN_FRM_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -25,7 +25,7 @@
 
 #include "../client/TimerManager.h"
 #include "../client/HttpConnection.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
 #include "../client/LogManager.h"
@@ -122,6 +122,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_NET_STATS, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_VIEW_WAITING_USERS, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_SYSTEM_LOG, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_HELP_FULPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
@@ -133,7 +135,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_README, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onMenuHelp)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(IDC_OPEN_OWN_LIST, onOpenOwnList)
@@ -142,7 +143,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		COMMAND_ID_HANDLER(ID_WINDOW_RESTORE_ALL, onWindowRestoreAll)
-		COMMAND_ID_HANDLER(IDC_FINISHED, onStaticFrame)
+		COMMAND_ID_HANDLER(IDC_FINISHED_DL, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onStaticFrame)
 		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_PM, onCloseWindows)
@@ -393,7 +394,7 @@ private:
 	MainFrame(const MainFrame&) { dcassert(0); };
 
 	// LogManagerListener
-	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new tstring(Text::toT(m))); };
+	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); };
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second type, u_int32_t aTick) throw();
@@ -411,11 +412,9 @@ private:
 	UPnP* UPnP_UDPConnection;
 };
 
-#endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
+#endif // !defined(MAIN_FRM_H)
 
 /**
  * @file
  * $Id: MainFrm.h,v 1.11 2004/02/22 01:24:11 trem Exp $
  */
-
- 

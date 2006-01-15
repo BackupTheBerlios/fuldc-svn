@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_LineDLG_H__A7EB85C3_1EEA_4FEC_8450_C090219B8619__INCLUDED_)
-#define AFX_LineDLG_H__A7EB85C3_1EEA_4FEC_8450_C090219B8619__INCLUDED_
+#if !defined(LINE_DLG_H)
+#define LINE_DLG_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -83,7 +83,7 @@ public:
 	
 };
 
-#endif // !defined(AFX_LineDLG_H__A7EB85C3_1EEA_4FEC_8450_C090219B8619__INCLUDED_)
+#endif // !defined(LINE_DLG_H)
 
 /**
  * @file

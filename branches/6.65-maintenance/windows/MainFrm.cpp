@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,14 +32,16 @@
 #include "NotepadFrame.h"
 #include "QueueFrame.h"
 #include "SpyFrame.h"
-#include "FinishedFrame.h"
+#include "FinishedDLFrame.h"
 #include "ADLSearchFrame.h"
 #include "FinishedULFrame.h"
 #include "TextFrame.h"
 #include "StatsFrame.h"
+#include "WaitingUsersFrame.h"
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 #include "UPnP.h"
+#include "SystemFrame.h"
 #include "PopupManager.h"
 #include "PrivateFrame.h"
 
@@ -126,9 +128,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 30, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 31, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	m_CmdBar.m_hImageList = images;
-	if(images.GetImageCount() > 15) {
+	if(images.GetImageCount() > 16) {
 		//File
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_OWN_LIST);
@@ -142,7 +144,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		//View
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
@@ -164,14 +167,15 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_PM);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_DIR_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_SEARCH_FRAME);
-	} else if(images.GetImageCount() == 15) {
+	} else if(images.GetImageCount() == 16) {
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
@@ -235,11 +239,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	//c->addListener(this);
 	//c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
+	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
 	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_FILE_CONNECT);
 	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
 	if(BOOLSETTING(OPEN_QUEUE)) PostMessage(WM_COMMAND, IDC_QUEUE);
-	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED);
+	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_DL);
+	if(BOOLSETTING(OPEN_WAITING_USERS)) PostMessage(WM_COMMAND, IDC_VIEW_WAITING_USERS);
 	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_UL);
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
 	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
@@ -311,7 +317,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 
 	if(SETTING(NICK).empty()) {
-		PostMessage(WM_COMMAND, IDC_HELP_README);
+		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
 	}
 
@@ -321,9 +327,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	bHandled = FALSE;
 	return 0;
 }
-/**
- * @todo Fix this, it's dead ugly...
- */
+
 void MainFrame::startSocket() {
 	SearchManager::getInstance()->disconnect();
 	ConnectionManager::getInstance()->disconnect();
@@ -389,7 +393,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolBar.SetImageList(largeImages);
 	ctrlToolBar.SetHotImageList(largeImagesHot);
 
-	const int numButtons = 22;
+	const int numButtons = 24;
 
 
 	TBBUTTON tb[numButtons];
@@ -442,7 +446,13 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FINISHED;
+	tb[n].idCommand = IDC_VIEW_WAITING_USERS;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_FINISHED_DL;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
@@ -502,6 +512,12 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_SYSTEM_LOG;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_NOTEPAD;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
@@ -512,8 +528,6 @@ HWND MainFrame::createToolbar() {
 
 	return ctrlToolBar.m_hWnd;
 }
-
-
 
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		
@@ -551,13 +565,13 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		delete &str;
 	} else if(wParam == AUTO_CONNECT) {
-		autoConnect(HubManager::getInstance()->getFavoriteHubs());
+		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
 	} else if(wParam == STATUS_MESSAGE) {
-		tstring* msg = (tstring*)lParam;
+		auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)lParam);
 		if(ctrlStatus.IsWindow()) {
-			tstring line = _T("[") + Util::getShortTimeString() + _T("] ") + *msg;
+			tstring line = _T("[") + Util::getShortTimeString(msg->first) + _T("] ") + msg->second;
 
 			ctrlStatus.SetText(0, line.c_str());
 			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
@@ -568,7 +582,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 				lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
 			}
 		}
-		delete msg;
 	} else if(wParam == DOWNLOAD_COMPLETE) {
 		PopupManager::getInstance()->ShowDownloadComplete((tstring*)lParam);
 	} else if(wParam == WM_CLOSE) {
@@ -601,17 +614,19 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	switch(wID){
-		case ID_FILE_CONNECT:		PublicHubsFrame::openWindow(); break;
-		case IDC_FAVORITES:			FavoriteHubsFrame::openWindow(); break;
-		case IDC_FAVUSERS:			UsersFrame::openWindow(); break;
-		case IDC_QUEUE:				QueueFrame::openWindow(); break;
-		case IDC_FINISHED:			FinishedFrame::openWindow(); break;
-		case IDC_FINISHED_UL:		FinishedULFrame::openWindow(); break;
-		case ID_FILE_SEARCH:		SearchFrame::openWindow(); break;
-		case IDC_FILE_ADL_SEARCH:	ADLSearchFrame::openWindow(); break;
-		case IDC_SEARCH_SPY:		SpyFrame::openWindow(); break;
-		case IDC_NOTEPAD:			NotepadFrame::openWindow(); break;
-		case IDC_NET_STATS:			StatsFrame::openWindow(); break;
+		case ID_FILE_CONNECT:			PublicHubsFrame::openWindow(); break;
+		case IDC_FAVORITES:				FavoriteHubsFrame::openWindow(); break;
+		case IDC_FAVUSERS:				UsersFrame::openWindow(); break;
+		case IDC_QUEUE:					QueueFrame::openWindow(); break;
+		case IDC_VIEW_WAITING_USERS:	WaitingUsersFrame::openWindow(); break;
+		case IDC_FINISHED_DL:			FinishedDLFrame::openWindow(); break;
+		case IDC_FINISHED_UL:			FinishedULFrame::openWindow(); break;
+		case ID_FILE_SEARCH:			SearchFrame::openWindow(); break;
+		case IDC_FILE_ADL_SEARCH:		ADLSearchFrame::openWindow(); break;
+		case IDC_SEARCH_SPY:			SpyFrame::openWindow(); break;
+		case IDC_NOTEPAD:				NotepadFrame::openWindow(); break;
+		case IDC_NET_STATS:				StatsFrame::openWindow(); break;
+		case IDC_SYSTEM_LOG:			SystemFrame::openWindow();
 	}
 	return 0;
 }
@@ -634,7 +649,7 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	PropertiesDlg dlg(SettingsManager::getInstance());
+	PropertiesDlg dlg(m_hWnd, SettingsManager::getInstance());
 
 	short lastPort = (short)SETTING(IN_PORT);
 	short lastUDP = (short)SETTING(UDP_PORT);
@@ -678,7 +693,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 
 		xml.resetCurrentChild();
 		if(xml.findChild("Version")) {
-			if(atof(xml.getChildData().c_str()) > VERSIONFLOAT) {
+			if(Util::toDouble(xml.getChildData()) > VERSIONFLOAT) {
 				xml.resetCurrentChild();
 				xml.resetCurrentChild();
 				if(xml.findChild("Title")) {
@@ -696,31 +711,6 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 						}
 					}
 				}
-			} else {
-				xml.resetCurrentChild();
-				if(xml.findChild("VeryOldVersion")) {
-					if(atof(xml.getChildData().c_str()) >= VERSIONFLOAT) {
-						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
-						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str());
-						oldshutdown = true;
-						PostMessage(WM_CLOSE);
-					}
-				}
-			}
-
-			xml.resetCurrentChild();
-			if(xml.findChild("BadVersions")) {
-				xml.stepIn();
-				while(xml.findChild("BadVersion")) {
-					double v = atof(xml.getChildAttrib("Version").c_str());
-					if(v == VERSIONFLOAT) {
-						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
-						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str(), _T("Bad DC++ version"), MB_OK | MB_ICONEXCLAMATION);
-						oldshutdown = true;
-						PostMessage(WM_CLOSE);
-					}
-				}
-				xml.stepOut();
 			}
 
 			xml.resetCurrentChild();
@@ -802,10 +792,11 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_FAVORITES: stringId = ResourceManager::MENU_FAVORITE_HUBS; break;
 			case IDC_FAVUSERS: stringId = ResourceManager::MENU_FAVORITE_USERS; break;
 			case IDC_QUEUE: stringId = ResourceManager::MENU_DOWNLOAD_QUEUE; break;
-			case IDC_FINISHED: stringId = ResourceManager::FINISHED_DOWNLOADS; break;
+			case IDC_FINISHED_DL: stringId = ResourceManager::FINISHED_DOWNLOADS; break;
 			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
 			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
+			case IDC_VIEW_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
 			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
 			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case IDC_REFRESH_FILE_LIST: stringId = ResourceManager::MENU_REFRESH_FILE_LIST; break;
@@ -1009,9 +1000,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 
 	tstring site;
-	bool isFile = false;
 	switch(wID) {
-	case IDC_HELP_README: site = Text::toT(Util::getAppPath() + "README.txt"); isFile = true; break;
 	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
 	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
 	//case IDC_HELP_GEOIPFILE: site = links.geoipfile; break;
@@ -1026,10 +1015,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	default: dcassert(0);
 	}
 
-	if(isFile)
-		WinUtil::openFile(site);
-	else
-		WinUtil::openLink(site);
+	WinUtil::openLink(site);
 
 	return 0;
 }

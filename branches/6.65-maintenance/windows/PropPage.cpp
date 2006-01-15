@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,28 +31,32 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 {
 	dcassert(page != NULL);
 
-	bool const useDef = true;
-	for(Item const* i = items; i->type != T_END; i++)
-	{
-		switch(i->type)
+	if(items != NULL) {
+		bool const useDef = true;
+		for(Item const* i = items; i->type != T_END; i++)
 		{
-		case T_STR:
-			::SetDlgItemText(page, i->itemID,
-			Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
-			break;
-		case T_INT:
-			if(settings->isDefault(i->setting) && i->setting == SettingsManager::IN_PORT)
+			switch(i->type)
+			{
+			case T_STR:
+				::SetDlgItemText(page, i->itemID,
+				Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
 				break;
-			
-			::SetDlgItemInt(page, i->itemID,
-			settings->get((SettingsManager::IntSetting)i->setting, useDef), FALSE);
-			
-			break;
-		case T_BOOL:
-			if(settings->getBool((SettingsManager::IntSetting)i->setting, useDef))
-				::CheckDlgButton(page, i->itemID, BST_CHECKED);
-			else
-				::CheckDlgButton(page, i->itemID, BST_UNCHECKED);
+			case T_INT:
+				if(settings->isDefault(i->setting) && i->setting == SettingsManager::IN_PORT)
+					break;
+				if(settings->isDefault(i->setting) && i->setting == SettingsManager::UDP_PORT)
+					break;
+				
+				::SetDlgItemInt(page, i->itemID,
+				settings->get((SettingsManager::IntSetting)i->setting, useDef), FALSE);
+				
+				break;
+			case T_BOOL:
+				if(settings->getBool((SettingsManager::IntSetting)i->setting, useDef))
+					::CheckDlgButton(page, i->itemID, BST_CHECKED);
+				else
+					::CheckDlgButton(page, i->itemID, BST_UNCHECKED);
+			}
 		}
 	}
 
@@ -84,30 +88,32 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 {
 	dcassert(page != NULL);
 
-	AutoArray<TCHAR> buf(SETTING_STR_MAXLEN);
-	for(Item const* i = items; i->type != T_END; i++)
-	{
-		switch(i->type)
+	if(items != NULL) {
+		AutoArray<TCHAR> buf(SETTING_STR_MAXLEN);
+		for(Item const* i = items; i->type != T_END; i++)
 		{
-		case T_STR:
+			switch(i->type)
 			{
-				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(tstring(buf)));
+			case T_STR:
+				{
+					::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
+					settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(tstring(buf)));
 
-				break;
-			}
-		case T_INT:
-			{
-				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(tstring(buf)));
-				break;
-			}
-		case T_BOOL:
-			{
-				if(::IsDlgButtonChecked(page, i->itemID) == BST_CHECKED)
-					settings->set((SettingsManager::IntSetting)i->setting, true);
-				else
-					settings->set((SettingsManager::IntSetting)i->setting, false);
+					break;
+				}
+			case T_INT:
+				{
+					::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
+					settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(tstring(buf)));
+					break;
+				}
+			case T_BOOL:
+				{
+					if(::IsDlgButtonChecked(page, i->itemID) == BST_CHECKED)
+						settings->set((SettingsManager::IntSetting)i->setting, true);
+					else
+						settings->set((SettingsManager::IntSetting)i->setting, false);
+				}
 			}
 		}
 	}
@@ -125,7 +131,7 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 	}
 }
 
-void PropPage::translate(HWND page, TextItem* textItems) 
+void PropPage::translate(HWND page, TextItem* textItems)
 {
 	if (textItems != NULL) {
 		for(int i = 0; textItems[i].itemID != 0; i++) {
@@ -139,4 +145,3 @@ void PropPage::translate(HWND page, TextItem* textItems)
  * @file
  * $Id: PropPage.cpp,v 1.2 2004/02/12 22:44:43 trem Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #include "ClientManager.h"
 #include "HashManager.h"
 #include "LogManager.h"
-#include "HubManager.h"
+#include "FavoriteManager.h"
 #include "SettingsManager.h"
 #include "FinishedManager.h"
 #include "ADLSearch.h"
@@ -84,7 +84,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
 	ShareManager::newInstance();
-	HubManager::newInstance();
+	FavoriteManager::newInstance();
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
@@ -99,7 +99,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
 	}
 
-	HubManager::getInstance()->load();
+	FavoriteManager::getInstance()->load();
 
 	if(f != NULL)
 		(*f)(p, tku[index], TSTRING(HASH_DATABASE));
@@ -118,10 +118,11 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 }
 
 void shutdown() {
-	ConnectionManager::getInstance()->shutdown();
-	HashManager::getInstance()->shutdown();
-
 	TimerManager::getInstance()->removeListeners();
+
+	HashManager::getInstance()->shutdown();
+	ConnectionManager::getInstance()->shutdown();
+
 	SettingsManager::getInstance()->save();
 	
 	IgnoreManager::deleteInstance();
@@ -138,7 +139,7 @@ void shutdown() {
 	ConnectionManager::deleteInstance();
 	SearchManager::deleteInstance();
 	ClientManager::deleteInstance();
-	HubManager::deleteInstance();
+	FavoriteManager::deleteInstance();
 	HashManager::deleteInstance();
 	LogManager::deleteInstance();
 	SettingsManager::deleteInstance();
@@ -150,4 +151,3 @@ void shutdown() {
  * @file
  * $Id: DCPlusPlus.cpp,v 1.5 2004/02/15 01:20:30 trem Exp $
  */
-

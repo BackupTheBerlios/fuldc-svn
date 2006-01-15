@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
@@ -24,6 +25,7 @@
 #include "SettingsManager.h"
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
+#include "SettingsManager.h"
 #include "version.h"
 
 #ifndef _WIN32
@@ -59,6 +61,10 @@ const string Util::ANTI_FRAG_EXT = ".antifrag";
 
 static void sgenrand(unsigned long seed);
 
+extern "C" void bz_internal_error(int errcode) { 
+	dcdebug("bzip2 internal error: %d\n", errcode); 
+}
+
 void Util::initialize() {
 	setlocale(LC_ALL, "");
 
@@ -82,7 +88,7 @@ void Util::initialize() {
 	try {
 		// This product includes GeoIP data created by MaxMind, available from http://maxmind.com/
 		// Updates at http://www.maxmind.com/app/geoip_country
-		string file = Util::getAppPath() + "GeoIpCountryWhois.csv";
+		string file = Util::getDataPath() + "GeoIpCountryWhois.csv";
 		string data = File(file, File::READ, File::OPEN).read();
 
 		const char* start = data.c_str();
@@ -116,12 +122,31 @@ string Util::getConfigPath() {
 		char* home = getenv("HOME");
 		if (home) {
 #ifdef __APPLE__
+/// @todo Verify this for apple?
 			return string(home) + "/Library/Application Support/Mac DC++/";
 #else
 			return string(home) + "/.dc++/";
 #endif // __APPLE__
 		}
 		return emptyString;
+#endif // _WIN32
+}
+
+string Util::getDataPath() {
+#ifdef _WIN32
+	return getAppPath();
+#else
+	// This probably ought to be /usr/share/*...
+	char* home = getenv("HOME");
+	if (home) {
+#ifdef __APPLE__
+		/// @todo Verify this for apple?
+		return string(home) + "/Library/Application Support/Mac DC++/";
+#else
+		return string(home) + "/.dc++/";
+#endif // __APPLE__
+	}
+	return emptyString;
 #endif // _WIN32
 }
 
@@ -144,7 +169,7 @@ string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 			i++;
 		}
 		if(checkNewLines) {
-			// Check all '<' and '|' after newlines...
+			// Check all '<' and '[' after newlines...
 			i = 0;
 			while( (i = tmp.find('\n', i)) != string::npos) {
 				if(i + 1 < tmp.length()) {
@@ -355,9 +380,10 @@ void Util::decodeUrl(const string& url, string& aServer, u_int16_t& aPort, strin
 		k = j;
 	}
 
-	if(k == string::npos)
-		aServer = url;
-	else
+	if(k == string::npos) {
+		aServer = url.substr(i);
+		if(i==0) aPort = 411;
+	} else
 		aServer = url.substr(i, k-i);
 }
 
@@ -702,7 +728,7 @@ string fixedftime(const string& format, struct tm* t) {
 
 	StringMap sm;
 	AutoArray<char> buf(1024);
-	for(size_t i = 0; i < sizeof(codes); ++i) {
+	for(size_t i = 0; i < strlen(codes); ++i) {
 		tmp[1] = codes[i];
 		tmp[2] = 0;
 		strftime(buf, 1024-1, tmp, t);
@@ -963,7 +989,7 @@ string Util::toDOS(const string& tmp) {
 	return tmp2;
 }
 
-wstring Util::getShortTimeString() {
+wstring Util::getShortTimeString(time_t t) {
 	if(SETTING(TIME_STAMPS_FORMAT).empty())
 		return Util::emptyStringW;
 
@@ -974,8 +1000,7 @@ wstring Util::getShortTimeString() {
 
 	AutoArray<wchar_t> buf(bufSize);
 
-	time_t _tt = time(NULL);
-	tm* _tm = localtime(&_tt);
+	tm* _tm = localtime(&t);
 	if(_tm == NULL) {
 		return Util::emptyStringW;
 	} else {
@@ -1012,4 +1037,3 @@ string Util::replace(const string& aString, const string& fStr, const string& rS
  * @file
  * $Id: Util.cpp,v 1.4 2004/02/14 13:26:28 trem Exp $
  */
-

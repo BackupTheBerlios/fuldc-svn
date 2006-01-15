@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,12 @@
 
 
 PropPage::TextItem LogPage::texts[] = {
-	{ IDC_SETTINGS_LOGGING,		ResourceManager::SETTINGS_LOGGING },
-	{ IDC_SETTINGS_LOG_DIR,		ResourceManager::DIRECTORY},
-	{ IDC_BROWSE_LOG,			ResourceManager::BROWSE_ACCEL },
-	{ IDC_SETTINGS_FORMAT,		ResourceManager::SETTINGS_FORMAT },
-	{ IDC_SETTINGS_FILE_NAME,	ResourceManager::SETTINGS_FILE_NAME },
-	{ 0,						ResourceManager::SETTINGS_AUTO_AWAY }
+	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
+	{ IDC_SETTINGS_LOG_DIR, ResourceManager::DIRECTORY },
+	{ IDC_BROWSE_LOG, ResourceManager::BROWSE_ACCEL },
+	{ IDC_SETTINGS_FORMAT, ResourceManager::SETTINGS_FORMAT },
+	{ IDC_SETTINGS_FILE_NAME, ResourceManager::SETTINGS_FILE_NAME },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 PropPage::Item LogPage::items[] = {
@@ -42,13 +42,14 @@ PropPage::Item LogPage::items[] = {
 };
 
 PropPage::ListItem LogPage::listItems[] = {
-	{ SettingsManager::LOG_MAIN_CHAT,			ResourceManager::SETTINGS_LOG_MAIN_CHAT },
-	{ SettingsManager::LOG_PRIVATE_CHAT,		ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
-	{ SettingsManager::LOG_DOWNLOADS,			ResourceManager::SETTINGS_LOG_DOWNLOADS }, 
-	{ SettingsManager::LOG_UPLOADS,				ResourceManager::SETTINGS_LOG_UPLOADS },
-	{ SettingsManager::LOG_SYSTEM,				ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
-	{ SettingsManager::LOG_STATUS_MESSAGES,		ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
-	{ 0,										ResourceManager::SETTINGS_AUTO_AWAY }
+	{ SettingsManager::LOG_MAIN_CHAT, ResourceManager::SETTINGS_LOG_MAIN_CHAT },
+	{ SettingsManager::LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
+	{ SettingsManager::LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS },
+	{ SettingsManager::LOG_UPLOADS, ResourceManager::SETTINGS_LOG_UPLOADS },
+	{ SettingsManager::LOG_SYSTEM, ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
+	{ SettingsManager::LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
+	{ SettingsManager::LOG_FILELIST_TRANSFERS, ResourceManager::SETTINGS_LOG_FILELIST_TRANSFERS },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 
@@ -77,7 +78,7 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 	
 	int sel = logOptions.GetSelectedIndex();
 		
-	if(sel >= 0) {
+	if(sel >= 0 && sel < LogManager::LAST) {
 		BOOL checkState = logOptions.GetCheckState(sel) == BST_CHECKED ? TRUE : FALSE;
 				
 		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), checkState);
@@ -88,6 +89,12 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 	
 		//save the old selection so we know where to save the values
 		oldSelection = sel;
+	} else {
+		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), FALSE);
+		::EnableWindow(GetDlgItem(IDC_LOG_FILE), FALSE);
+
+		SetDlgItemText(IDC_LOG_FILE, _T(""));
+		SetDlgItemText(IDC_LOG_FORMAT, _T(""));
 	}
 		
 	logOptions.Detach();
@@ -157,4 +164,3 @@ LRESULT LogPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
  * @file
  * $Id: LogPage.cpp,v 1.1 2004/12/29 19:52:36 arnetheduck Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -160,4 +160,3 @@ void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLe
  * @file
  * $Id: HttpConnection.cpp,v 1.1 2003/12/15 16:51:41 trem Exp $
  */
-

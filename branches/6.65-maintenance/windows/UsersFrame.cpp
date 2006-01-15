@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -56,10 +56,10 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.AppendMenu(MF_STRING, IDC_EDIT, CTSTRING(PROPERTIES));
 	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
-	HubManager::getInstance()->addListener(this);
+	FavoriteManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
 
-	User::List ul = HubManager::getInstance()->getFavoriteUsers();
+	User::List ul = FavoriteManager::getInstance()->getFavoriteUsers();
 	ctrlUsers.SetRedraw(FALSE);
 	for(User::Iter i = ul.begin(); i != ul.end(); ++i) {
 		addUser(*i);
@@ -133,7 +133,7 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 			ui->user->setUserDescription(Text::fromT(dlg.line));
 			ui->update();
 			ctrlUsers.updateItem(i);
-			HubManager::getInstance()->save();
+			FavoriteManager::getInstance()->save();
 		}
 	}
 	return 0;
@@ -143,7 +143,7 @@ LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
 		ctrlUsers.getItemData(l->iItem)->user->setFavoriteGrantSlot(ctrlUsers.GetCheckState(l->iItem) != FALSE);
-		HubManager::getInstance()->save();
+		FavoriteManager::getInstance()->save();
 	}
 	return 0;
 } 
@@ -179,7 +179,7 @@ void UsersFrame::removeUser(const User::Ptr& aUser) {
 
 LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
-		HubManager::getInstance()->removeListener(this);
+		FavoriteManager::getInstance()->removeListener(this);
 		ClientManager::getInstance()->removeListener(this);
 
 		closed = true;
@@ -192,6 +192,7 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 			delete ctrlUsers.getItemData(i);
 		}
+		
 		checkButton(false);
 		bHandled = FALSE;
 		return 0;
@@ -211,4 +212,3 @@ LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
  * @file
  * $Id: UsersFrame.cpp,v 1.3 2004/01/06 01:52:18 trem Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #include "FilteredFile.h"
 #include "BZUtils.h"
 #include "CryptoManager.h"
+#include "ResourceManager.h"
 
 #ifdef ff
 #undef ff
@@ -39,83 +40,28 @@ void DirectoryListing::loadFile(const string& name) {
 
 	// For now, we detect type by ending...
 	string ext = Util::getFileExt(name);
-	if(Util::stricmp(ext, ".DcLst") == 0) {
-		size_t len = (size_t)::File::getSize(name);
-		if(len == (size_t)-1)
-			return;
-		AutoArray<u_int8_t> buf(len);
-		::File(name, ::File::READ, ::File::OPEN).read(buf, len);
-		CryptoManager::getInstance()->decodeHuffman(buf, txt, len);
-		load(txt);
-	} else if(Util::stricmp(ext, ".bz2") == 0) {
+		
+	if(Util::stricmp(ext, ".bz2") == 0) {
 		::File ff(name, ::File::READ, ::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
 		char buf[BUF_SIZE];
 		size_t len;
+		size_t bytesRead = 0;
 		for(;;) {
 			size_t n = BUF_SIZE;
 			len = f.read(buf, n);
 			txt.append(buf, len);
+			bytesRead += len;
+			if(SETTING(MAX_FILELIST_SIZE) && bytesRead > (size_t)SETTING(MAX_FILELIST_SIZE)*1024*1024)
+				break;
 			if(len < BUF_SIZE)
 				break;
 		}
 
 		loadXML(txt, false);
 	}
-}
 
-void DirectoryListing::load(const string& in) {
-	StringTokenizer<string> t(in, '\n');
-
-	StringList& tokens = t.getTokens();
-	string::size_type indent = 0;
-
-	root->setComplete(true);
-
-	Directory* cur = root;
-	string fullPath;
-	
-	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) 
-	{
-		string& tok = *i;
-		string::size_type j = tok.find_first_not_of('\t');
-		if(j == string::npos) {
-			break;
-		}
-
-		while(j < indent) {
-			// Wind up directory structure
-			cur = cur->getParent();
-			dcassert(cur != NULL);
-			indent--;
-			string::size_type l = fullPath.find_last_of('\\');
-			if(l != string::npos) {
-				fullPath.erase(fullPath.begin() + l, fullPath.end());
-			}
-		}
-
-		string::size_type k = tok.find('|', j);
-		if(k != string::npos) {
-			// this must be a file...
-			cur->files.push_back(new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
-		} else {
-			// A directory
-			string name = tok.substr(j, tok.length()-j-1);
-			fullPath += '\\';
-			fullPath += name;
-
-			Directory::Iter di = ::find(cur->directories.begin(), cur->directories.end(), name);
-			if(di != cur->directories.end()) {
-				cur = *di;
-			} else {
-				Directory* d = new Directory(cur, name, false, true);
-				cur->directories.push_back(d);
-				cur = d;
-			}
-			indent++;
-		}
-	}
 }
 
 class ListLoader : public SimpleXMLReader::CallBack {
@@ -139,8 +85,6 @@ private:
 };
 
 string DirectoryListing::loadXML(const string& xml, bool updating) {
-	setUtf8(true);
-
 	ListLoader ll(getRoot(), updating);
 	SimpleXMLReader(&ll).fromXML(xml);
 	return ll.getBase();
@@ -236,7 +180,7 @@ void ListLoader::endTag(const string& name, const string&) {
 	}
 }
 
-string DirectoryListing::getPath(Directory* d) {
+string DirectoryListing::getPath(const Directory* d) const {
 	if(d == root)
 		return "";
 
@@ -253,13 +197,9 @@ string DirectoryListing::getPath(Directory* d) {
 	return dir;
 }
 
-static inline const string& escaper(const string& n, string& tmp, bool utf8) {
-	return utf8 ? n : (tmp.clear(), Text::acpToUtf8(n, tmp));
-}
-
 void DirectoryListing::download(Directory* aDir, const string& aTarget, bool highPrio) {
 	string tmp;
-	string target = (aDir == getRoot()) ? aTarget : aTarget + escaper(aDir->getName(), tmp, getUtf8()) + PATH_SEPARATOR;
+	string target = (aDir == getRoot()) ? aTarget : aTarget + aDir->getName() + PATH_SEPARATOR;
 	// First, recurse over the directories
 	Directory::List& lst = aDir->directories;
 	sort(lst.begin(), lst.end(), Directory::DirSort());
@@ -272,7 +212,7 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget, bool hig
 	for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 		File* file = *i;
 		try {
-			download(file, target + escaper(file->getName(), tmp, getUtf8()), false, highPrio);
+			download(file, target + file->getName(), false, highPrio);
 		} catch(const QueueException&) {
 			// Catch it here to allow parts of directories to be added...
 		} catch(const FileException&) {
@@ -290,8 +230,7 @@ void DirectoryListing::download(const string& aDir, const string& aTarget, bool 
 }
 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view, bool highPrio) {
-	int flags = (getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0) |
-		(view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
+	int flags = (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
 	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
 		aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
@@ -310,6 +249,43 @@ DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directo
 			return find(aName.substr(end + 1), *i);
 	}
 	return NULL;
+}
+
+struct HashContained {
+	HashContained(const HASH_SET<TTHValue, TTHValue::Hash>& l) : tl(l) { }
+	const HASH_SET<TTHValue, TTHValue::Hash>& tl;
+	bool operator()(const DirectoryListing::File::Ptr i) const {
+		return tl.count(*(i->getTTH())) && (DeleteFunction()(i), true);
+	}
+private:
+	HashContained& operator=(HashContained&);
+};
+
+struct DirectoryEmpty {
+	bool operator()(const DirectoryListing::Directory::Ptr i) const {
+		bool r = i->getFileCount() + i->directories.size() == 0;
+		if (r) DeleteFunction()(i);
+		return r;
+	}
+};
+
+void DirectoryListing::Directory::filterList(DirectoryListing& dirList) {
+		DirectoryListing::Directory* d = dirList.getRoot();
+
+		HASH_SET<TTHValue, TTHValue::Hash> l;
+		d->getHashList(l);
+		filterList(l);
+}
+
+void DirectoryListing::Directory::filterList(const HASH_SET<TTHValue, TTHValue::Hash>& l) {
+	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->filterList(l);
+	directories.erase(std::remove_if(directories.begin(),directories.end(),DirectoryEmpty()),directories.end());
+	files.erase(std::remove_if(files.begin(),files.end(),HashContained(l)),files.end());
+}
+
+void DirectoryListing::Directory::getHashList(HASH_SET<TTHValue, TTHValue::Hash>& l) {
+	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->getHashList(l);
+	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert(*(*i)->getTTH());
 }
 
 int64_t DirectoryListing::Directory::getTotalSize(bool adl) {

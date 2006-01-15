@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.unsetFlag( CFulEditCtrl::URL_SINGLE_CLICK );
 	ctrlPad.setFlag( CFulEditCtrl::MENU_PASTE | CFulEditCtrl::URL_DOUBLE_CLICK );
 
-	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
 	
 	ctrlPad.LimitText(0);
@@ -44,7 +44,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	string tmp;
 	try {
-		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ, File::OPEN).read();
+		tmp = File(Util::getNotepadFile(), File::READ, File::OPEN).read();
 	} catch(const FileException&) {
 		// ...
 	}
@@ -67,18 +67,18 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 }
 
 LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	checkButton(false);
-
 	if(dirty || ctrlPad.GetModify()) {
 		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {
 			string tmp( Text::wideToAcp(  tstring( buf, ctrlPad.GetWindowTextLength() ) ) );
-			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
+			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
 		} catch(const FileException&) {
 			// Oops...
 		}
 	}
+
+	checkButton(false);
 
 	bHandled = FALSE;
 	return 0;
@@ -118,5 +118,3 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
  * @file
  * $Id: NotepadFrame.cpp,v 1.2 2004/01/06 01:52:12 trem Exp $
  */
-
-

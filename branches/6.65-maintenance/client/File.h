@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FILE_H
+#if !defined(FILE_H)
 #define FILE_H
 
 #if _MSC_VER > 1000
@@ -343,7 +343,21 @@ public:
 	}
 
 	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
-	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
+
+	/* ::rename seems to have problems when source and target is on different partitions
+       from "man 2 rename"
+       EXDEV  oldpath  and  newpath are not on the same mounted filesystem.  (Linux permits a
+       filesystem to be mounted at multiple points, but rename(2) does not
+       work across different mount points, even if the same filesystem is mounted on both.)
+    */
+	static void renameFile(const string& source, const string& target) throw() {
+		int ret = ::rename(source.c_str(), target.c_str());
+		if ( ( ret != 0 ) && ( errno == EXDEV ) ) {
+          copyFile(source.c_str(), target.c_str());
+          deleteFile(source.c_str());
+        } else if (ret != 0)
+             throw FileException(source.c_str() + Util::translateError(errno));
+    }
 
 	// This doesn't assume all bytes are written in one write call, it is a bit safer
 	static void copyFile(const string& source, const string& target) throw(FileException) { 
@@ -422,10 +436,9 @@ private:
 	File& operator=(const File&);
 };
 
-#endif // FILE_H
+#endif // !defined(FILE_H)
 
 /**
  * @file
  * $Id: File.h,v 1.4 2004/02/14 13:24:48 trem Exp $
  */
-

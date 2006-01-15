@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
+#if !defined(CLIENT_H)
+#define CLIENT_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -161,7 +161,7 @@ protected:
 
 	void setPort(short aPort) { port = aPort; }
 
-	// reload nick from settings, other details from hubmanager
+	// reload nick from settings, other details from FavoriteManager
 	void reloadSettings();
 
 	virtual string checkNick(const string& nick) = 0;
@@ -198,7 +198,8 @@ private:
 	}
 };
 
-#endif // _CLIENT_H
+#endif // !defined(CLIENT_H)
+
 /**
  * @file
  * $Id: Client.h,v 1.5 2004/02/14 13:24:02 trem Exp $

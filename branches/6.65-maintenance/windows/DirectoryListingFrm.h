@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_DIRECTORYFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
-#define AFX_DIRECTORYFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_
+#if !defined(DIRECTORY_LISTING_FRM_H)
+#define DIRECTORY_LISTING_FRM_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -33,6 +33,7 @@
 
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
+#include "../client/FavoriteManager.h"
 #include "../client/ShareManager.h"
 
 #define STATUS_MESSAGE_MAP 9
@@ -60,7 +61,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	};
 	
 	DirectoryListingFrame(const User::Ptr& aUser);
-	~DirectoryListingFrame() { 
+	virtual ~DirectoryListingFrame() { 
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
 		delete dl; 
@@ -68,10 +69,6 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 
 
 	DECLARE_FRAME_WND_CLASS(_T("DirectoryListingFrame"), IDR_DIRECTORY)
-
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
 
 	BEGIN_MSG_MAP(DirectoryListingFrame)
 		NOTIFY_HANDLER(IDC_FILES, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
@@ -95,8 +92,10 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadTargetDir)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET_DIR, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
@@ -104,6 +103,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COMMAND_ID_HANDLER(IDC_FIND, onFind)
 		COMMAND_ID_HANDLER(IDC_NEXT, onNext)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
+		COMMAND_ID_HANDLER(IDC_FILELIST_DIFF, onListDiff)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -119,6 +119,8 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -157,12 +159,12 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		bHandled = FALSE;
 		return 0;
 	}
-	
+
 	void setWindowTitle() {
 		if(error.empty())
 			SetWindowText(Text::toT(dl->getUser()->getFullNick()).c_str());
 		else
-			SetWindowText(error.c_str());		
+			SetWindowText(error.c_str());
 	}
 
 	void clearList() {
@@ -211,6 +213,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	}
 
 	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onListDiff(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
@@ -249,12 +252,8 @@ private:
 			DirectoryListing::Directory* dir;
 		};
 
-		ItemInfo(DirectoryListing::File* f, bool utf8) : type(FILE), file(f) { 
-			if(utf8) {
-				columns[COLUMN_FILENAME] = Text::toT(f->getName());
-			} else {
-				columns[COLUMN_FILENAME] = Text::acpToWide(f->getName());
-			}
+		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) { 
+			columns[COLUMN_FILENAME] = Text::toT(f->getName());
 			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
 			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
 				columns[COLUMN_TYPE].erase(0, 1);
@@ -269,12 +268,8 @@ private:
 			else
 				dupe = false;
 		};
-		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d), dupe(false) { 
-			if(utf8) {
-				columns[COLUMN_FILENAME] = Text::toT(d->getName());
-			} else {
-				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(d->getName()));
-			}
+		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d), dupe(false) { 
+			columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(d->getTotalSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		};
@@ -346,9 +341,8 @@ private:
 	CMenu copyMenu;
 	CMenu searchMenu;
 	CContainedWindow statusContainer;
-		
+
 	StringList targets;
-	StringPairList downloadPaths;
 	
 	CTreeViewCtrl ctrlTree;
 	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;
@@ -356,10 +350,8 @@ private:
 	HTREEITEM treeRoot;
 	
 	CButton ctrlFind, ctrlFindNext;
+	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
-
-	/** Parameter map for user commands */
-	StringMap ucParams;
 
 	string findStr;
 	tstring error;
@@ -373,7 +365,7 @@ private:
 	bool searching;
 	bool mylist;
 
-	int statusSizes[8];
+	int statusSizes[9];
 	
 	DirectoryListing* dl;
 
@@ -392,7 +384,7 @@ private:
 	static FrameMap frames;
 };
 
-#endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
+#endif // !defined(DIRECTORY_LISTING_FRM_H)
 
 /**
  * @file

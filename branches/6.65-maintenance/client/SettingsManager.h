@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SETTINGSMANAGER_H)
-#define SETTINGSMANAGER_H
+#if !defined(SETTINGS_MANAGER_H)
+#define SETTINGS_MANAGER_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "Util.h"
 #include "Speaker.h"
@@ -71,17 +75,20 @@ public:
 		MAIN_WINDOW_SIZE_X, MAIN_WINDOW_SIZE_Y, MAIN_WINDOW_POS_X, MAIN_WINDOW_POS_Y, AUTO_AWAY,
 		SMALL_SEND_BUFFER, SOCKS_PORT, SOCKS_RESOLVE, KEEP_LISTS, AUTO_KICK, QUEUEFRAME_SHOW_TREE,
 		COMPRESS_TRANSFERS, SHOW_PROGRESS_BARS, SFV_CHECK, MAX_TAB_ROWS, AUTO_UPDATE_LIST,
-		MAX_COMPRESSION, FINISHED_DIRTY, QUEUE_DIRTY, ANTI_FRAG, MDI_MAXIMIZED, NO_AWAYMSG_TO_BOTS,
+		MAX_COMPRESSION, ANTI_FRAG, MDI_MAXIMIZED, NO_AWAYMSG_TO_BOTS,
 		SKIP_ZERO_BYTE, ADLS_BREAK_ON_FIRST, 
 		HUB_USER_COMMANDS, AUTO_SEARCH_AUTO_MATCH, UPLOAD_BAR_COLOR, DOWNLOAD_BAR_COLOR, LOG_SYSTEM,
 		LOG_FILELIST_TRANSFERS, SEND_UNKNOWN_COMMANDS, MAX_HASH_SPEED, OPEN_USER_CMD_HELP,
 		GET_USER_COUNTRY, FAV_SHOW_JOINS, LOG_STATUS_MESSAGES, SHOW_STATUSBAR,
 		SHOW_TOOLBAR, SHOW_TRANSFERVIEW, POPUNDER_PM, POPUNDER_FILELIST,
-		ADD_FINISHED_INSTANTLY, SETTINGS_USE_UPNP, DONT_DL_ALREADY_SHARED, SETTINGS_USE_CTRL_FOR_LINE_HISTORY, CONFIRM_HUB_REMOVAL,
-		SETTINGS_OPEN_NEW_WINDOW, UDP_PORT, SEARCH_ONLY_TTH, SHOW_LAST_LINES_LOG, CONFIRM_ITEM_REMOVAL,
-		ADVANCED_RESUME, ADC_DEBUG, TOGGLE_ACTIVE_WINDOW, SEARCH_HISTORY,
+		ADD_FINISHED_INSTANTLY, SETTINGS_USE_UPNP, DONT_DL_ALREADY_SHARED, USE_CTRL_FOR_LINE_HISTORY, CONFIRM_HUB_REMOVAL, 
+		JOIN_OPEN_NEW_WINDOW, UDP_PORT, SEARCH_ONLY_TTH, SHOW_LAST_LINES_LOG, CONFIRM_ITEM_REMOVAL,
+		ADVANCED_RESUME, ADC_DEBUG, TOGGLE_ACTIVE_WINDOW, SEARCH_HISTORY, MAX_FILELIST_SIZE, 
 		OPEN_PUBLIC, OPEN_FAVORITE_HUBS, OPEN_FAVORITE_USERS, OPEN_QUEUE, OPEN_FINISHED_DOWNLOADS, 
 		OPEN_FINISHED_UPLOADS, OPEN_SEARCH_SPY, OPEN_NETWORK_STATISTICS, OPEN_NOTEPAD,
+		SEARCH_ONLY_FREE_SLOTS, LAST_SEARCH_TYPE, BOLD_FINISHED_DOWNLOADS, BOLD_FINISHED_UPLOADS, BOLD_QUEUE, 
+		BOLD_HUB, BOLD_PM, BOLD_SEARCH, SOCKET_IN_BUFFER, SOCKET_OUT_BUFFER, ONLY_DL_TTH_FILES,
+		OPEN_WAITING_USERS, BOLD_WAITING_USERS, OPEN_SYSTEM_LOG, BOLD_SYSTEM_LOG,
 
 		INCOMING_REFRESH_TIME, SHARE_REFRESH_TIME, CHATBUFFERSIZE, AUTO_UPDATE_INCOMING, EXPAND_QUEUE,
 		STRIP_ISP, STRIP_ISP_PM,HUB_BOLD_TABS, HIGH_PRIO_SAMPLE,
@@ -183,25 +190,14 @@ public:
 	bool isDefault(int aSet) { return !isSet[aSet]; };
 
 	void load() {
-		load(Util::getAppPath() + "DCPlusPlus.xml");
+		load(Util::getConfigPath() + "DCPlusPlus.xml");
 	}
 	void save() {
-		save(Util::getAppPath() + "DCPlusPlus.xml");
+		save(Util::getConfigPath() + "DCPlusPlus.xml");
 	}
 
 	void load(const string& aFileName);
 	void save(const string& aFileName);
-
-	StringPairList& getDownloadPaths() {
-		Lock l(cs);
-		return downloadPaths;
-	}
-
-	void setDownloadPaths( const StringPairList& dl ) {
-		Lock l(cs);
-		downloadPaths = dl;
-		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
-	}
 
 	TStringList getSearchHistory() const {
 		Lock l(cs);
@@ -280,7 +276,6 @@ private:
 
 	mutable CriticalSection cs;
 
-	StringPairList	downloadPaths;
 	TStringList		searchHistory;
 	TStringList		filterHistory;
 };
@@ -289,10 +284,9 @@ private:
 #define SETTING(k) (SettingsManager::getInstance()->get(SettingsManager::k, true))
 #define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
 
-#endif // SETTINGSMANAGER_H
+#endif // !defined(SETTINGS_MANAGER_H)
 
 /**
  * @file
  * $Id: SettingsManager.h,v 1.12 2004/02/23 16:02:19 trem Exp $
  */
-

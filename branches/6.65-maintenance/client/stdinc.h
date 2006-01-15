@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef STDINC_H
+#if !defined(STDINC_H)
 #define STDINC_H
 
 #include "config.h"
@@ -33,9 +33,11 @@
 #define _ATL_NO_OLD_NAMES
 
 #if _MSC_VER == 1400
-#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
+//#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
 //disable the deperecated warnings for the crt functions.
-#pragma warning(disable: 4996)
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _ATL_SECURE_NO_DEPRECATE 1
+#define _CRT_NON_CONFORMING_SWPRINTFS 1
 #endif
 
 #include <Winsock2.h>
@@ -63,6 +65,7 @@
 #include <deque>
 #include <list>
 #include <utility>
+#include <functional>
 
 // Use maps if hash_maps aren't available
 #ifdef HAVE_HASH
@@ -97,13 +100,15 @@
 #ifdef HAVE_STLPORT
 using namespace _STL;
 #include <hash_map>
+#include <hash_set>
 
 #elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #include <ext/hash_map>
-                                                                                
+#include <ext/hash_set>
+#include <ext/functional>
 using namespace std;
 using namespace __gnu_cxx;
-                                                                                
+
 // GNU C++ library doesn't have hash(std::string) or hash(long long int)
 namespace __gnu_cxx {
 	template<> struct hash<std::string> {
@@ -117,12 +122,14 @@ namespace __gnu_cxx {
 #else // __GLIBCPP__
 
 #include <hash_map>
+#include <hash_set>
+
 using namespace std;
 using namespace stdext;
 
 #endif // __GLIBCPP__
 
-#endif // STDINC_H
+#endif // !defined(STDINC_H)
 
 /**
  * @file

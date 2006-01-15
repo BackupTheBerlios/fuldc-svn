@@ -29,7 +29,7 @@
 string Socket::udpServer;
 short Socket::udpPort;
 
-#define checkconnected() if(!isConnected()) throw SocketException(STRING(NOT_CONNECTED))
+#define checkconnected() if(!isConnected()) throw SocketException(ENOTCONN)
 
 #ifdef _DEBUG
 
@@ -40,51 +40,21 @@ SocketException::SocketException(int aError) throw() {
 
 #else // _DEBUG
 
-SocketException::SocketException(int aError) throw() {
-	error = errorToString(aError);
-}
+SocketException::SocketException(int aError) throw() : Exception(errorToString(aError)) { }
 
 #endif
 
 Socket::Stats Socket::stats = { 0, 0 };
 
 string SocketException::errorToString(int aError) throw() {
-	switch(aError) {
-	case EWOULDBLOCK:
-		return STRING(OPERATION_WOULD_BLOCK_EXECUTION);
-	case EACCES:
-		return STRING(PERMISSION_DENIED);
-	case EADDRINUSE:
-		return STRING(ADDRESS_ALREADY_IN_USE);
-	case EADDRNOTAVAIL:
-		return STRING(ADDRESS_NOT_AVAILABLE);
-	case EALREADY:
-		return STRING(NON_BLOCKING_OPERATION);
-	case ECONNREFUSED:
-		return STRING(CONNECTION_REFUSED);
-	case ETIMEDOUT:
-		return STRING(CONNECTION_TIMEOUT);
-	case EHOSTUNREACH:
-		return STRING(HOST_UNREACHABLE);
-	case ESHUTDOWN:
-		return STRING(SOCKET_SHUT_DOWN);
-	case ECONNABORTED:
-		return STRING(CONNECTION_CLOSED);
-	case ECONNRESET:
-		return STRING(CONNECTION_RESET);
-	case ENOTSOCK:
-		return STRING(NOT_SOCKET);
-	case ENOTCONN:
-		return STRING(NOT_CONNECTED);
-	case ENETUNREACH:
-		return STRING(NETWORK_UNREACHABLE);
-	default:
-		{
-			char tmp[64];
-			sprintf(tmp, CSTRING(UNKNOWN_ERROR), aError);
-			return tmp;
-		}
+	string msg = Util::translateError(aError);
+	if(msg.empty())
+	{
+		char tmp[64];
+		sprintf(tmp, CSTRING(UNKNOWN_ERROR), aError);
+		msg = tmp;
 	}
+	return msg;
 }
 
 void Socket::create(int aType /* = TYPE_TCP */, bool server /* = false */) throw(SocketException) {
@@ -327,7 +297,7 @@ void Socket::writeTo(const string& aIp, short aPort, const char* aBuffer, size_t
 	hostent* host;
 
 	if(aIp.empty() || aPort == 0) {
-		throw SocketException(STRING(ADDRESS_NOT_AVAILABLE));
+		throw SocketException(EADDRNOTAVAIL);
 	}
 
 	memset(&serv_addr, 0, sizeof(serv_addr));

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -45,9 +45,9 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 		lvi.iItem = newPos;
 	}
 	int i = InsertItem(&lvi);
-	int j = 0;
-	for(TStringIter k = l.begin(); k != l.end(); ++k, j++) {
-		SetItemText(i, j, k->c_str());
+	int m = 0;
+	for(TStringIter k = l.begin(); k != l.end(); ++k, m++) {
+		SetItemText(i, m, k->c_str());
 	}
 	EnsureVisible(i, FALSE);
 
@@ -183,4 +183,3 @@ int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lPa
  * @file
  * $Id: ExListViewCtrl.cpp,v 1.1 2003/12/15 16:51:58 trem Exp $
  */
-

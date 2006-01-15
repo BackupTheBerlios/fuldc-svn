@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -83,8 +83,8 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlDown.SetWindowText(CTSTRING(MOVE_DOWN));
 	ctrlDown.SetFont(WinUtil::font);
 
-	HubManager::getInstance()->addListener(this);
-	updateList(HubManager::getInstance()->getFavoriteHubs());
+	FavoriteManager::getInstance()->addListener(this);
+	updateList(FavoriteManager::getInstance()->getFavoriteHubs());
 	
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));
@@ -171,7 +171,7 @@ LRESULT FavoriteHubsFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i = -1;
 	if(!BOOLSETTING(CONFIRM_HUB_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) {
 		while( (i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			HubManager::getInstance()->removeFavorite((FavoriteHubEntry*)ctrlHubs.GetItemData(i));
+			FavoriteManager::getInstance()->removeFavorite((FavoriteHubEntry*)ctrlHubs.GetItemData(i));
 		}
 	}
 	return 0;
@@ -206,8 +206,19 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	e.setStripIsp(BOOLSETTING(STRIP_ISP));
 	e.setShowUserlist(true);
 
-	if(dlg.DoModal((HWND)*this) == IDOK)
-		HubManager::getInstance()->addFavorite(e);
+	while (true) {
+		if(dlg.DoModal((HWND)*this) == IDOK) {
+			if (FavoriteManager::getInstance()->checkFavHubExists(e)){
+				MessageBox(
+					CTSTRING(FAVORITE_HUB_ALREADY_EXISTS), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONWARNING | MB_OK);
+			} else {
+				FavoriteManager::getInstance()->addFavorite(e);
+				break;
+			}
+		} else {
+			break;
+		}
+	}
 	return 0;
 }
 
@@ -222,7 +233,7 @@ bool FavoriteHubsFrame::checkNick() {
 LRESULT FavoriteHubsFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	nosave = true;
 	int j = ctrlHubs.GetItemCount();
-	FavoriteHubEntry::List& fh = HubManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	ctrlHubs.SetRedraw(FALSE);
 	for(int i = 1; i < j; ++i) {
 		if(ctrlHubs.GetItemState(i, LVIS_SELECTED)) {
@@ -236,13 +247,13 @@ LRESULT FavoriteHubsFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	}
 	ctrlHubs.SetRedraw(TRUE);
 	nosave = false;
-	HubManager::getInstance()->save();
+	FavoriteManager::getInstance()->save();
 	return 0;
 }
 
 LRESULT FavoriteHubsFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int j = ctrlHubs.GetItemCount() - 2;
-	FavoriteHubEntry::List& fh = HubManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 
 	nosave = true;
 	ctrlHubs.SetRedraw(FALSE);
@@ -258,7 +269,7 @@ LRESULT FavoriteHubsFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	}
 	ctrlHubs.SetRedraw(TRUE);
 	nosave = false;
-	HubManager::getInstance()->save();
+	FavoriteManager::getInstance()->save();
 	return 0;
 }
 
@@ -267,18 +278,18 @@ LRESULT FavoriteHubsFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	if(!nosave && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
 		FavoriteHubEntry* f = (FavoriteHubEntry*)ctrlHubs.GetItemData(l->iItem);
 		f->setConnect(ctrlHubs.GetCheckState(l->iItem) != FALSE);
-		HubManager::getInstance()->save();
+		FavoriteManager::getInstance()->save();
 	}
 	return 0;
 }
 
 LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	HubManager::getInstance()->removeListener(this);
+	FavoriteManager::getInstance()->removeListener(this);
 	
 	WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::FAVORITESFRAME_ORDER, 
 		SettingsManager::FAVORITESFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-    	checkButton(false);
+    checkButton(false);
 
 	bHandled = FALSE;
 	return 0;
@@ -336,4 +347,3 @@ LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
  * @file
  * $Id: FavoritesFrm.cpp,v 1.3 2004/01/06 01:52:09 trem Exp $
  */
-

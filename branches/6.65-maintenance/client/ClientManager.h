@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
-#define AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_
+#if !defined(CLIENT_MANAGER_H)
+#define CLIENT_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -145,10 +145,9 @@ private:
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 };
 
-#endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
+#endif // !defined(CLIENT_MANAGER_H)
 
 /**
  * @file
  * $Id: ClientManager.h,v 1.2 2003/12/25 06:58:22 trem Exp $
  */
-

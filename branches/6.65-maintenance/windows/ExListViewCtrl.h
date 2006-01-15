@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_)
-#define AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_
+#if !defined(EX_LIST_VIEW_CTRL_H)
+#define EX_LIST_VIEW_CTRL_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -49,19 +49,6 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP()
-
-	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
-			int count = GetItemCount();
-			for(int i = 0; i < count; ++i)
-				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
-
-			return 0;
-		}
-
-		bHandled = FALSE;
-		return 1;
-	}
 
 	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
 		bool doUpdateArrow = (aColumn != sortColumn || aAscending != ascending);
@@ -161,6 +148,19 @@ public:
 			result = -result;
 		return result;
 	}
+
+	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
+			int count = GetItemCount();
+			for(int i = 0; i < count; ++i)
+				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
+
+			return 0;
+		}
+
+		bHandled = FALSE;
+		return 1;
+	}
 	
 	template<class T> static int compare(const T& a, const T& b) {
 		return (a < b) ? -1 : ( (a == b) ? 0 : 1);
@@ -171,10 +171,9 @@ public:
 	virtual ~ExListViewCtrl() { };
 };
 
-#endif // !defined(AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_)
+#endif // !defined(EX_LIST_VIEW_CTRL_H)
 
 /**
  * @file
  * $Id: ExListViewCtrl.h,v 1.1 2003/12/15 16:51:58 trem Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,8 +46,8 @@
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
-	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20),
-	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false), refreshing(0)
+	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), refreshing(0),
+	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -72,7 +72,7 @@ ShareManager::~ShareManager() {
 	WIN32_FIND_DATA data;
 	HANDLE hFind;
 
-	hFind = FindFirstFile(Text::toT(Util::getAppPath() + "files*.xml.bz2").c_str(), &data);
+	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "files*.xml.bz2").c_str(), &data);
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if(_tcslen(data.cFileName) > 13) // length of "files.xml.bz2"
@@ -82,7 +82,7 @@ ShareManager::~ShareManager() {
 		FindClose(hFind);
 	}
 
-	hFind = FindFirstFile(Text::toT(Util::getAppPath() + "MyList*.DcLst").c_str(), &data);
+	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "MyList*.DcLst").c_str(), &data);
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			File::deleteFile(Util::getAppPath() + Text::fromT(data.cFileName));			
@@ -97,7 +97,7 @@ ShareManager::~ShareManager() {
 		while (struct dirent* ent = readdir(dir)) {
 			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0 ||
 				fnmatch("MyList*.DcLst", ent->d_name, 0) == 0) {
-					File::deleteFile(Util::getAppPath() + ent->d_name);	
+					File::deleteFile(Util::getConfigPath() + ent->d_name);	
 				}
 		}
 		closedir(dir);
@@ -181,7 +181,6 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	}
 }
 
-/** @todo Fix for file list */
 AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) {
 	if(aFile.compare(0, 4, "TTH/") != 0)
 		throw ShareException("File Not Available");
@@ -673,7 +672,7 @@ int ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bo
 		LogManager::getInstance()->message(STRING(FILE_LIST_REFRRESH_IN_PROGRESS));
 		return REFRESH_IN_PROGRESS;
 	}
-
+	
 	update = aUpdate;
 	refreshDirs = dirs;
 	refreshIncoming = incoming;
@@ -815,7 +814,7 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 				i->second->toXml(xml, true);
 			}
 			
-			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
+			string newXmlName = Util::getConfigPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
 				FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
 				xml->stepOut();
@@ -826,15 +825,14 @@ void ShareManager::generateXmlList(bool force /* = false */ ) {
 			
 			delete xml;
 
-			
 			if(xFile != NULL) {
 				delete xFile;
 				xFile = NULL;
 				File::deleteFile(getBZXmlFile());
 			}
 			try {
-				File::renameFile(newXmlName, Util::getAppPath() + "files.xml.bz2");
-				newXmlName = Util::getAppPath() + "files.xml.bz2";
+				File::renameFile(newXmlName, Util::getConfigPath() + "files.xml.bz2");
+				newXmlName = Util::getConfigPath() + "files.xml.bz2";
 			} catch(const FileException&) {
 				// Ignore, this is for caching only...
 			}
@@ -863,7 +861,7 @@ void ShareManager::generateNmdcList(bool force /* = false */) {
 				i->second->toNmdc(tmp, indent, tmp2);
 			}
 
-			string newName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".DcLst";
+			string newName = Util::getConfigPath() + "MyList" + Util::toString(listN) + ".DcLst";
 			tmp2.clear();
 			CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 			File(newName, File::WRITE, File::CREATE | File::TRUNCATE).write(tmp2);
@@ -874,8 +872,8 @@ void ShareManager::generateNmdcList(bool force /* = false */) {
 				File::deleteFile(getListFile());
 			}
 			try {
-				File::renameFile(newName, Util::getAppPath() + "MyList.DcLst");
-				newName = Util::getAppPath() + "MyList.DcLst";
+				File::renameFile(newName, Util::getConfigPath() + "MyList.DcLst");
+				newName = Util::getConfigPath() + "MyList.DcLst";
 			} catch(const FileException&) {
 			}
 			lFile = new File(newName, File::READ, File::OPEN);
@@ -1482,7 +1480,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const T
         Directory::File::Iter i = d->findFile(Util::getFileName(fname));
 		if(i != d->files.end()) {
 			if(root != i->getTTH())
-			removeTTH(i->getTTH(), i);
+				removeTTH(i->getTTH(), i);
 			// Get rid of false constness...
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
 			f->setTTH(root);
@@ -1811,4 +1809,3 @@ StringList ShareManager::getVirtualDirectories() {
  * @file
  * $Id: ShareManager.cpp,v 1.9 2004/02/21 10:47:46 trem Exp $
  */
-

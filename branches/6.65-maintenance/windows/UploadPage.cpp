@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -78,10 +78,10 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	CUpDownCtrl updown;
 	updown.Attach(GetDlgItem(IDC_SLOTSPIN));
-	updown.SetRange(1, 100);
+	updown.SetRange(1, UD_MAXVAL);
 	updown.Detach();
 	updown.Attach(GetDlgItem(IDC_MIN_UPLOAD_SPIN));
-	updown.SetRange32(0, 30000);
+	updown.SetRange32(0, UD_MAXVAL);
 	return TRUE;
 }
 
@@ -127,7 +127,7 @@ LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
-	return 0;		
+	return 0;
 }
 
 LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -280,4 +280,3 @@ void UploadPage::addDirectory(const tstring& aPath){
  * @file
  * $Id: UploadPage.cpp,v 1.5 2004/02/15 01:21:43 trem Exp $
  */
-

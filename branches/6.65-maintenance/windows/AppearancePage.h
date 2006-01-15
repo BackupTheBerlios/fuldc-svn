@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef APPEARANCEPAGE_H
-#define APPEARANCEPAGE_H
+#if !defined(APPEARANCE_PAGE_H)
+#define APPEARANCE_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -30,7 +30,7 @@
 class AppearancePage : public CPropertyPage<IDD_APPEARANCEPAGE>, public PropPage
 {
 public:
-	AppearancePage(SettingsManager *s) : PropPage(s) { 
+	AppearancePage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_APPEARANCE));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -65,7 +65,7 @@ protected:
 	LOGFONT font;
 };
 
-#endif //APPEARANCEPAGE_H
+#endif // !defined(APPEARANCE_PAGE_H)
 
 /**
  * @file

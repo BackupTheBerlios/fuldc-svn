@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
  * Henrik Engstr�m, henrikengstrom at home se
  */
 
-#if !defined(__ADLSEARCH_H__)
-#define __ADLSEARCH_H__
+#if !defined(ADL_SEARCH_H)
+#define ADL_SEARCH_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -323,9 +323,11 @@ private:
 			}
 		}
 	}
+
+	string getConfigFile() { return Util::getConfigPath() + "ADLSearch.xml"; }
 };
 
-#endif
+#endif // !defined(ADL_SEARCH_H)
 
 /**
  * @file

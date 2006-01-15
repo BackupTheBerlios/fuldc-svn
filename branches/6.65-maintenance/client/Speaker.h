@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef SPEAKER_H
+#if !defined(SPEAKER_H)
 #define SPEAKER_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "CriticalSection.h"
 
@@ -117,7 +121,8 @@ protected:
 	CriticalSection listenerCS;
 };
 
-#endif // SPEAKER_H
+#endif // !defined(SPEAKER_H)
+
 /**
  * @file
  * $Id: Speaker.h,v 1.1 2003/12/15 16:51:46 trem Exp $

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SEARCHFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
-#define AFX_SEARCHFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_
+#if !defined(SEARCH_FRM_H)
+#define SEARCH_FRM_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -35,6 +35,7 @@
 #include "../client/CriticalSection.h"
 #include "../client/ClientManagerListener.h"
 #include "../client/TimerManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/ShareManager.h"
 
 #include "UCHandler.h"
@@ -91,10 +92,10 @@ public:
 		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
 		COMMAND_ID_HANDLER(IDC_SEARCH_HISTORY, onClearHistory)
 		COMMAND_ID_HANDLER(IDC_FILTER_HISTORY, onClearHistory)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + downloadPaths.size() + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + downloadPaths.size() + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST+2, onCopy)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_COMMANDS(ucBase)
@@ -123,16 +124,14 @@ public:
 		filterBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		filterContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
 		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
-		 timerID(0)
+		showUI(true), onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)), closed(false), isHash(false), useRegExp(false), results(0), filtered(0),
+		timerID(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
-		downloadPaths = SettingsManager::getInstance()->getDownloadPaths();
 	}
 
 	virtual ~SearchFrame() {
 	}
-	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -144,6 +143,8 @@ public:
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -339,44 +340,7 @@ private:
 			}
 		}
 
-		void update() { 
-			if(sr->getType() == SearchResult::TYPE_FILE) {
-				if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-					fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
-				} else {
-					fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
-					path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
-				}
-
-				type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
-				if(!type.empty() && type[0] == _T('.'))
-					type.erase(0, 1);
-				size = Text::toT(Util::formatBytes(sr->getSize()));
-				exactSize = Util::formatExactSize(sr->getSize());
-			} else {
-				fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
-				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
-				type = TSTRING(DIRECTORY);
-			}
-			nick = Text::toT(sr->getUser()->getNick());
-			connection = Text::toT(sr->getUser()->getConnection());
-			hubName = Text::toT(sr->getHubName());
-			slots = Text::toT(sr->getSlotString());
-			
-			tstring country;
-			if(!sr->getIP().empty()) {
-				country = Text::toT(Util::getIpCountry(sr->getIP()));
-			}
-
-			if(country.empty()) {
-				ip = Text::toT(sr->getIP());;
-			} else {
-				ip = country + Text::toT(" (" + sr->getIP() + ")");
-			}
-			
-			if(sr->getTTH() != NULL)
-				setTTH(Text::toT(sr->getTTH()->toBase32()));
-		}
+		void update();
 
 		GETSET(tstring, nick, Nick);
 		GETSET(tstring, connection, Connection)
@@ -464,14 +428,11 @@ private:
 	TStringList search;
 	StringList targets;
 	StringList wholeTargets;
-	StringPairList downloadPaths;
 	TStringList filterList;
 
 	PME filterRegExp;
 	bool useRegExp;
 
-	/** Parameter map for user commands */
-	StringMap ucParams;
 
 	bool onlyFree;
 	bool isHash;
@@ -527,15 +488,9 @@ private:
 	};
 };
 
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
+#endif // !defined(SEARCH_FRM_H)
 
 /**
  * @file
  * $Id: SearchFrm.h,v 1.6 2004/01/06 01:52:15 trem Exp $
  */
-

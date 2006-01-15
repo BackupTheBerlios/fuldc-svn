@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _FILTERED_FILE
-#define _FILTERED_FILE
+#if !defined(FILTERED_FILE_H)
+#define FILTERED_FILE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -42,14 +42,14 @@ public:
 		return s->write(buf, len);
 	}
 
-
 	const Filter& getFilter() const { return filter; }
+	Filter& getFilter() { return filter; }
 private:
 	OutputStream* s;
 	Filter filter;
 };
 
-template<class Filter, bool managed> 
+template<class Filter, bool managed>
 class CalcInputStream : public InputStream {
 public:
 	CalcInputStream(InputStream* aStream) : s(aStream) { }
@@ -85,7 +85,7 @@ public:
 		for(;;) {
 			size_t n = BUF_SIZE;
 			size_t zero = 0;
-            bool more = filter(NULL, zero, buf, n);
+			bool more = filter(NULL, zero, buf, n);
 
 			written += f->write(buf, n);
 
@@ -183,9 +183,9 @@ private:
 	bool more;
 };
 
-#endif // _FILTERED_FILE
+#endif // !defined(FILTERED_FILE_H)
 
 /**
-* @file
-* $Id: FilteredFile.h,v 1.7 2004/09/07 01:36:52 arnetheduck Exp $
-*/
+ * @file
+ * $Id: FilteredFile.h,v 1.14 2005/04/24 09:45:39 arnetheduck Exp $
+ */

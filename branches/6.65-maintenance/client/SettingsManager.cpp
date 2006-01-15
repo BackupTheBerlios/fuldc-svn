@@ -58,7 +58,7 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
+	"MaxCompression", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
@@ -66,9 +66,13 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", 
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "MaxFilelistSize", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad",
+	"SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
+	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
+	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
+
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -103,8 +107,8 @@ SettingsManager::SettingsManager()
 		int64Settings[k] = 0;
 	}
 	
-	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads" PATH_SEPARATOR_STR);
-	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getAppPath() + "Incomplete" PATH_SEPARATOR_STR);
+	setDefault(DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Downloads" PATH_SEPARATOR_STR);
+	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
 	//setDefault(SERVER, Util::getLocalIp());
 	setDefault(IN_PORT, Util::rand(1025, 32000));
@@ -117,7 +121,7 @@ SettingsManager::SettingsManager()
 	setDefault(MINIMIZE_TRAY, false);
 	setDefault(AUTO_SEARCH, true);
 	setDefault(TIME_STAMPS, true);
-	setDefault(CONFIRM_EXIT, false);
+	setDefault(CONFIRM_EXIT, true);
 	setDefault(IGNORE_OFFLINE, false);
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(LIST_DUPES, true);
@@ -125,7 +129,7 @@ SettingsManager::SettingsManager()
 	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.xml.bz2;http://dc.selwerd.nl/hublist.xml.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
-	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs" PATH_SEPARATOR_STR);
+	setDefault(LOG_DIRECTORY, Util::getConfigPath() + "Logs" PATH_SEPARATOR_STR);
 	setDefault(LOG_UPLOADS, false);
 	setDefault(LOG_DOWNLOADS, false);
 	setDefault(LOG_PRIVATE_CHAT, false);
@@ -170,8 +174,6 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
-	setDefault(FINISHED_DIRTY, true);
-	setDefault(QUEUE_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
@@ -195,11 +197,11 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_USE_UPNP, false);
 	setDefault(DONT_DL_ALREADY_SHARED, false);
 	setDefault(CONFIRM_HUB_REMOVAL, false);
-	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
-	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
+	setDefault(USE_CTRL_FOR_LINE_HISTORY, true);
+	setDefault(JOIN_OPEN_NEW_WINDOW, false);
 	setDefault(SEARCH_ONLY_TTH, false);
 	setDefault(SHOW_LAST_LINES_LOG, 0);
-	setDefault(CONFIRM_ITEM_REMOVAL, 0);
+	setDefault(CONFIRM_ITEM_REMOVAL, true);
 	setDefault(ADVANCED_RESUME, true);
 	setDefault(ADC_DEBUG, false);
 	setDefault(TOGGLE_ACTIVE_WINDOW, false);
@@ -213,6 +215,22 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_SEARCH_SPY, false);
 	setDefault(OPEN_NETWORK_STATISTICS, false);
 	setDefault(OPEN_NOTEPAD, false);
+	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
+	setDefault(LAST_SEARCH_TYPE, 0);
+	setDefault(SOCKET_IN_BUFFER, 64*1024);
+	setDefault(SOCKET_OUT_BUFFER, 64*1024);
+	setDefault(ONLY_DL_TTH_FILES, false);
+	setDefault(OPEN_WAITING_USERS, false);
+	setDefault(OPEN_SYSTEM_LOG, true);
+	setDefault(BOLD_FINISHED_DOWNLOADS, true);
+	setDefault(BOLD_FINISHED_UPLOADS, true);
+	setDefault(BOLD_QUEUE, true);
+	setDefault(BOLD_HUB, true);
+	setDefault(BOLD_PM, true);
+	setDefault(BOLD_SEARCH, true);
+	setDefault(BOLD_WAITING_USERS, true);
+	setDefault(BOLD_SYSTEM_LOG, true);
+	
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -346,31 +364,6 @@ void SettingsManager::load(string const& aFileName)
 		setDefault(UDP_PORT, SETTING(IN_PORT));
 
 		xml.resetCurrentChild();
-		if(xml.findChild("DownloadPaths")) {
-			xml.stepIn();
-			Lock l(cs);
-			while(xml.findChild("DownloadPath")){
-				string name = xml.getChildAttrib("Name");
-				string path = xml.getChildData();
-				downloadPaths.push_back(StringPair(name, path));
-			}
-			xml.stepOut();
-		} else {
-			xml.resetCurrentChild();
-			if(xml.findChild("DownloadToPaths")){
-				Lock l(cs);
-				string paths = xml.getChildData();
-				StringTokenizer<string> t(paths, '|');
-				StringList s = t.getTokens();
-				for(StringIter i = s.begin(); i != s.end(); ++i){
-					downloadPaths.push_back(StringPair(Util::getLastDir(*i), *i));
-				}
-			}
-		}
-		
-		sort(downloadPaths.begin(), downloadPaths.end(), SortFirst<string, string>());
-
-		xml.resetCurrentChild();
 		if(xml.findChild("SearchHistory")) {
 			xml.stepIn();
 			while(xml.findChild("Search")) {
@@ -441,18 +434,6 @@ void SettingsManager::save(string const& aFileName) {
 	}
 	xml.stepOut();
 
-	xml.addTag("DownloadPaths");
-	xml.stepIn();
-
-	{
-		Lock l(cs);
-		for(StringPairIter i = downloadPaths.begin(); i != downloadPaths.end(); ++i ) {
-			xml.addTag( "DownloadPath", i->second );
-			xml.addChildAttrib( "Name", i->first );
-		}
-	}
-	xml.stepOut();
-
 	xml.addTag("SearchHistory");
 	xml.stepIn();
 	{
@@ -495,4 +476,3 @@ void SettingsManager::save(string const& aFileName) {
  * @file
  * $Id: SettingsManager.cpp,v 1.13 2004/02/23 16:02:19 trem Exp $
  */
-

@@ -240,6 +240,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\client\FavoriteManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath="client\FinishedManager.cpp"
 				>
 			</File>
@@ -253,10 +257,6 @@
 			</File>
 			<File
 				RelativePath=".\client\HttpConnection.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\client\HubManager.cpp"
 				>
 			</File>
 			<File
@@ -485,6 +485,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\client\FavoriteManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\client\FavoriteUser.h"
 				>
 			</File>
@@ -514,10 +518,6 @@
 			</File>
 			<File
 				RelativePath=".\client\HttpConnection.h"
-				>
-			</File>
-			<File
-				RelativePath=".\client\HubManager.h"
 				>
 			</File>
 			<File

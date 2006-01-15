@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include "BufferedSocket.h"
 
-#include "HubManager.h"
+#include "FavoriteManager.h"
 
 Client::Counts Client::counts;
 
@@ -43,7 +43,7 @@ Client::~Client() throw() {
 }
 
 void Client::reloadSettings() {
-	FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(getHubURL());
+	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubURL());
 	if(hub) {
 		setNick(checkNick(hub->getNick(true)));
 		setDescription(hub->getUserDescription());

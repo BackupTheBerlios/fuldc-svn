@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef UTIL_H
+#if !defined(UTIL_H)
 #define UTIL_H
 
 #if _MSC_VER > 1000
@@ -82,10 +82,22 @@ private:
 	const T2& a;
 };
 
+template<class T>
+class LessIgnoreCase {
+public:
+	bool operator() (const T& t1, const T& t2) const { return Util::stricmp(t1, t2) < 0; }
+};
+
 template<class T1, class T2, class op= less_equal<T1> >
 class SortFirst {
 public:
-	bool operator()(const pair<T1, T2>&p1, const pair<T1, T2>&p2) { return op()(p1.first, p2.first); };
+	bool operator() (const pair<T1, T2>&p1, const pair<T1, T2>&p2) const { return op()(p1.first, p2.first); };
+};
+
+template<class T1, class T2, class op= less_equal<T1> >
+class SortSecond {
+public:
+	bool operator()(const pair<T1, T2>&p1, const pair<T1, T2>&p2) { return op()(p1.second, p2.second); };
 };
 
 template<class T>
@@ -178,18 +190,7 @@ public:
 #endif // _WIN32
 	}	
 
-	/**
-	 * Get the path to where the applications settings.
-	 * 
-	 * @return Path to settings directory.
-	 */
-	static string getConfigPath();
-
-	/**
-	 * Get the directory for temporary files.
-	 *
-	 * @return Path to temp directory.
-	 */
+	/** Path of temporary storage */
 	static string getTempPath() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
@@ -200,30 +201,25 @@ public:
 #endif
 	}
 
-	/**
-	 * Get the directory to the application resources.
-	 *
-	 * @todo On non Windows system this still returns the path to the
-	 * configuration directory. Later this will be completed with a patch for
-	 * Mac OS X. And the Linux(?) implementation is also wrong right now.
-	 * @return Path to resource directory.
-	 */
-	static string getDataPath() {
-#ifdef _WIN32
-		return getAppPath();
-#else
-		char* home = getenv("HOME");
-		if (home) {
-			return string(home) + "/.dc++/";
-		}
-		return emptyString;
-#endif
+	/** Path of resource directory */
+	static string getDataPath();
+
+	/** Path of configuration files */
+	static string getConfigPath();
+
+	/** Path of file lists */
+	static string getListPath() {
+		return getConfigPath() + "FileLists" PATH_SEPARATOR_STR;
+	}
+	/** Notepad filename */
+	static string getNotepadFile() {
+		return getConfigPath() + "Notepad.txt";
 	}
 
 	static string translateError(int aError) {
 #ifdef _WIN32
 		LPVOID lpMsgBuf;
-		FormatMessage( 
+		DWORD chars = FormatMessage( 
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
 			FORMAT_MESSAGE_FROM_SYSTEM | 
 			FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -234,6 +230,9 @@ public:
 			0,
 			NULL 
 			);
+		if(chars == 0) {
+			return string();
+		}
 		string tmp = Text::fromT((LPCTSTR)lpMsgBuf);
 		// Free the buffer.
 		LocalFree( lpMsgBuf );
@@ -298,7 +297,7 @@ public:
 
 	static string toDOS(const string& tmp);
 
-	static wstring getShortTimeString();
+	static wstring getShortTimeString(time_t t = time(NULL) );
 
 	static tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
 	static string replace(const string& aString, const string& fStr, const string& rStr);
@@ -485,6 +484,20 @@ public:
 		return buf;
 	}
 
+	static string toString(const StringList& lst) {
+		if(lst.size() == 1)
+			return lst[0];
+		string tmp("[");
+		for(StringList::const_iterator i = lst.begin(); i != lst.end(); ++i) {
+			tmp += *i + ',';
+		}
+		if(tmp.length() == 1)
+			tmp.push_back(']');
+		else
+			tmp[tmp.length()-1] = ']';
+		return tmp;
+	}
+
 	static wstring toStringW( long val ) {
 		wchar_t buf[32];
 		swprintf(buf, L"%ld", val);
@@ -516,7 +529,7 @@ public:
 	}
 
 	static string toHexEscape(char val) {
-		char buf[sizeof(int)*2+2];
+		char buf[sizeof(int)*2+1+1];
 		sprintf(buf, "%%%X", val&0x0FF);
 		return buf;
 	}
@@ -524,6 +537,17 @@ public:
 		unsigned int res = 0;
 		sscanf(aString.c_str(), "%X", &res);
 		return static_cast<char>(res);
+	}
+
+	template<typename T>
+	static T& intersect(T& t1, const T& t2) {
+		for(typename T::iterator i = t1.begin(); i != t1.end();) {
+			if(find_if(t2.begin(), t2.end(), bind1st(equal_to<typename T::value_type>(), *i)) == t2.end())
+				i = t1.erase(i);
+			else
+				++i;
+		}
+		return t1;
 	}
 
 	static string encodeURI(const string& /*aString*/, bool reverse = false);
@@ -669,7 +693,7 @@ struct noCaseStringLess {
 	}
 };
 
-#endif // UTIL_H
+#endif // !defined(UTIL_H)
 
 /**
  * @file

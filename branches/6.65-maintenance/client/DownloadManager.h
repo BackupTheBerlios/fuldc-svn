@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_DOWNLOADMANAGER_H__D6409156_58C2_44E9_B63C_B58C884E36A3__INCLUDED_)
-#define AFX_DOWNLOADMANAGER_H__D6409156_58C2_44E9_B63C_B58C884E36A3__INCLUDED_
+#if !defined(DOWNLOAD_MANAGER_H)
+#define DOWNLOAD_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -55,10 +55,10 @@ public:
 		FLAG_CALC_CRC32 = 0x10,
 		FLAG_CRC32_OK = 0x20,
 		FLAG_ANTI_FRAG = 0x40,
-		FLAG_UTF8 = 0x80,
-		FLAG_TREE_DOWNLOAD = 0x100,
-		FLAG_TREE_TRIED = 0x200,
-		FLAG_PARTIAL_LIST = 0x400
+		FLAG_TREE_DOWNLOAD = 0x80,
+		FLAG_TREE_TRIED = 0x100,
+		FLAG_PARTIAL_LIST = 0x200,
+		FLAG_TTH_CHECK = 0x400
 	};
 
 	Download() throw();
@@ -310,7 +310,7 @@ private:
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 };
 
-#endif // !defined(AFX_DOWNLOADMANAGER_H__D6409156_58C2_44E9_B63C_B58C884E36A3__INCLUDED_)
+#endif // !defined(DOWNLOAD_MANAGER_H)
 
 /**
  * @file

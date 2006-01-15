@@ -1,23 +1,23 @@
-/* 
-* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
-#if !defined(AFX_QUEUEITEM_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
-#define AFX_QUEUEITEM_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_
+#if !defined(QUEUE_ITEM_H)
+#define QUEUE_ITEM_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -79,8 +79,6 @@ public:
 		FLAG_EXISTS = 0x40,
 		/** Match the queue against this list */
 		FLAG_MATCH_QUEUE = 0x80,
-		/** The source being added has its filename in utf-8 */
-		FLAG_SOURCE_UTF8 = 0x100,
 		/** The file list downloaded was actually an .xml.bz2 list */
 		FLAG_XML_BZLIST = 0x200
 	};
@@ -99,26 +97,22 @@ public:
 			FLAG_REMOVED = 0x08,
 			FLAG_CRC_FAILED = 0x10,
 			FLAG_CRC_WARN = 0x20,
-			FLAG_UTF8 = 0x40,
-			FLAG_BAD_TREE = 0x80,
-			FLAG_NO_TREE = 0x100,
+			FLAG_BAD_TREE = 0x40,
+			FLAG_NO_TREE = 0x80,
 			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY 
-				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 
+				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN
 				| FLAG_BAD_TREE | FLAG_NO_TREE,
 			
 			FLAG_ERROR_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY |
 								FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_BAD_TREE | FLAG_NO_TREE
 		};
 
-		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
-		Source(const Source& aSource) : Flags(aSource), path(aSource.path), user(aSource.user) { }
+		Source(const User::Ptr& aUser) : user(aUser) { };
+		Source(const Source& aSource) : Flags(aSource), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; };
 		const User::Ptr& getUser() const { return user; };
 		void setUser(const User::Ptr& aUser) { user = aUser; };
-		string getFileName() { return Util::getFileName(path); };
-
-		GETSET(string, path, Path);
 	private:
 		User::Ptr user;
 	};
@@ -147,8 +141,8 @@ public:
 	}
 
 	virtual ~QueueItem() { 
-		for_each(sources.begin(), sources.end(), DeleteFunction<Source*>());
-		for_each(badSources.begin(), badSources.end(), DeleteFunction<Source*>());
+		for_each(sources.begin(), sources.end(), DeleteFunction());
+		for_each(badSources.begin(), badSources.end(), DeleteFunction());
 		delete tthRoot;
 	};
 
@@ -162,11 +156,6 @@ public:
 		return n;
 	}
 	bool hasOnlineUsers() const { return countOnlineUsers() > 0; };
-
-	const string& getSourcePath(const User::Ptr& aUser) { 
-		dcassert(isSource(aUser)); 
-		return (*getSource(aUser, sources))->getPath();
-	}
 
 	Source::List& getSources() { return sources; };
 	Source::List& getBadSources() { return badSources; };
@@ -185,10 +174,10 @@ public:
 	bool isSource(const User::Ptr& aUser) { return (getSource(aUser, sources) != sources.end()); };
 	bool isBadSource(const User::Ptr& aUser) { return (getSource(aUser, badSources) != badSources.end()); };
 
-	bool isSource(const User::Ptr& aUser, const string& aFile) const { return isSource(aUser, aFile, sources); };
-	bool isBadSource(const User::Ptr& aUser, const string& aFile) const { return isSource(aUser, aFile, badSources); };
-	bool isBadSourceExcept(const User::Ptr& aUser, const string& aFile, Flags::MaskType exceptions) const {
-		Source::ConstIter i = getSource(aUser, aFile, badSources);
+	bool isSource(const User::Ptr& aUser) const { return isSource(aUser, sources); };
+	bool isBadSource(const User::Ptr& aUser) const { return isSource(aUser, badSources); };
+	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
+		Source::ConstIter i = getSource(aUser, badSources);
 		if(i != badSources.end())
 			return (*i)->isAnySet(exceptions^Source::FLAG_ERROR_MASK); 
 		return false;
@@ -207,8 +196,6 @@ public:
 			return getTarget() + ".DcLst";
 		}
 	}
-
-	string getSearchString() const;
 
 	const string& getTempTarget();
 	void setTempTarget(const string& aTempTarget) {
@@ -231,16 +218,15 @@ private:
 	Source::List sources;
 	Source::List badSources;	
 
-	Source* addSource(const User::Ptr& aUser, const string& aPath) {
+	Source* addSource(const User::Ptr& aUser) {
 		dcassert(!isSource(aUser));
 		Source* s = NULL;
 		Source::Iter i = getSource(aUser, badSources);
 		if(i != badSources.end()) {
 			s = *i;
 			badSources.erase(i);
-			s->setPath(aPath);
 		} else {
-			s = new Source(aUser, aPath);
+			s = new Source(aUser);
 		}
 
 		sources.push_back(s);
@@ -256,26 +242,25 @@ private:
 	}
 
 	static Source::Iter getSource(const User::Ptr& aUser, Source::List& lst) { 
-		for(Source::Iter i = lst.begin(); i != lst.end(); ++i)
+		for(Source::Iter i = lst.begin(); i != lst.end(); ++i) {
 			if((*i)->getUser() == aUser)
 				return i;
+		}
 		return lst.end();
 	}
-	static Source::ConstIter getSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) { 
+	static Source::ConstIter getSource(const User::Ptr& aUser, const Source::List& lst) { 
 		for(Source::ConstIter i = lst.begin(); i != lst.end(); ++i) {
 			const Source* s = *i;
-			if( (s->getUser() == aUser) ||
-				((s->getUser()->getNick() == aUser->getNick()) && (s->getPath() == aFile)) )
+			if( (s->getUser() == aUser) )
 				return i;
 		}
 
 		return lst.end();
 	}
-	static bool isSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) {
+	static bool isSource(const User::Ptr& aUser, const Source::List& lst) {
 		for(Source::List::const_iterator i = lst.begin(); i != lst.end(); ++i) {
-			Source* s = *i;
-			if( (s->getUser() == aUser) ||
-				((s->getUser()->getNick() == aUser->getNick()) && (s->getPath() == aFile)) )
+			const Source* s = *i;
+			if( (s->getUser() == aUser)  )
 				return true;
 		}
 		return false;
@@ -283,9 +268,9 @@ private:
 
 };
 
-#endif // !defined(AFX_QUEUEITEM_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
+#endif // !defined(QUEUE_ITEM_H)
 
 /**
-* @file
-* $Id: QueueItem.h,v 1.3 2004/02/14 13:25:03 trem Exp $
-*/
+ * @file
+ * $Id: QueueItem.h,v 1.22 2005/04/24 08:13:11 arnetheduck Exp $
+ */

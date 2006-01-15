@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -115,11 +115,6 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
-#if 0
-	ItemInfo* ii = new ItemInfo(ClientManager::getInstance()->getUser("test"), 
-		ItemInfo::TYPE_DOWNLOAD, ItemInfo::STATUS_RUNNING, 75, 100, 25, 50);
-	ctrlTransfers.insert(0, tstring("Test"), 0, (LPARAM)ii);
-#endif
 	return 0;
 }
 
@@ -171,7 +166,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 					userMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
 					userMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
 				}
-
+				
 				
 				//check that we have a filename and that it's not a file list
 				if(!ii->getText(COLUMN_FILE).empty() && !ii->fileList) {
@@ -200,6 +195,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 void TransferView::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
@@ -207,7 +203,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo* itemI = ctrlTransfers.getItemData(i);
 		if(!itemI->user->isOnline())
-			return;
+			continue;
 
 		ucParams["mynick"] = itemI->user->getClientNick();
 		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
@@ -477,10 +473,10 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_PATH] = path;
 	}
 	if(colMask & MASK_IP) {
-		if (country == _T("")) 
-			columns[COLUMN_IP] = IP;
-		else 
+		if(!country.empty())
 			columns[COLUMN_IP] = country + _T(" (") + IP + _T(")");
+		else
+			columns[COLUMN_IP] = IP;
 	}
 	if(colMask & MASK_RATIO) {
 		columns[COLUMN_RATIO] = Text::toT(Util::toString(getRatio()));
@@ -588,11 +584,20 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 			i->totalTimeLeft = d->getTotalSecondsLeft();
 			i->speed = d->getRunningAverage();
 
-			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-				i->statusString = _T("* ") + tstring(buf);
-			} else {
-				i->statusString = buf;
+			i->statusString.clear();
+			if(d->isSet(Download::FLAG_TTH_CHECK)) {
+				i->statusString += _T("[T]");
 			}
+			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+				i->statusString += _T("[Z]");
+			} 
+			if(d->isSet(Download::FLAG_ROLLBACK)) {
+				i->statusString += _T("[R]");
+			}
+			if(!i->statusString.empty()) {
+				i->statusString += _T(" ");
+			}
+			i->statusString += buf;
 			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_TOTALTIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 
 			v->push_back(i);
@@ -680,11 +685,16 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
 				(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
 
+			i->statusString.clear();
+
 			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
-				i->statusString = _T("* ") + tstring(buf);
-			} else {
-				i->statusString = buf;
+				i->statusString += _T("[Z]");
 			}
+			if(!i->statusString.empty()) {
+				i->statusString += _T(" ");
+			}
+			i->statusString += buf;
+			
 
 			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 			v->push_back(i);

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 
 	if(firstException) {
-		File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
+		File::deleteFile(Util::getConfigPath() + "exceptioninfo.txt");
 		firstException = false;
 	}
 
@@ -87,7 +87,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 	}
 
-	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
+	File f(Util::getConfigPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
 	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
@@ -118,7 +118,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
     f.write(LIT("\r\n"));
 
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
-	
+
+	f.write(LIT("\r\n"));
+
 	f.close();
 
 	if( IDYES == MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an error and will terminate. If you would like to report this error, click yes and follow the steps on the website that you're taken to."), _T("fulDC Has Crashed"), MB_YESNO | MB_ICONERROR)) {
@@ -298,9 +300,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 {
 #ifndef _DEBUG
 	tstring appPath;
-	TCHAR buf[MAX_PATH+1];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	appPath = buf;
+	TCHAR filename[MAX_PATH+1];
+	GetModuleFileName(NULL, filename, MAX_PATH);
+	appPath = filename;
 	appPath.erase(appPath.rfind('\\'));
 	appPath = _T("{FULDC-PATH-") + appPath + _T("}");
 	appPath = Util::replace(appPath, _T("\\"), _T("_"));

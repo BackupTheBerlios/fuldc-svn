@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SIMPLEXML_H__3FDC96DD_A4D6_4357_9557_9D7585529A98__INCLUDED_)
-#define AFX_SIMPLEXML_H__3FDC96DD_A4D6_4357_9557_9D7585529A98__INCLUDED_
+#if !defined(SIMPLE_XML_H)
+#define SIMPLE_XML_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -188,7 +188,7 @@ public:
 	}
 	static string& escape(string& aString, bool aAttrib, bool aLoading = false, bool utf8 = true);
 	/** 
-	 * This is a heurestic for whether escape needs to be called or not. The results are
+	 * This is a heuristic for whether escape needs to be called or not. The results are
  	 * only guaranteed for false, i e sometimes true might be returned even though escape
 	 * was not needed...
 	 */
@@ -291,10 +291,9 @@ private:
 	bool found;
 };
 
-#endif // !defined(AFX_SIMPLEXML_H__3FDC96DD_A4D6_4357_9557_9D7585529A98__INCLUDED_)
+#endif // !defined(SIMPLE_XML_H)
 
 /**
  * @file
  * $Id: SimpleXML.h,v 1.4 2004/02/14 13:25:47 trem Exp $
  */
-

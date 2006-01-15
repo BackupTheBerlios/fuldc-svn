@@ -26,6 +26,8 @@ settings_usercommands.html
 settings_colors_and_sounds.html
 settings_expert.html
 settings_connection.html
+settings_windows.html
+settings_queue.html
 settings_fuldc.html
 settings_fuldc_downloads.html
 settings_fuldc_sharing.html
@@ -52,6 +54,8 @@ faq_nosearch.html
 faq_slowdownload.html
 faq_different_icons.html
 faq_units.html
+faq_install.html
+faq_secret.html
 dev_createpatch.html
 dev_applypatch.html
 links.html
@@ -69,9 +73,11 @@ IDD_GENERALPAGE=settings_general.html
 IDD_KEYBOARD=faq_keyboard_commands.html
 IDD_LOGPAGE=settings_logs.html
 IDD_NETWORKPAGE=settings_connection.html
+IDD_QUEUEPAGE=settings_queue.html
 IDD_STARTPAGE=index.html
 IDD_UCPAGE=settings_usercommands.html
 IDD_UPLOADPAGE=settings_sharing.html
+IDD_WINDOWSPAGE=settings_windows.html
 IDR_ADLSEARCH=adlsearch.html
 IDD_FULADVANCEDPAGE=settings_fuldc.html
 IDD_FULDOWNLOADPAGE=settings_fuldc_downloads.html

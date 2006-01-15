@@ -1,23 +1,23 @@
-/* 
-* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
-#if !defined(PUBLICHUBSLISTDLG_H)
-#define PUBLICHUBLISTDLG_H
+#if !defined(PUBLIC_HUBS_LIST_DLG_H)
+#define PUBLIC_HUBS_LIST_DLG_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,7 +25,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/Text.h"
-#include "../Client/HubManager.h"
+#include "../Client/FavoriteManager.h"
 #include "ExListViewCtrl.h"
 #include "LineDlg.h"
 
@@ -68,7 +68,7 @@ public:
 		ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 		ctrlList.GetClientRect(rc);
 		ctrlList.InsertColumn(0, CTSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width() - 4, 0);
-		StringList lists(HubManager::getInstance()->getHubLists());
+		StringList lists(FavoriteManager::getInstance()->getHubLists());
 		for(StringList::iterator idx = lists.begin(); idx != lists.end(); ++idx) {
 			ctrlList.insert(ctrlList.GetItemCount(), Text::toT(*idx));
 		}
@@ -117,8 +117,8 @@ public:
 		TCHAR buf[256];
 		while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			LineDlg hublist;
-			hublist.title = _T("Hublist");
-			hublist.description = _T("Edit the hublist");
+			hublist.title = CTSTRING(HUB_LIST);
+			hublist.description = CTSTRING(HUB_LIST_EDIT);
 			ctrlList.GetItemText(i, 0, buf, 256);
 			hublist.line = tstring(buf);
 			if(hublist.DoModal(m_hWnd) == IDOK) {
@@ -160,10 +160,9 @@ private:
 	ExListViewCtrl ctrlList;
 };
 
-#endif // PUBLICHUBLISTDLG_H
+#endif // !defined(PUBLIC_HUBS_LIST_DLG_H)
 
 /**
-* @file
-* $Id: PublicHubsListDlg.h,v 1.1 2004/11/06 12:14:00 arnetheduck Exp $
-*/
-
+ * @file
+ * $Id: PublicHubsListDlg.h,v 1.7 2005/04/24 08:13:05 arnetheduck Exp $
+ */
