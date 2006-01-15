@@ -232,8 +232,11 @@ void DirectoryListing::download(const string& aDir, const string& aTarget, bool 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view, bool highPrio) {
 	int flags = (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
-	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
-		aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), 
+		getPath(aFile) + aFile->getName(), flags);
+
+	if(highPrio)
+		QueueManager::getInstance()->setPriority(aTarget, QueueItem::HIGHEST);
 }
 
 DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directory* current) {

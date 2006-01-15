@@ -56,7 +56,7 @@ const string SettingsManager::settingTags[] =
 	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
+	"PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
@@ -154,7 +154,6 @@ SettingsManager::SettingsManager()
 	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
 	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
-	setDefault(USE_SYSTEM_ICONS, true);
 	setDefault(USE_OEM_MONOFONT, false);
 	setDefault(POPUP_PMS, true);
 	setDefault(MIN_UPLOAD_SPEED, 0);
@@ -363,7 +362,8 @@ void SettingsManager::load(string const& aFileName)
 			xml.stepOut();
 		}
 
-		double v = Util::toDouble(SETTING(CONFIG_VERSION));
+		// @todo add version-dependent compatibility hacks here
+		//double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
 
 

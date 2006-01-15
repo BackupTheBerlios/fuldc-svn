@@ -1223,7 +1223,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		(((aFileType == SearchManager::TYPE_ANY) && sizeOk) || (aFileType == SearchManager::TYPE_DIRECTORY)) ) {
 		// We satisfied all the search words! Add the directory...
 		SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_DIRECTORY, 
-			0, getFullName(), NULL, true);
+			0, getFullName(), NULL);
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
@@ -1247,7 +1247,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 			if(checkType(i->getName(), aFileType)) {
 				
 				SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_FILE, 
-					i->getSize(), getFullName() + i->getName(), &i->getTTH(), true);
+					i->getSize(), getFullName() + i->getName(), &i->getTTH());
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 				if(aResults.size() >= maxResults) {
@@ -1274,7 +1274,7 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 				results.push_back( new SearchResult(aClient, SearchResult::TYPE_FILE, 
 					iter.first->second->getSize(),
 					iter.first->second->getParent()->getFullName() + iter.first->second->getName(), 
-					&iter.first->second->getTTH(), true));
+					&iter.first->second->getTTH()));
 
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 				if(ShareManager::getInstance()->getHits() == maxResults)

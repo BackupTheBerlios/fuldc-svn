@@ -51,22 +51,22 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, const TTHValue* aTTH, bool aUtf8);
+	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, const TTHValue* aTTH);
 	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue* aTTH);
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubURL, const string& aIp, bool aUtf8) :
+		const string& aHubURL, const string& aIp) :
 	file(aFile), hubName(aUser->getClientName()), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 
-		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), utf8(aUtf8), ref(1) { }
+		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), ref(1) { }
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, 
-		const string& aHubURL, TTHValue* aTTH, bool aUtf8) :
+		const string& aHubURL, TTHValue* aTTH) :
 	file(aFile), hubName(aUser->getClientName()), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
-		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), utf8(aUtf8), ref(1) { }
+		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), ref(1) { }
 
 	string getFileName() const;
 	string toSR(const Client& client) const;
@@ -83,7 +83,6 @@ public:
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
 	TTHValue* getTTH() const { return tth; }
-	bool getUtf8() const { return utf8; }
 	const string& getIP() const { return IP; }
 
 	void incRef() { Thread::safeInc(ref); }
@@ -111,7 +110,6 @@ private:
 	string IP;
 	TTHValue* tth;
 	
-	bool utf8;
 	volatile long ref;
 
 	bool isTTH(const string& str) const {

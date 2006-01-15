@@ -403,7 +403,7 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		} else {
 			// match all here
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
-				if((Util::findSubString(aResult->getUtf8() ? aResult->getFile() : Text::acpToUtf8(aResult->getFile()), Text::fromT(*j)) == -1))
+				if((Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1))
 				{
 					return;
 				}
@@ -465,9 +465,9 @@ LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), 
-				Util::getTempPath() + Text::fromT(fileName), sr->getTTH(), 
-				(QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT), QueueItem::HIGHEST);
+			QueueManager::getInstance()->add(Util::getTempPath() + Text::fromT(fileName), 
+				sr->getSize(), sr->getTTH(), sr->getUser(), sr->getFile(), 
+				QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
 		}
 	} catch(const Exception&) {
 	}
@@ -476,9 +476,12 @@ void SearchFrame::SearchInfo::view() {
 void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				Text::fromT(tgt + si->fileName), si->sr->getTTH(), QueueItem::FLAG_RESUME ,
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+			string target = Text::fromT(tgt + si->fileName);
+			QueueManager::getInstance()->add(target, si->sr->getSize(), 
+				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile());
+
+			if(WinUtil::isShift())
+				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
 				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
@@ -503,9 +506,12 @@ void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				Text::fromT(tgt), si->sr->getTTH(), QueueItem::FLAG_RESUME,
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+			string target = Text::fromT(tgt);
+			QueueManager::getInstance()->add(target, si->sr->getSize(), 
+				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile());
+
+			if(WinUtil::isShift())
+				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
 				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);

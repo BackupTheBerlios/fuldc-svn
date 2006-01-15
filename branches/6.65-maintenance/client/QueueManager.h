@@ -77,24 +77,11 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 {
 public:
 	/** Add a file to the queue. */
-	void add(const string& aFile, int64_t aSize, User::Ptr aUser, 
-		const string& aTarget, const TTHValue* root, 
-		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
-		bool addBad = true) throw(QueueException, FileException);
-	
+	void add(const string& aTarget, int64_t aSize, const TTHValue* root, User::Ptr aUser, const string& aSourceFile, 
+		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
-		string x = aUser->getNick();
-		string::size_type i = 0;
-		while((i = x.find('\\'), i) != string::npos)
-			x[i] = '_';
-		string file = Util::getAppPath() + "FileLists\\" + x;
-		// We use the searchString to store the start viewing directory for file lists
-		add(USER_LIST_NAME, -1, aUser, file, NULL, 
-			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
-			true);
-	}
-
+	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
+	/** Queue a partial file list download */
 	void addPfs(const User::Ptr& aUser, const string& aDir) throw();
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);

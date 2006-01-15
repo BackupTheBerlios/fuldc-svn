@@ -46,7 +46,7 @@ crcCalc(NULL), tth(NULL), treeValid(false) {
 }
 
 Download::Download(QueueItem* qi) throw() : 
-	tempTarget(qi->getTempTarget()), file(NULL),
+	target(qi->getTarget()), tempTarget(qi->getTempTarget()), file(NULL),
 	crcCalc(NULL), tth(qi->getTTH()), treeValid(false) { 
 	
 	setSize(qi->getSize());
@@ -266,7 +266,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	}
 
 	// File ok for adcget in nmdc-conns
-	bool adcOk = (aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) && d->getTTH() != NULL);
+	bool adcOk = d->isSet(Download::FLAG_USER_LIST) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) && d->getTTH() != NULL);
 
 	if(!aConn->isSet(UserConnection::FLAG_NMDC) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && adcOk)) {
 		aConn->send(d->getCommand(

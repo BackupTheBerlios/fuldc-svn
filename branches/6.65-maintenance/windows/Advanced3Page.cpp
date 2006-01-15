@@ -55,7 +55,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_MAX_FILELIST_SIZE, SettingsManager::MAX_FILELIST_SIZE, PropPage::T_INT },
 	{ IDC_SOCKET_IN_BUFFER, SettingsManager::SOCKET_IN_BUFFER, PropPage::T_INT },
 	{ IDC_SOCKET_OUT_BUFFER, SettingsManager::SOCKET_OUT_BUFFER, PropPage::T_INT },
-	{ IDC_CLIENT_ID, SettingsManager::CLIENT_ID, PropPage::T_STR },
+	//{ IDC_CLIENT_ID, SettingsManager::CLIENT_ID, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 

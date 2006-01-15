@@ -406,6 +406,12 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	}
 }
 
+void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
+	string target = Util::getConfigPath() + FILELISTS_DIR + Util::validateFileName(aUser->getNick());
+
+	add(target, -1, NULL, aUser, USER_LIST_NAME, QueueItem::FLAG_USER_LIST | aFlags);
+}
+
 void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw() {
 	if(!aUser->isOnline() || aUser->getCID().isZero())
 		return;
@@ -421,13 +427,11 @@ void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw() {
 	ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-					   const TTHValue* root, 
-					   int aFlags /* = QueueItem::FLAG_RESUME */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
-					   bool addBad /* = true */) throw(QueueException, FileException) 
+void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* root, User::Ptr aUser, const string& aSourceFile,
+					   int aFlags /* = QueueItem::FLAG_RESUME */, bool addBad /* = true */) throw(QueueException, FileException) 
 {
 	bool wantConnection = true;
-	dcassert((aFile != USER_LIST_NAME) || (aFlags &QueueItem::FLAG_USER_LIST));
+	dcassert((aSourceFile != USER_LIST_NAME) || (aFlags &QueueItem::FLAG_USER_LIST));
 
 	// Check that we're not downloading from ourselves...
 	if(aUser->getClientNick() == aUser->getNick()) {
@@ -435,17 +439,11 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 	}
 
 	// Check if we're not downloading something already in our share
-	if (BOOLSETTING(DONT_DL_ALREADY_SHARED) && root != NULL){
-		if (ShareManager::getInstance()->isTTHShared(*root)){
+	if(BOOLSETTING(DONT_DL_ALREADY_SHARED) && root != NULL){
+		if (ShareManager::getInstance()->isTTHShared(*root))
 			throw QueueException(STRING(TTH_ALREADY_SHARED));
-		}
 	}
 
-	// Check if we're trying to download a non-TTH file
-	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
-		throw QueueException(STRING(FILE_HAS_NO_TTH));
-	} 
-    
 	string target = checkTarget(aTarget, aSize, aFlags);
 
 	// Check if it's a zero-byte file, if so, create and return...
@@ -456,6 +454,14 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		return;
 	}
 
+	// Check if we're trying to download a non-TTH file
+	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
+		throw QueueException(STRING(FILE_HAS_NO_TTH)); 
+	} 
+
+	if(aUser->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
+		throw QueueException(STRING(NO_DOWNLOADS_FROM_PASSIVE));
+	}
 	
 	if( !SETTING(SKIPLIST_DOWNLOAD).empty() ){
 		int pos = aTarget.rfind("\\")+1;
@@ -469,7 +475,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
-			q = fileQueue.add(target, aSize, aFlags, p, Util::emptyString, 0, GET_TIME(), root);
+			q = fileQueue.add(target, aSize, aFlags, QueueItem::NORMAL, Util::emptyString, 0, GET_TIME(), root);
 			updateTotalSize(q->getTarget(), q->getSize(), true);
 			fire(QueueManagerListener::Added(), q);
 		} else {
@@ -480,10 +486,14 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			if(q->getSize() != aSize) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 			}
-			if(!(*root == *q->getTTH())) {
+			if(q->getTTH() != NULL && root == NULL)
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
-			}
 
+			if(root != NULL && q->getTTH() != NULL) {
+				if(!(*root == *q->getTTH())) {
+					throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
+				}
+			}
 			q->setFlag(aFlags);
 		}
 
@@ -575,6 +585,8 @@ bool QueueManager::addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType add
 	if(qi->isBadSourceExcept(aUser, addBad)) {
 		throw QueueException(STRING(DUPLICATE_SOURCE));
 	}
+
+	qi->addSource(aUser);
 
 	if(aUser->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive() ) {
 		qi->removeSource(aUser, QueueItem::Source::FLAG_PASSIVE);

@@ -26,14 +26,14 @@
 #include "ShareManager.h"
 #include "ResourceManager.h"
 
-SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH, bool aUtf8) :
+SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH) :
 	file(aFile), hubName(aClient->getName()), hubURL(aClient->getIpPort()), user(aClient->getMe()), 
 	size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
-	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(aUtf8), ref(1) { }
+	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), ref(1) { }
 
 SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH) :
 	file(aFile), size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
-	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(true), ref(1) { }
+	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), ref(1) { }
 
 string SearchResult::toSR(const Client& c) const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
@@ -43,7 +43,7 @@ string SearchResult::toSR(const Client& c) const {
 	tmp.append("$SR ", 4);
 	tmp.append(Text::utf8ToAcp(user->getNick()));
 	tmp.append(1, ' ');
-	string acpFile = utf8 ? Text::utf8ToAcp(file) : file;
+	string acpFile = Text::utf8ToAcp(file);
 	if(type == TYPE_FILE) {
 		tmp.append(acpFile);
 		tmp.append(1, '\x05');
@@ -71,7 +71,7 @@ AdcCommand SearchResult::toRES(char type) const {
 	AdcCommand cmd(AdcCommand::CMD_RES, type);
 	cmd.addParam("SI", Util::toString(size));
 	cmd.addParam("SL", Util::toString(freeSlots));
-	cmd.addParam("FN", Util::toAdcFile(utf8 ? file : Text::acpToUtf8(file)));
+	cmd.addParam("FN", Util::toAdcFile(file));
 	if(getTTH() != NULL) {
 		cmd.addParam("TR", getTTH()->toBase32());
 	}
@@ -257,7 +257,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
 
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, hubIpPort, remoteIp, false);
+			file, hubName, hubIpPort, remoteIp);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	} else if(x.compare(1, 4, "RES ") == 0 && x[x.length() - 1] == 0x0a) {
@@ -286,7 +286,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 
 		if(!name.empty() && freeSlots != -1 && size != -1) {
 			SearchResult::Types type = (name[name.length() - 1] == '\\' ? SearchResult::TYPE_DIRECTORY : SearchResult::TYPE_FILE);
-			SearchResult* sr = new SearchResult(p, type, p->getSlots(), freeSlots, size, name, p->getClientName(), "0.0.0.0", NULL, true);
+			SearchResult* sr = new SearchResult(p, type, p->getSlots(), freeSlots, size, name, p->getClientName(), "0.0.0.0", NULL);
 			fire(SearchManagerListener::SR(), sr);
 			sr->decRef();
 		}
