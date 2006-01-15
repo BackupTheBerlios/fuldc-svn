@@ -161,9 +161,19 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			} else {
 				delete is;
 				aSource->maxedOut();
+
+				// Check for tth root identifier
+				string tFile = aFile;
+				if (tFile.compare(0, 4, "TTH/") == 0)
+					tFile = ShareManager::getInstance()->translateTTH(aFile.substr(4));
+
+				addFailedUpload(aSource, tFile +
+					" (" + Util::toString((aStartPos*1000/(File::getSize(file)+10))/10.0)+"% of " + Util::formatBytes(File::getSize(file)) + " done)");
 				aSource->disconnect();
 				return false;
 			}
+		} else {
+			clearUserFiles(aSource->getUser());	// this user is using a full slot, nix them.
 		}
 
 		setLastGrant(GET_TICK());

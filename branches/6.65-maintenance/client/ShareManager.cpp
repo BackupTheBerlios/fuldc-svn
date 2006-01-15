@@ -113,11 +113,19 @@ ShareManager::Directory::~Directory() {
 	for(MapIter i = directories.begin(); i != directories.end(); ++i)
 		delete i->second;
 	
-#ifdef USE_TTH
 	for(File::Iter i = files.begin(); i != files.end(); ++i) {
 		ShareManager::getInstance()->removeTTH(i->getTTH(), i);
 	}
-#endif
+}
+
+string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
+	TTHValue v(TTH);
+	HashFileIter i = tthIndex.find(&v);
+	if(i != tthIndex.end()) {
+		return i->second->getADCPath();
+	} else {
+		throw ShareException("File Not Available");
+	}
 }
 
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
@@ -136,13 +144,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 
 		// Check for tth root identifier
 		if(aFile.compare(0, 4, "TTH/") == 0) {
-			TTHValue v(aFile.substr(4));
-			HashFileIter i = tthIndex.find(&v);
-			if(i != tthIndex.end()) {
-				file = i->second->getADCPath();
-			} else {
-				throw ShareException("File Not Available");
-			}
+			file = translateTTH(aFile.substr(4));
 		} else if(aFile[0] != '/') {
 			throw ShareException("File Not Available");
 		}  else {
