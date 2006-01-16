@@ -249,14 +249,7 @@ public:
 			c.addParam(*i);
 		send(c);
 	}
-	void inf(bool withToken) { 
-		AdcCommand c(AdcCommand::CMD_INF);
-		c.addParam("CI", SETTING(CLIENT_ID));
-		if(withToken) {
-			c.addParam("TO", getToken());
-		}
-		send(c);
-	}
+	void inf(bool withToken);
 	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_GET).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 	void snd(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_SND).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 	void ntd() { send(AdcCommand(AdcCommand::CMD_NTD)); }
@@ -272,66 +265,46 @@ public:
 		send("$Supports " + x + '|');
 	}
 	void setDataMode(int64_t aBytes = -1) { dcassert(socket); socket->setDataMode(aBytes); }
-	void setLineMode() { dcassert(socket); socket->setLineMode(); };
+	void setLineMode(size_t rollback) { dcassert(socket); socket->setLineMode(rollback); }
 
-	void connect(const string& aServer, short aPort) throw(SocketException);
-	void accept(const Socket& aServer) throw(SocketException);
+	void connect(const string& aServer, short aPort) throw(SocketException, ThreadException);
+	void accept(const Socket& aServer) throw(SocketException, ThreadException);
 	
-	void disconnect() { if(socket) socket->disconnect(); };
-	void transmitFile(InputStream* f) { socket->transmitFile(f); };
+	void disconnect(bool graceless = false) { if(socket) socket->disconnect(graceless); }
+	void transmitFile(InputStream* f) { socket->transmitFile(f); }
 
 	const string& getDirectionString() {
 		dcassert(isSet(FLAG_UPLOAD) ^ isSet(FLAG_DOWNLOAD));
 		return isSet(FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
 	}
 
-	User::Ptr& getUser() { return user; };
-	bool isSecure() const { return secure; };
+	User::Ptr& getUser() { return user; }
+	bool isSecure() const { return secure; }
 
 	string getRemoteIp() const { return socket->getIp(); }
-	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; };
-	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; };
-	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; };
-	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; };
+	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; }
+	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; }
+	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; }
+	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; }
 
-	void handle(AdcCommand::SUP t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
-	void handle(AdcCommand::INF t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
-	void handle(AdcCommand::GET t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
-	void handle(AdcCommand::SND t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
-	void handle(AdcCommand::STA t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
-	void handle(AdcCommand::NTD t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
-	void handle(AdcCommand::RES t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
-	void handle(AdcCommand::GFI t, const AdcCommand& c) {
-		fire(t, this, c);
-	}
+	void handle(AdcCommand::SUP t, const AdcCommand& c) { fire(t, this, c); }
+	void handle(AdcCommand::INF t, const AdcCommand& c) { fire(t, this, c); }
+	void handle(AdcCommand::GET t, const AdcCommand& c) { fire(t, this, c); }
+	void handle(AdcCommand::SND t, const AdcCommand& c) { fire(t, this, c);	}
+	void handle(AdcCommand::STA t, const AdcCommand& c) { fire(t, this, c);	}
+	void handle(AdcCommand::NTD t, const AdcCommand& c) { fire(t, this, c);	}
+	void handle(AdcCommand::RES t, const AdcCommand& c) { fire(t, this, c); }
+	void handle(AdcCommand::GFI t, const AdcCommand& c) { fire(t, this, c);	}
 
 	// Ignore any other ADC commands for now
-	template<typename T>
-	void handle(T , const AdcCommand& ) {
-	}
+	template<typename T> void handle(T , const AdcCommand& ) { }
 
 	GETSET(string, nick, Nick);
 	GETSET(string, hubUrl, HubUrl);
 	GETSET(string, token, Token);
-	GETSET(ConnectionQueueItem*, cqi, CQI);
+	//GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
 	GETSET(u_int32_t, lastActivity, LastActivity);
-	GETSET(Download*, tempDownload, TempDownload);
-
 private:
 	BufferedSocket* socket;
 	User::Ptr user;
@@ -345,13 +318,11 @@ private:
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection() throw() : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), 
-		socket(0), download(NULL) { 
+	UserConnection(bool secure_) throw() : /*cqi(NULL),*/ state(STATE_UNCONNECTED), lastActivity(0),
+		socket(0), secure(secure_), download(NULL) { 
 	};
 
 	virtual ~UserConnection() throw() {
-		socket->removeListener(this);
-		removeListeners();
 		BufferedSocket::putSocket(socket);
 	};
 	friend struct DeleteFunction;

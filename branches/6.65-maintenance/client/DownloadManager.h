@@ -181,6 +181,8 @@ public:
 		checkDownloads(conn);
 	}
 
+	void checkIdle(const User::Ptr& user);
+
 	/** @internal */
 	void abortDownload(const string& aTarget);
 
@@ -261,9 +263,10 @@ private:
 	
 	CriticalSection cs;
 	Download::List downloads;
-	
+	UserConnection::List idlers;
+
 	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
-	void removeConnection(UserConnection::Ptr aConn, bool reuse = false, bool ntd = false);
+	void removeConnection(UserConnection::Ptr aConn);
 	void removeDownload(Download* aDown);
 	void fileNotAvailable(UserConnection* aSource);
 	void noSlots(UserConnection* aSource);

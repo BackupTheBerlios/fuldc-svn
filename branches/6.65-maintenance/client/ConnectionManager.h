@@ -42,17 +42,16 @@ public:
 	enum State {
 		CONNECTING,					// Recently sent request to connect
 		WAITING,					// Waiting to send request to connect
-		NO_DOWNLOAD_SLOTS,			// Bot needed right now
-		IDLE,						// In the download pool
+		NO_DOWNLOAD_SLOTS,			// Not needed right now
 		ACTIVE						// In one up/downmanager
 	};
 
-	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), connection(NULL), lastAttempt(0), download(aDownload), user(aUser) { };
+	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), user(aUser) { };
 	
-	User::Ptr& getUser() { return user; };
+	User::Ptr& getUser() { return user; }
+	const User::Ptr& getUser() const { return user; }
 	
 	GETSET(State, state, State);
-	GETSET(UserConnection*, connection, Connection);
 	GETSET(u_int32_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
@@ -70,13 +69,14 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 {
 public:
 	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
-	void adcConnect(const string& aServer, short aPort, const string& aToken);
-	void getDownloadConnection(const User::Ptr& aUser);
-	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
-	void putUploadConnection(UserConnection* aSource, bool ntd);
+	void adcConnect(const string& aServer, short aPort, const string& aToken, bool secure);
 	
-	void removeConnection(const User::Ptr& aUser, int isDownload);
-	void shutdown();	
+	void getDownloadConnection(const User::Ptr& aUser);
+
+	void disconnect(const User::Ptr& aUser, int isDownload);
+
+	void shutdown();
+
 	/** Find a suitable port to listen on, and start doing it */
 	void listen() throw(Exception);
 	void disconnect() throw() {
@@ -87,13 +87,8 @@ public:
 		port = securePort = 0;
 	}
 
-	unsigned short getPort() {
-		return port;
-	}
-	unsigned short getSecurePort() {
-		return securePort;
-	}
-
+	unsigned short getPort() { return port; }
+	unsigned short getSecurePort() { return securePort;	}
 private:
 
 	class Server : public Thread {
@@ -118,10 +113,10 @@ private:
 	ConnectionQueueItem::List downloads;
 	ConnectionQueueItem::List uploads;
 
-	User::List pendingAdd;
-	UserConnection::List pendingDelete;
 	/** All active connections */
 	UserConnection::List userConnections;
+
+	User::List checkIdle;
 
 	StringList features;
 	StringList adcFeatures;
@@ -138,7 +133,7 @@ private:
 
 	virtual ~ConnectionManager() throw() { shutdown(); };
 	
-	UserConnection* getConnection(bool aNmdc) throw(SocketException);
+	UserConnection* getConnection(bool aNmdc, bool secure) throw();
 	void putConnection(UserConnection* aConn);
 
 	void addUploadConnection(UserConnection* uc);
@@ -147,7 +142,7 @@ private:
 	ConnectionQueueItem* getCQI(const User::Ptr& aUser, bool download);
 	void putCQI(ConnectionQueueItem* cqi);
 
-	void accept(const Socket& sock) throw();
+	void accept(const Socket& sock, bool secure) throw();
 
 	// UserConnectionListener
 	virtual void on(Connected, UserConnection*) throw();

@@ -31,7 +31,6 @@
 #define IDC_OPEN_MY_LIST                121
 #define IDC_HEADER_MENU                 122
 #define IDC_SEARCH_BY_TTH               123
-#define IDC_RESOLVE_IP                  125
 #define IDC_RESOLVED_IP                 126
 #define IDC_SEARCH_RELEASEALTERNATES    127
 #define IDC_SETTINGS_GET_USER_COUNTRY   127

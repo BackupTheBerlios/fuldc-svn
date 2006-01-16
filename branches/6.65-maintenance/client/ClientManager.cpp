@@ -27,17 +27,13 @@
 #include "ConnectionManager.h"
 #include "FavoriteManager.h"
 
-#include "AdcHub.h"
+//#include "AdcHub.h"
 #include "NmdcHub.h"
 
 
 Client* ClientManager::getClient(const string& aHubURL) {
 	Client* c;
-	if(Util::strnicmp("adc://", aHubURL.c_str(), 6) == 0) {
-		c = new AdcHub(aHubURL);
-	} else {
-		c = new NmdcHub(aHubURL);
-	}
+	c = new NmdcHub(aHubURL);
 
 	{
 		Lock l(cs);
@@ -49,7 +45,7 @@ Client* ClientManager::getClient(const string& aHubURL) {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	aClient->disconnect();
+	aClient->disconnect(true);
 	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
 
@@ -205,7 +201,7 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 	// Check for an offline user that was on that hub that we can put online again
 	for(i = p.first; i != p.second; ++i) {
 		if( (!i->second->isOnline()) && 
-			((i->second->getLastHubAddress() == aClient->getAddressPort()) || (i->second->getLastHubAddress() == aClient->getIpPort())) )
+			((i->second->getLastHubAddress() == aClient->getHubUrl()) || (i->second->getLastHubAddress() == aClient->getIpPort())) )
 		{
 			if(putOnline) {
 				i->second->setClient(aClient);
@@ -342,16 +338,16 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 }
 
 void ClientManager::on(Failed, Client* client, const string&) throw() { 
-	FavoriteManager::getInstance()->removeUserCommand(client->getAddressPort());
+	FavoriteManager::getInstance()->removeUserCommand(client->getHubUrl());
 	fire(ClientManagerListener::ClientDisconnected(), client);
 }
 
 void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() { 
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
  		if(aType == ::UserCommand::TYPE_CLEAR) {
- 			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getAddressPort());
+ 			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getHubUrl());
  		} else {
- 			FavoriteManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
+ 			FavoriteManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getHubUrl());
  		}
 	}
 }

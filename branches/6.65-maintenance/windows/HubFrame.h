@@ -164,7 +164,7 @@ public:
 	}
 
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		client->disconnect();
+		client->disconnect(false);
 		clearUserList();
 		client->connect();
 		return 0;
@@ -502,15 +502,10 @@ private:
 	void openLinksInTopic();
 	bool resolve(const wstring& aDns);
 };
-/////////////////////////////////////////////////////////////////////////////
 
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
+#endif // !defined(HUB_FRAME_H)
 
 /**
  * @file
  * $Id: HubFrame.h,v 1.15 2004/02/21 15:15:28 trem Exp $
  */
-

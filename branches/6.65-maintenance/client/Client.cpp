@@ -24,26 +24,27 @@
 #include "BufferedSocket.h"
 
 #include "FavoriteManager.h"
+#include "TimerManager.h"
 
 Client::Counts Client::counts;
 
-Client::Client(const string& hubURL, char separator) : 
-	socket(BufferedSocket::getSocket(separator)), reconnDelay(120), registered(false), port(0), countType(COUNT_UNCOUNTED)
+Client::Client(const string& hubURL, char separator_, bool secure_) : 
+	socket(NULL), reconnDelay(120), 
+	lastActivity(0), registered(false), hubUrl(hubURL), port(0), separator(separator_),
+	secure(secure_), countType(COUNT_UNCOUNTED)
 {
 	string file;
 	Util::decodeUrl(hubURL, address, port, file);
-	addressPort = hubURL;
-	socket->addListener(this);
 }
 
 Client::~Client() throw() {
-	socket->removeListener(this);
-
+	if(socket)
+		BufferedSocket::putSocket(socket);
 	updateCounts(true);
 }
 
 void Client::reloadSettings() {
-	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubURL());
+	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubUrl());
 	if(hub) {
 		setNick(checkNick(hub->getNick(true)));
 		setDescription(hub->getUserDescription());
@@ -61,9 +62,17 @@ void Client::connect() {
 	reloadSettings();
 	setRegistered(false);
 
-	socket = BufferedSocket::getSocket('|');
-	socket->addListener(this);
-	socket->connect(address, port, true);
+	try {
+		socket = BufferedSocket::getSocket(separator);
+		socket->addListener(this);
+		socket->connect(address, port, secure, true);
+	} catch(const Exception& e) {
+		if(socket) {
+			BufferedSocket::putSocket(socket);
+			socket = NULL;
+		}
+		fire(ClientListener::Failed(), this, e.getError());
+	}
 	updateActivity();
 }
 
@@ -80,6 +89,7 @@ void Client::updateCounts(bool aRemove) {
 	} else if(countType == COUNT_OP) {
 		Thread::safeDec(counts.op);
 	}
+
 	countType = COUNT_UNCOUNTED;
 
 	if(!aRemove) {
@@ -96,7 +106,7 @@ void Client::updateCounts(bool aRemove) {
 	}
 }
 
-string Client::getLocalIp() const { 
+string Client::getLocalIp() const {
 	// Best case - the server detected it
 	if((!BOOLSETTING(NO_IP_OVERRIDE) || SETTING(EXTERNAL_IP).empty()) && !getMe()->getIp().empty()) {
 		return getMe()->getIp();

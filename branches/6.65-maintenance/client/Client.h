@@ -83,17 +83,21 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client(const string& hubURL, char separator);
+	Client(const string& hubURL, char separator, bool secure_);
 	virtual ~Client() throw();
+
+	virtual void connect();
+	bool isConnected() const { return socket && socket->isConnected(); }
+	void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
+
 
 	virtual void connect(const User* user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
 	virtual void privateMessage(const User* user, const string& aMessage) = 0;
-	virtual void send(const string& aMessage) = 0;
 	virtual void sendUserCmd(const string& aUserCmd) = 0;
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) = 0;
 	virtual void password(const string& pwd) = 0;
-	virtual void info(bool alwaysSend) = 0;
+	virtual void info(bool force) = 0;
     
 	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
@@ -106,16 +110,11 @@ public:
 
 	short getPort() const { return port; }
 	const string& getAddress() const { return address; }
-	const string& getAddressPort() const { return addressPort; }
 
 
-	const string& getIp() const { return socket->getIp().empty() ? getAddress() : socket->getIp(); };
+	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); };
 	string getIpPort() const { return getIp() + ':' + Util::toString(port); };
 	string getLocalIp() const;
-
-	virtual void connect();
-	bool isConnected() const { return socket->isConnected(); }
-	void disconnect() { if(socket) socket->disconnect(); }
 
 	void updated(User::Ptr& aUser) { 
 		fire(ClientListener::UserUpdated(), this, aUser);
@@ -140,6 +139,18 @@ public:
 		}
 		return sm;
 	}
+
+	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
+	void send(const char* aMessage, size_t aLen) {
+		dcassert(socket);
+		if(!socket)
+			return;
+		updateActivity();
+		socket->write(aMessage, aLen);
+	}
+
+	const string& getHubUrl() const { return hubUrl; }
+
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
 	GETSET(u_int32_t, reconnDelay, ReconnDelay);
@@ -168,7 +179,6 @@ protected:
 	void reloadSettings();
 
 	virtual string checkNick(const string& nick) = 0;
-	virtual string getHubURL() = 0;
 
 private:
 
@@ -185,11 +195,15 @@ private:
 	string description;
 	string hubUrl;
 	string address;
-	string addressPort;
 	u_int16_t port;
+	char separator;
+	bool secure;
 
 	CountType countType;
 
+	// BufferedSocketListener
+	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
+	virtual void on(Connected) throw() { updateActivity(); fire(ClientListener::Connected(), this); }
 };
 
 #endif // !defined(CLIENT_H)

@@ -30,9 +30,9 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw() : 
+BufferedSocket::BufferedSocket(char aSeparator) throw(ThreadException) : 
 separator(aSeparator), mode(MODE_LINE), 
-dataBytes(0), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0)
+dataBytes(0), rollback(0), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0), disconnecting(false)
 {
 	start();
 }
@@ -41,41 +41,43 @@ BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
 }
 
-void BufferedSocket::accept(const Socket& srv) throw(SocketException, ThreadException) {
+void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException) {
 	dcassert(!sock);
 
+	secure; // avoid warning
 	sock = new Socket;
-	
-	sock->accept(srv);
 
+	sock->accept(srv);
 	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
 	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+	sock->setBlocking(false);
 
 	Lock l(cs);
 	addTask(ACCEPTED, 0);
 }
 
-void BufferedSocket::connect(const string& aAddress, short aPort, bool proxy) throw(ThreadException) {
+void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException) {
 	dcassert(!sock);
 
+	secure; // avoid warning
 	sock = new Socket;
-	
+
+	sock->create();
+	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+	sock->setBlocking(false);
+
 	Lock l(cs);
 	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 }
 
 #define CONNECT_TIMEOUT 30000
 void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy) throw(SocketException) {
-	dcdebug("threadConnect()\n");
-
+	dcdebug("threadConnect %s:%d\n", aAddr.c_str(), (int)aPort);
+	dcassert(sock);
+	if(!sock)
+		return;
 	fire(BufferedSocketListener::Connecting());
-
-	sock->create();
-
-	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
-
-	sock->setBlocking(false);
 
 	u_int32_t startTime = GET_TICK();
 	if(proxy) {
@@ -85,7 +87,7 @@ void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy)
 	}
 
 	while(sock->wait(POLL_TIMEOUT, Socket::WAIT_CONNECT) != Socket::WAIT_CONNECT) {
-		if(checkDisconnect())
+		if(disconnecting)
 			return;
 
 		if((startTime + 30000) < GET_TICK()) {
@@ -96,15 +98,10 @@ void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy)
 	fire(BufferedSocketListener::Connected());
 }
 
-void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
-	{
-		Lock l(cs);
-		writeBuf.insert(writeBuf.end(), aBuf, aBuf+aLen);
-		addTask(SEND_DATA, 0);
-	}
-}
-
 void BufferedSocket::threadRead() throw(SocketException) {
+	dcassert(sock);
+	if(!sock)
+		return;
 	int left = sock->read(&inbuf[0], (int)inbuf.size());
 	if(left == -1) {
 		// EWOULDBLOCK, no data received...
@@ -146,8 +143,9 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		} else if(mode == MODE_DATA) {
 			if(dataBytes == -1) {
 				fire(BufferedSocketListener::Data(), &inbuf[bufpos], left);
-				bufpos += left;
-				left = 0;
+				bufpos += (left - rollback);
+				left = rollback;
+				rollback = 0;
 			} else {
 				int high = (int)min(dataBytes, (int64_t)left);
 				fire(BufferedSocketListener::Data(), &inbuf[bufpos], high);
@@ -165,6 +163,9 @@ void BufferedSocket::threadRead() throw(SocketException) {
 }
 
 void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
+	dcassert(sock);
+	if(!sock)
+		return;
 	dcassert(file != NULL);
 	vector<u_int8_t> buf;
 
@@ -179,7 +180,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 		buf.resize(actual);
 
 		while(!buf.empty()) {
-			if(checkDisconnect())
+			if(disconnecting)
 				return;
 
 			int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
@@ -199,19 +200,33 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	}
 }
 
+void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
+	dcassert(sock);
+	if(!sock)
+		return;
+	Lock l(cs);
+	if(writeBuf.empty())
+		addTask(SEND_DATA, 0);
+
+	writeBuf.insert(writeBuf.end(), aBuf, aBuf+aLen);
+}
+
 void BufferedSocket::threadSendData() {
+	dcassert(sock);
+	if(!sock)
+		return;
 	{
 		Lock l(cs);
 		if(writeBuf.empty())
 			return;
 
-		swap(writeBuf, sendBuf);
+		writeBuf.swap(sendBuf);
 	}
 
 	size_t left = sendBuf.size();
 	size_t done = 0;
 	while(left > 0) {
-		if(checkDisconnect()) {
+		if(disconnecting) {
 			return;
 		}
 
@@ -230,16 +245,6 @@ void BufferedSocket::threadSendData() {
 		}
 	}
 	sendBuf.clear();
-}
-
-bool BufferedSocket::checkDisconnect() {
-	Lock l(cs);
-	for(vector<pair<Tasks, TaskData*> >::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-		if(i->first == DISCONNECT || i->first == SHUTDOWN) {
-			return true;
-		}
-	}
-	return false;
 }
 
 bool BufferedSocket::checkEvents() {
@@ -268,7 +273,6 @@ bool BufferedSocket::checkEvents() {
 					fail(STRING(DISCONNECTED)); 
 				break;
 			case SHUTDOWN: 
-				threadShutDown(); 
 				return false;
 		}
 
@@ -278,6 +282,10 @@ bool BufferedSocket::checkEvents() {
 }
 
 void BufferedSocket::checkSocket() {
+	dcassert(sock);
+	if(!sock)
+		return;
+
 	int waitFor = sock->wait(POLL_TIMEOUT, Socket::WAIT_READ);
 
 	if(waitFor & Socket::WAIT_READ) {
@@ -299,6 +307,7 @@ int BufferedSocket::run() {
 			fail(e.getError());
 		}
 	}
+	delete this;
 	return 0;
 }
 

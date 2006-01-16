@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_NmdcHub_H__089CBD05_4833_4E30_9A57_BB636231D78E__INCLUDED_)
-#define AFX_NmdcHub_H__089CBD05_4833_4E30_9A57_BB636231D78E__INCLUDED_
+#if !defined(NMDC_HUB_H)
+#define NMDC_HUB_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -32,6 +32,7 @@
 #include "User.h"
 #include "CriticalSection.h"
 #include "Text.h"
+#include "Client.h"
 
 class NmdcHub;
 
@@ -115,17 +116,12 @@ public:
 	virtual void connect(const User* aUser);
 	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
 	virtual void privateMessage(const User* aUser, const string& aMessage) { privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage); }
-	virtual void send(const string& a) throw() {
-		lastActivity = GET_TICK();
-		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
-		socket->write(a);
-	}
 	virtual void sendUserCmd(const string& aUserCmd) throw() {
 		send(toNmdc(aUserCmd));
 	}
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	virtual void password(const string& aPass) { send("$MyPass " + toNmdc(aPass) + "|"); }
-	virtual void info(bool alwaysSend) { myInfo(alwaysSend); }
+	virtual void info(bool force) { myInfo(force); }
 	
 	virtual size_t getUserCount() const {  Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
@@ -138,7 +134,7 @@ public:
 
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
-	void disconnect() throw();
+	virtual void disconnect(bool graceless) throw();
 	void myInfo(bool alwaysSend);
 	
 	void refreshUserList(bool unknownOnly = false);
@@ -174,11 +170,6 @@ public:
 		checkstate(); 
 		dcdebug("NmdcHub::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + toNmdc(getNick()) + " " + toNmdc(aUser->getNick()) + "|");
-	}
-
-	void send(const char* aBuf, int aLen) throw() {
-		lastActivity = GET_TICK();
-		socket->write(aBuf, aLen);
 	}
 
 	GETSET(int, supportFlags, SupportFlags);
@@ -220,8 +211,6 @@ private:
 	string name;
 	string shortName;
 
-	u_int32_t lastActivity;
-
 	mutable CriticalSection cs;
 
 	User::NickMap users;
@@ -242,7 +231,7 @@ private:
 	NmdcHub(const NmdcHub&);
 	NmdcHub& operator=(const NmdcHub&);
 
-	void connect();
+	virtual void connect();
 
 	void clearUsers();
 	void onLine(const string& aLine) throw();
@@ -251,22 +240,20 @@ private:
 	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
 
 	virtual string checkNick(const string& aNick);
-	virtual string getHubURL();
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 
 	virtual void on(Connecting) throw() { Speaker<NmdcHubListener>::fire(NmdcHubListener::Connecting(), this); }
-	virtual void on(Connected) throw() { lastActivity = GET_TICK(); Speaker<NmdcHubListener>::fire(NmdcHubListener::Connected(), this); }
+	virtual void on(Connected) throw() { updateActivity(); Speaker<NmdcHubListener>::fire(NmdcHubListener::Connected(), this); }
 	virtual void on(Line, const string& l) throw() { onLine(l); }
 	virtual void on(Failed, const string&) throw();
 
 };
 
-#endif // !defined(AFX_NmdcHub_H__089CBD05_4833_4E30_9A57_BB636231D78E__INCLUDED_)
+#endif // !defined(NMDC_HUB_H)
 
 /**
  * @file
  * $Id: NmdcHub.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
  */
-

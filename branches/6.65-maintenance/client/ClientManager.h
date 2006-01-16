@@ -28,6 +28,7 @@
 #include "Client.h"
 #include "Singleton.h"
 #include "SettingsManager.h"
+
 #include "ClientManagerListener.h"
 
 class ClientManager : public Speaker<ClientManagerListener>, 

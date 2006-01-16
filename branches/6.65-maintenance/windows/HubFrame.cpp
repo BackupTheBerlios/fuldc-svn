@@ -642,7 +642,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 		TimerManager::getInstance()->removeListener(this);
 		client->removeListener(this);
-		client->disconnect();
+		client->disconnect(true);
 
 		closed = true;
 
@@ -760,7 +760,7 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
 		params["hub"] = client->getName();
-		params["hubaddr"] = client->getAddressPort();
+		params["hubaddr"] = client->getHubUrl();
 		params["mynick"] = client->getNick(); 
 		LOG(LogManager::CHAT, params);
 	}
@@ -775,7 +775,7 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	tabMenuShown = true;
-	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, Text::toT(client->getAddressPort()), client->getOp());
+	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, Text::toT(client->getHubUrl()), client->getOp());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -864,7 +864,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		}
 
 		tabMenuShown = false;
-		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getAddressPort()), client->getOp());
+		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getHubUrl()), client->getOp());
 		checkAdcItems(userMenu);
 
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -1254,7 +1254,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		StringMap params;
 		params["hub"] = client->getName();
-		params["hubaddr"] = client->getAddressPort();
+		params["hubaddr"] = client->getHubUrl();
 		params["message"] = Text::fromT(aLine);
 		LOG(LogManager::STATUS, params);
 	}
@@ -1281,8 +1281,8 @@ void HubFrame::on(TimerManagerListener::Second, DWORD /*aTick*/) throw() {
 }
 
 void HubFrame::on(Connecting, Client*) throw() { 
-	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getAddressPort() + "...");
-	speak(SET_WINDOW_TITLE, client->getAddressPort());
+	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getHubUrl() + "...");
+	speak(SET_WINDOW_TITLE, client->getHubUrl());
 }
 void HubFrame::on(Connected, Client*) throw() { 
 	speak(CONNECTED);
@@ -1346,7 +1346,7 @@ void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
 void HubFrame::on(HubUpdated, Client*) throw() { 
-	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getNameWithTopic(), true, false) + " (" + client->getAddressPort() + ")");
+	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getNameWithTopic(), true, false) + " (" + client->getHubUrl() + ")");
 }
 void HubFrame::on(Message, Client*, const string& line) throw() { 
 	if(SETTING(FILTER_MESSAGES)) {
@@ -1604,7 +1604,7 @@ LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 	
 	StringMap params;
 	params["hub"] = client->getName();
-	params["hubaddr"] = client->getAddressPort();
+	params["hubaddr"] = client->getHubUrl();
 	params["mynick"] = client->getNick(); 
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::CHAT, params));

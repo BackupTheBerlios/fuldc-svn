@@ -479,6 +479,7 @@ enum Strings { // @DontAdd
 	SETTINGS_UPLOADS_SLOTS, // "Upload slots"
 	SETTINGS_URL_HANDLER, // "Register with Windows to handle dchub:// and adc:// URL links"
 	SETTINGS_USE_OEM_MONOFONT, // "Use OEM monospaced font for viewing text files"
+	SETTINGS_USE_SYSTEM_ICONS, // "Use system icons when browsing files (slows browsing down a bit)"
 	SETTINGS_USER_COMMANDS, // "DC++\\Advanced\\User Commands"
 	SETTINGS_WINDOWS, // "DC++\\Appearance\\Windows"
 	SETTINGS_WINDOWS_OPTIONS, // "Window options"

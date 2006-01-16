@@ -192,10 +192,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\client\AdcHub.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\ADLSearch.cpp"
 				>
 			</File>
@@ -390,10 +386,6 @@
 			>
 			<File
 				RelativePath=".\client\AdcCommand.h"
-				>
-			</File>
-			<File
-				RelativePath=".\client\AdcHub.h"
 				>
 			</File>
 			<File

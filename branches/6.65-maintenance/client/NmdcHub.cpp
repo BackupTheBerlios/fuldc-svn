@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,11 +32,8 @@
 #include "UserCommand.h"
 #include "StringTokenizer.h"
 
-
-NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),  
-	adapter(this), state(STATE_CONNECT),
-	lastActivity(GET_TICK()), 
-	reconnect(true), lastUpdate(0)
+NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|', false), supportFlags(0), state(STATE_CONNECT),
+	adapter(this), reconnect(true), lastUpdate(0)
 {
 	TimerManager::getInstance()->addListener(this);
 }
@@ -102,7 +99,7 @@ void NmdcHub::clearUsers() {
 }
 
 void NmdcHub::onLine(const string& aLine) throw() {
-	lastActivity = GET_TICK();
+	updateActivity();
 
 	if(aLine.length() == 0)
 		return;
@@ -161,15 +158,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			seekers.push_back(make_pair(seeker, tick));
 
 			// First, check if it's a flooder
-			FloodIter fi;
-			for(fi = flooders.begin(); fi != flooders.end(); ++fi) {
+			for(FloodIter fi = flooders.begin(); fi != flooders.end(); ++fi) {
 				if(fi->first == seeker) {
 					return;
 				}
 			}
 
 			int count = 0;
-			for(fi = seekers.begin(); fi != seekers.end(); ++fi) {
+			for(FloodIter fi = seekers.begin(); fi != seekers.end(); ++fi) {
 				if(fi->first == seeker)
 					count++;
 
@@ -312,7 +308,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getNick(), getHubURL()); 
+		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getNick(), getHubUrl()); 
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::ConnectToMe(), this, server, (short)Util::toInt(port));
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_CONNECTED) {
@@ -477,12 +473,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			Speaker<NmdcHubListener>::fire(NmdcHubListener::Hello(), this, u);
 		}
 	} else if(cmd == "$ForceMove") {
-		disconnect();
+		disconnect(false);
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::Redirect(), this, param);
 	} else if(cmd == "$HubIsFull") {
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::HubFull(), this);
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
-		disconnect();
+		disconnect(false);
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::ValidateDenied(), this);
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
@@ -598,10 +594,6 @@ string NmdcHub::checkNick(const string& aNick) {
 	return tmp;
 }
 
-string NmdcHub::getHubURL() {
-	return getAddressPort();
-}
-
 void NmdcHub::myInfo(bool alwaysSend) {
 	checkstate();
 	
@@ -645,9 +637,9 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	}
 }
 
-void NmdcHub::disconnect() throw() {	
+void NmdcHub::disconnect(bool graceless) throw() {	
 	state = STATE_CONNECT;
-	Client::disconnect();
+	Client::disconnect(graceless);
 	{ 
 		Lock l(cs);
 		clearUsers();
@@ -678,13 +670,13 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 
 // TimerManagerListener
 void NmdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
-	if(socket && (lastActivity + getReconnDelay() * 1000) < aTick) {
+	if(socket && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
 		// Nothing's happened for ~120 seconds, check if we're connected, if not, try to connect...
-		lastActivity = aTick;
+		updateActivity();
 		// Try to send something for the fun of it...
 		if(isConnected()) {
 			dcdebug("Testing writing...\n");
-			socket->write("|", 1);
+			send("|", 1);
 		} else {
 			// Try to reconnect...
 			if(reconnect && !getAddress().empty())
