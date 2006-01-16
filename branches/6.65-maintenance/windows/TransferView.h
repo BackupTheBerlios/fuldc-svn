@@ -253,8 +253,8 @@ private:
 		int64_t actual;
 		void setSpeed(int64_t aSpeed) { speed = aSpeed; updateMask |= MASK_SPEED; }
 		int64_t speed;
-		void setTimeLeft(int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
-		int64_t timeLeft;
+		void setTimeLeft(u_int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
+		u_int64_t timeLeft;
 		void setTotalTimeLeft(int64_t aTotalTimeLeft) { totalTimeLeft = aTotalTimeLeft; updateMask |= MASK_TOTALTIMELEFT; }
 		int64_t totalTimeLeft;
 		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }

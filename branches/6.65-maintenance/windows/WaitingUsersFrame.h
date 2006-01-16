@@ -39,9 +39,7 @@ public:
 	typedef MDITabChildWindowImpl<WaitingUsersFrame> baseClass;
 
 	// Constructor
-	WaitingUsersFrame() {
-		UploadManager::getInstance()->addListener(this);
-	}
+	WaitingUsersFrame() { }
 
 	// Frame window declaration
 	DECLARE_FRAME_WND_CLASS_EX(_T("WaitingUsersFrame"), IDR_WAITING_USERS, 0, COLOR_3DFACE);
@@ -54,12 +52,17 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		COMMAND_HANDLER(IDC_GETLIST, BN_CLICKED, onGetList)
 		COMMAND_HANDLER(IDC_COPY_FILENAME, BN_CLICKED, onCopyFilename)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
-		COMMAND_HANDLER(IDC_GRANTSLOT, BN_CLICKED, onGrantSlot)
-		COMMAND_HANDLER(IDC_ADD_TO_FAVORITES, BN_CLICKED, onAddToFavorites)
+		COMMAND_HANDLER(IDC_GETLIST, BN_CLICKED, onGetList)
+		COMMAND_HANDLER(IDC_MATCH_QUEUE, BN_CLICKED, onMatchQueue)
 		COMMAND_HANDLER(IDC_PRIVATEMESSAGE, BN_CLICKED, onPrivateMessage)
+		COMMAND_HANDLER(IDC_ADD_TO_FAVORITES, BN_CLICKED, onAddToFavorites)
+		COMMAND_HANDLER(IDC_GRANTSLOT, BN_CLICKED, onGrantSlot)
+		COMMAND_HANDLER(IDC_REMOVEALL, BN_CLICKED, onRemoveAll)
+		COMMAND_HANDLER(IDC_IGNORE, BN_CLICKED, onIgnore)
+		COMMAND_HANDLER(IDC_UNIGNORE, BN_CLICKED, onUnIgnore)
+		COMMAND_HANDLER(IDC_SHOWLOG, BN_CLICKED, onShowLog)
 		CHAIN_MSG_MAP(baseClass)
 		ALT_MSG_MAP(UPLOADQUEUE_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
@@ -68,15 +71,21 @@ public:
 	// Message handlers
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onGetList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onCopyFilename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onGetList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCopyFilename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
 
 	void onRemoveUser(const User::Ptr);
 	void onAddFile(const User::Ptr, const string&);
@@ -114,7 +123,7 @@ private:
 
 	User::Ptr getSelectedUser() {
 		HTREEITEM selectedItem = GetParentItem();
-		return selectedItem?reinterpret_cast<UserPtr *>(ctrlQueued.GetItemData(selectedItem))->u:User::Ptr(0);
+		return selectedItem ? reinterpret_cast<UserPtr *>(ctrlQueued.GetItemData(selectedItem))->u:User::Ptr(0);
 	}
 
 	// Communication with manager

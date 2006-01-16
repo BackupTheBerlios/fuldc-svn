@@ -508,7 +508,7 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 	}
 
 	//Remove references to them.
-	if(!aUser->isOnline()) {
+	if(!aUser->isOnline() && aUser->isSet(User::QUIT_HUB)) {
 		clearUserFiles(aUser);
 	}
 }

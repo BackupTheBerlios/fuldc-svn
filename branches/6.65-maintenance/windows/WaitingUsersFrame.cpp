@@ -23,6 +23,9 @@
 #include "../client/Client.h"
 #include "../client/ClientManager.h"
 #include "../client/QueueManager.h"
+#include "../client/FavoriteManager.h"
+#include "../client/IgnoreManager.h"
+#include "../client/LogManager.h"
 #include "WaitingUsersFrame.h"
 #include "PrivateFrame.h"
 
@@ -41,16 +44,26 @@ LRESULT WaitingUsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	// Create context menu
 	contextMenu.CreatePopupMenu();
 	contextMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
-	contextMenu.AppendMenu(MF_STRING, IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME));
-	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-	contextMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
-	contextMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
 	contextMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE));
+	contextMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
+	contextMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
+	contextMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
+	contextMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CTSTRING(REMOVE_FROM_ALL));
+	contextMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, CTSTRING(SHOW_LOG));
+	contextMenu.AppendMenu(MF_STRING, IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME));
+	contextMenu.AppendMenu(MF_SEPARATOR);
+	contextMenu.AppendMenu(MF_STRING, IDC_IGNORE, CTSTRING(IGNOREA));
+	contextMenu.AppendMenu(MF_STRING, IDC_UNIGNORE, CTSTRING(UNIGNORE));
+	contextMenu.AppendMenu(MF_SEPARATOR);
+	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
+
 
 	// Load all waiting users & files.
 	LoadAll();
 
 	WinUtil::SetIcon(m_hWnd, _T("wuicon.ico"));
+
+	UploadManager::getInstance()->addListener(this);
 
 	bHandled = FALSE;
 	return TRUE;
@@ -159,6 +172,20 @@ LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	// Hit-test
 	if(PtInRect(&rc, pt)) 
 	{
+		User::Ptr user = getSelectedUser();
+		if( user ) {
+			if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
+				contextMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
+				contextMenu.EnableMenuItem(IDC_UNIGNORE, MF_ENABLED);
+			} else {
+				contextMenu.EnableMenuItem(IDC_IGNORE, MF_ENABLED);
+				contextMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
+			}
+		} else {
+			contextMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
+			contextMenu.EnableMenuItem(IDC_UNIGNORE, MF_GRAYED);
+		}
+
 		ctrlQueued.ClientToScreen(&pt);
 		contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		return TRUE; 
@@ -186,11 +213,64 @@ LRESULT WaitingUsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();
 	if (user) {
-		User::Ptr user = user;
 		FavoriteManager::getInstance()->addFavoriteUser(user);
 	}
 	return 0;
 };
+
+LRESULT WaitingUsersFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	User::Ptr user = getSelectedUser();
+	if (user) {
+		try {
+			QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
+		} catch(const Exception&) { }
+	}
+	return 0;
+}
+
+LRESULT WaitingUsersFrame::onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	User::Ptr user = getSelectedUser();
+	if (user) {
+		try {
+			QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+		} catch(const Exception&) { }
+	}
+	return 0;
+}
+
+LRESULT WaitingUsersFrame::onIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	User::Ptr user = getSelectedUser();
+	if (user) {
+			IgnoreManager::getInstance()->ignore(user->getNick());
+	}
+	return 0;
+}
+
+LRESULT WaitingUsersFrame::onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	User::Ptr user = getSelectedUser();
+	if (user) {
+		IgnoreManager::getInstance()->unignore(user->getNick());
+	}
+	return 0;
+}
+
+LRESULT WaitingUsersFrame::onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	User::Ptr user = getSelectedUser();
+	if (user) {
+		StringMap params;
+		params["user"] = user->getNick();
+		params["hub"] = user->getClientName();
+		params["hubaddr"] = user->getClientAddressPort();
+		params["mynick"] = user->getClientNick(); 
+		params["mycid"] = user->getClientCID().toBase32(); 
+		params["cid"] = user->getCID().toBase32(); 
+
+		tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
+		if(!path.empty())
+			ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+	return 0;
+}
 
 // Load all searches from manager
 void WaitingUsersFrame::LoadAll()

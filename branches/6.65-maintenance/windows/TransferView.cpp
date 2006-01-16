@@ -168,11 +168,11 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 				
 				
 				//check that we have a filename and that it's not a file list
-				/* @todof if(!ii->getText(COLUMN_FILE).empty() && !ii->fileList) {
+				if(!ii->getText(COLUMN_FILE).empty() && !ii->filelist) {
 					transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
 				} else {
 					transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
-				} */
+				}
 			}
 		} else {
 			transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
@@ -450,6 +450,8 @@ TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoB
 };
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
+	filelist = ui.filelist;
+
 	if(ui.updateMask & UpdateInfo::MASK_STATUS) {
 		status = ui.status;
 	}
@@ -473,15 +475,13 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 		actual = start + ui.actual;
 		columns[COLUMN_RATIO] = Text::toT(Util::toString(getRatio()));
 	}
-/* @todof
-	if(colMask & MASK_TOTALTIMELEFT) {
+	if(ui.updateMask & UpdateInfo::MASK_TOTALTIMELEFT) {
 		if(status == STATUS_RUNNING)
-			columns[COLUMN_TOTALTIMELEFT] = Util::formatSecondsW(totalTimeLeft);
+			columns[COLUMN_TOTALTIMELEFT] = Util::formatSecondsW(ui.totalTimeLeft);
 		else
 			columns[COLUMN_TOTALTIMELEFT] = Util::emptyStringT;
 	}
-	if(colMask & MASK_SPEED) {
-*/
+
 	if(ui.updateMask & UpdateInfo::MASK_SPEED) {
 		speed = ui.speed;
 		if (status == STATUS_RUNNING) {
@@ -536,6 +536,7 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 
 void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true);
+	ui->filelist = aDownload->isSet(Download::FLAG_USER_LIST);
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
 	ui->setPos(aDownload->getTotal());
 	ui->setActual(aDownload->getActual());
@@ -570,6 +571,7 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		ui->setActual(d->getActual());
 		ui->setPos(d->getTotal());
 		ui->setTimeLeft(d->getSecondsLeft());
+		ui->setTotalTimeLeft(d->getTotalSecondsLeft());
 		ui->setSpeed(d->getRunningAverage());
 
 		_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(d->getPos())).c_str(), 
