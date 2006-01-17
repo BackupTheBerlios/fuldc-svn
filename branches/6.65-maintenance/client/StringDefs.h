@@ -759,5 +759,6 @@ enum Strings { // @DontAdd
 	DROP_FAKE_NICK_CONNECTION_LOG, // "Detected a user trying to connect using a fake nick, nick=%s ip=%s"
 	MENU_CLOSE_ALL_OFFLINE_PM, // "Close all offline PM windows"
 	USER_NOT_AVAILABLE, // "User not available, could be because he is offline"
+	FAILED_TO_MOVE_FILE, // "Failed to move the file from the temporary download location because: "
 	LAST // @DontAdd
 };

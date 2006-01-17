@@ -95,6 +95,7 @@ public:
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 	static tstring encodeFont(LOGFONT const& font);
 	
+	static tstring getIconPath(const tstring& filename);
 	static void SetIcon(HWND hWnd, tstring file, bool big = false);
 	static void setClipboard(const tstring & str);
 	static void search(tstring searchTerm, int searchMode, bool tth = false);

@@ -756,6 +756,7 @@ string ResourceManager::strings[] = {
 "Detected a user trying to connect using a fake nick, nick=%s ip=%s", 
 "Close all offline PM windows", 
 "User not available, could be because he is offline", 
+"Failed to move the file from the temporary download location because: ", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1512,4 +1513,5 @@ string ResourceManager::names[] = {
 "DropFakeNickConnectionLog", 
 "MenuCloseAllOfflinePm", 
 "UserNotAvailable", 
+"FailedToMoveFile", 
 };

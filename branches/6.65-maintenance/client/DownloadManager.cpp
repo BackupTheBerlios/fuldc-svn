@@ -146,8 +146,8 @@ int DownloadManager::FileMover::run() {
 		}
 		try {
 			File::renameFile(next.first, next.second);
-		} catch(const FileException&) {
-			// Too bad...
+		} catch(const FileException& fe) {
+			LogManager::getInstance()->message(STRING(FAILED_TO_MOVE_FILE) + fe.getError());
 		}
 	}
 }

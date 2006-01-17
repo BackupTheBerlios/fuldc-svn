@@ -48,7 +48,7 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		addLine(i->first, Text::toT(i->second));
 	}
 
-	WinUtil::SetIcon(m_hWnd, _T("notepad.ico"));
+	WinUtil::SetIcon(m_hWnd, _T("systemlog.ico"));
 
 	bHandled = FALSE;
 	return 1;

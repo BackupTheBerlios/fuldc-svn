@@ -5,6 +5,8 @@ help\.svn
 regex\.svn
 regex\doc\.svn
 res\.svn
+res\24bpp\.svn
+res\32bpp\.svn
 windows\.svn
 zlib\.svn
 vc7.1.project\.svn
@@ -15,3 +17,4 @@ DCPlusPlus.suo
 vc7
 App
 Temp
+*.user

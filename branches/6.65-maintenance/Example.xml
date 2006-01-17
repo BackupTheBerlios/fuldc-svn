@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.685" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.68" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -755,5 +755,6 @@
 		<String Name="DropFakeNickConnectionLog">Detected a user trying to connect using a fake nick, nick=%s ip=%s</String>
 		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
 		<String Name="UserNotAvailable">User not available, could be because he is offline</String>
+		<String Name="FailedToMoveFile">Failed to move the file from the temporary download location because: </String>
 	</Strings>
 </Language>

@@ -54,6 +54,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.CreatePopupMenu();
 	appendUserItems(usersMenu);
 	usersMenu.AppendMenu(MF_STRING, IDC_EDIT, CTSTRING(PROPERTIES));
+	usersMenu.AppendMenu(MF_SEPARATOR);
 	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
 	FavoriteManager::getInstance()->addListener(this);

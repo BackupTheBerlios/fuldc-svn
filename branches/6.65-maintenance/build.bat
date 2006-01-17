@@ -29,7 +29,11 @@ ECHO copying files...
 
 md Temp
 md Temp\icons
-xcopy /Q /Y res\*.* Temp\icons\
+md Temp\icons\32bpp
+md Temp\icons\24bpp
+rem xcopy /Q /Y res\*.* Temp\icons\
+xcopy /Q /Y res\32bpp\*.* Temp\icons\32bpp\
+xcopy /Q /Y res\24bpp\*.* Temp\icons\24bpp\
 xcopy /Q /Y changelog.txt Temp\
 xcopy /Q /Y example.xml Temp\
 xcopy /Q /Y App\Dcplusplus.exe Temp\
@@ -37,7 +41,7 @@ xcopy /Q /Y App\DCPlusPlus.pdb Temp\
 xcopy /Q /Y App\DCPlusPlus.chm Temp\
 xcopy /Q /Y GeoIPCountryWhois.csv Temp\
 
-del Temp\icons\dcplusplus.manifest
+rem del Temp\icons\dcplusplus.manifest
 
 
 ECHO ------------------------------

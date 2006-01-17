@@ -69,8 +69,14 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		if(wParam == USER_UPDATED) {
+		if(wParam == USER_ADDED) {
+			addUser(((UserInfoBase*)lParam)->user);
+			delete (UserInfoBase*)lParam;
+		} else if(wParam == USER_UPDATED) {
 			updateUser(((UserInfoBase*)lParam)->user);
+			delete (UserInfoBase*)lParam;
+		} else if(wParam == USER_REMOVED) {
+			removeUser(((UserInfoBase*)lParam)->user);
 			delete (UserInfoBase*)lParam;
 		}
 		return 0;
@@ -97,7 +103,9 @@ private:
 	};
 
 	enum {
-		USER_UPDATED
+		USER_ADDED,
+		USER_UPDATED,
+		USER_REMOVED,
 	};
 
 	class UserInfo : public UserInfoBase {
@@ -142,8 +150,12 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 
 	// FavoriteManagerListener
-	virtual void on(UserAdded, const User::Ptr& aUser) throw() { addUser(aUser); }
-	virtual void on(UserRemoved, const User::Ptr& aUser) throw() { removeUser(aUser); }
+	virtual void on(UserAdded, const User::Ptr& aUser) throw() {
+		PostMessage(WM_SPEAKER, USER_ADDED, (LPARAM) new UserInfoBase(aUser));
+	}
+	virtual void on(UserRemoved, const User::Ptr& aUser) throw() {
+		PostMessage(WM_SPEAKER, USER_REMOVED, (LPARAM) new UserInfoBase(aUser));
+	}
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {

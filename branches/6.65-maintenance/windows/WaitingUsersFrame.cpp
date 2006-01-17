@@ -348,8 +348,9 @@ void WaitingUsersFrame::onAddFile(const User::Ptr aUser, const string& aFile) {
 }
 
 HTREEITEM WaitingUsersFrame::GetParentItem() {
-	HTREEITEM item = ctrlQueued.GetSelectedItem(), parent = ctrlQueued.GetParentItem(item);
-	return parent?parent:item;
+	HTREEITEM item = ctrlQueued.GetSelectedItem();
+	HTREEITEM parent = ctrlQueued.GetParentItem(item);
+	return parent ? parent : item;
 }
 
 LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {

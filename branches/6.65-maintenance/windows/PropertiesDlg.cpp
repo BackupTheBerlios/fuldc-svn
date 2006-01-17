@@ -45,7 +45,7 @@
 #include "FulIgnorePage.h"
 
 PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : 
-TreePropertySheet(_T("icons\\settings_tree.bmp"), CTSTRING(SETTINGS), 0, parent)
+TreePropertySheet(WinUtil::getIconPath(_T("settings_tree.bmp")), CTSTRING(SETTINGS), 0, parent)
 {
 	int n = 0;
 	pages[n++] = new GeneralPage(s);

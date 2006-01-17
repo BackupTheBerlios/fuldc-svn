@@ -47,7 +47,10 @@ static const TCHAR fulthanks[] =
 _T("Thanks to Snowflake/Summerfling/Goose for his work on the lovely fulDC website. ")
 _T("Thanks to fnordpojk for 0xBADC0DE and to DCPortal.net for hosting the website. ")
 _T("Thanks to fusbar for all his advice. ")
-_T("Thanks to farmer for his advice on default colors. ");
+_T("Thanks to farmer for his advice on default colors. ")
+_T("Thanks to manos for his nice icons. ")
+_T("Thanks to Banten for his lovely icons. ")
+_T("Thanks to Irean for her help with the graphics. ");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
 {

@@ -632,9 +632,14 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 	} else if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
 		ConnectionQueueItem::Iter i = find(uploads.begin(), uploads.end(), aSource->getUser());
 		dcassert(i != uploads.end());
-
-		ConnectionQueueItem* cqi = *i;
-		putCQI(cqi);
+		
+		//ugly fix, haven't found the actual problem yet
+		//seems like two upload connections get added so when the first fail the upload
+		//cqi is removed and doesn't exist when the second one fail
+		if(i != uploads.end()) {
+			ConnectionQueueItem* cqi = *i;
+			putCQI(cqi);
+		}
 	}
 
 	putConnection(aSource);

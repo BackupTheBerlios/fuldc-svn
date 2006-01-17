@@ -125,9 +125,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 31, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	images.CreateFromImage(WinUtil::getIconPath(_T("toolbar.bmp")).c_str(), 16, 33, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	m_CmdBar.m_hImageList = images;
-	if(images.GetImageCount() > 16) {
+	if(images.GetImageCount() > 22) {
 		//File
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_OWN_LIST);
@@ -150,6 +150,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);
 		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_HASH_PROGRESS);
 		
@@ -162,25 +163,32 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_DISCONNECTED);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_PM);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_OFFLINE_PM);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_DIR_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_SEARCH_FRAME);
-	} else if(images.GetImageCount() == 16) {
-		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+	} else if(images.GetImageCount() == 22) {
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
 		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);	
 		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 	}
 
 	
@@ -353,8 +361,8 @@ void MainFrame::stopUPnP() {
 }
 
 HWND MainFrame::createToolbar() {
-	largeImages.CreateFromImage(_T("icons\\toolbar20.bmp"), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	largeImagesHot.CreateFromImage(_T("icons\\toolbar20-highlight.bmp"), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImages.CreateFromImage(WinUtil::getIconPath(_T("toolbar20.bmp")).c_str(), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImagesHot.CreateFromImage(WinUtil::getIconPath(_T("toolbar20-highlight.bmp")).c_str(), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	
 	ctrlToolBar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrlToolBar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
