@@ -165,7 +165,7 @@ public:
 	}
 
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		client->disconnect();
+		client->disconnect(false);
 		clearUserList();
 		client->connect();
 		return 0;

@@ -34,7 +34,7 @@ StringList SettingsManager::connectionSpeeds;
 const string SettingsManager::settingTags[] =
 {
 	// Strings
-	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
+	"Nick", "UploadSpeed", "Description", "DownloadDirectory", "EMail", "ExternalIp",
 	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 

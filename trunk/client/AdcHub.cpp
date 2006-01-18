@@ -121,7 +121,7 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 	if(state != STATE_PROTOCOL) /** @todo SUP changes */
 		return;
 	if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
-		disconnect();
+		disconnect(false);
 		return;
 	}
 	state = STATE_IDENTIFY;
@@ -290,9 +290,9 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	}
 }
 
-void AdcHub::disconnect() {
+void AdcHub::disconnect(bool graceless) {
 	state = STATE_PROTOCOL;
-	Client::disconnect();
+	Client::disconnect(graceless);
 	{
 		Lock l(cs);
 		clearUsers();

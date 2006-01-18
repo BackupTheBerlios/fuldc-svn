@@ -78,7 +78,7 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 public:
 	/** Add a file to the queue. */
 	void add(const string& aTarget, int64_t aSize, const TTHValue* root, User::Ptr aUser, const string& aSourceFile, 
-		bool utf8 = true, int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
+		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
 	/** Queue a partial file list download */
@@ -103,7 +103,6 @@ public:
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
-	void getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw();
 	void getTargetsByRoot(StringList& sl, const TTHValue& tth);
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
 	void unlockQueue() throw() { cs.leave(); };
@@ -157,7 +156,7 @@ private:
 	PME regexp;
 	deque< QueueItem::Ptr > searchQueue;
 	StringList notifyList;
-	bool addAlternates(string, User::Ptr, bool utf8);
+	bool addAlternates(string, User::Ptr);
 	void onTimerSearch();
 	void checkNotify();
 
@@ -186,7 +185,6 @@ private:
 			u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException);
 
 		QueueItem* find(const string& target);
-		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
 		void find(QueueItem::List& ql, const TTHValue& tth);
 
 		QueueItem* findAutoSearch(StringList& recent);
@@ -258,7 +256,7 @@ private:
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */
-	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, Flags::MaskType addBad, bool utf8) throw(QueueException, FileException);
+	bool addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType addBad) throw(QueueException, FileException);
 
 	int matchFiles(const DirectoryListing::Directory* dir) throw();
 	void processList(const string& name, User::Ptr& user, int flags);

@@ -13,6 +13,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bzip2", "bzip2.vcproj", "{8
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client.vcproj", "{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}"
 	ProjectSection(ProjectDependencies) = postProject
+		{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3} = {F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}
 		{6B5E1154-D1FC-460A-B5F4-78ACB1E96349} = {6B5E1154-D1FC-460A-B5F4-78ACB1E96349}
 	EndProjectSection
 EndProject
@@ -33,10 +34,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "help", "help.vcproj", "{901
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yassl", "yassl\yassl.vcproj", "{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
-		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
@@ -68,9 +70,16 @@ Global
 		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Debug.Build.0 = Release|Win32
 		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Release.ActiveCfg = Release|Win32
 		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Release.Build.0 = Release|Win32
+		{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}.Debug.ActiveCfg = Debug|Win32
+		{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}.Debug.Build.0 = Debug|Win32
+		{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}.Release.ActiveCfg = Release|Win32
+		{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
 	EndGlobalSection
 EndGlobal

@@ -46,7 +46,7 @@ Download::Download() throw() : file(NULL),
 crcCalc(NULL), tth(NULL), treeValid(false) { 
 }
 
-Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
+Download::Download(QueueItem* qi) throw() : 
 	target(qi->getTarget()), tempTarget(qi->getTempTarget()), file(NULL),
 	crcCalc(NULL), tth(qi->getTTH()), treeValid(false) { 
 	
@@ -55,8 +55,6 @@ Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 		setFlag(Download::FLAG_USER_LIST);
 	if(qi->isSet(QueueItem::FLAG_RESUME))
 		setFlag(Download::FLAG_RESUME);
-	if(qi->getCurrent()->isSet(QueueItem::Source::FLAG_UTF8))
-		setFlag(Download::FLAG_UTF8);
 }
 
 AdcCommand Download::getCommand(bool zlib, bool tthf) {
@@ -120,7 +118,7 @@ void DownloadManager::on(TimerManagerListener::Second, u_int32_t /*aTick*/) thro
 		else
 			averagePosMap.insert(StringIntPair(tmp, d->getPos()));
 	}
-		
+
 	if(tickList.size() > 0)
 		fire(DownloadManagerListener::Tick(), tickList);
 }
@@ -154,10 +152,13 @@ int DownloadManager::FileMover::run() {
 	}
 }
 
-void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */, bool ntd /* = false */) {
+void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
 	dcassert(aConn->getDownload() == NULL);
 	aConn->removeListener(this);
-	ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse, ntd);
+	aConn->disconnect();
+
+	Lock l(cs);
+	idlers.erase(remove(idlers.begin(), idlers.end(), aConn), idlers.end());
 }
 
 class TreeOutputStream : public OutputStream {
@@ -196,6 +197,18 @@ private:
 	size_t bufPos;
 };
 
+void DownloadManager::checkIdle(const User::Ptr& user) {
+	Lock l(cs);
+	for(UserConnection::Iter i = idlers.begin(); i != idlers.end(); ++i) {
+		UserConnection* uc = *i;
+		if(uc->getUser() == user) {
+			idlers.erase(i);
+			checkDownloads(uc);
+			return;
+		}
+	}
+}
+
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 	dcassert(aConn->getDownload() == NULL);
 
@@ -213,7 +226,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	Download* d = QueueManager::getInstance()->getDownload(aConn->getUser(), aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL));
 
 	if(d == NULL) {
-		removeConnection(aConn, true);
+		Lock l(cs);
+		idlers.push_back(aConn);
 		return;
 	}
 
@@ -260,8 +274,6 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
-			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
-				d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 
@@ -271,7 +283,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	}
 
 	// File ok for adcget in nmdc-conns
-	bool adcOk = d->isSet(Download::FLAG_UTF8) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) && d->getTTH() != NULL);
+	bool adcOk = (aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) && d->getTTH() != NULL);
 
 	if(!aConn->isSet(UserConnection::FLAG_NMDC) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && adcOk)) {
 		aConn->send(d->getCommand(
@@ -279,15 +291,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			aConn->isSet(!aConn->isSet(UserConnection::FLAG_NMDC) || UserConnection::FLAG_SUPPORTS_TTHF)
 			));
 	} else {
-		if(BOOLSETTING(COMPRESS_TRANSFERS) && aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) && d->getSize() != -1 ) {
-			// This one, we'll download with a zblock download instead...
-			d->setFlag(Download::FLAG_ZDOWNLOAD);
-			aConn->getZBlock(d->getSource(), d->getPos(), d->getBytesLeft(), d->isSet(Download::FLAG_UTF8));
-		} else if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST) && d->isSet(Download::FLAG_UTF8)) {
-			aConn->uGetBlock(d->getSource(), d->getPos(), d->getBytesLeft());
-		} else {
-			aConn->get(d->getSource(), d->getPos());
-		}
+		dcdebug("remote client too old\r\n");
 	}
 }
 
@@ -539,7 +543,7 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 			throw Exception(STRING(TOO_MUCH_DATA));
 		} else if(d->getPos() == d->getSize()) {
 			handleEndData(aSource);
-			aSource->setLineMode();
+			aSource->setLineMode(0);
 		}
 	} catch(const RollbackException& e) {
 		string target = d->getTarget();
@@ -792,7 +796,7 @@ void DownloadManager::noSlots(UserConnection* aSource) {
 
 	aSource->setDownload(NULL);
 	QueueManager::getInstance()->putDownload(d, false);
-	removeConnection(aSource, false, !aSource->isSet(UserConnection::FLAG_NMDC));
+	removeConnection(aSource);
 }
 
 void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {

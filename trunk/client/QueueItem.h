@@ -97,26 +97,22 @@ public:
 			FLAG_REMOVED = 0x08,
 			FLAG_CRC_FAILED = 0x10,
 			FLAG_CRC_WARN = 0x20,
-			FLAG_UTF8 = 0x40,
-			FLAG_BAD_TREE = 0x80,
-			FLAG_NO_TREE = 0x100,
+			FLAG_BAD_TREE = 0x40,
+			FLAG_NO_TREE = 0x80,
 			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY 
-				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 
+				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN
 				| FLAG_BAD_TREE | FLAG_NO_TREE,
 			
 			FLAG_ERROR_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY |
 								FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_BAD_TREE | FLAG_NO_TREE
 		};
 
-		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
-		Source(const Source& aSource) : Flags(aSource), path(aSource.path), user(aSource.user) { }
+		Source(const User::Ptr& aUser) : user(aUser) { };
+		Source(const Source& aSource) : Flags(aSource), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; };
 		const User::Ptr& getUser() const { return user; };
 		void setUser(const User::Ptr& aUser) { user = aUser; };
-		string getFileName() { return Util::getFileName(path); };
-
-		GETSET(string, path, Path);
 	private:
 		User::Ptr user;
 	};
@@ -161,11 +157,6 @@ public:
 	}
 	bool hasOnlineUsers() const { return countOnlineUsers() > 0; };
 
-	const string& getSourcePath(const User::Ptr& aUser) { 
-		dcassert(isSource(aUser)); 
-		return (*getSource(aUser, sources))->getPath();
-	}
-
 	Source::List& getSources() { return sources; };
 	Source::List& getBadSources() { return badSources; };
 
@@ -206,8 +197,6 @@ public:
 		}
 	}
 
-	string getSearchString() const;
-
 	const string& getTempTarget();
 	void setTempTarget(const string& aTempTarget) {
 		tempTarget = aTempTarget;
@@ -229,16 +218,15 @@ private:
 	Source::List sources;
 	Source::List badSources;	
 
-	Source* addSource(const User::Ptr& aUser, const string& aPath) {
+	Source* addSource(const User::Ptr& aUser) {
 		dcassert(!isSource(aUser));
 		Source* s = NULL;
 		Source::Iter i = getSource(aUser, badSources);
 		if(i != badSources.end()) {
 			s = *i;
 			badSources.erase(i);
-			s->setPath(aPath);
 		} else {
-			s = new Source(aUser, aPath);
+			s = new Source(aUser);
 		}
 
 		sources.push_back(s);

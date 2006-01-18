@@ -523,12 +523,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			fire(ClientListener::UserUpdated(), this, u);
 		}
 	} else if(cmd == "$ForceMove") {
-		disconnect();
+		disconnect(false);
 		fire(ClientListener::Redirect(), this, param);
 	} else if(cmd == "$HubIsFull") {
 		fire(ClientListener::HubFull(), this);
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
-		disconnect();
+		disconnect(false);
 		fire(ClientListener::NickTaken(), this);
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
@@ -717,9 +717,9 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	}
 }
 
-void NmdcHub::disconnect() throw() {	
+void NmdcHub::disconnect(bool graceless) throw() {	
 	state = STATE_CONNECT;
-	Client::disconnect();
+	Client::disconnect(graceless);
 	clearUsers();
 }
 

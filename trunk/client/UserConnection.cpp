@@ -175,17 +175,17 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	}
 }
 
-void UserConnection::connect(const string& aServer, short aPort) throw(SocketException) { 
-	if(socket)
-		BufferedSocket::putSocket(socket);
+void UserConnection::connect(const string& aServer, short aPort) throw(SocketException, ThreadException) { 
+	dcassert(!socket);
+
 	socket = BufferedSocket::getSocket(0);
 	socket->addListener(this);
 	socket->connect(aServer, aPort, secure, true);
 }
 
-void UserConnection::accept(const Socket& aServer) throw(SocketException) {
-	if(socket)
-		BufferedSocket::putSocket(socket);
+void UserConnection::accept(const Socket& aServer) throw(SocketException, ThreadException) {
+	dcassert(!socket);
+
 	socket = BufferedSocket::getSocket(0);
 	socket->addListener(this);
 	socket->accept(aServer, secure);
@@ -203,6 +203,8 @@ void UserConnection::inf(bool withToken) {
 void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	setState(STATE_UNCONNECTED);
 	fire(UserConnectionListener::Failed(), this, aLine);
+
+	delete this;
 }
 
 /**

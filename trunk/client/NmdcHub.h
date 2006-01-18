@@ -63,7 +63,7 @@ public:
 
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
-	void disconnect() throw();
+	virtual void disconnect(bool graceless) throw();
 	void myInfo(bool alwaysSend);
 	
 	void refreshUserList(bool unknownOnly = false);
@@ -120,7 +120,7 @@ private:
 	NmdcHub(const NmdcHub&);
 	NmdcHub& operator=(const NmdcHub&);
 
-	void connect();
+	virtual void connect();
 
 	void clearUsers();
 	void onLine(const string& aLine) throw();

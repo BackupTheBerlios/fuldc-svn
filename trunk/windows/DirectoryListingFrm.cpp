@@ -229,11 +229,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
 		tstring name;
-		if(dl->getUtf8()) {
-			name = Text::toT((*i)->getName());
-		} else {
-			name = Text::toT(Text::acpToUtf8((*i)->getName()));
-		}
+		name = Text::toT((*i)->getName());
 		int index = (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
 		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), index, index, 0, 0, (LPARAM)*i, aParent, TVI_SORT);
 		if((*i)->getAdls())
@@ -337,10 +333,10 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	clearList();
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
-		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i, dl->getUtf8()), (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex());
+		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i), (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex());
 	}
 	for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
-		ItemInfo* ii = new ItemInfo(*j, dl->getUtf8());
+		ItemInfo* ii = new ItemInfo(*j);
 		ctrlList.insertItem(ctrlList.GetItemCount(), ii, WinUtil::getIconIndex(ii->getText(COLUMN_FILENAME)));
 	}
 	ctrlList.resort();
@@ -523,12 +519,12 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 		if(!ii->file->getAdls())
 			return 0;
 		fullPath = Text::toT(dl->getPath(ii->file));
-		DirectoryListing::Directory* pd = ii->file->getParent();
-		while(pd != NULL && pd != dl->getRoot()) {
-			fullPath = Text::toT(pd->getName()) + _T("\\") + fullPath;
-			pd = pd->getParent();
-		}
-		fullPath.erase(0, 1);
+		//DirectoryListing::Directory* pd = ii->file->getParent();
+		//while(pd != NULL && pd != dl->getRoot()) {
+		//	fullPath = _T("\\") + Text::toT(pd->getName()) + fullPath;
+		//	pd = pd->getParent();
+		//}
+		//fullPath.erase(0, 1);
 	} else if(ii->type == ItemInfo::DIRECTORY) {
 		if(!(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()))
 			return 0;
@@ -601,9 +597,8 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 			targets.clear();
 			if(ii->file->getTTH() != NULL) {
 				QueueManager::getInstance()->getTargetsByRoot(targets, *ii->file->getTTH());
-			} else {
-				QueueManager::getInstance()->getTargetsBySize(targets, ii->file->getSize(), Util::getFileExt(ii->file->getName()));
 			}
+
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -938,8 +933,6 @@ void DirectoryListingFrame::findFile(bool findNext)
 			return;
 
 		findStr = Text::fromT(dlg.line);
-		if(!dl->getUtf8())
-			findStr = Text::utf8ToAcp(findStr);
 		skipHits = 0;
 	} else {
 		skipHits++;

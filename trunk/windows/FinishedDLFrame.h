@@ -30,6 +30,7 @@ class FinishedDLFrame : public FinishedFrameBase<FinishedDLFrame, ResourceManage
 public:
 	FinishedDLFrame() {
 		upload = false;
+		boldFinished  = SettingsManager::BOLD_FINISHED_DOWNLOADS;
 		columnOrder   = SettingsManager::FINISHED_ORDER;
 		columnWidth   = SettingsManager::FINISHED_WIDTHS;
 		columnVisible = SettingsManager::FINISHED_VISIBLE;

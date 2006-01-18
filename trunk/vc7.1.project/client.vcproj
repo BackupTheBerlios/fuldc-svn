@@ -24,7 +24,7 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;;&quot;$(SolutionDir)\..\yassl\include&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -183,6 +183,9 @@
 				RelativePath="..\client\Encoder.cpp">
 			</File>
 			<File
+				RelativePath="..\client\FavoriteManager.cpp">
+			</File>
+			<File
 				RelativePath="..\client\FinishedManager.cpp">
 			</File>
 			<File
@@ -193,9 +196,6 @@
 			</File>
 			<File
 				RelativePath="..\client\HttpConnection.cpp">
-			</File>
-			<File
-				RelativePath="..\client\HubManager.cpp">
 			</File>
 			<File
 				RelativePath="..\client\IgnoreManager.cpp">
@@ -235,6 +235,9 @@
 			</File>
 			<File
 				RelativePath="..\client\Socket.cpp">
+			</File>
+			<File
+				RelativePath="..\client\SSLSocket.cpp">
 			</File>
 			<File
 				RelativePath="..\client\stdinc.cpp">
@@ -367,6 +370,9 @@
 				RelativePath="..\client\FastAlloc.h">
 			</File>
 			<File
+				RelativePath="..\client\FavoriteManager.h">
+			</File>
+			<File
 				RelativePath="..\client\FavoriteUser.h">
 			</File>
 			<File
@@ -389,9 +395,6 @@
 			</File>
 			<File
 				RelativePath="..\client\HttpConnection.h">
-			</File>
-			<File
-				RelativePath="..\client\HubManager.h">
 			</File>
 			<File
 				RelativePath="..\client\IgnoreManager.h">
@@ -458,6 +461,9 @@
 			</File>
 			<File
 				RelativePath="..\client\Speaker.h">
+			</File>
+			<File
+				RelativePath="..\client\SSLSocket.h">
 			</File>
 			<File
 				RelativePath="..\client\stdinc.h">

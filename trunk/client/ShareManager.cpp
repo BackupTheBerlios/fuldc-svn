@@ -113,11 +113,9 @@ ShareManager::Directory::~Directory() {
 	for(MapIter i = directories.begin(); i != directories.end(); ++i)
 		delete i->second;
 	
-#ifdef USE_TTH
 	for(File::Iter i = files.begin(); i != files.end(); ++i) {
 		ShareManager::getInstance()->removeTTH(i->getTTH(), i);
 	}
-#endif
 }
 
 string ShareManager::translateTTH(const string& TTH) throw(ShareException) {

@@ -54,7 +54,7 @@ Client* ClientManager::getClient(const string& aHubURL) {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	aClient->disconnect();
+	aClient->disconnect(true);
 	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
 

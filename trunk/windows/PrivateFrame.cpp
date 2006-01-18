@@ -163,8 +163,6 @@ void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
 		p->sendMessage(msg);
 }
 
-
-
 LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	if (uMsg != WM_KEYDOWN) {
 		switch(wParam) {

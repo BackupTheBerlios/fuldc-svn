@@ -65,9 +65,17 @@ void Client::connect() {
 	reloadSettings();
 	setRegistered(false);
 
-	socket = BufferedSocket::getSocket(separator);
-	socket->addListener(this);
-	socket->connect(address, port, secure, true);
+	try {
+		socket = BufferedSocket::getSocket(separator);
+		socket->addListener(this);
+		socket->connect(address, port, secure, true);
+	} catch(const Exception& e) {
+		if(socket) {
+			BufferedSocket::putSocket(socket);
+			socket = NULL;
+		}
+		fire(ClientListener::Failed(), this, e.getError());
+	}
 	updateActivity();
 }
 

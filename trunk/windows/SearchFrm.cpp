@@ -467,7 +467,7 @@ void SearchFrame::SearchInfo::view() {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(Util::getTempPath() + Text::fromT(fileName), 
 				sr->getSize(), sr->getTTH(), sr->getUser(), sr->getFile(), 
-				sr->getUtf8(), QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
+				QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
 		}
 	} catch(const Exception&) {
 	}
@@ -478,8 +478,7 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			string target = Text::fromT(tgt + si->fileName);
 			QueueManager::getInstance()->add(target, si->sr->getSize(), 
-				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile(), 
-				si->sr->getUtf8());
+				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile());
 
 			if(WinUtil::isShift())
 				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
@@ -509,8 +508,7 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			string target = Text::fromT(tgt);
 			QueueManager::getInstance()->add(target, si->sr->getSize(), 
-				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile(), 
-				si->sr->getUtf8());
+				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile());
 
 			if(WinUtil::isShift())
 				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
@@ -1026,8 +1024,6 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 			targets.clear();
 			if(cs.hasTTH) {
 				QueueManager::getInstance()->getTargetsByRoot(targets, TTHValue(Text::fromT(cs.tth)));
-			} else {
-				QueueManager::getInstance()->getTargetsBySize(targets, cs.size, Text::fromT(cs.ext));
 			}
 
 			if(targets.size() > 0) {
@@ -1205,10 +1201,10 @@ LRESULT SearchFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 void SearchFrame::SearchInfo::update() { 
 	if(sr->getType() == SearchResult::TYPE_FILE) {
 		if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-			fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+			fileName = Text::toT(sr->getFile());
 		} else {
-			fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
-			path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+			fileName = Text::toT(Util::getFileName(sr->getFile()));
+			path = Text::toT(Util::getFilePath(sr->getFile()));
 		}
 
 		type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
@@ -1217,8 +1213,8 @@ void SearchFrame::SearchInfo::update() {
 		size = Text::toT(Util::formatBytes(sr->getSize()));
 		exactSize = Util::formatExactSize(sr->getSize());
 	} else {
-		fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
-		path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+		fileName = Text::toT(sr->getFileName());
+		path = Text::toT(sr->getFile());
 		type = TSTRING(DIRECTORY);
 		if(sr->getSize() > 0) {
 			size = Text::toT(Util::formatBytes(sr->getSize()));

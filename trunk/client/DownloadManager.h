@@ -55,11 +55,10 @@ public:
 		FLAG_CALC_CRC32 = 0x10,
 		FLAG_CRC32_OK = 0x20,
 		FLAG_ANTI_FRAG = 0x40,
-		FLAG_UTF8 = 0x80,
-		FLAG_TREE_DOWNLOAD = 0x100,
-		FLAG_TREE_TRIED = 0x200,
-		FLAG_PARTIAL_LIST = 0x400,
-		FLAG_TTH_CHECK = 0x800
+		FLAG_TREE_DOWNLOAD = 0x80,
+		FLAG_TREE_TRIED = 0x100,
+		FLAG_PARTIAL_LIST = 0x200,
+		FLAG_TTH_CHECK = 0x400
 	};
 
 	Download() throw();
@@ -182,6 +181,8 @@ public:
 		checkDownloads(conn);
 	}
 
+	void checkIdle(const User::Ptr& user);
+
 	/** @internal */
 	void abortDownload(const string& aTarget);
 
@@ -262,9 +263,10 @@ private:
 	
 	CriticalSection cs;
 	Download::List downloads;
-	
+	UserConnection::List idlers;
+
 	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
-	void removeConnection(UserConnection::Ptr aConn, bool reuse = false, bool ntd = false);
+	void removeConnection(UserConnection::Ptr aConn);
 	void removeDownload(Download* aDown);
 	void fileNotAvailable(UserConnection* aSource);
 	void noSlots(UserConnection* aSource);

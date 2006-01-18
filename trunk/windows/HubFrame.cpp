@@ -351,6 +351,9 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("dump")) == 0) {
 				ctrlClient.Dump();
 #endif
+			} else if(Util::stricmp(cmd.c_str(), _T("crash")) == 0) {
+				UserInfo* ui = NULL;
+				tstring t = ui->getText(COLUMN_NICK);
 			} else if(Util::stricmp(cmd.c_str(), _T("dns")) == 0) {
 				if( !param.empty() ) {
 					if( resolve(param) )
@@ -712,7 +715,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 		TimerManager::getInstance()->removeListener(this);
 		client->removeListener(this);
-		client->disconnect();
+		client->disconnect(true);
 
 		closed = true;
 

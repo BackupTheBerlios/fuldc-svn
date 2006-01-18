@@ -265,9 +265,9 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.DestroyWindow();
 	dummy.DestroyWindow();
 
-	//if(ResourceManager::getInstance()->isRTL()) {
-	//	SetProcessDefaultLayout(LAYOUT_RTL);
-	//}
+	if(ResourceManager::getInstance()->isRTL()) {
+		SetProcessDefaultLayout(LAYOUT_RTL);
+	}
 
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
@@ -306,9 +306,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 {
 #ifndef _DEBUG
 	tstring appPath;
-	TCHAR buf[MAX_PATH+1];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	appPath = buf;
+	TCHAR filename[MAX_PATH+1];
+	GetModuleFileName(NULL, filename, MAX_PATH);
+	appPath = filename;
 	appPath.erase(appPath.rfind('\\'));
 	appPath = _T("{FULDC-PATH-") + appPath + _T("}");
 	appPath = Util::replace(appPath, _T("\\"), _T("_"));

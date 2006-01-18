@@ -51,6 +51,7 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("PrivateFrame"), IDR_PRIVATE, 0, COLOR_3DFACE);
 
+	typedef MDITabChildWindowImpl<PrivateFrame> baseClass;
 	typedef UCHandler<PrivateFrame> ucBase;
 
 	BEGIN_MSG_MAP(PrivateFrame)

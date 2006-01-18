@@ -34,7 +34,6 @@
 #include "FavoriteManager.h"
 
 #include <functional>
-
 static const string UPLOAD_AREA = "Uploads";
 
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) { 
@@ -146,7 +145,6 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 		return false;
 	}
 
-
 	Lock l(cs);
 
 	bool extraSlot = false;
@@ -223,6 +221,14 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	}
 
 	return true;
+}
+
+void UploadManager::removeUpload(Upload* aUpload) {
+	Lock l(cs);
+	dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
+	uploads.erase(find(uploads.begin(), uploads.end(), aUpload));
+	aUpload->setUserConnection(NULL);
+	delete aUpload;
 }
 
 void UploadManager::reserveSlot(const User::Ptr& aUser) {
@@ -389,7 +395,6 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
 		extra--;
 		aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 	}
-	ConnectionManager::getInstance()->putUploadConnection(aConn, ntd);
 }
 
 void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
@@ -488,7 +493,6 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 	
 	if(ticks.size() > 0)
 		fire(UploadManagerListener::Tick(), ticks);
-
 }
 
 void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {

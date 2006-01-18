@@ -80,17 +80,7 @@ void DirectoryListing::loadFile(const string& name) {
 
 	// For now, we detect type by ending...
 	string ext = Util::getFileExt(name);
-	if(Util::stricmp(ext, ".DcLst") == 0) {
-		size_t len = (size_t)::File::getSize(name);
-		if(len == (size_t)-1)
-			return;
-		AutoArray<u_int8_t> buf(len);
-		::File(name, ::File::READ, ::File::OPEN).read(buf, len);
-		CryptoManager::getInstance()->decodeHuffman(buf, txt, len);
-		load(txt);
-		return;
-	} 
-	
+		
 	if(Util::stricmp(ext, ".bz2") == 0) {
 		::File ff(name, ::File::READ, ::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
@@ -120,59 +110,6 @@ void DirectoryListing::loadFile(const string& name) {
 	loadXML(txt, false);
 }
 
-void DirectoryListing::load(const string& in) {
-	StringTokenizer<string> t(in, '\n');
-
-	StringList& tokens = t.getTokens();
-	string::size_type indent = 0;
-
-	root->setComplete(true);
-
-	Directory* cur = root;
-	string fullPath;
-	
-	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) 
-	{
-		string& tok = *i;
-		string::size_type j = tok.find_first_not_of('\t');
-		if(j == string::npos) {
-			break;
-		}
-
-		while(j < indent) {
-			// Wind up directory structure
-			cur = cur->getParent();
-			dcassert(cur != NULL);
-			indent--;
-			string::size_type l = fullPath.find_last_of('\\');
-			if(l != string::npos) {
-				fullPath.erase(fullPath.begin() + l, fullPath.end());
-			}
-		}
-
-		string::size_type k = tok.find('|', j);
-		if(k != string::npos) {
-			// this must be a file...
-			cur->files.push_back(new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
-		} else {
-			// A directory
-			string name = tok.substr(j, tok.length()-j-1);
-			fullPath += '\\';
-			fullPath += name;
-
-			Directory::Iter di = ::find(cur->directories.begin(), cur->directories.end(), name);
-			if(di != cur->directories.end()) {
-				cur = *di;
-			} else {
-				Directory* d = new Directory(cur, name, false, true);
-				cur->directories.push_back(d);
-				cur = d;
-			}
-			indent++;
-		}
-	}
-}
-
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
 	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) { 
@@ -194,8 +131,6 @@ private:
 };
 
 string DirectoryListing::loadXML(const string& xml, bool updating) {
-	setUtf8(true);
-
 	ListLoader ll(getRoot(), updating);
 	SimpleXMLReader(&ll).fromXML(xml);
 	return ll.getBase();
@@ -308,13 +243,9 @@ string DirectoryListing::getPath(const Directory* d) const {
 	return dir;
 }
 
-static inline const string& escaper(const string& n, string& tmp, bool utf8) {
-	return utf8 ? n : (tmp.clear(), Text::acpToUtf8(n, tmp));
-}
-
 void DirectoryListing::download(Directory* aDir, const string& aTarget, bool highPrio) {
 	string tmp;
-	string target = (aDir == getRoot()) ? aTarget : aTarget + escaper(aDir->getName(), tmp, getUtf8()) + PATH_SEPARATOR;
+	string target = (aDir == getRoot()) ? aTarget : aTarget + aDir->getName() + PATH_SEPARATOR;
 	// First, recurse over the directories
 	Directory::List& lst = aDir->directories;
 	sort(lst.begin(), lst.end(), Directory::DirSort());
@@ -327,7 +258,7 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget, bool hig
 	for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 		File* file = *i;
 		try {
-			download(file, target + escaper(file->getName(), tmp, getUtf8()), false, highPrio);
+			download(file, target + file->getName(), false, highPrio);
 		} catch(const QueueException&) {
 			// Catch it here to allow parts of directories to be added...
 		} catch(const FileException&) {
@@ -348,7 +279,7 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view, b
 	int flags = (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
 	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), 
-		getPath(aFile) + aFile->getName(), getUtf8(), flags);
+		getPath(aFile) + aFile->getName(), flags);
 
 	if(highPrio)
 		QueueManager::getInstance()->setPriority(aTarget, QueueItem::HIGHEST);
