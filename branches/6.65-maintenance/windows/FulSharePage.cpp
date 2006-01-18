@@ -30,7 +30,7 @@ PropPage::TextItem FulSharePage::texts[] = {
 	{ IDC_REFRESH_SHARE,			ResourceManager::SETTINGS_AUTO_UPDATE_LIST				},
 	{ IDC_SB_SKIPLIST_SHARE,		ResourceManager::SETTINGS_SB_SKIPLIST_SHARE				},
 	{ IDC_SB_REFRESH,				ResourceManager::SETTINGS_SB_REFRESH					},
-	{ IDC_ST_SKIPLIST_SHARE,		ResourceManager::SETTINGS_ST_SKIPLIST_SHARE				},
+	{ IDC_ST_SKIPLIST_SHARE,		ResourceManager::SETTINGS_ST_PATHS						},
 	{ IDC_SB_MINISLOTS,				ResourceManager::SETTINGS_SB_MINISLOTS					},
 	{ IDC_ST_MINISLOTS_EXT,			ResourceManager::SETTINGS_ST_MINISLOTS_EXT				},
 	{ IDC_ST_MINISLOTS_SIZE,		ResourceManager::SETTINGS_ST_MINISLOTS_SIZE				},

@@ -150,7 +150,7 @@ public:
 			if(j > 0) {
 				tmp.erase(tmp.size()-1);
 			}
-			SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
+			FavoriteManager::getInstance()->setHubList(tmp);
 		}
 		EndDialog(wID);
 		return 0;

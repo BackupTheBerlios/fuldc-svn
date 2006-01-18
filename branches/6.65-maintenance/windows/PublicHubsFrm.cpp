@@ -221,9 +221,7 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT PublicHubsFrame::onClickedConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	PublicHubListDlg dlg;
-	if(dlg.DoModal(m_hWnd) == IDOK) {
-		updateDropDown();
-	}
+	dlg.DoModal(m_hWnd);
 	return 0;
 }
 

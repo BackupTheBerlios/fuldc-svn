@@ -91,12 +91,15 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget,
 						  int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException) 
 {
-	if(p == QueueItem::DEFAULT)
+	if(p == QueueItem::NORMAL)
 		p = (aSize <= 64*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
 
-	if(BOOLSETTING(HIGH_PRIO_SAMPLE)){
-		if( (aTarget.find("sample") != string::npos || aTarget.find("subs") != string::npos) && (p !=  QueueItem::HIGHEST) )
+	if(!SETTING(HIGH_PRIO_FILES).empty() && p == QueueItem::NORMAL){
+		int pos = aTarget.rfind("\\")+1;
+
+		if(Wildcard::patternMatch(aTarget.substr(pos), SETTING(SKIPLIST_DOWNLOAD), '|')) {
 			p = QueueItem::HIGH;
+		}
 	}
 	
 	QueueItem* qi = new QueueItem(aTarget, aSize, p, aFlags, aDownloadedBytes, aAdded, root);

@@ -49,6 +49,7 @@ const string SettingsManager::settingTags[] =
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
 	"QueueFrameVisible", "DirectoryListingFrameVisible","FinishedVisible", "FinishedULVisible",
+	"HighPrioFiles",
 	"SENTRY", 
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -76,7 +77,7 @@ const string SettingsManager::settingTags[] =
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
-	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "HighPrioSample",
+	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
@@ -252,7 +253,6 @@ SettingsManager::SettingsManager()
 	setDefault(STRIP_ISP, false);
 	setDefault(STRIP_ISP_PM, false);
 	setDefault(HUB_BOLD_TABS, true);
-	setDefault(HIGH_PRIO_SAMPLE, false);
 	setDefault(POPUP_TIMEOUT, 5);
 	setDefault(POPUP_AWAY, false);
 	setDefault(POPUP_ON_PM, false);
@@ -300,6 +300,7 @@ SettingsManager::SettingsManager()
 	setDefault(REFRESH_SHARE_BEGIN, 0);
 	setDefault(REFRESH_SHARE_END, 0);
 	setDefault(MUTE_ON_AWAY, false);
+	setDefault(HIGH_PRIO_FILES, "*.sfv|*.nfo|*sample*|*subs*");
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

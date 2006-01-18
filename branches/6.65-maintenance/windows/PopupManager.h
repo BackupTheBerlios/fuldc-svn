@@ -41,7 +41,7 @@ public:
 		TimerManager::getInstance()->addListener(this);
 		QueueManager::getInstance()->addListener(this);
 
-		hBitmap = (HBITMAP)::LoadImage(NULL, _T("icons\\popup.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		hBitmap = (HBITMAP)::LoadImage(NULL, WinUtil::getIconPath(_T("popup.bmp")).c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		if(hBitmap != NULL){
 			BITMAP bm;
 			GetObject(hBitmap,sizeof(bm),&bm);

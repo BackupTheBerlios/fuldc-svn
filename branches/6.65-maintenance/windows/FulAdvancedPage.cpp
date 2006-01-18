@@ -42,7 +42,6 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::EXPAND_QUEUE,					ResourceManager::EXPAND_QUEUE				},
 	{ SettingsManager::STRIP_ISP,						ResourceManager::STRIP_ISP					},
 	{ SettingsManager::STRIP_ISP_PM,					ResourceManager::STRIP_ISP_PM				},
-	{ SettingsManager::HIGH_PRIO_SAMPLE,				ResourceManager::HIGH_PRIO_SAMPLE			},
 	{ SettingsManager::HUBFRAME_CONFIRMATION,			ResourceManager::HUBFRAME_CONFIRMATION		},
 	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND				},
 	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC				}, 

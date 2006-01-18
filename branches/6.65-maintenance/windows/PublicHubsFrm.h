@@ -155,6 +155,7 @@ private:
 	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
 	virtual void on(DownloadFailed, const string& l) throw() { speak(FAILED, l); }
 	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
+	virtual void on(PublicHubsUpdated) throw() { updateDropDown(); }
 
 	void speak(int x, const string& l) {
 		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(Text::toT(l)));

@@ -774,6 +774,8 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
+			case IDC_SYSTEM_LOG: stringId = ResourceManager::MENU_SYSTEM_LOG; break;
+			default: dcassert(false); break;
 		}
 		if(stringId != -1) {
 			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);
@@ -814,7 +816,7 @@ void MainFrame::updateTray(bool add /* = true */) {
 		nid.uID = 0;
 		nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
 		nid.uCallbackMessage = WM_APP + 242;
-		nid.hIcon = (HICON)::LoadImage(NULL, _T("icons\\dcplusplus.ico"), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
+		nid.hIcon = (HICON)::LoadImage(NULL, WinUtil::getIconPath(_T("dcplusplus.ico")).c_str(), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
 		_tcscpy(nid.szTip, _T("DC++"));
 		nid.szTip[63] = '\0';
 		lastMove = GET_TICK() - 1000;

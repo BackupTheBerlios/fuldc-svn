@@ -564,6 +564,11 @@ StringList FavoriteManager::getHubLists() {
 	return lists.getTokens();
 }
 
+void FavoriteManager::setHubList(const string& hubs) {
+	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, hubs);
+	fire(FavoriteManagerListener::PublicHubsUpdated());
+}
+
 bool FavoriteManager::setHubList(int aHubList) {
 	if(!running) {
 		lastServer = aHubList;

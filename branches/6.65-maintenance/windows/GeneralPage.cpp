@@ -53,7 +53,10 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	PropPage::translate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
-	ctrlConnection.AddString(Text::toT(SETTING(UPLOAD_SPEED)).c_str());
+	if(find(SettingsManager::connectionSpeeds.begin(), SettingsManager::connectionSpeeds.end(),
+			SETTING(UPLOAD_SPEED)) == SettingsManager::connectionSpeeds.end()) {
+		ctrlConnection.AddString(Text::toT(SETTING(UPLOAD_SPEED)).c_str());
+	}
 	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i)
 		ctrlConnection.AddString(Text::toT(*i).c_str());
 

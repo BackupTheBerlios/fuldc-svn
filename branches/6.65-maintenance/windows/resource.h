@@ -421,6 +421,8 @@
 #define IDC_SKIPLIST                    1217
 #define IDC_SKIPLIST_DOWNLOAD           1218
 #define IDC_REFRESH_TIME                1219
+#define IDC_SKIPLIST_DOWNLOAD2          1219
+#define IDC_HIGH_PRIO_FILES             1219
 #define IDC_INCOMING_REFRESH_TIME       1220
 #define IDC_SKIPLIST_SHARE              1221
 #define IDC_SHARE_REFRESH_TIME          1222
@@ -480,7 +482,9 @@
 #define IDC_ST_SKIPLIST_DOWNLOAD        1264
 #define IDC_ST_SKIPLIST                 1264
 #define IDC_SB_SKIPLIST_SHARE           1265
+#define IDC_SB_HIGH_PRIO_FILES          1265
 #define IDC_ST_SKIPLIST_SHARE           1266
+#define IDC_ST_HIGH_PRIO_FILES          1266
 #define IDC_SB_REFRESH                  1267
 #define IDC_ST_REFRESH_INCOMING         1268
 #define IDC_ST_REFRESH_SHARE            1269
@@ -648,7 +652,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        312
+#define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           137

@@ -417,11 +417,14 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_MAX_SOURCES,15,69,93,14,ES_AUTOHSCROLL
-    GROUPBOX        "Max sources for match queue",IDC_SB_MAX_SOURCES,7,57,109,32
+    EDITTEXT        IDC_MAX_SOURCES,15,129,93,14,ES_AUTOHSCROLL
+    GROUPBOX        "Max sources for match queue",IDC_SB_MAX_SOURCES,7,117,109,32
     EDITTEXT        IDC_SKIPLIST_DOWNLOAD,15,28,245,14,ES_AUTOHSCROLL
     GROUPBOX        "Skiplist Downloads",IDC_SB_SKIPLIST_DOWNLOAD,7,7,259,43
-    LTEXT           "Skiplist (separate files with """"|""""):",IDC_ST_SKIPLIST_DOWNLOAD,15,17,106,8
+    LTEXT           "separate files with """"|""""",IDC_ST_SKIPLIST_DOWNLOAD,15,17,75,8
+    EDITTEXT        IDC_HIGH_PRIO_FILES,15,85,245,14,ES_AUTOHSCROLL
+    GROUPBOX        "Highest Priority Files",IDC_SB_HIGH_PRIO_FILES,7,62,259,43
+    LTEXT           "separate files with """"|""""",IDC_ST_HIGH_PRIO_FILES,15,74,75,8
 END
 
 IDD_HASH_PROGRESS DIALOGEX 0, 0, 430, 113
@@ -1122,7 +1125,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\32bpp\\DCPlusPlus.ico"
+IDR_MAINFRAME           ICON                    "res\\dcplusplus.ico"
 #endif    // Swedish resources
 /////////////////////////////////////////////////////////////////////////////
 

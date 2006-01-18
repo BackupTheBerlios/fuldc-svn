@@ -425,7 +425,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			ItemInfo* ii = ctrlTransfers.getItemData(i);
 			for(vector<UpdateInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
 				UpdateInfo* ui = *j;
-				if(*ui == *ii) {
+				if(ui->user == ii->getUser()) {
 					ii->update(*ui);
 					ctrlTransfers.updateItem(i);
 				}

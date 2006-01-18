@@ -135,6 +135,7 @@ public:
 	typedef X<4> FavoriteRemoved;
 	typedef X<5> UserAdded;
 	typedef X<6> UserRemoved;
+	typedef X<7> PublicHubsUpdated;
 
 	virtual void on(DownloadStarting, const string&) throw() { }
 	virtual void on(DownloadFailed, const string&) throw() { }
@@ -143,6 +144,7 @@ public:
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry*) throw() { }
 	virtual void on(UserAdded, const User::Ptr&) throw() { }
 	virtual void on(UserRemoved, const User::Ptr&) throw() { }
+	virtual void on(PublicHubsUpdated) throw() { }
 };
 
 class SimpleXML;
@@ -160,7 +162,9 @@ public:
 		TYPE_BZIP2
 	};
 	StringList getHubLists();
+
 	bool setHubList(int /*aHubList*/);
+	void setHubList(const string& hubs);
 	int getSelectedHubList() { return lastServer; };
 	void refresh();
 	HubTypes getHubListType() { return listType; };

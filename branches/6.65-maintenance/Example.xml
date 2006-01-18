@@ -572,7 +572,6 @@
 		<String Name="StripIspPm">Strip ISP in private messages</String>
 		<String Name="Isp">ISP</String>
 		<String Name="HubBoldTabs">Make tabs bold on status messages in Hubs</String>
-		<String Name="HighPrioSample">Set high priority on sample and sub files when enqueued</String>
 		<String Name="PopupAway">Only show popups if away</String>
 		<String Name="PopupMinimized">Only show popups if minimized to tray</String>
 		<String Name="PopupOnPm">Show popup on PM</String>
@@ -601,9 +600,7 @@
 		<String Name="SettingsFulPopup">fulDC\Appearance\Popups</String>
 		<String Name="SettingsAutoUpdateIncoming">Automatically refresh incoming</String>
 		<String Name="SettingsSbSkiplistDownload">Skiplist</String>
-		<String Name="SettingsStSkiplistDownload">Skiplist (separate files with |):</String>
 		<String Name="SettingsSbSkiplistShare">Skiplist</String>
-		<String Name="SettingsStSkiplistShare">Skiplist (separate files with |):</String>
 		<String Name="SettingsSbRefresh">Refresh options</String>
 		<String Name="SettingsStRefreshIncoming">Incoming</String>
 		<String Name="SettingsSbChatbuffersize">Mainchat buffer size</String>
@@ -618,6 +615,7 @@
 		<String Name="SettingsBtnTextcolor">Text Color</String>
 		<String Name="SettingsSbMinislots">Minislots</String>
 		<String Name="SettingsSbMaxSources">Max sources for match queue</String>
+		<String Name="SettingsSbHighPrioFiles">High priority files</String>
 		<String Name="SettingsStMinislotsExt">Minislots file extensions</String>
 		<String Name="SettingsStMinislotsSize">Minislots file size in KiB</String>
 		<String Name="SettingsStPaths">Separate paths with |</String>
