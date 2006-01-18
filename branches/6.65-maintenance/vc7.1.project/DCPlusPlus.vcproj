@@ -290,13 +290,10 @@
 				RelativePath="..\windows\FavHubProperties.cpp">
 			</File>
 			<File
+				RelativePath="..\windows\FavoriteDirsPage.cpp">
+			</File>
+			<File
 				RelativePath="..\windows\FavoritesFrm.cpp">
-			</File>
-			<File
-				RelativePath="..\windows\FinishedFrame.cpp">
-			</File>
-			<File
-				RelativePath="..\windows\FinishedULFrame.cpp">
 			</File>
 			<File
 				RelativePath="..\windows\FulAdvancedPage.cpp">
@@ -368,6 +365,9 @@
 				RelativePath="..\windows\QueueFrame.cpp">
 			</File>
 			<File
+				RelativePath="..\windows\QueuePage.cpp">
+			</File>
+			<File
 				RelativePath="..\windows\SearchFrm.cpp">
 			</File>
 			<File
@@ -390,6 +390,9 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\windows\SystemFrame.cpp">
 			</File>
 			<File
 				RelativePath="..\windows\TextFrame.cpp">
@@ -420,6 +423,9 @@
 			</File>
 			<File
 				RelativePath="..\windows\UsersFrame.cpp">
+			</File>
+			<File
+				RelativePath="..\windows\WaitingUsersFrame.cpp">
 			</File>
 			<File
 				RelativePath="..\windows\WebShortcutsProperties.cpp">
@@ -474,10 +480,16 @@
 				RelativePath="..\windows\FavHubProperties.h">
 			</File>
 			<File
+				RelativePath="..\windows\FavoriteDirsPage.h">
+			</File>
+			<File
 				RelativePath="..\windows\FavoritesFrm.h">
 			</File>
 			<File
-				RelativePath="..\windows\FinishedFrame.h">
+				RelativePath="..\windows\FinishedDLFrame.h">
+			</File>
+			<File
+				RelativePath="..\windows\FinishedFrameBase.h">
 			</File>
 			<File
 				RelativePath="..\windows\FinishedULFrame.h">
@@ -576,6 +588,9 @@
 				RelativePath="..\windows\QueueFrame.h">
 			</File>
 			<File
+				RelativePath="..\windows\QueuePage.h">
+			</File>
+			<File
 				RelativePath="..\windows\resource.h">
 			</File>
 			<File
@@ -595,6 +610,9 @@
 			</File>
 			<File
 				RelativePath="..\windows\stdafx.h">
+			</File>
+			<File
+				RelativePath="..\windows\SystemFrame.h">
 			</File>
 			<File
 				RelativePath="..\windows\TextFrame.h">
@@ -628,6 +646,9 @@
 			</File>
 			<File
 				RelativePath="..\windows\UsersFrame.h">
+			</File>
+			<File
+				RelativePath="..\windows\WaitingUsersFrame.h">
 			</File>
 			<File
 				RelativePath="..\windows\WebShortcutsProperties.h">

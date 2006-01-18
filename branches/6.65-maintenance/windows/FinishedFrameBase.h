@@ -40,7 +40,7 @@
 
 template<class T, int title, int id>
 class FinishedFrameBase: public MDITabChildWindowImpl<T>, public StaticFrame<T, title, id>,
-	private FinishedManagerListener
+	protected FinishedManagerListener
 {
 public:
 	FinishedFrameBase(): totalBytes(0), totalTime(0), closed(false) { };

@@ -147,9 +147,6 @@
 				RelativePath="..\client\AdcCommand.cpp">
 			</File>
 			<File
-				RelativePath="..\client\AdcHub.cpp">
-			</File>
-			<File
 				RelativePath="..\client\ADLSearch.cpp">
 			</File>
 			<File
@@ -183,6 +180,9 @@
 				RelativePath="..\client\Encoder.cpp">
 			</File>
 			<File
+				RelativePath="..\client\FavoriteManager.cpp">
+			</File>
+			<File
 				RelativePath="..\client\FinishedManager.cpp">
 			</File>
 			<File
@@ -193,9 +193,6 @@
 			</File>
 			<File
 				RelativePath="..\client\HttpConnection.cpp">
-			</File>
-			<File
-				RelativePath="..\client\HubManager.cpp">
 			</File>
 			<File
 				RelativePath="..\client\IgnoreManager.cpp">
@@ -298,9 +295,6 @@
 				RelativePath="..\client\AdcCommand.h">
 			</File>
 			<File
-				RelativePath="..\client\AdcHub.h">
-			</File>
-			<File
 				RelativePath="..\client\ADLSearch.h">
 			</File>
 			<File
@@ -367,6 +361,9 @@
 				RelativePath="..\client\FastAlloc.h">
 			</File>
 			<File
+				RelativePath="..\client\FavoriteManager.h">
+			</File>
+			<File
 				RelativePath="..\client\FavoriteUser.h">
 			</File>
 			<File
@@ -389,9 +386,6 @@
 			</File>
 			<File
 				RelativePath="..\client\HttpConnection.h">
-			</File>
-			<File
-				RelativePath="..\client\HubManager.h">
 			</File>
 			<File
 				RelativePath="..\client\IgnoreManager.h">
