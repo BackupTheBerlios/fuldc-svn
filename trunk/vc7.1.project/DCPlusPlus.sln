@@ -34,7 +34,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "help", "help.vcproj", "{901
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yassl", "yassl\yassl.vcproj", "{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yassl", "yassl.vcproj", "{F573DE0C-73CE-4D55-90AB-4F0432CCB6F3}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
