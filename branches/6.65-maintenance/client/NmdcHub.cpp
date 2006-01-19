@@ -58,11 +58,11 @@ void NmdcHub::connect() {
 	Client::connect();
 }
 
-void NmdcHub::connect(const User* aUser) {
+void NmdcHub::connect(const User::Ptr aUser) {
 	checkstate(); 
 	dcdebug("NmdcHub::connectToMe %s\n", aUser->getNick().c_str());
 	if(ClientManager::getInstance()->isActive()) {
-		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(TCP_PORT)) + "|");
+		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(ConnectionManager::getInstance()->getPort()) + "|");
 	} else {
 		send("$RevConnectToMe " + toNmdc(getNick()) + " " + toNmdc(aUser->getNick())  + "|");
 	}
@@ -139,7 +139,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		// Filter own searches
 		if(ClientManager::getInstance()->isActive()) {
-			if(seeker == (getLocalIp() + ":" + Util::toString(SETTING(UDP_PORT)))) {
+			if(seeker == (ClientManager::getInstance()->getCachedIp() + ":" + Util::toString(SearchManager::getInstance()->getPort()))) {
 				return;
 			}
 		} else {
@@ -337,12 +337,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		if(u) {
 			if(ClientManager::getInstance()->isActive()) {
-				connectToMe(u);
+				connect(u);
 				Speaker<NmdcHubListener>::fire(NmdcHubListener::RevConnectToMe(), this, u);
 			} else {
 				// Notify the user that we're passive too...
 				if(up)
-					revConnectToMe(u);
+					connect(u);
 			}
 
 			if(up)
@@ -658,7 +658,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	}
 	int chars = 0;
 	if(ClientManager::getInstance()->isActive()) {
-		string x = getLocalIp();
+		string x = ClientManager::getInstance()->getCachedIp();
 		buf = new char[x.length() + aString.length() + 64];
 		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(UDP_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {

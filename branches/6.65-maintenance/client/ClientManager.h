@@ -111,6 +111,8 @@ public:
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 
+	string getCachedIp() { return cachedIp; }
+
 private:
 	typedef HASH_MULTIMAP_X(string, User::Ptr, noCaseStringHash, noCaseStringEq, noCaseStringLess) UserMap;
 	typedef UserMap::iterator UserIter;
@@ -126,12 +128,16 @@ private:
 	UserMap users;
 	AdcMap adcUsers;
 
+	string cachedIp;
+
 	Socket s;
 
 	friend class Singleton<ClientManager>;
 	ClientManager() { 
 		TimerManager::getInstance()->addListener(this); 
 	};
+
+	void updateCachedIp();
 
 	virtual ~ClientManager() throw() { TimerManager::getInstance()->removeListener(this); };
 

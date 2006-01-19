@@ -1100,10 +1100,14 @@ void WinUtil::AppendSearchMenu(CMenu& menu) {
 }
 
 tstring WinUtil::getIconPath(const tstring& filename) {
-	if (getOsMajor() >= 5 && getOsMinor() >= 1)
-		return _T("icons\\32bpp\\") + filename;
-	else
-		return _T("icons\\24bpp\\") + filename;
+	if(Util::stricmp(Util::getFileExt(filename), _T(".bmp")) == 0) {
+		if (getOsMajor() == 5 && getOsMinor() == 0)
+			return _T("icons\\24bpp\\") + filename;
+		else
+			return _T("icons\\32bpp\\") + filename;
+	}
+
+	return _T("icons\\") + filename;
 }	
 
 void WinUtil::SetIcon(HWND hWnd, tstring file, bool big) {

@@ -113,7 +113,7 @@ public:
 
 #define checkstate() if(state != STATE_CONNECTED) return
 
-	virtual void connect(const User* aUser);
+	virtual void connect(const User::Ptr aUser);
 	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
 	virtual void privateMessage(const User* aUser, const string& aMessage) { privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage); }
 	virtual void sendUserCmd(const string& aUserCmd) throw() {
@@ -146,12 +146,6 @@ public:
 	void getInfo(User::Ptr aUser) { checkstate(); send("$GetINFO " + toNmdc(aUser->getNick()) + " " + toNmdc(getNick()) + "|"); };
 	void getInfo(User* aUser) {  checkstate(); send("$GetINFO " + toNmdc(aUser->getNick()) + " " + toNmdc(getNick()) + "|"); };
 
-	void connectToMe(const User::Ptr& aUser) {
-		checkstate(); 
-		dcdebug("NmdcHub::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(TCP_PORT)) + "|");
-	}
-
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
 		privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage);
 	}
@@ -165,11 +159,6 @@ public:
 			x+= *i + ' ';
 		}
 		send("$Supports " + x + '|');
-	}
-	void revConnectToMe(const User::Ptr& aUser) {
-		checkstate(); 
-		dcdebug("NmdcHub::revConnectToMe %s\n", aUser->getNick().c_str());
-		send("$RevConnectToMe " + toNmdc(getNick()) + " " + toNmdc(aUser->getNick()) + "|");
 	}
 
 	GETSET(int, supportFlags, SupportFlags);

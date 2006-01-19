@@ -66,6 +66,7 @@ void ConnectionManager::listen() throw(Exception){
 			lastPort = newPort;
 		}
 	}
+	/* not using ssl(adc), why try to listen?
 
 	lastPort++;
 	firstPort = lastPort;
@@ -82,7 +83,7 @@ void ConnectionManager::listen() throw(Exception){
 			}
 			lastPort = newPort;
 		}
-	}
+	}*/
 }
 
 /**

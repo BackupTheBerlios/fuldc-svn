@@ -425,7 +425,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			ItemInfo* ii = ctrlTransfers.getItemData(i);
 			for(vector<UpdateInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
 				UpdateInfo* ui = *j;
-				if(ui->user == ii->getUser()) {
+				if(*ui == *ii) {
 					ii->update(*ui);
 					ctrlTransfers.updateItem(i);
 				}
@@ -671,6 +671,7 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			statusString += _T(" ");
 		}
 		statusString += buf;
+		ui->setStatusString(statusString);
 
 		v->push_back(ui);
 	}

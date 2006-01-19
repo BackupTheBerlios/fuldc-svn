@@ -91,7 +91,7 @@ public:
 	void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
 
 
-	virtual void connect(const User* user) = 0;
+	virtual void connect(const User::Ptr user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
 	virtual void privateMessage(const User* user, const string& aMessage) = 0;
 	virtual void sendUserCmd(const string& aUserCmd) = 0;

@@ -38,7 +38,7 @@ LRESULT TreePropertySheet::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	addTree();
 
 	CImageList img;
-	hasIcons = img.CreateFromImage(iconPath.c_str(), 16, 18, CLR_DEFAULT, IMAGE_BITMAP, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+	hasIcons = img.CreateFromImage(iconPath.c_str(), 16, 21, CLR_DEFAULT, IMAGE_BITMAP, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 	if(hasIcons) {
 		ctrlTree.SetImageList(img, TVSIL_NORMAL);
 	}

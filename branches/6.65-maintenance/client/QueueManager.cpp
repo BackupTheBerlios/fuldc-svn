@@ -97,7 +97,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 	if(!SETTING(HIGH_PRIO_FILES).empty() && p == QueueItem::NORMAL){
 		int pos = aTarget.rfind("\\")+1;
 
-		if(Wildcard::patternMatch(aTarget.substr(pos), SETTING(SKIPLIST_DOWNLOAD), '|')) {
+		if(Wildcard::patternMatch(aTarget.substr(pos), SETTING(HIGH_PRIO_FILES), '|')) {
 			p = QueueItem::HIGH;
 		}
 	}
