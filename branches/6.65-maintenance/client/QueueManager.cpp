@@ -531,7 +531,7 @@ int QueueManager::readdUser(User::Ptr& aUser) throw() {
 			q = i->second;
 			if(q != NULL && q->isBadSource(aUser)) {
 				try{
-					wantConnection = addSource(q, aUser, QueueItem::Source::FLAG_ERROR_MASK);
+					wantConnection = addSource(q, aUser, QueueItem::Source::FLAG_MASK);
 					++matches;
 				} catch(const QueueException& /* e*/){
 				}

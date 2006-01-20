@@ -423,6 +423,42 @@ private:
 		delete (tstring*)ctrlDirs.GetItemData(item);
 	}
 
+	QueueItemInfo::SourceInfo* getSourceInfo(const CMenu& menu, WORD wID) {
+		TCHAR buf[50];
+
+		menu.GetMenuString(wID, &buf[0], 50, MF_BYCOMMAND);
+
+		QueueItemInfo *qii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
+
+		if(qii) {
+			string tmp = Text::fromT(buf);
+			QueueItemInfo::SourceIter i  = qii->getSources().begin();
+			for(; i != qii->getSources().end(); ++i) {
+				if(Util::stricmp(i->getUser()->getNick(), tmp) == 0)
+					return &(*i);
+			}
+		}
+		return NULL;
+	}
+
+	QueueItemInfo::SourceInfo* getBadSourceInfo(const CMenu& menu, WORD wID) {
+		TCHAR buf[50];
+
+		menu.GetMenuString(wID, &buf[0], 50, MF_BYCOMMAND);
+
+		QueueItemInfo *qii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
+
+		if(qii) {
+			string tmp = Text::fromT(buf);
+			QueueItemInfo::SourceIter i  = qii->getBadSources().begin();
+			for(; i != qii->getBadSources().end(); ++i) {
+				if(Util::stricmp(i->getUser()->getNick(), tmp) == 0)
+					return &(*i);
+			}
+		}
+		return NULL;
+	}
+
 	void removeSelected() {
 		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			ctrlQueue.forEachSelected(&QueueItemInfo::remove);

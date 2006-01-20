@@ -298,6 +298,14 @@ void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, 
 
 	if(u) {
 		aSource->setUpload(NULL);
+
+		StringMap sm;
+		sm["file"] = u->getFileName();
+		sm["user"] = aSource->getUser()->getNick();
+		sm["error"] = aError;
+
+		LogManager::getInstance()->message(Util::formatParams(STRING(UPLOAD_FAILED), sm));
+
 		fire(UploadManagerListener::Failed(), u, aError);
 
 		dcdebug("UM::onFailed: Removing upload\n");

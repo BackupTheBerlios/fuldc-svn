@@ -145,7 +145,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	dirMenu.AppendMenu(MF_SEPARATOR);
 	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
-	removeMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCES, CTSTRING(ALL));
+	removeMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCE, CTSTRING(ALL));
 	removeMenu.AppendMenu(MF_SEPARATOR);
 
 	removeQueueMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCES, CTSTRING(ALL));
@@ -818,7 +818,6 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.dwTypeData = (LPTSTR)nick.c_str();
-					mi.dwItemData = (ULONG_PTR)&(*i);
 					mi.wID = IDC_BROWSELIST + menuItems;
 					browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
 					mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
@@ -842,7 +841,6 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.dwTypeData = (LPTSTR)nick.c_str();
-					mi.dwItemData = (ULONG_PTR)&(*i);
 					mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
 					readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
 					mi.wID = IDC_READD_QUEUE + 1 + readdItems; // "All" is before sources
@@ -941,15 +939,14 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	if(ctrlQueue.GetSelectedCount() == 1) {
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-		
-		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		try {
-			QueueManager::getInstance()->addList(s->getUser(), QueueItem::FLAG_CLIENT_VIEW);
-		} catch(const Exception&) {
+		QueueItemInfo::SourceInfo *si = getSourceInfo(browseMenu, wID);
+		if(si) {
+			try {
+				QueueManager::getInstance()->addList(si->getUser(), QueueItem::FLAG_CLIENT_VIEW);
+			} catch(const Exception&) {
+			}
 		}
+		
 	}
 	return 0;
 }
@@ -960,38 +957,46 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-		if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
-			readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		} else {
-			readdQueueMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		}
-		
 		if(wID == IDC_READD) {
 			// re-add all sources
-			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
-				QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
-				//reset the iterator since it won't be valid after the call to readd
-				s = ii->getBadSources().begin();
+			try {
+				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+					QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
+					//reset the iterator since it won't be valid after the call to readd
+					s = ii->getBadSources().begin();
+				} 
+			} catch (const QueueException& e) {
+				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			}
+
 		} else if(wID == IDC_READD_QUEUE) {
 			// re-add all sources
-			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
-				QueueManager::getInstance()->readdUser(s->getUser());
-				//reset the iterator since it won't be valid after the call to readdUser
-				s = ii->getBadSources().begin();
+			try {
+				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+					QueueManager::getInstance()->readdUser(s->getUser());
+					//reset the iterator since it won't be valid after the call to readdUser
+					s = ii->getBadSources().begin();
+				} 
+			} catch (const QueueException& e) {
+				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			}
 		} else {
-			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-			try {
-				if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
-					QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
-				} else {
-					QueueManager::getInstance()->readdUser(s->getUser());
+			QueueItemInfo::SourceInfo* si = NULL;
+			if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
+				si = getBadSourceInfo(readdMenu, wID);
+			} else {
+				si = getBadSourceInfo(readdQueueMenu, wID);
+			}
+			if(si) {
+				try {
+					if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
+						QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), si->getUser());
+					} else {
+						QueueManager::getInstance()->readdUser(si->getUser());
+					}
+				} catch(const QueueException& e) {
+					ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 				}
-			} catch(const Exception& e) {
-				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			}
 		}
 	}
@@ -1008,12 +1013,10 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 				QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
-			CMenuItemInfo mi;
-			mi.fMask = MIIM_DATA;
-
-			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
-			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-			QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), s->getUser(), QueueItem::Source::FLAG_REMOVED);
+			QueueItemInfo::SourceInfo* si = getSourceInfo(removeMenu, wID);
+			if(si) {
+				QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			}
 		}
 	}
 	return 0;
@@ -1023,17 +1026,16 @@ LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
+
 		if(wID == IDC_REMOVE_SOURCES) {
 			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
 				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
-			CMenuItemInfo mi;
-			mi.fMask = MIIM_DATA;
-
-			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
-			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-			QueueManager::getInstance()->removeSources(s->getUser(), QueueItem::Source::FLAG_REMOVED);
+			QueueItemInfo::SourceInfo* si = getSourceInfo(removeMenu, wID);
+			if(si) {
+				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			}
 		}
 	}	
 	return 0;
@@ -1041,12 +1043,10 @@ LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlQueue.GetSelectedCount() == 1) {
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-		
-		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		PrivateFrame::openWindow(s->getUser());
+		QueueItemInfo::SourceInfo* si = getSourceInfo(pmMenu, wID);
+		if(si) {
+			PrivateFrame::openWindow(si->getUser());
+		}
 	}
 	return 0;
 }

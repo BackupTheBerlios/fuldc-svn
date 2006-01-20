@@ -111,7 +111,7 @@ public:
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 
-	string getCachedIp() { return cachedIp; }
+	string getCachedIp() { Lock l(cs); return cachedIp; }
 
 private:
 	typedef HASH_MULTIMAP_X(string, User::Ptr, noCaseStringHash, noCaseStringEq, noCaseStringLess) UserMap;
@@ -123,7 +123,7 @@ private:
 	typedef pair<AdcIter, AdcIter> AdcPair;
 
 	Client::List clients;
-	CriticalSection cs;
+	mutable CriticalSection cs;
 	
 	UserMap users;
 	AdcMap adcUsers;

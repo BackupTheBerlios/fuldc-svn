@@ -530,6 +530,7 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 			ConnectionQueueItem* cqi = *i;
 			if(cqi->getState() == ConnectionQueueItem::WAITING || cqi->getState() == ConnectionQueueItem::CONNECTING) {
 				cqi->setState(ConnectionQueueItem::ACTIVE);
+				uc->setFlag(UserConnection::FLAG_ASSOCIATED);
 
 				fire(ConnectionManagerListener::Connected(), cqi);
 				
@@ -563,6 +564,7 @@ void ConnectionManager::addUploadConnection(UserConnection* uc) {
 			ConnectionQueueItem* cqi = getCQI(uc->getUser(), false);
 
 			cqi->setState(ConnectionQueueItem::ACTIVE);
+			uc->setFlag(UserConnection::FLAG_ASSOCIATED);
 
 			fire(ConnectionManagerListener::Connected(), cqi);
 
@@ -622,27 +624,27 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
 	Lock l(cs);
 
-	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-		ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aSource->getUser());
-		dcassert(i != downloads.end());
-
-		ConnectionQueueItem* cqi = *i;
-		cqi->setState(ConnectionQueueItem::WAITING);
-		cqi->setLastAttempt(GET_TICK());
-		fire(ConnectionManagerListener::Failed(), cqi, aError);
-	} else if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
-		ConnectionQueueItem::Iter i = find(uploads.begin(), uploads.end(), aSource->getUser());
-		dcassert(i != uploads.end());
-		
-		//ugly fix, haven't found the actual problem yet
-		//seems like two upload connections get added so when the first fail the upload
-		//cqi is removed and doesn't exist when the second one fail
-		if(i != uploads.end()) {
+	if(aSource->isSet(UserConnection::FLAG_ASSOCIATED)) {
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aSource->getUser());
+			dcassert(i != downloads.end());
 			ConnectionQueueItem* cqi = *i;
-			putCQI(cqi);
+			cqi->setState(ConnectionQueueItem::WAITING);
+			cqi->setLastAttempt(GET_TICK());
+			fire(ConnectionManagerListener::Failed(), cqi, aError);
+		} else if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
+			ConnectionQueueItem::Iter i = find(uploads.begin(), uploads.end(), aSource->getUser());
+			dcassert(i != uploads.end());
+		
+			//ugly fix, haven't found the actual problem yet
+			//seems like two upload connections get added so when the first fail the upload
+			//cqi is removed and doesn't exist when the second one fail
+			if(i != uploads.end()) {
+				ConnectionQueueItem* cqi = *i;
+				putCQI(cqi);
+			}
 		}
 	}
-
 	putConnection(aSource);
 }
 

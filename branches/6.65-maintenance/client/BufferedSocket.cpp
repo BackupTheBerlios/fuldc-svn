@@ -305,6 +305,8 @@ int BufferedSocket::run() {
 			checkSocket();
 		} catch(const SocketException& e) {
 			fail(e.getError());
+		} catch(const FileException& e) {
+			fail(e.getError());
 		}
 	}
 	delete this;

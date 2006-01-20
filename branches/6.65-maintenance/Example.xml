@@ -754,5 +754,6 @@
 		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
 		<String Name="UserNotAvailable">User not available, could be because he is offline</String>
 		<String Name="FailedToMoveFile">Failed to move the file from the temporary download location because: </String>
+		<String Name="UploadFailed">Failed to upload %[file] to %[user] because: %[error]</String>
 	</Strings>
 </Language>

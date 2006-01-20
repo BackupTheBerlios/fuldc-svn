@@ -755,6 +755,7 @@ string ResourceManager::strings[] = {
 "Close all offline PM windows", 
 "User not available, could be because he is offline", 
 "Failed to move the file from the temporary download location because: ", 
+"Failed to upload %[file] to %[user] because: %[error]", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1510,4 +1511,5 @@ string ResourceManager::names[] = {
 "MenuCloseAllOfflinePm", 
 "UserNotAvailable", 
 "FailedToMoveFile", 
+"UploadFailed", 
 };

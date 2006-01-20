@@ -179,7 +179,7 @@ public:
 	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
 		Source::ConstIter i = getSource(aUser, badSources);
 		if(i != badSources.end())
-			return (*i)->isAnySet(exceptions^Source::FLAG_ERROR_MASK); 
+			return (*i)->isAnySet(exceptions^Source::FLAG_MASK); 
 		return false;
 	};
 

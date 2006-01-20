@@ -758,5 +758,6 @@ enum Strings { // @DontAdd
 	MENU_CLOSE_ALL_OFFLINE_PM, // "Close all offline PM windows"
 	USER_NOT_AVAILABLE, // "User not available, could be because he is offline"
 	FAILED_TO_MOVE_FILE, // "Failed to move the file from the temporary download location because: "
+	UPLOAD_FAILED, // "Failed to upload %[file] to %[user] because: %[error]"
 	LAST // @DontAdd
 };
