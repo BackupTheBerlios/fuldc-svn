@@ -193,8 +193,7 @@ void QueueFrame::QueueItemInfo::update() {
 		if(colMask & MASK_USERS || colMask & MASK_STATUS) {
 			tstring tmp;
 
-			SourceIter j;
-			for(j = getSources().begin(); j != getSources().end(); ++j) {
+			for(SourceIter j = getSources().begin(); j != getSources().end(); ++j) {
 				if(tmp.size() > 0)
 					tmp += _T(", ");
 
@@ -248,13 +247,13 @@ void QueueFrame::QueueItemInfo::update() {
 		}
 		if(colMask & MASK_PRIORITY) {
 			switch(getPriority()) {
-		case QueueItem::PAUSED: display->columns[COLUMN_PRIORITY] = TSTRING(PAUSED); break;
-		case QueueItem::LOWEST: display->columns[COLUMN_PRIORITY] = TSTRING(LOWEST); break;
-		case QueueItem::LOW: display->columns[COLUMN_PRIORITY] = TSTRING(LOW); break;
-		case QueueItem::NORMAL: display->columns[COLUMN_PRIORITY] = TSTRING(NORMAL); break;
-		case QueueItem::HIGH: display->columns[COLUMN_PRIORITY] = TSTRING(HIGH); break;
-		case QueueItem::HIGHEST: display->columns[COLUMN_PRIORITY] = TSTRING(HIGHEST); break;
-		default: dcasserta(0); break;
+				case QueueItem::PAUSED: display->columns[COLUMN_PRIORITY] = TSTRING(PAUSED); break;
+				case QueueItem::LOWEST: display->columns[COLUMN_PRIORITY] = TSTRING(LOWEST); break;
+				case QueueItem::LOW: display->columns[COLUMN_PRIORITY] = TSTRING(LOW); break;
+				case QueueItem::NORMAL: display->columns[COLUMN_PRIORITY] = TSTRING(NORMAL); break;
+				case QueueItem::HIGH: display->columns[COLUMN_PRIORITY] = TSTRING(HIGH); break;
+				case QueueItem::HIGHEST: display->columns[COLUMN_PRIORITY] = TSTRING(HIGHEST); break;
+				default: dcasserta(0); break;
 			}
 		}
 
@@ -264,8 +263,7 @@ void QueueFrame::QueueItemInfo::update() {
 
 		if(colMask & MASK_ERRORS) {
 			tstring tmp;
-			SourceIter j;
-			for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
+			for(SourceIter j = getBadSources().begin(); j != getBadSources().end(); ++j) {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");

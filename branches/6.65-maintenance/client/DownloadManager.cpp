@@ -146,8 +146,15 @@ int DownloadManager::FileMover::run() {
 		}
 		try {
 			File::renameFile(next.first, next.second);
-		} catch(const FileException& fe) {
-			LogManager::getInstance()->message(STRING(FAILED_TO_MOVE_FILE) + fe.getError());
+		} catch(const FileException&) {
+			try {
+				// Try to just rename it to the correct name  at least
+				string newTarget = Util::getFilePath(next.first) + Util::getFileName(next.second);
+				File::renameFile(next.first, newTarget);
+				LogManager::getInstance()->message(next.first + STRING(RENAMED_TO) + newTarget);
+			} catch(const FileException& e) {
+				LogManager::getInstance()->message(STRING(UNABLE_TO_RENAME) + next.first + ": " + e.getError());
+			}
 		}
 	}
 }

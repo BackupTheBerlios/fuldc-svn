@@ -31,7 +31,7 @@ PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_EMAIL, ResourceManager::EMAIL },
 	{ IDC_SETTINGS_DESCRIPTION, ResourceManager::DESCRIPTION },
 	{ IDC_SETTINGS_UPLOAD_SPEED, ResourceManager::SETTINGS_UPLOAD_SPEED },
-	{ IDC_SETTINGS_MEBIBYES, ResourceManager::MiBPS },
+	{ IDC_SETTINGS_MEBIBITS, ResourceManager::MiBITSPS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

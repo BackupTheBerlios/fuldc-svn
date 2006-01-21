@@ -69,7 +69,7 @@ public:
 	 * @param sep Line separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep) throw(ThreadException) { 
+	static BufferedSocket* getSocket(char sep) throw() { 
 		return new BufferedSocket(sep); 
 	};
 
@@ -78,8 +78,8 @@ public:
 		aSock->shutdown();
 	};
 
-	void accept(const Socket& srv, bool secure) throw(SocketException);
-	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException);
+	void accept(const Socket& srv, bool secure) throw(SocketException, ThreadException);
+	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException);
 
 	/** Sets data mode for aBytes bytes. Must be called within onLine. */
 	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }
@@ -143,7 +143,7 @@ private:
 	Modes mode;
 	int64_t dataBytes;
 	size_t rollback;
-	
+	bool failed;
 	string line;
 	vector<u_int8_t> inbuf;
 	vector<u_int8_t> writeBuf;
@@ -164,12 +164,13 @@ private:
 		if(sock)
 			sock->disconnect();
 		fire(BufferedSocketListener::Failed(), aError);
+		failed = true;
 	}
 
 	bool checkEvents();
 	void checkSocket();
 
-	void shutdown() { Lock l(cs); disconnecting = true; addTask(SHUTDOWN, 0); }
+	void shutdown();
 	void addTask(Tasks task, TaskData* data) { tasks.push_back(make_pair(task, data)); taskSem.signal(); }
 };
 

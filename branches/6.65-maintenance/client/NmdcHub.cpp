@@ -40,6 +40,9 @@ NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|', false), supportFl
 
 NmdcHub::~NmdcHub() throw() {
 	TimerManager::getInstance()->removeListener(this);
+	// remove the listener to avoid getting messages before
+	// the client destructor has shut down the socket.
+	socket->removeListener(this); 
 	
 	Lock l(cs);
 	clearUsers();

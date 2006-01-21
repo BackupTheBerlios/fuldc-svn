@@ -69,8 +69,8 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	socket->addListener(this);
 	try {
 		socket->connect(server, port, false, false);
-	} catch(const ThreadException& e) {
-		dcdebug("Thread exception: %s\n", e.getError().c_str());
+	} catch(const Exception& e) {
+		fire(HttpConnectionListener::Failed(), this, e.getError() + " (" + currentUrl + ")");
 	}
 }
 

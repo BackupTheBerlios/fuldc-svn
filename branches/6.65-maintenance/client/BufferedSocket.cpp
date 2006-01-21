@@ -30,18 +30,17 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw(ThreadException) : 
+BufferedSocket::BufferedSocket(char aSeparator) throw() : 
 separator(aSeparator), mode(MODE_LINE), 
-dataBytes(0), rollback(0), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0), disconnecting(false)
+dataBytes(0), rollback(0), failed(false), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0), disconnecting(false)
 {
-	start();
 }
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
 }
 
-void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException) {
+void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
 	secure; // avoid warning
@@ -52,11 +51,19 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
 
+	try {
+		start();
+	} catch(...) {
+		delete sock;
+		sock = 0;
+		throw;
+	}
+
 	Lock l(cs);
 	addTask(ACCEPTED, 0);
 }
 
-void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException) {
+void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
 	secure; // avoid warning
@@ -66,6 +73,14 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
 	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
+
+	try {
+		start();
+	} catch(...) {
+		delete sock;
+		sock = 0;
+		throw;
+	}
 
 	Lock l(cs);
 	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
@@ -256,6 +271,12 @@ bool BufferedSocket::checkEvents() {
 			p = tasks.front();
 			tasks.erase(tasks.begin());
 		}
+		if(failed && p.first != SHUTDOWN) {
+			dcdebug("BufferedSocket: New commands when already failed\n");
+			fail(STRING(DISCONNECTED));
+			delete p.second;
+			continue;
+		}
 
 		switch(p.first) {
 			case SEND_DATA:
@@ -303,14 +324,24 @@ int BufferedSocket::run() {
 			if(!checkEvents())
 				break;
 			checkSocket();
-		} catch(const SocketException& e) {
-			fail(e.getError());
-		} catch(const FileException& e) {
+		} catch(const Exception& e) {
 			fail(e.getError());
 		}
 	}
 	delete this;
 	return 0;
+}
+
+void BufferedSocket::shutdown() { 
+	if(sock) {
+		Lock l(cs); 
+		disconnecting = true; 
+		addTask(SHUTDOWN, 0); 
+	} else {
+		// Socket thread not running yet, disconnect...
+		delete this;
+	}
+
 }
 
 /**

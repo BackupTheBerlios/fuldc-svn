@@ -601,6 +601,7 @@
 #define IDC_DOWNLOAD_FAVORITE_DIRS      1370
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 1371
 #define IDC_FILTER_DROPDOWN             1372
+#define IDC_SETTINGS_MEBIBITS           1373
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
