@@ -31,7 +31,7 @@ md Temp
 md Temp\icons
 md Temp\icons\32bpp
 md Temp\icons\24bpp
-rem xcopy /Q /Y res\*.* Temp\icons\
+xcopy /Q /Y res\*.* Temp\icons\
 xcopy /Q /Y res\32bpp\*.* Temp\icons\32bpp\
 xcopy /Q /Y res\24bpp\*.* Temp\icons\24bpp\
 xcopy /Q /Y changelog.txt Temp\
@@ -40,8 +40,9 @@ xcopy /Q /Y App\Dcplusplus.exe Temp\
 xcopy /Q /Y App\DCPlusPlus.pdb Temp\
 xcopy /Q /Y App\DCPlusPlus.chm Temp\
 xcopy /Q /Y GeoIPCountryWhois.csv Temp\
+xcopy /Q /Y "C:\Program Files\Microsoft Visual Studio 8\Common7\IDE\dbghelp.dll" Temp\
 
-rem del Temp\icons\dcplusplus.manifest
+del Temp\icons\dcplusplus.manifest
 
 
 ECHO ------------------------------
