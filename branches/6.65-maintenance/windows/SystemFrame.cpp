@@ -26,10 +26,6 @@
 
 LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	//needs to be set before calling create otherwise the menu won't be created correctly
-	//ctrlPad.unsetFlag( CFulEditCtrl::URL_SINGLE_CLICK );
-	//ctrlPad.setFlag( CFulEditCtrl::MENU_PASTE | CFulEditCtrl::URL_DOUBLE_CLICK );
-
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
 
@@ -37,8 +33,7 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlPad.SetFont(WinUtil::font);
 	ctrlPad.SetTextColor(WinUtil::textColor);
 	ctrlPad.SetBackgroundColor(WinUtil::bgColor);
-	ctrlPad.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB | CFulEditCtrl::STRIP_ISP |
-		CFulEditCtrl::HANDLE_SCROLL );
+	ctrlPad.unsetFlag(CFulEditCtrl::POPUP | CFulEditCtrl::SOUND | CFulEditCtrl::TAB | CFulEditCtrl::STRIP_ISP );
 
 	deque<pair<time_t, string> > oldMessages = LogManager::getInstance()->getLastLogs();
 	// Technically, we might miss a message or two here, but who cares...
@@ -47,6 +42,8 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	for(deque<pair<time_t, string> >::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
 		addLine(i->first, Text::toT(i->second));
 	}
+
+	PostMessage(WM_COMMAND, IDC_SCROLL, 0); //post this to make sure it's received after the window's been created
 
 	WinUtil::SetIcon(m_hWnd, _T("systemlog.ico"));
 

@@ -181,6 +181,7 @@
 #define IDC_PRIORITY_NORMAL             317
 #define IDC_PRIORITY_HIGH               318
 #define IDC_PRIORITY_HIGHEST            319
+#define IDC_SCROLL                      320
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002

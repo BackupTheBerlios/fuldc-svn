@@ -47,6 +47,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		COMMAND_ID_HANDLER(IDC_SCROLL, onScroll);
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -71,6 +72,11 @@ public:
 	
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
+		return 0;
+	}
+
+	LRESULT onScroll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		ctrlPad.ScrollToEnd();
 		return 0;
 	}
 	

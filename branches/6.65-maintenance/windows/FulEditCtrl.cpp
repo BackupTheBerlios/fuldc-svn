@@ -506,7 +506,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 
 LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
 	if(isSet(HANDLE_SCROLL)) {
-		if(wParam != SIZE_MINIMIZED && HIWORD(lParam) > 0)
+		if(wParam != SIZE_MINIMIZED && wParam != SIZE_RESTORED && HIWORD(lParam) > 0)
 			ScrollToEnd();
 	}		
 	bHandled = FALSE;
@@ -600,7 +600,7 @@ LRESULT CFulEditCtrl::onDoubleClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	return bHandled = TRUE ? 0: 1;
 }
 
-LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
+LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	LPFINDREPLACE fr = reinterpret_cast<LPFINDREPLACE>(lParam);
 
 	if(fr->Flags & FR_DIALOGTERM){

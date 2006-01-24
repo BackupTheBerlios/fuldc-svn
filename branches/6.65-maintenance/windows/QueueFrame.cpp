@@ -1030,7 +1030,7 @@ LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
-			QueueItemInfo::SourceInfo* si = getSourceInfo(removeMenu, wID);
+			QueueItemInfo::SourceInfo* si = getSourceInfo(removeQueueMenu, wID);
 			if(si) {
 				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}

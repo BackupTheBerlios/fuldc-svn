@@ -115,7 +115,6 @@ public:
 	}
 
 private:
-	/** Parameter map for user commands */
 	TCHAR * headerBuf;
 
 	class ItemInfo;

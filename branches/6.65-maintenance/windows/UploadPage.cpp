@@ -124,9 +124,16 @@ void UploadPage::write()
 
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
+	NMLISTVIEW* lv = (NMLISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
+	return 0;
+}
+
+LRESULT UploadPage::onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLISTVIEW* lv = reinterpret_cast<NMLISTVIEW*>(pnmh);
+	ctrlDirectories.setSort(lv->iSubItem, ExListViewCtrl::SORT_STRING, !ctrlDirectories.isAscending());
+
 	return 0;
 }
 
