@@ -167,11 +167,11 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlStatus.SetParts(7, statusSizes);
 	updateStatus();
 
-	if(!BOOLSETTING(EXPAND_QUEUE)) {
+	if(BOOLSETTING(EXPAND_QUEUE)) {
 		HTREEITEM item = ctrlDirs.GetRootItem();
 		do{
-			collapse(item);
-			ctrlDirs.Expand(item, TVE_EXPAND);
+			expand(item);
+			//ctrlDirs.Expand(item, TVE_EXPAND);
 		}while((item = ctrlDirs.GetNextSiblingItem(item)) != NULL);
 	}
 
@@ -1342,15 +1342,15 @@ LRESULT QueueFrame::onSetPriority(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-void QueueFrame::collapse(HTREEITEM item) {
+void QueueFrame::expand(HTREEITEM item) {
 	if(ctrlDirs.ItemHasChildren(item)) {
 		HTREEITEM tmp = ctrlDirs.GetChildItem(item);
 	
 		while( tmp != NULL ) {
-			collapse(tmp);
+			expand(tmp);
 			tmp = ctrlDirs.GetNextSiblingItem(tmp);
 		}
-		ctrlDirs.Expand(item, TVE_COLLAPSE);
+		ctrlDirs.Expand(item, TVE_EXPAND);
 	}
 }
 

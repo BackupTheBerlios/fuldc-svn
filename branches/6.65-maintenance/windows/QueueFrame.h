@@ -482,7 +482,7 @@ private:
 	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
 	virtual void on(QueueManagerListener::SearchAlternates, string aMsg, int nr) throw();
-	void collapse(HTREEITEM item);
+	void expand(HTREEITEM item);
 };
 
 #endif // !defined(QUEUE_FRAME_H)
