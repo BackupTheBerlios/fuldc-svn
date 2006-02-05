@@ -762,5 +762,7 @@ enum Strings { // @DontAdd
 	MENU_CLOSE_ALL_OFFLINE_PM, // "Close all offline PM windows"
 	USER_NOT_AVAILABLE, // "User not available, could be because he is offline"
 	UPLOAD_FAILED, // "Failed to upload %[file] to %[user] because: %[error]"
+	NOTIFY_UPDATES, //  "Notify me about new versions"
+	NOTIFY_BETA_UPDATES, // "Notify me about new beta versions"
 	LAST // @DontAdd
 };

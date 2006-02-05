@@ -108,7 +108,7 @@ void Client::updateCounts(bool aRemove) {
 
 string Client::getLocalIp() const {
 	// Best case - the server detected it
-	if((!BOOLSETTING(NO_IP_OVERRIDE) || SETTING(EXTERNAL_IP).empty()) && !getMe()->getIp().empty()) {
+	if((!BOOLSETTING(NO_IP_OVERRIDE) || SETTING(EXTERNAL_IP).empty()) && getMe() && !getMe()->getIp().empty()) {
 		return getMe()->getIp();
 	}
 

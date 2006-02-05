@@ -49,6 +49,8 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::FLASH_WINDOW_ON_PM,				ResourceManager::FLASH_WINDOW_ON_PM			},
 	{ SettingsManager::FLASH_WINDOW_ON_NEW_PM,			ResourceManager::FLASH_WINDOW_ON_NEW_PM		},
 	{ SettingsManager::MUTE_ON_AWAY,					ResourceManager::MUTE_ON_AWAY				},
+	{ SettingsManager::NOTIFY_UPDATES,					ResourceManager::NOTIFY_UPDATES				},
+	{ SettingsManager::NOTIFY_BETA_UPDATES,				ResourceManager::NOTIFY_BETA_UPDATES		},
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 

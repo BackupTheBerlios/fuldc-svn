@@ -655,7 +655,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			}
 		} 
 	}else if(Util::stricmp(cmd.c_str(), _T("fuldc")) == 0) {
-		message = _T("http://ful.dcportal.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
+		message = _T("http://www.fuldc.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
 	} else if(Util::stricmp(cmd.c_str(), _T("info")) == 0) {
 		message = WinUtil::UselessInfo();
 	} else if(Util::stricmp(cmd.c_str(), _T("fuptime")) == 0) {

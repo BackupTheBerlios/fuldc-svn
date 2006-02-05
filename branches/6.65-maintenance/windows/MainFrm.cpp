@@ -241,8 +241,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-	//c->addListener(this);
-	//c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	c->addListener(this);
+	c->downloadFile("http://www.fuldc.net/version.xml");
 
 	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
 	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_FILE_CONNECT);
@@ -661,74 +661,81 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 		xml.fromXML(versionInfo);
 		xml.stepIn();
 
-		string url = Text::fromT(links.homepage);
+		if(xml.findChild("Beta") && BOOLSETTING(NOTIFY_BETA_UPDATES)) {
+			xml.stepIn();
+			string url = Text::fromT(links.homepage);
 
-		if(xml.findChild("URL")) {
-			url = xml.getChildData();
-		}
-
-		xml.resetCurrentChild();
-		if(xml.findChild("Version")) {
-			if(Util::toDouble(xml.getChildData()) > VERSIONFLOAT) {
-				xml.resetCurrentChild();
-				xml.resetCurrentChild();
-				if(xml.findChild("Title")) {
-					const string& title = xml.getChildData();
-					xml.resetCurrentChild();
-					if(xml.findChild("Message")) {
-						if(url.empty()) {
-							const string& msg = xml.getChildData();
-							MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
-						} else {
-							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
-							if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO | MB_DEFBUTTON1) == IDYES) {
-								WinUtil::openLink(Text::toT(url));
-							}
-						}
-					}
-				}
+			if(xml.findChild("URL")) {
+				url = xml.getChildData();
 			}
 
 			xml.resetCurrentChild();
-			if(xml.findChild("Links")) {
-				xml.stepIn();
-				if(xml.findChild("Homepage")) {
-					links.homepage = Text::toT(xml.getChildData());
-				}
+			if(xml.findChild("MajorVersion")) {
+				float major, minor;
+				major = Util::toDouble(xml.getChildData());
 				xml.resetCurrentChild();
-				if(xml.findChild("Downloads")) {
-					links.downloads = Text::toT(xml.getChildData());
+				if(xml.findChild("MinorVersion")) {
+					minor = Util::toDouble(xml.getChildData());
+                    if( major > MAJORVERSIONFLOAT || ( major >= MAJORVERSIONFLOAT && minor > MINORVERSIONFLOAT )) {
+                        if(xml.findChild("Title")) {
+                            const string& title = xml.getChildData();
+                            xml.resetCurrentChild();
+                            if(xml.findChild("Message")) {
+                                if(url.empty()) {
+                                    const string& msg = xml.getChildData();
+                                    MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
+                                } else {
+                                    string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
+                                    if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO | MB_DEFBUTTON1) == IDYES) {
+                                        WinUtil::openLink(Text::toT(url));
+                                    }
+                                }
+                            }
+                        }
+                    }
 				}
-				xml.resetCurrentChild();
-				if(xml.findChild("GeoIP database update")) {
-					links.geoipfile = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Translations")) {
-					links.translations = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Faq")) {
-					links.faq = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Bugs")) {
-					links.bugs = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Features")) {
-					links.features = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Help")) {
-					links.help = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Forum")) {
-					links.discuss = Text::toT(xml.getChildData());
-				}
-				xml.stepOut();
 			}
+			xml.stepOut();
+			xml.resetCurrentChild();
+		}
+		
+		xml.resetCurrentChild();
+		if(xml.findChild("Stable") && BOOLSETTING(NOTIFY_UPDATES)) {
+			xml.stepIn();
+			string url = Text::fromT(links.homepage);
+
+			if(xml.findChild("URL")) {
+				url = xml.getChildData();
+			}
+
+			xml.resetCurrentChild();
+			if(xml.findChild("MajorVersion")) {
+				double major, minor;
+				major = Util::toDouble(xml.getChildData());
+				xml.resetCurrentChild();
+				if(xml.findChild("MinorVersion")) {
+					minor = Util::toDouble(xml.getChildData());
+                    if( major > MAJORVERSIONFLOAT || ( major >= MAJORVERSIONFLOAT && minor > MINORVERSIONFLOAT )) {
+                        if(xml.findChild("Title")) {
+                            const string& title = xml.getChildData();
+                            xml.resetCurrentChild();
+                            if(xml.findChild("Message")) {
+                                if(url.empty()) {
+                                    const string& msg = xml.getChildData();
+                                    MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
+                                } else {
+                                    string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
+                                    if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO | MB_DEFBUTTON1) == IDYES) {
+                                        WinUtil::openLink(Text::toT(url));
+                                    }
+                                }
+                            }
+                        }
+                    }
+				}
+			}
+			xml.stepOut();
+			xml.resetCurrentChild();
 		}
 		xml.stepOut();
 	} catch (const Exception&) {
@@ -965,7 +972,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
 	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
 	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/xclick/business=arnetheduck%40gmail.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
-	case IDC_HELP_FULPAGE: site = _T("http://ful.dcportal.net"); break;
+	case IDC_HELP_FULPAGE: site = _T("http://www.fuldc.net"); break;
 	default: dcassert(0);
 	}
 

@@ -758,5 +758,7 @@
 		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
 		<String Name="UserNotAvailable">User not available, could be because he is offline</String>
 		<String Name="UploadFailed">Failed to upload %[file] to %[user] because: %[error]</String>
+		<String Name="NotifyUpdates">Notify me about new versions</String>
+		<String Name="NotifyBetaUpdates">Notify me about new beta versions</String>
 	</Strings>
 </Language>

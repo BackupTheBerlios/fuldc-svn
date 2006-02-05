@@ -86,7 +86,7 @@ const string SettingsManager::settingTags[] =
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
-    "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", 
+    "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", "NotifyUpdates", "NotifyBetaUpdates",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -301,6 +301,8 @@ SettingsManager::SettingsManager()
 	setDefault(REFRESH_SHARE_END, 0);
 	setDefault(MUTE_ON_AWAY, false);
 	setDefault(HIGH_PRIO_FILES, "*.sfv|*.nfo|*sample*|*subs*");
+	setDefault(NOTIFY_UPDATES, true);
+	setDefault(NOTIFY_BETA_UPDATES, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
