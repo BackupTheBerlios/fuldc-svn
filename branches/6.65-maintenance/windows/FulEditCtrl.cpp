@@ -506,7 +506,7 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 
 LRESULT CFulEditCtrl::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
 	if(isSet(HANDLE_SCROLL)) {
-		if(wParam != SIZE_MINIMIZED && wParam != SIZE_RESTORED && HIWORD(lParam) > 0)
+		if(wParam != SIZE_MINIMIZED && HIWORD(lParam) > 0)
 			ScrollToEnd();
 	}		
 	bHandled = FALSE;

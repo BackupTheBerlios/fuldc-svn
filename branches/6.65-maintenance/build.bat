@@ -6,7 +6,7 @@ set NET="devenv.exe"
 set OPTS=dcplusplus.sln /build release
 set CLEAN=dcplusplus.sln /clean release
 
-set RAR="C:\Program Files\Winrar\rar.exe"
+set RAR="%ProgramFiles%\Winrar\rar.exe"
 set RAROPS=a -r -idp -inul -m3 ..\fulDC.rar *.*
 set RARSRCOPS=a -r -idp -inul -m3 -x@exclude.txt fulDC-src.rar *.*
 
