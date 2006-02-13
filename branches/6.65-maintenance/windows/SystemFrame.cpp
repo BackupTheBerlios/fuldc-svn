@@ -27,7 +27,7 @@
 LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
+		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 
 	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
@@ -61,6 +61,22 @@ LRESULT SystemFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	bHandled = FALSE;
 	return 0;
 	
+}
+
+
+LRESULT SystemFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlPad) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
+		if( pt.x == -1 && pt.y == -1 )
+			WinUtil::getContextMenuPos(ctrlPad, pt);
+
+		ctrlPad.ShowMenu(m_hWnd, pt);
+		bHandled = TRUE;
+	}else {
+		bHandled = FALSE;
+	}
+	return 0;
 }
 
 void SystemFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
