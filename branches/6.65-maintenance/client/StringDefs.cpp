@@ -761,6 +761,10 @@ string ResourceManager::strings[] = {
 "Failed to upload %[file] to %[user] because: %[error]", 
 "Notify me about new versions", 
 "Notify me about new beta versions", 
+"Invalid format for the time specified, please read the help file.", 
+"Timer started", 
+"Timer stopped", 
+"Timer", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1522,4 +1526,8 @@ string ResourceManager::names[] = {
 "UploadFailed", 
 "NotifyUpdates", 
 "NotifyBetaUpdates", 
+"InvalidTimerFormat", 
+"TimerStarted", 
+"TimerStopped", 
+"Timer", 
 };

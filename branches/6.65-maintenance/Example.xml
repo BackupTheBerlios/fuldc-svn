@@ -760,5 +760,9 @@
 		<String Name="UploadFailed">Failed to upload %[file] to %[user] because: %[error]</String>
 		<String Name="NotifyUpdates">Notify me about new versions</String>
 		<String Name="NotifyBetaUpdates">Notify me about new beta versions</String>
+		<String Name="InvalidTimerFormat">Invalid format for the time specified, please read the help file.</String>
+		<String Name="TimerStarted">Timer started</String>
+		<String Name="TimerStopped">Timer stopped</String>
+		<String Name="Timer">Timer</String>
 	</Strings>
 </Language>

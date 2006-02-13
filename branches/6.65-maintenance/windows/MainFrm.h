@@ -61,7 +61,9 @@ public:
 		VIEW_FILE_AND_DELETE,
 		STATUS_MESSAGE,
 		DOWNLOAD_COMPLETE,
-		REMOVE_POPUP
+		REMOVE_POPUP,
+		START_TIMER,
+		STOP_TIMER
 	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
@@ -371,6 +373,9 @@ private:
 	HANDLE stopperThread;
 
 	bool missedAutoConnect;
+
+	u_int32_t timerTime;
+	tstring timerMsg;
 
 	struct {
 		tstring homepage;

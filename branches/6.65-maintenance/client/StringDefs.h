@@ -764,5 +764,9 @@ enum Strings { // @DontAdd
 	UPLOAD_FAILED, // "Failed to upload %[file] to %[user] because: %[error]"
 	NOTIFY_UPDATES, //  "Notify me about new versions"
 	NOTIFY_BETA_UPDATES, // "Notify me about new beta versions"
+	INVALID_TIMER_FORMAT, // "Invalid format for the time specified, please read the help file."
+	TIMER_STARTED, // "Timer started"
+	TIMER_STOPPED, // "Timer stopped"
+	TIMER, // "Timer"
 	LAST // @DontAdd
 };

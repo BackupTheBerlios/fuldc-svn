@@ -24,6 +24,7 @@
 #include "PrivateFrame.h"
 #include "SearchFrm.h"
 #include "LineDlg.h"
+#include "MainFrm.h"
 #include "../client/WebShortcuts.h"
 
 #include "../client/Util.h"
@@ -657,7 +658,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	}else if(Util::stricmp(cmd.c_str(), _T("fuldc")) == 0) {
 		message = _T("http://www.fuldc.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
 	} else if(Util::stricmp(cmd.c_str(), _T("info")) == 0) {
-		message = WinUtil::UselessInfo();
+		status = WinUtil::UselessInfo();
 	} else if(Util::stricmp(cmd.c_str(), _T("fuptime")) == 0) {
 		message = TSTRING(FULDC_UPTIME) + _T(" ") + Util::formatTimeW(GET_TIME() - WinUtil::startTime, false);
 	} else if(Util::stricmp(cmd.c_str(), _T("uptime")) == 0) {
@@ -670,6 +671,37 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		message = WinUtil::DiskSpaceInfo();
 	} else if(Util::stricmp(cmd.c_str(), _T("regen")) == 0) {
 		ShareManager::getInstance()->generateXmlList(true);
+	} else if(Util::stricmp(cmd.c_str(), _T("timer")) == 0) {
+		int pos = param.find(_T(" "));
+		if(pos != tstring::npos) {
+			tstring time = param.substr(0, pos);
+			tstring msg = param.substr(pos+1);
+			u_int32_t seconds = 0;
+
+			TStringList tmp = StringTokenizer<tstring>(time, _T(":")).getTokens();
+			if(tmp.size() == 1) {
+				seconds = Util::toInt(tmp[0]);
+			} else if(tmp.size() == 2) {
+				seconds = Util::toInt(tmp[0]) * 60;
+				seconds += Util::toInt(tmp[1]);
+			} else if(tmp.size() == 3) {
+				seconds = Util::toInt(tmp[0]) * 3600;
+				seconds += Util::toInt(tmp[1]) * 60;
+				seconds += Util::toInt(tmp[2]);
+			} else {
+				status = TSTRING(INVALID_TIMER_FORMAT);
+			}
+			if(seconds > 0) {
+				seconds = GET_TICK() + seconds*1000; //convert to ticks
+				PostMessage(mainWnd, WM_SPEAKER, MainFrame::START_TIMER, (LPARAM) new pair<u_int32_t, tstring>(seconds, msg));
+				status = TSTRING(TIMER_STARTED);
+			}
+		} else {
+			status = TSTRING(INVALID_TIMER_FORMAT);
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("stoptimer")) == 0) {
+		PostMessage(mainWnd, WM_SPEAKER, MainFrame::STOP_TIMER, 0);
+		status = TSTRING(TIMER_STOPPED);
 	} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 		HtmlHelp(mainWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDC_CHATCOMMANDS);
 	} else {

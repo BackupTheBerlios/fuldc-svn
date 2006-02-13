@@ -56,7 +56,7 @@
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
 closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL),
- hashProgress(false)
+ hashProgress(false), timerTime(0)
 { 
 	memset(statusSizes, 0, sizeof(statusSizes));
 	
@@ -561,6 +561,13 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		PopupManager::getInstance()->Remove((int)lParam, true);
 	} else if(wParam == REMOVE_POPUP){
 		PopupManager::getInstance()->AutoRemove();
+	} else if(wParam == START_TIMER) {
+		auto_ptr<pair<u_int32_t, tstring> > msg(reinterpret_cast<pair<u_int32_t, tstring>* > (lParam));
+		timerTime = msg->first;
+		timerMsg = msg->second;
+	} else if(wParam == STOP_TIMER) {
+		timerTime = 0;
+		timerMsg = _T("");
 	}
 
 	return 0;
@@ -1166,6 +1173,15 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	lastUpdate = aTick;
 	lastUp = Socket::getTotalUp();
 	lastDown = Socket::getTotalDown();
+
+	if(timerTime > 0) {
+		if(aTick > timerTime) {
+			WinUtil::flashWindow();
+			::MessageBox(WinUtil::mainWnd, timerMsg.c_str(), CTSTRING(TIMER), MB_OK);
+			timerTime = 0;
+			timerMsg = _T("");
+		}
+	}
 }
 
 void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
