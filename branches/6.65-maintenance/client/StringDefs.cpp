@@ -217,7 +217,7 @@ string ResourceManager::strings[] = {
 "DC++ discussion forum", 
 "Donate (paypal)", 
 "&Download Queue\tCtrl+D", 
-"&Exit", 
+"E&xit", 
 "Frequently asked questions", 
 "&Favorite Hubs\tCtrl+F", 
 "Favorite &Users\tCtrl+U", 

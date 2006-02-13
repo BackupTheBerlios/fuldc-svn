@@ -220,7 +220,7 @@ enum Strings { // @DontAdd
 	MENU_DISCUSS, // "DC++ discussion forum"
 	MENU_DONATE, // "Donate (paypal)"
 	MENU_DOWNLOAD_QUEUE, // "&Download Queue\tCtrl+D"
-	MENU_EXIT, // "&Exit"
+	MENU_EXIT, // "E&xit"
 	MENU_FAQ, // "Frequently asked questions"
 	MENU_FAVORITE_HUBS, // "&Favorite Hubs\tCtrl+F"
 	MENU_FAVORITE_USERS, // "Favorite &Users\tCtrl+U"

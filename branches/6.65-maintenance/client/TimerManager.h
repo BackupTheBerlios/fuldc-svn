@@ -47,6 +47,11 @@ public:
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
 {
 public:
+	void shutdown() {
+		s.signal();
+		join();
+	}
+
 	static time_t getTime() {
 		return (time_t)time(NULL);
 	}
@@ -69,12 +74,11 @@ private:
 		gettimeofday(&tv, NULL);
 #endif
 	};
-	
+
 	virtual ~TimerManager() throw() {
-		s.signal();
-		join();
+		shutdown();
 	};
-	
+
 	virtual int run();
 	
 #ifndef _WIN32

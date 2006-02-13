@@ -593,8 +593,11 @@ public:
 		if (away)
 			awayTime = time(NULL);
 	};
-	static string getAwayMessage();
 
+	static bool getManualAway() { return manualAway; };
+	static void setManualAway(bool aManualAway) { manualAway = aManualAway;	};
+
+	static string getAwayMessage();
 	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
 
 	static u_int32_t rand();
@@ -606,6 +609,7 @@ private:
 	static string appPath;
 	static string dataPath;
 	static bool away;
+	static bool manualAway;
 	static string awayMsg;
 	static time_t awayTime;
 

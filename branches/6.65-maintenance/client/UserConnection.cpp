@@ -185,7 +185,6 @@ void UserConnection::connect(const string& aServer, short aPort) throw(SocketExc
 
 void UserConnection::accept(const Socket& aServer) throw(SocketException, ThreadException) {
 	dcassert(!socket);
-
 	socket = BufferedSocket::getSocket(0);
 	socket->addListener(this);
 	socket->accept(aServer, secure);

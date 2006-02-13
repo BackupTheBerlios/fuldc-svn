@@ -508,20 +508,18 @@ HWND MainFrame::createToolbar() {
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		
 	if(wParam == DOWNLOAD_LISTING) {
-		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
+		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
 		DirectoryListingFrame::openWindow(i->file, i->user);
-		delete i;
 	} else if(wParam == BROWSE_LISTING) {
-		DirectoryBrowseInfo* i = (DirectoryBrowseInfo*)lParam;
+		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
 		DirectoryListingFrame::openWindow(i->user, i->text);
-		delete i;
 	} else if(wParam == VIEW_FILE_AND_DELETE) {
-		tstring* file = (tstring*)lParam;
+		auto_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
 		TextFrame::openWindow(*file);
 		File::deleteFile(Text::fromT(*file));
-		delete file;
 	} else if(wParam == STATS) {
-		TStringList& str = *(TStringList*)lParam;
+		auto_ptr<TStringList> pstr(reinterpret_cast<TStringList*>(lParam));
+		const TStringList& str = *pstr;
 		if(ctrlStatus.IsWindow()) {
 			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
 			bool u = false;
@@ -539,7 +537,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			if(u)
 				UpdateLayout(TRUE);
 		}
-		delete &str;
 	} else if(wParam == AUTO_CONNECT) {
 		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
@@ -847,7 +844,7 @@ void MainFrame::updateTray(bool add /* = true */) {
 LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if(wParam == SIZE_MINIMIZED) {
-		if(BOOLSETTING(AUTO_AWAY)) {
+		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(true);
 		}
 		if(BOOLSETTING(MINIMIZE_TRAY)) {
@@ -858,7 +855,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		maximized = IsZoomed() > 0;
 
 	} else if( (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) ) {
-		if(BOOLSETTING(AUTO_AWAY)) {
+		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(false);
 		}
 		if(trayIcon) {

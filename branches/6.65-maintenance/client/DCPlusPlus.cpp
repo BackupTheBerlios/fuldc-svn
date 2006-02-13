@@ -118,10 +118,11 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 }
 
 void shutdown() {
-	TimerManager::getInstance()->removeListeners();
-
+	TimerManager::getInstance()->shutdown();
 	HashManager::getInstance()->shutdown();
 	ConnectionManager::getInstance()->shutdown();
+
+	BufferedSocket::waitShutdown();
 
 	SettingsManager::getInstance()->save();
 	
@@ -138,8 +139,8 @@ void shutdown() {
 	QueueManager::deleteInstance();
 	ConnectionManager::deleteInstance();
 	SearchManager::deleteInstance();
-	ClientManager::deleteInstance();
 	FavoriteManager::deleteInstance();
+	ClientManager::deleteInstance();
 	HashManager::deleteInstance();
 	LogManager::deleteInstance();
 	SettingsManager::deleteInstance();

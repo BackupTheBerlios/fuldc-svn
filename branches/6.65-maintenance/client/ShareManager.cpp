@@ -114,7 +114,7 @@ ShareManager::Directory::~Directory() {
 		delete i->second;
 	
 	for(File::Iter i = files.begin(); i != files.end(); ++i) {
-		ShareManager::getInstance()->removeTTH(i->getTTH(), i);
+		ShareManager::getInstance()->removeTTH(i->getTTH(), *i);
 	}
 }
 
@@ -656,10 +656,10 @@ void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	bloom.add(Text::toLower(f.getName()));
 }
 
-void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& iter) {
+void ShareManager::removeTTH(const TTHValue& tth, const Directory::File& file) {
 	pair<HashFileIter, HashFileIter> range = tthIndex.equal_range(const_cast<TTHValue*>(&tth));
 	for(HashFileIter j = range.first; j != range.second; ++j) {
-		if(j->second == iter) {
+		if(*j->second == file) {
 			tthIndex.erase(j);
 			break;
 		}
@@ -1482,7 +1482,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const T
         Directory::File::Iter i = d->findFile(Util::getFileName(fname));
 		if(i != d->files.end()) {
 			if(root != i->getTTH())
-				removeTTH(i->getTTH(), i);
+				removeTTH(i->getTTH(), *i);
 			// Get rid of false constness...
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
 			f->setTTH(root);

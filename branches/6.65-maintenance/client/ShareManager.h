@@ -148,6 +148,10 @@ private:
 				return *this;
 			}
 
+			bool operator==(const File& rhs) const {
+				return getParent() == rhs.getParent() && (Util::stricmp(getName(), rhs.getName()) == 0);
+			}
+
 			string getADCPath() const { return parent->getADCPath() + name; }
 			string getFullName() const { return parent->getFullName() + getName(); }
 
@@ -319,7 +323,7 @@ private:
 	void addTree(Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
 		
-	void removeTTH(const TTHValue& tth, const Directory::File::Iter&);
+	void removeTTH(const TTHValue& tth, const Directory::File& file);
 
 	Directory* getDirectory(const string& fname);
 

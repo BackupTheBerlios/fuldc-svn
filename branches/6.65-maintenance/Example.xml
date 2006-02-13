@@ -216,7 +216,7 @@
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
 		<String Name="MenuDonate">Donate (paypal)</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>
-		<String Name="MenuExit">&amp;Exit</String>
+		<String Name="MenuExit">E&amp;xit</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
 		<String Name="MenuFavoriteHubs">&amp;Favorite Hubs	Ctrl+F</String>
 		<String Name="MenuFavoriteUsers">Favorite &amp;Users	Ctrl+U</String>

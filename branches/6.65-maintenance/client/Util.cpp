@@ -51,6 +51,7 @@ wstring Util::emptyStringW;
 tstring Util::emptyStringT;
 
 bool Util::away = false;
+bool Util::manualAway = false;
 string Util::awayMsg;
 time_t Util::awayTime;
 
