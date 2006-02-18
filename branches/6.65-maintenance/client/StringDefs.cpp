@@ -733,7 +733,7 @@ string ResourceManager::strings[] = {
 "Don't display popups for active window", 
 "Activate window when clicking popup", 
 "Drop connections from own nick(stupid clients)", 
-"Incoming connection dropped because user tried to use a fake nick, IP=", 
+"Incoming connection dropped because user tried to download with your nick, in hub %[hub] with IP %[ip] ", 
 "Flash window on PM", 
 "Flash window on PM only if it's from a new user", 
 "Unignore", 
@@ -755,7 +755,7 @@ string ResourceManager::strings[] = {
 "Releases", 
 "Re-add user to queue", 
 "Mute sounds when away mode is enabled", 
-"Detected a user trying to connect using a fake nick, nick=%s ip=%s", 
+"Detected a user trying to connect using a fake nick, nick used=%[nick] ip=%[ip] in hub %[hub]", 
 "Close all offline PM windows", 
 "User not available, could be because he is offline", 
 "Failed to upload %[file] to %[user] because: %[error]", 
@@ -765,6 +765,10 @@ string ResourceManager::strings[] = {
 "Timer started", 
 "Timer stopped", 
 "Timer", 
+"Old client detected, disconnecting. User=%[user] Hub=%[hub]", 
+"Client too old to download from, no support for TTH", 
+"Total Files", 
+"Total Size", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1530,4 +1534,8 @@ string ResourceManager::names[] = {
 "TimerStarted", 
 "TimerStopped", 
 "Timer", 
+"OldClient", 
+"ClientTooOld", 
+"TotalFiles", 
+"TotalSize", 
 };

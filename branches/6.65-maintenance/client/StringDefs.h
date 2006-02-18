@@ -736,7 +736,7 @@ enum Strings { // @DontAdd
 	POPUP_DONT_SHOW_ON_ACTIVE, // "Don't display popups for active window"
 	POPUP_ACTIVATE_ON_CLICK, // "Activate window when clicking popup"
 	DROP_STUPID_CONNECTION, // "Drop connections from own nick(stupid clients)"
-	DROP_STUPID_CONNECTION_LOG, // "Incoming connection dropped because user tried to use a fake nick, IP="
+	DROP_STUPID_CONNECTION_LOG, // "Incoming connection dropped because user tried to download with your nick, in hub %[hub] with IP %[ip] "
 	FLASH_WINDOW_ON_PM, // "Flash window on PM"
 	FLASH_WINDOW_ON_NEW_PM, // "Flash window on PM only if it's from a new user"
 	UNIGNORE, // "Unignore"
@@ -758,7 +758,7 @@ enum Strings { // @DontAdd
 	PRESET_RELEASES, // "Releases"
 	READD_SOURCE_TO_QUEUE, // "Re-add user to queue"
 	MUTE_ON_AWAY, // "Mute sounds when away mode is enabled"
-	DROP_FAKE_NICK_CONNECTION_LOG, // "Detected a user trying to connect using a fake nick, nick=%s ip=%s"
+	DROP_FAKE_NICK_CONNECTION_LOG, // "Detected a user trying to connect using a fake nick, nick used=%[nick] ip=%[ip] in hub %[hub]"
 	MENU_CLOSE_ALL_OFFLINE_PM, // "Close all offline PM windows"
 	USER_NOT_AVAILABLE, // "User not available, could be because he is offline"
 	UPLOAD_FAILED, // "Failed to upload %[file] to %[user] because: %[error]"
@@ -768,5 +768,9 @@ enum Strings { // @DontAdd
 	TIMER_STARTED, // "Timer started"
 	TIMER_STOPPED, // "Timer stopped"
 	TIMER, // "Timer"
+	OLD_CLIENT, // "Old client detected, disconnecting. User=%[user] Hub=%[hub]"
+	CLIENT_TOO_OLD, // "Client too old to download from, no support for TTH"
+	TOTAL_FILES, // "Total Files"
+	TOTAL_SIZE, // "Total Size"
 	LAST // @DontAdd
 };

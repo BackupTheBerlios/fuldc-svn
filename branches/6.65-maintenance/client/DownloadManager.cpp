@@ -298,7 +298,18 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			aConn->isSet(!aConn->isSet(UserConnection::FLAG_NMDC) || UserConnection::FLAG_SUPPORTS_TTHF)
 			));
 	} else {
-		dcdebug("remote client too old\r\n");
+		StringMap params;
+		params["user"] = aConn->getUser()->getNick();
+		params["hub"] = aConn->getUser()->getClientAddressPort();
+		string tmp = Util::formatParams(STRING(OLD_CLIENT), params);
+		LogManager::getInstance()->message(tmp);
+		
+		removeDownload(d);
+		string target = d->getTarget();
+		aConn->setDownload(NULL);
+		QueueManager::getInstance()->putDownload(d, false);
+		QueueManager::getInstance()->removeSource(target, aConn->getUser(), QueueItem::Source::FLAG_OLD_CLIENT, false);
+		removeConnection(aConn);
 	}
 }
 

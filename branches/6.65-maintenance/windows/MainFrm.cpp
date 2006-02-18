@@ -95,8 +95,6 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 		}
 	}
 
-	shutdown();
-	
 	mf->PostMessage(WM_CLOSE);	
 	return 0;
 }
@@ -1208,6 +1206,18 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 	}
 }
 
+
+LRESULT MainFrame::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LogManager::getInstance()->removeListener(this);
+	QueueManager::getInstance()->removeListener(this);
+	TimerManager::getInstance()->removeListener(this);
+
+	if(trayIcon) {
+		updateTray(false);
+	}
+	bHandled = FALSE;
+	return 0;
+}
 
 LRESULT MainFrame::onDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	LPNMTOOLBAR tb = (LPNMTOOLBAR)pnmh;

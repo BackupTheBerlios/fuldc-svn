@@ -740,6 +740,8 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 		if(qt == NULL) {
 			// Good, update the target and move in the queue...
 			fileQueue.move(qs, target);
+			updateTotalSize(aSource, qs->getSize(), false);
+			updateTotalSize(aTarget, qs->getSize(), true);
 			fire(QueueManagerListener::Moved(), qs);
 			setDirty();
 		} else {
@@ -760,6 +762,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 
 	if(delSource) {
 		remove(aSource);
+		updateTotalSize(aSource, qs->getSize(), false);
 	}
 }
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,16 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.6811"
-#define VERSIONFLOAT 0.6811
+#define VERSIONSTRING "0.686"
+#define VERSIONFLOAT 0.686
 
 #define FULDC "fulDC"
-#define MAJORVERSIONFLOAT 6.74
-#define MINORVERSIONFLOAT 0
+#define MAJORVERSIONFLOAT 6.75
+#define MINORVERSIONFLOAT 1
 #ifdef _DEBUG
-#define FULVERSIONSTRING "6.74 svn$revision"
+#define FULVERSIONSTRING "6.75 Beta 1 svn$revision"
 #else
-#define FULVERSIONSTRING "6.74"
+#define FULVERSIONSTRING "6.75 Beta 1"
 #endif
 
 /* Update the .rc file as well... */

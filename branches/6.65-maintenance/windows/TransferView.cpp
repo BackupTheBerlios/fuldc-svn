@@ -450,8 +450,10 @@ TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoB
 };
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
-	filelist = ui.filelist;
-
+	
+	if(ui.updateMask & UpdateInfo::MASK_FILE_LIST) {
+		filelist = ui.filelist;
+	}
 	if(ui.updateMask & UpdateInfo::MASK_STATUS) {
 		status = ui.status;
 	}
@@ -536,7 +538,7 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 
 void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true);
-	ui->filelist = aDownload->isSet(Download::FLAG_USER_LIST);
+	ui->setFileList(aDownload->isSet(Download::FLAG_USER_LIST));
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
 	ui->setPos(aDownload->getTotal());
 	ui->setActual(aDownload->getActual());

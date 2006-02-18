@@ -336,6 +336,7 @@ protected:
 		COLUMN_HUB,
 		COLUMN_SIZE,
 		COLUMN_SPEED,
+		COLUMN_CRC32,
 		COLUMN_LAST
 	};
 
@@ -351,6 +352,7 @@ protected:
 			columns[COLUMN_HUB]   = Text::toT(entry->getHub());
 			columns[COLUMN_SIZE]  = Text::toT(Util::formatBytes(entry->getSize()));
 			columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s");
+			columns[COLUMN_CRC32] = entry->getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR);
 		}
 		tstring columns[COLUMN_LAST];
 
@@ -432,12 +434,12 @@ protected:
 };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED };
+int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
 
 template <class T, int title, int id>
 int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH, 
-ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED
+ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED,
 };
 
 #endif

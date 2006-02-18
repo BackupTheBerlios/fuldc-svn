@@ -732,7 +732,7 @@
 		<String Name="PopupDontShowOnActive">Don't display popups for active window</String>
 		<String Name="PopupActivateOnClick">Activate window when clicking popup</String>
 		<String Name="DropStupidConnection">Drop connections from own nick(stupid clients)</String>
-		<String Name="DropStupidConnectionLog">Incoming connection dropped because user tried to use a fake nick, IP=</String>
+		<String Name="DropStupidConnectionLog">Incoming connection dropped because user tried to download with your nick, in hub %[hub] with IP %[ip] </String>
 		<String Name="FlashWindowOnPm">Flash window on PM</String>
 		<String Name="FlashWindowOnNewPm">Flash window on PM only if it's from a new user</String>
 		<String Name="Unignore">Unignore</String>
@@ -754,7 +754,7 @@
 		<String Name="PresetReleases">Releases</String>
 		<String Name="ReaddSourceToQueue">Re-add user to queue</String>
 		<String Name="MuteOnAway">Mute sounds when away mode is enabled</String>
-		<String Name="DropFakeNickConnectionLog">Detected a user trying to connect using a fake nick, nick=%s ip=%s</String>
+		<String Name="DropFakeNickConnectionLog">Detected a user trying to connect using a fake nick, nick used=%[nick] ip=%[ip] in hub %[hub]</String>
 		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
 		<String Name="UserNotAvailable">User not available, could be because he is offline</String>
 		<String Name="UploadFailed">Failed to upload %[file] to %[user] because: %[error]</String>
@@ -764,5 +764,9 @@
 		<String Name="TimerStarted">Timer started</String>
 		<String Name="TimerStopped">Timer stopped</String>
 		<String Name="Timer">Timer</String>
+		<String Name="OldClient">Old client detected, disconnecting. User=%[user] Hub=%[hub]</String>
+		<String Name="ClientTooOld">Client too old to download from, no support for TTH</String>
+		<String Name="TotalFiles">Total Files</String>
+		<String Name="TotalSize">Total Size</String>
 	</Strings>
 </Language>

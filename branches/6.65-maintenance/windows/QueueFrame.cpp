@@ -279,6 +279,8 @@ void QueueFrame::QueueItemInfo::update() {
 						tmp += TSTRING(SFV_INCONSISTENCY);
 					} else if(j->isSet(QueueItem::Source::FLAG_BAD_TREE)) {
 						tmp += TSTRING(INVALID_TREE);
+					} else if(j->isSet(QueueItem::Source::FLAG_OLD_CLIENT)) {
+						tmp += TSTRING(CLIENT_TOO_OLD);
 					}
 					tmp += ')';
 				}
@@ -1153,8 +1155,8 @@ void QueueFrame::updateStatus() {
 
 		}
 
-		tstring tmp1 = Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt));
-		tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
+		tstring tmp1 = Text::toT(STRING(TOTAL_FILES) + ": " + Util::toString(cnt));
+		tstring tmp2 = Text::toT(STRING(TOTAL_SIZE) + ": " + Util::formatBytes(total));
 		bool u = false;
 
 		int w = WinUtil::getTextWidth(tmp1, ctrlStatus.m_hWnd);

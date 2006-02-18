@@ -58,7 +58,7 @@ public:
 	static int fileImageCount;
 	static CImageList userImages;
 
-	typedef HASH_MAP<string, int> ImageMap;
+	typedef HASH_MAP<tstring, int> ImageMap;
 	typedef ImageMap::iterator ImageIter;
 	static ImageMap fileIndexes;
 	static HBRUSH bgBrush;

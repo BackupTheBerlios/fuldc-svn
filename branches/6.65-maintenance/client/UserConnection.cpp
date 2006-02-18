@@ -18,14 +18,15 @@
 
 #include "stdinc.h"
 #include "DCPlusPlus.h"
+#include "ResourceManager.h"
 
 #include "UserConnection.h"
 #include "ClientManager.h"
+#include "LogManager.h"
 
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
 
-const string UserConnection::FEATURE_GET_ZBLOCK = "GetZBlock";
 const string UserConnection::FEATURE_MINISLOTS = "MiniSlots";
 const string UserConnection::FEATURE_XML_BZLIST = "XmlBZList";
 const string UserConnection::FEATURE_ADCGET = "ADCGet";
@@ -34,6 +35,7 @@ const string UserConnection::FEATURE_TTHL = "TTHL";
 const string UserConnection::FEATURE_TTHF = "TTHF";
 
 const string UserConnection::FILE_NOT_AVAILABLE = "File Not Available";
+const string UserConnection::COMMAND_NOT_SUPPORTED = "Client too old, not supported";
 
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
@@ -110,32 +112,21 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	} else if(cmd == "$GetListLen") {
 		fire(UserConnectionListener::GetListLength(), this);
 	} else if(cmd == "$Get") {
-		x = param.find('$');
-		if(x != string::npos) {
-			fire(UserConnectionListener::Get(), this, Text::acpToUtf8(param.substr(0, x)), Util::toInt64(param.substr(x+1)) - (int64_t)1);
-		}
+		notSupported();
+		disconnect();
+		StringMap params;
+		params["user"] = getUser()->getNick();
+		params["hub"] = getUser()->getClientAddressPort();
+		string tmp = Util::formatParams(STRING(OLD_CLIENT), params);
+		LogManager::getInstance()->message(tmp);
 	} else if(cmd == "$GetZBlock" || cmd == "$UGetZBlock" || cmd == "$UGetBlock") {
-		string::size_type i = param.find(' ');
-		if(i == string::npos)
-			return;
-		int64_t start = Util::toInt64(param.substr(0, i));
-		if(start < 0) {
-			disconnect();
-			return;
-		}
-		i++;
-		string::size_type j = param.find(' ', i);
-		if(j == string::npos)
-			return;
-		int64_t bytes = Util::toInt64(param.substr(i, j-i));
-		string name = param.substr(j+1);
-		if(cmd == "$GetZBlock")
-			name = Text::acpToUtf8(name);
-		if(cmd == "$UGetBlock") {
-			fire(UserConnectionListener::GetBlock(), this, name, start, bytes);
-		} else {
-			fire(UserConnectionListener::GetZBlock(), this, name, start, bytes);
-		}
+		notSupported();
+		disconnect();
+		StringMap params;
+		params["user"] = getUser()->getNick();
+		params["hub"] = getUser()->getClientAddressPort();
+		string tmp = Util::formatParams(STRING(OLD_CLIENT), params);
+		LogManager::getInstance()->message(tmp);
 	} else if(cmd == "$Key") {
 		if(!param.empty())
 			fire(UserConnectionListener::Key(), this, param);

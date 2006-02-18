@@ -239,6 +239,7 @@ private:
 		User::Ptr user;
 		bool download;
 		bool transferFailed;
+		void setFileList(bool aFileList) { filelist = aFileList; updateMask |= MASK_FILE_LIST; }
 		bool filelist;
 		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
 		ItemInfo::Status status;

@@ -44,9 +44,6 @@ public:
 	typedef X<4> CLock;
 	typedef X<5> Key;
 	typedef X<6> Direction;
-	typedef X<7> Get;
-	typedef X<8> GetBlock;
-	typedef X<9> GetZBlock;
 	typedef X<10> Sending;
 	typedef X<11> FileLength;
 	typedef X<12> Send;
@@ -68,9 +65,6 @@ public:
 	virtual void on(CLock, UserConnection*, const string&, const string&) throw() { }
 	virtual void on(Key, UserConnection*, const string&) throw() { }
 	virtual void on(Direction, UserConnection*, const string&, const string&) throw() { }
-	virtual void on(Get, UserConnection*, const string&, int64_t) throw() { }
-	virtual void on(GetBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
-	virtual void on(GetZBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
 	virtual void on(Sending, UserConnection*, int64_t) throw() { }
 	virtual void on(FileLength, UserConnection*, int64_t) throw() { }
 	virtual void on(Send, UserConnection*) throw() { }
@@ -169,7 +163,6 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	static const string FEATURE_GET_ZBLOCK;
 	static const string FEATURE_MINISLOTS;
 	static const string FEATURE_XML_BZLIST;
 	static const string FEATURE_ADCGET;
@@ -178,6 +171,7 @@ public:
 	static const string FEATURE_TTHF;
 
 	static const string FILE_NOT_AVAILABLE;
+	static const string COMMAND_NOT_SUPPORTED;
 	
 	enum Modes {	
 		MODE_COMMAND = BufferedSocket::MODE_LINE,
@@ -232,9 +226,6 @@ public:
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
-	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); }; 	// No acp - utf conversion here...
-	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send((utf8 ? "$UGetZBlock " : "$GetZBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
-	void uGetBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$UGetBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
 	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); };
@@ -242,6 +233,7 @@ public:
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
 	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full"); };
 	void fileNotAvail() { isSet(FLAG_NMDC) ? send("$Error " + FILE_NOT_AVAILABLE + "|") : sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE); }
+	void notSupported() { send("$Error " + COMMAND_NOT_SUPPORTED + "|"); }
 
 	// ADC Stuff
 	void sup(const StringList& features) { 
