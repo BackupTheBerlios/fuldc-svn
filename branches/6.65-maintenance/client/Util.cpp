@@ -26,6 +26,7 @@
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
 #include "SettingsManager.h"
+#include "LogManager.h"
 #include "version.h"
 
 #ifndef _WIN32
@@ -66,6 +67,12 @@ extern "C" void bz_internal_error(int errcode) {
 	dcdebug("bzip2 internal error: %d\n", errcode); 
 }
 
+#if defined(_WIN32) && _MSC_VER >= 1400
+void WINAPI invalidParameterHandler(const wchar_t*, const wchar_t*, const wchar_t*, unsigned int, uintptr_t) {
+	//do nothing, this exist because vs2k5 crt needs it not to crash on errors.
+}
+#endif
+
 void Util::initialize() {
 	setlocale(LC_ALL, "");
 
@@ -78,6 +85,11 @@ void Util::initialize() {
 	GetModuleFileName(NULL, buf, MAX_PATH);
 	appPath = Text::fromT(buf);
 	appPath.erase(appPath.rfind('\\') + 1);
+
+#if _MSC_VER >= 1400
+	_set_invalid_parameter_handler(reinterpret_cast<_invalid_parameter_handler>(invalidParameterHandler));
+#endif
+
 #else // _WIN32
 	char* home = getenv("HOME");
 	if (home) {
@@ -995,21 +1007,15 @@ wstring Util::getShortTimeString(time_t t) {
 		return Util::emptyStringW;
 
 	wstring tmp = Text::utf8ToWide(SETTING(TIME_STAMPS_FORMAT));
-	size_t bufSize = tmp.length() * 2;
-
-	bufSize = bufSize > 20 ? bufSize : 20;
-
-	AutoArray<wchar_t> buf(bufSize);
+	TCHAR buf[255];
 
 	tm* _tm = localtime(&t);
 	if(_tm == NULL) {
-		return Util::emptyStringW;
+		return _T("xx:xx");
 	} else {
-		while(0 == wcsftime(buf, bufSize, tmp.c_str(), _tm) ){
-			bufSize *= 2;
-			buf.resize(bufSize);
-		}
+		wcsftime(buf, 254, tmp.c_str(), _tm);
 	}
+	
 	return wstring(buf);
 }
 
