@@ -39,9 +39,7 @@ class TransferView : public CWindowImpl<TransferView>, private DownloadManagerLi
 public:
 	DECLARE_WND_CLASS(_T("TransferView"))
 
-	TransferView() {
-		headerBuf = new TCHAR[128];
-	};
+	TransferView() { };
 	virtual ~TransferView(void);
 
 	typedef UserInfoBaseHandler<TransferView> uibBase;
@@ -115,7 +113,6 @@ public:
 	}
 
 private:
-	TCHAR * headerBuf;
 
 	class ItemInfo;
 public:
