@@ -31,7 +31,6 @@
 #include "LogManager.h"
 #include "FavoriteManager.h"
 #include "SettingsManager.h"
-#include "FinishedManager.h"
 #include "ADLSearch.h"
 #include "HighlightManager.h"
 #include "WebShortcuts.h"
@@ -39,7 +38,7 @@
 
 //ugly, but i have no intention on moving the code to *nix so it works =)
 #include "../windows/PopupManager.h"
-
+#include "../windows/FinishedManager.h"
 
 #include "StringTokenizer.h"
 

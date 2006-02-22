@@ -126,6 +126,7 @@ private:
 
 class FavoriteManagerListener {
 public:
+	virtual ~FavoriteManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> DownloadStarting;
@@ -153,7 +154,7 @@ class SimpleXML;
  * Public hub list, favorites (hub&user). Assumed to be called only by UI thread.
  */
 class FavoriteManager : public Speaker<FavoriteManagerListener>, private HttpConnectionListener, public Singleton<FavoriteManager>,
-	private SettingsManagerListener, private TimerManagerListener
+	private SettingsManagerListener
 {
 public:
 // Public Hubs
@@ -209,8 +210,6 @@ public:
 	void load();
 	void save();
 
-	void setDirty() { dirty = true; }
-	
 private:
 	FavoriteHubEntry::List favoriteHubs;
 	StringPairList favoriteDirs;
@@ -234,29 +233,20 @@ private:
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
-	bool dirty;
-	u_int32_t lastSave;
-
-
 	friend class Singleton<FavoriteManager>;
 	
-	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false),
-		dirty(false), lastSave(0) {
-
+	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
 	}
 
-	virtual ~FavoriteManager() throw(){
-		if(dirty)
-			save();
-
+	virtual ~FavoriteManager() throw() {
 		SettingsManager::getInstance()->removeListener(this);
 		if(c) {
 			c->removeListener(this);
 			delete c;
 			c = NULL;
 		}
-		
+
 		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction());
 	}
 	
@@ -285,10 +275,6 @@ private:
 	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
 		load(xml);
 	}
-
-	//TimerManagerListener
-	virtual void on(TimerManagerListener::Minute, u_int32_t ticks) throw();
-	
 
 	void load(SimpleXML* aXml);
 	

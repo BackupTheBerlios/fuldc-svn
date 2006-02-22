@@ -126,8 +126,8 @@ public:
 	bool isFavoriteUser() const;
 	bool getFavoriteGrantSlot() const;
 	void setFavoriteGrantSlot(bool grant);
-	void setFavoriteLastSeen(u_int32_t anOfflineTime = 0);
-	u_int32_t getFavoriteLastSeen() const;
+	void setFavoriteLastSeen(time_t anOfflineTime = 0);
+	time_t getFavoriteLastSeen() const;
 	const string& getUserDescription() const;
 	void setUserDescription(const string& aDescription);
 

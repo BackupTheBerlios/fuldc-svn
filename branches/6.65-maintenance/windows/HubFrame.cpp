@@ -684,7 +684,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			fhe->setHeaderVisible(tmp3);
 			
 
-			FavoriteManager::getInstance()->setDirty();
+			FavoriteManager::getInstance()->save();
 		} else {
 			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, tmp);
 			SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, tmp2);

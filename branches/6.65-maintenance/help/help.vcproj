@@ -53,8 +53,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling Help File"
-						CommandLine="compile.cmd&#x0D;&#x0A;"
-							AdditionalDependencies="$(ProjectDir)changelog.html;$(ProjectDir)index.hhk;$(ProjectDir)toc.hhc;..\windows\resource.h"
+						CommandLine="compile.cmd"
+						AdditionalDependencies="$(ProjectDir)changelog.html;$(ProjectDir)index.hhk;$(ProjectDir)toc.hhc;..\windows\resource.h"
 						Outputs="$(SolutionDir)app\DCPlusPlus.chm"
 					/>
 				</FileConfiguration>
@@ -78,15 +78,18 @@
 				>
 			</File>
 			<File
-				RelativePath=".\changelog.html">
+				RelativePath=".\changelog.html"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building changelog"
-						CommandLine="$(ProjectDir)gen_changelog.py"
+						CommandLine="$(ProjectDir)gen_changelog.py&#x0D;&#x0A;"
 						AdditionalDependencies="$(SolutionDir)changelog.txt"
-						Outputs="changelog.html"/>
+						Outputs="changelog.html"
+					/>
 				</FileConfiguration>
 			</File>
 			<File

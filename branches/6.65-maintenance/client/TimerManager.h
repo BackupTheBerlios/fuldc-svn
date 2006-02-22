@@ -34,6 +34,7 @@
 
 class TimerManagerListener {
 public:
+	virtual ~TimerManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Second;

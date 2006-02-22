@@ -175,7 +175,7 @@ void User::setFavoriteGrantSlot(bool grant) {
 		favoriteUser->unsetFlag(FavoriteUser::FLAG_GRANTSLOT);
 }
 
-void User::setFavoriteLastSeen(u_int32_t anOfflineTime) {
+void User::setFavoriteLastSeen(time_t anOfflineTime) {
 	WLock<> l(cs);
 	if (favoriteUser != NULL) {
 		if (anOfflineTime != 0)
@@ -185,7 +185,7 @@ void User::setFavoriteLastSeen(u_int32_t anOfflineTime) {
 	}
 }
 
-u_int32_t User::getFavoriteLastSeen() const {
+time_t User::getFavoriteLastSeen() const {
 	RLock<> l(cs);
 	if (favoriteUser != NULL)
 		return favoriteUser->getLastSeen();

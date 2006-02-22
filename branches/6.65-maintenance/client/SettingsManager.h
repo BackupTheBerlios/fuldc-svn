@@ -32,6 +32,7 @@ class SimpleXML;
 
 class SettingsManagerListener {
 public:
+	virtual ~SettingsManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Load;

@@ -29,6 +29,7 @@ class HttpConnection;
 
 class HttpConnectionListener {
 public:
+	virtual ~HttpConnectionListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Data;

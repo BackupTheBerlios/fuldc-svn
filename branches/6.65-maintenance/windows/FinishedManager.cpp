@@ -16,8 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdinc.h"
-#include "DCPlusPlus.h"
+#include "stdafx.h"
+#include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "FinishedManager.h"
 
@@ -49,16 +50,18 @@ void FinishedManager::remove(FinishedItem *item, bool upload /* = false */) {
 }
 
 void FinishedManager::removeAll(bool upload /* = false */) {
+	//fire before the items are removed to make sure the gui can clear the list
+	if (!upload)
+		fire(FinishedManagerListener::RemovedAllDl());
+	else
+		fire(FinishedManagerListener::RemovedAllUl());
+
 	{
 		Lock l(cs);
 		FinishedItem::List *listptr = upload ? &uploads : &downloads;
 		for_each(listptr->begin(), listptr->end(), DeleteFunction());
 		listptr->clear();
 	}
-	if (!upload)
-		fire(FinishedManagerListener::RemovedAllDl());
-	else
-		fire(FinishedManagerListener::RemovedAllUl());
 }
 
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()

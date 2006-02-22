@@ -35,7 +35,7 @@ public:
 	};
 
 	GETSET(string, description, Description);
-	GETSET(u_int32_t, lastSeen, LastSeen);
+	GETSET(time_t, lastSeen, LastSeen);
 
 	FavoriteUser() : lastSeen(0) {}
 	~FavoriteUser() {}

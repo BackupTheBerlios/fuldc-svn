@@ -648,14 +648,6 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 	listType = TYPE_BZIP2; 
 }
 
-void FavoriteManager::on(Minute, u_int32_t ticks) throw() {
-	if(lastSave + 1000*60*30 > ticks){
-		if(dirty)
-			save();
-		lastSave = ticks;
-	}
-}
-
 /**
  * @file
  * $Id: FavoriteManager.cpp,v 1.6 2004/02/14 13:24:57 trem Exp $

@@ -29,6 +29,7 @@ class QueueItem;
 
 class QueueManagerListener {
 public:
+	virtual ~QueueManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Added;

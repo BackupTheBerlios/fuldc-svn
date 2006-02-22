@@ -23,37 +23,88 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "DownloadManager.h"
-#include "UploadManager.h"
+#include "../client/DownloadManager.h"
+#include "../client/UploadManager.h"
+#include "../client/ResourceManager.h"
 
-#include "CriticalSection.h"
-#include "Singleton.h"
+#include "../client/CriticalSection.h"
+#include "../client/Singleton.h"
 
+#include "WinUtil.h"
+
+//this is a bit ugly having the finisheditem use it's own set of columns definitions
+//but it'll avoid lots of string conversion/copies when viewing the list, only a pointer
+//to the list of items will be used.
 class FinishedItem
 {
 public:
 	typedef FinishedItem* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+	
+	enum {
+		COLUMN_FIRST,
+		COLUMN_FILE = COLUMN_FIRST,
+		COLUMN_DONE,
+		COLUMN_PATH,
+		COLUMN_NICK,
+		COLUMN_HUB,
+		COLUMN_SIZE,
+		COLUMN_SPEED,
+		COLUMN_CRC32,
+		COLUMN_LAST
+	};
 
 	FinishedItem(string const& aTarget, string const& aUser, string const& aHub, 
-		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, u_int32_t aTime,
+		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, time_t aTime,
 		bool aCrc32 = false) : 
-		target(aTarget), user(aUser), hub(aHub), size(aSize), chunkSize(aChunkSize),
+		size(aSize), chunkSize(aChunkSize),
 		milliSeconds(aMSeconds), time(aTime), crc32Checked(aCrc32) 
-	{
+	{ 
+		columns[COLUMN_FILE]  = Text::toT(Util::getFileName(aTarget));
+		columns[COLUMN_DONE]  = Text::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", aTime));
+		columns[COLUMN_PATH]  = Text::toT(Util::getFilePath(aTarget));
+		columns[COLUMN_NICK]  = Text::toT(aUser);
+		columns[COLUMN_HUB]   = Text::toT(aHub);
+		columns[COLUMN_SIZE]  = Text::toT(Util::formatBytes(aSize));
+		columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(getAvgSpeed()) + "/s");
+		columns[COLUMN_CRC32] = getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR);
+		
+		//cache this, should be cheaper to do it once a file is added instead of
+		//a few thousand calls once the list is created
+		iconIndex = WinUtil::getIconIndex(columns[COLUMN_FILE]);
+	}
+	tstring columns[COLUMN_LAST];
+
+	const tstring& getText(int col) const {
+		dcassert(col >= 0 && col < COLUMN_LAST);
+		return columns[col];
+	}
+
+	const tstring& copy(int col) {
+		if(col >= 0 && col < COLUMN_LAST)
+			return getText(col);
+
+		return Util::emptyStringT;
+	}
+
+	static int compareItems(FinishedItem* a, FinishedItem* b, int col) {
+		switch(col) {
+			case COLUMN_SPEED:	return compare(a->getAvgSpeed(), b->getAvgSpeed());
+			case COLUMN_SIZE:	return compare(a->getSize(), b->getSize());
+			default:			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+		}
 	}
 
 	int64_t getAvgSpeed() { return milliSeconds > 0 ? (chunkSize * ((int64_t)1000) / milliSeconds) : 0; };
 
-	GETSET(string, target, Target);
-	GETSET(string, user, User);
-	GETSET(string, hub, Hub);
 	GETSET(int64_t, size, Size);
 	GETSET(int64_t, chunkSize, ChunkSize);
 	GETSET(int64_t, milliSeconds, MilliSeconds);
-	GETSET(u_int32_t, time, Time);
-	GETSET(bool, crc32Checked, Crc32Checked)
+	GETSET(time_t, time, Time);
+	GETSET(bool, crc32Checked, Crc32Checked);
+	GETSET(int, iconIndex, IconIndex);
+
 private:
 	friend class FinishedManager;
 
