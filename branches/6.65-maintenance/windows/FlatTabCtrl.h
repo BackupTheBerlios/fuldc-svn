@@ -51,7 +51,7 @@ public:
 
 	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), moving(NULL), inTab(false) { 
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-	};
+	}
 	virtual ~FlatTabCtrlImpl() { }
 
 	static LPCTSTR GetWndClassName()
@@ -325,11 +325,11 @@ public:
 		}
 	}
 
-	int getTabHeight() { return height; };
-	int getHeight() { return (getRows() * getTabHeight())+1; };
-	int getFill() { return (getTabHeight() + 1) / 2; };
+	int getTabHeight() { return height; }
+	int getHeight() { return (getRows() * getTabHeight())+1; }
+	int getFill() { return (getTabHeight() + 1) / 2; }
 
-	int getRows() { return rows; };
+	int getRows() { return rows; }
 
 	void calcRows(bool inval = true) {
 		CRect rc;
@@ -513,7 +513,7 @@ private:
 			memset(&size, 0, sizeof(size));
 			memset(&boldSize, 0, sizeof(boldSize));
 			update();
-		};
+		}
 
 		const unsigned int MAX_LENGTH;
 		HWND hWnd;
@@ -538,7 +538,7 @@ private:
 			bool ret = updateText(name2);
 			delete[] name2;
 			return ret;
-		};
+		}
 
 		bool updateText(LPCTSTR text) {
 			len = _tcslen(text);
@@ -559,7 +559,7 @@ private:
 			dc.SelectFont(f);		
 			::ReleaseDC(hWnd, dc);
 			return true;
-		};
+		}
 
 		int getWidth() {
 			return ( ( dirty && !BOOLSETTING(BLEND_TABS) ) ? boldSize.cx : size.cx) + ((wCode == -1) ? FT_EXTRA_SPACE -7: FT_EXTRA_SPACE) - (BOOLSETTING(TAB_SHOW_ICONS) ? 0 : 16);
@@ -725,7 +725,7 @@ private:
 		//cleanup
 		DeleteObject(brBackground);
 		DeleteObject(borderPen);
-	};
+	}
 };
 
 class FlatTabCtrl : public FlatTabCtrlImpl<FlatTabCtrl> {
@@ -737,8 +737,8 @@ template <class T, class TBase = CMDIWindow, class TWinTraits = CMDIChildWinTrai
 class ATL_NO_VTABLE MDITabChildWindowImpl : public CMDIChildWindowImpl<T, TBase, TWinTraits> {
 public:
 
-	MDITabChildWindowImpl() : created(false) { };
-	FlatTabCtrl* getTab() { return WinUtil::tabCtrl; };
+	MDITabChildWindowImpl() : created(false) { }
+	FlatTabCtrl* getTab() { return WinUtil::tabCtrl; }
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 

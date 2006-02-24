@@ -44,11 +44,11 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	Upload() : tth(NULL), file(NULL) { };
+	Upload() : tth(NULL), file(NULL) { }
 	virtual ~Upload() { 
 		delete file;
 		delete tth;
-	};
+	}
 	
 	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
 	
@@ -60,6 +60,7 @@ public:
 
 class UploadManagerListener {
 public:
+	virtual ~UploadManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 	
 	typedef X<0> Complete;
@@ -83,7 +84,7 @@ class UploadManager : private ClientManagerListener, private UserConnectionListe
 public:
 	
 	/** @return Number of uploads. */ 
-	size_t getUploadCount() { Lock l(cs); return uploads.size(); };
+	size_t getUploadCount() { Lock l(cs); return uploads.size(); }
 
 	/**
 	 * @remarks This is only used in the tray icons. Could be used in
@@ -117,7 +118,7 @@ public:
 	}
 
 	/** @internal */
-	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
+	int getFreeExtraSlots() { return max(3 - getExtra(), 0); }
 	
 	/** @param aUser Reserve an upload slot for this user and connect. */
 	void reserveSlot(const User::Ptr& aUser);

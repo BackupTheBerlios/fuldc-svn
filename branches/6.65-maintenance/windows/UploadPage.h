@@ -34,11 +34,11 @@ public:
 	UploadPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_UPLOADS));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 	virtual ~UploadPage() {
 		ctrlDirectories.Detach();
 		ctrlTotal.Detach();
-	};
+	}
 
 	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -51,7 +51,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_RENAME, onClickedRename)
 		COMMAND_ID_HANDLER(IDC_SHAREHIDDEN, onClickedShareHidden)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
-		
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

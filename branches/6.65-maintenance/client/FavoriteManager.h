@@ -40,7 +40,7 @@ public:
 	
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
 	name(aName), server(aServer), description(aDescription), country(Util::emptyString), 
-	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { };
+	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { }
 
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers, const string& aCountry,
 		const string& aShared, const string& aMinShare, const string& aMinSlots, const string& aMaxHubs, const string& aMaxUsers,
@@ -51,12 +51,12 @@ public:
 
 	}
 
-	HubEntry() throw() { };
+	HubEntry() throw() { }
 	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country), 
 		rating(rhs.rating), reliability(rhs.reliability), shared(rhs.shared), minShare(rhs.minShare), users(rhs.users), minSlots(rhs.minSlots),
 		maxHubs(rhs.maxHubs), maxUsers(rhs.maxUsers) { }
 
-	~HubEntry() throw() { };
+	~HubEntry() throw() { }
 
 	GETSET(string, name, Name);
 	GETSET(string, server, Server);
@@ -98,7 +98,7 @@ public:
 		return (!nick.empty() || !useDefault) ? nick : SETTING(NICK);
 	}
 
-	void setNick(const string& aNick) { nick = aNick; };
+	void setNick(const string& aNick) { nick = aNick; }
 
 	GETSET(string, userdescription, UserDescription);
 	GETSET(string, name, Name);
@@ -163,26 +163,25 @@ public:
 		TYPE_BZIP2
 	};
 	StringList getHubLists();
-
 	bool setHubList(int /*aHubList*/);
 	void setHubList(const string& hubs);
-	int getSelectedHubList() { return lastServer; };
+	int getSelectedHubList() { return lastServer; }
 	void refresh();
-	HubTypes getHubListType() { return listType; };
+	HubTypes getHubListType() { return listType; }
 	HubEntry::List getPublicHubs() {
 		Lock l(cs);
 		return publicListMatrix[publicListServer];
 	}
-	bool isDownloading() { return running; };
+	bool isDownloading() { return running; }
 
 // Favorite Users
-	User::List& getFavoriteUsers() { return users; };
+	User::List& getFavoriteUsers() { return users; }
 	
 	void addFavoriteUser(User::Ptr& aUser);
 	void removeFavoriteUser(User::Ptr& aUser);
 
 // Favorite Hubs
-	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
+	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; }
 
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
@@ -204,12 +203,12 @@ public:
 	void removeUserCommand(const string& srv);
 	void removeHubUserCommands(int ctx, const string& hub);
 
-	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; };
+	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; }
 	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
 
 	void load();
 	void save();
-
+	
 private:
 	FavoriteHubEntry::List favoriteHubs;
 	StringPairList favoriteDirs;
@@ -246,7 +245,7 @@ private:
 			delete c;
 			c = NULL;
 		}
-
+		
 		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction());
 	}
 	

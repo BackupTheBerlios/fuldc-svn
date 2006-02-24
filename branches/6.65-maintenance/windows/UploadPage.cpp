@@ -124,7 +124,7 @@ void UploadPage::write()
 
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	NMLISTVIEW* lv = (NMLISTVIEW*) pnmh;
+	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
 	return 0;

@@ -67,7 +67,7 @@ extern "C" void bz_internal_error(int errcode) {
 	dcdebug("bzip2 internal error: %d\n", errcode); 
 }
 
-#if defined(_WIN32) && _MSC_VER >= 1400
+#if defined(_WIN32) && _MSC_VER == 1400
 void WINAPI invalidParameterHandler(const wchar_t*, const wchar_t*, const wchar_t*, unsigned int, uintptr_t) {
 	//do nothing, this exist because vs2k5 crt needs it not to crash on errors.
 }
@@ -86,7 +86,7 @@ void Util::initialize() {
 	appPath = Text::fromT(buf);
 	appPath.erase(appPath.rfind('\\') + 1);
 
-#if _MSC_VER >= 1400
+#if _MSC_VER == 1400
 	_set_invalid_parameter_handler(reinterpret_cast<_invalid_parameter_handler>(invalidParameterHandler));
 #endif
 
@@ -808,7 +808,7 @@ wstring Util::formatTime(const wstring& msg, const time_t t){
 
 		while(!wcsftime(buf, bufsize-1, msg.c_str(), loc)) {
 			bufsize += 64;
-			buf.resize(bufsize);
+			buf = new wchar_t[bufsize];
 		}
 
 		return wstring(buf);

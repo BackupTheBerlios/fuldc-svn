@@ -31,7 +31,7 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : port(0), securePort(0), server(0), secureServer(0), floodCounter(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0), server(0), secureServer(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
@@ -278,7 +278,7 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	if(now > floodCounter) {
 		floodCounter = now + FLOOD_ADD;
 	} else {
-		if(now + FLOOD_TRIGGER < floodCounter) {
+		if(false && now + FLOOD_TRIGGER < floodCounter) {
 			Socket s;
 			try {
 				s.accept(sock);
@@ -524,7 +524,6 @@ void ConnectionManager::on(UserConnectionListener::Direction, UserConnection* aS
 void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) {
 
 	dcassert(uc->isSet(UserConnection::FLAG_DOWNLOAD));
-
 	bool addConn = false;
 	{
 		Lock l(cs);
@@ -664,6 +663,7 @@ void ConnectionManager::disconnect(const User::Ptr& aUser, int isDownload) {
 }
 
 void ConnectionManager::shutdown() {
+	TimerManager::getInstance()->removeListener(this);
 	shuttingDown = true;
 	disconnect();
 	{

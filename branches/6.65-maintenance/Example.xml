@@ -119,6 +119,7 @@
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
 		<String Name="FavoriteHubAlreadyExists">Hub already exists as a favorite</String>
 		<String Name="FavoriteHubDoesNotExist">This hub is not a favorite hub</String>
+		<String Name="FavoriteHubDupeAddress">There's already an entry for this address, please specify another one</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
 		<String Name="FavoriteHubRemoved">Favorite hub removed</String>

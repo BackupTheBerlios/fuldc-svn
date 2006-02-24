@@ -194,14 +194,14 @@ private:
 	public:
 
 		struct SourceInfo : public Flags {
-			explicit SourceInfo(const QueueItem::Source& s) : Flags(s), user(s.getUser()) { };
+			explicit SourceInfo(const QueueItem::Source& s) : Flags(s), user(s.getUser()) { }
 
 			SourceInfo& operator=(const QueueItem::Source& s) {
 				*((Flags*)this) = s;
 				user = s.getUser();
 				return *this;
 			}
-			User::Ptr& getUser() { return user; };
+			User::Ptr& getUser() { return user; }
 
 			User::Ptr user;
 		};
@@ -238,9 +238,9 @@ private:
 			for(QueueItem::Source::Iter i = aQI->getBadSources().begin(); i != aQI->getBadSources().end(); ++i) {
 				badSources.push_back(SourceInfo(*(*i)));
 			}
-		};
+		}
 
-		~QueueItemInfo() { delete display; };
+		~QueueItemInfo() { delete display; }
 
 		void update();
 
@@ -271,8 +271,8 @@ private:
 
 		const tstring& getTargetFileName() { return getDisplay()->columns[COLUMN_TARGET]; }
 
-		SourceList& getSources() { return sources; };
-		SourceList& getBadSources() { return badSources; };
+		SourceList& getSources() { return sources; }
+		SourceList& getBadSources() { return badSources; }
 
 		Display* getDisplay() {
 			if(display == NULL) {
@@ -406,7 +406,7 @@ private:
 		}
 	}
 
-	bool isCurDir(const tstring& aDir) const { return Util::stricmp(curDir, aDir) == 0; };
+	bool isCurDir(const tstring& aDir) const { return Util::stricmp(curDir, aDir) == 0; }
 
 	void moveSelected();	
 	void moveSelectedDir();
@@ -467,14 +467,14 @@ private:
 	void removeSelectedDir() { 
 		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)	
 			removeDir(ctrlDirs.GetSelectedItem()); 
-	};
+	}
 	
 	const tstring& getSelectedDir() { 
 		HTREEITEM ht = ctrlDirs.GetSelectedItem();
 		return ht == NULL ? Util::emptyStringT : getDir(ctrlDirs.GetSelectedItem());
-	};
+	}
 	
-	const tstring& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((tstring*)ctrlDirs.GetItemData(ht)); };
+	const tstring& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((tstring*)ctrlDirs.GetItemData(ht)); }
 
 	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::Moved, QueueItem* aQI) throw();

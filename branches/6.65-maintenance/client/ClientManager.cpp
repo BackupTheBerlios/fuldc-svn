@@ -45,10 +45,11 @@ Client* ClientManager::getClient(const string& aHubURL) {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	aClient->disconnect(true);
+	aClient->shutdown();
+
 	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
-
+	
 	{
 		Lock l(cs);
 
@@ -233,7 +234,7 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
-
+	
 	updateCachedIp(); // no point in doing a resolve for every single hub we're searching on
 
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {

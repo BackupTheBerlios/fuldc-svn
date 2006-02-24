@@ -35,6 +35,7 @@ class SocketException;
 
 class BufferedSocketListener {
 public:
+	virtual ~BufferedSocketListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;
@@ -71,12 +72,12 @@ public:
 	 */
 	static BufferedSocket* getSocket(char sep) throw() { 
 		return new BufferedSocket(sep); 
-	};
+	}
 
 	static void putSocket(BufferedSocket* aSock) { 
 		aSock->removeListeners(); 
 		aSock->shutdown();
-	};
+	}
 
 	static void waitShutdown() {
 		while(sockets)
@@ -94,7 +95,7 @@ public:
 	 * Must be called from within onData. 
 	 */
 	void setLineMode(size_t aRollback) { mode = MODE_LINE; rollback = aRollback; }
-	Modes getMode() const { return mode; };
+	Modes getMode() const { return mode; }
 	const string& getIp() { return sock ? sock->getIp() : Util::emptyString; }
 	bool isConnected() { return sock && sock->isConnected(); }
 	
@@ -119,7 +120,7 @@ private:
 	};
 
 	struct TaskData { 
-		virtual ~TaskData() { };
+		virtual ~TaskData() { }
 	};
 	struct ConnectInfo : public TaskData {
 		ConnectInfo(string addr_, short port_, bool proxy_) : addr(addr_), port(port_), proxy(proxy_) { }
@@ -132,7 +133,7 @@ private:
 		InputStream* stream;
 	};
 
-	BufferedSocket(char aSeparator) throw(ThreadException);
+	BufferedSocket(char aSeparator) throw();
 
 	// Dummy...
 	BufferedSocket(const BufferedSocket&);

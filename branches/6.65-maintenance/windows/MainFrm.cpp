@@ -69,8 +69,7 @@ closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConn
 	links.discuss = links.homepage + _T("forum/");
 	links.features = links.homepage + _T("bugs/");
 	links.bugs = links.homepage + _T("bugs/");
-
-};
+}
 
 MainFrame::~MainFrame() {
 	m_CmdBar.m_hImageList = NULL;

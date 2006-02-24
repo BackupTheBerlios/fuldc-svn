@@ -230,7 +230,7 @@ public:
 	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
 		updateTray(true); 
 		return 0;
-	};
+	}
 
 	LRESULT onRowsChanged(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		UpdateLayout();
@@ -323,7 +323,7 @@ private:
 	};
 	class DirectoryBrowseInfo {
 	public:
-		DirectoryBrowseInfo(const User::Ptr& ptr, string aText) : user(ptr), text(aText) { };
+		DirectoryBrowseInfo(const User::Ptr& ptr, string aText) : user(ptr), text(aText) { }
 		User::Ptr user;
 		string text;
 	};
@@ -389,10 +389,10 @@ private:
 	void autoConnect(const FavoriteHubEntry::List& fl);
 	void startSocket();
 
-	MainFrame(const MainFrame&) { dcassert(0); };
+	MainFrame(const MainFrame&) { dcassert(0); }
 
 	// LogManagerListener
-	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); };
+	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); }
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second type, u_int32_t aTick) throw();

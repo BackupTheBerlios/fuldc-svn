@@ -452,6 +452,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 	// Check if it's a zero-byte file, if so, create and return...
 	if(aSize == 0) {
 		if(!BOOLSETTING(SKIP_ZERO_BYTE)) {
+			File::ensureDirectory(target);
 			File f(target, File::WRITE, File::CREATE);
 		}
 		return;
@@ -1159,62 +1160,59 @@ void QueueManager::saveQueue() throw() {
 
 	try {
 		
-#define STRINGLEN(n) n, sizeof(n)-1
-#define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
-
 		File ff(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		BufferedOutputStream<false> f(&ff);
 
 		f.write(SimpleXML::utf8Header);
-		f.write(STRINGLEN("<Downloads Version=\"" VERSIONSTRING "\">\r\n"));
+		f.write(LIT("<Downloads Version=\"" VERSIONSTRING "\">\r\n"));
 		string tmp;
 		string b32tmp;
 		for(QueueItem::StringIter i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
 			QueueItem* qi = i->second;
 			if(!qi->isSet(QueueItem::FLAG_USER_LIST)) {
-				f.write(STRINGLEN("\t<Download Target=\""));
-				f.write(CHECKESCAPE(qi->getTarget()));
-				f.write(STRINGLEN("\" Size=\""));
+				f.write(LIT("\t<Download Target=\""));
+				f.write(SimpleXML::escape(qi->getTarget(), tmp, true));
+				f.write(LIT("\" Size=\""));
 				f.write(Util::toString(qi->getSize()));
-				f.write(STRINGLEN("\" Priority=\""));
+				f.write(LIT("\" Priority=\""));
 				f.write(Util::toString((int)qi->getPriority()));
-				f.write(STRINGLEN("\" Added=\""));
+				f.write(LIT("\" Added=\""));
 				f.write(Util::toString(qi->getAdded()));
 				if(qi->getTTH() != NULL) {
 					b32tmp.clear();
-					f.write(STRINGLEN("\" TTH=\""));
+					f.write(LIT("\" TTH=\""));
 					f.write(qi->getTTH()->toBase32(b32tmp));
 				}
 				if(qi->getDownloadedBytes() > 0) {
-					f.write(STRINGLEN("\" TempTarget=\""));
-					f.write(CHECKESCAPE(qi->getTempTarget()));
-					f.write(STRINGLEN("\" Downloaded=\""));
+					f.write(LIT("\" TempTarget=\""));
+					f.write(SimpleXML::escape(qi->getTempTarget(), tmp, true));
+					f.write(LIT("\" Downloaded=\""));
 					f.write(Util::toString(qi->getDownloadedBytes()));
 				}
-				f.write(STRINGLEN("\">\r\n"));
+				f.write(LIT("\">\r\n"));
 
 				for(QueueItem::Source::List::const_iterator j = qi->sources.begin(); j != qi->sources.end(); ++j) {
 					QueueItem::Source* s = *j;
-					f.write(STRINGLEN("\t\t<Source Nick=\""));
-					f.write(CHECKESCAPE(s->getUser()->getNick()));
-					f.write(STRINGLEN("\"/>\r\n"));
+					f.write(LIT("\t\t<Source Nick=\""));
+					f.write(SimpleXML::escape(s->getUser()->getNick(), tmp, true));
+					f.write(LIT("\"/>\r\n"));
 				}
 
-				f.write(STRINGLEN("\t</Download>\r\n"));
+				f.write(LIT("\t</Download>\r\n"));
 			}
 		}
 
 		for(DirectoryItem::DirectoryIter j = directories.begin(); j != directories.end(); ++j) {
 			DirectoryItem::Ptr d = j->second;
-			f.write(STRINGLEN("\t<Directory Target=\""));
-			f.write(CHECKESCAPE(d->getTarget()));
-			f.write(STRINGLEN("\" Nick=\""));
-			f.write(CHECKESCAPE(d->getUser()->getNick()));
-			f.write(STRINGLEN("\" Priority=\""));
+			f.write(LIT("\t<Directory Target=\""));
+			f.write(SimpleXML::escape(d->getTarget(), tmp, true));
+			f.write(LIT("\" Nick=\""));
+			f.write(SimpleXML::escape(d->getUser()->getNick(), tmp, true));
+			f.write(LIT("\" Priority=\""));
 			f.write(Util::toString((int)d->getPriority()));
-			f.write(STRINGLEN("\" Source=\""));
-			f.write(CHECKESCAPE(d->getName()));
-			f.write(STRINGLEN("\"/>\r\n"));
+			f.write(LIT("\" Source=\""));
+			f.write(SimpleXML::escape(d->getName(), tmp, true));
+			f.write(LIT("\"/>\r\n"));
 		}
 		
 		f.write("</Downloads>\r\n");
@@ -1233,7 +1231,7 @@ void QueueManager::saveQueue() throw() {
 
 class QueueLoader : public SimpleXMLReader::CallBack {
 public:
-	QueueLoader() : cur(NULL), inDownloads(false) { };
+	QueueLoader() : cur(NULL), inDownloads(false) { }
 	virtual ~QueueLoader() { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);

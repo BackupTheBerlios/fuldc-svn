@@ -36,11 +36,11 @@ _T("DC++ (I hope I haven't missed someone, they're in roughly chronological orde
 _T("geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, ")
 _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, ")
 _T("sedulus, sandos, henrik engstr?m, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
-_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
+_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppï¿½lï¿½, johnny, ciber, ")
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
-_T("krzysztof tyszecki, poison, pothead, pur. ")
+_T("krzysztof tyszecki, poison, pothead, pur, bigmuscle. ")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 
@@ -58,8 +58,8 @@ public:
 	enum { IDD = IDD_ABOUTBOX };
 	enum { WM_VERSIONDATA = WM_APP + 53 };
 
-	AboutDlg() { };
-	virtual ~AboutDlg() { };
+	AboutDlg() { }
+	virtual ~AboutDlg() { }
 
 	BEGIN_MSG_MAP(AboutDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -115,7 +115,7 @@ public:
 private:
 	HttpConnection c;
 
-	AboutDlg(const AboutDlg&) { dcassert(0); };
+	AboutDlg(const AboutDlg&) { dcassert(0); }
 	
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 		downBuf.append((char*)buf, len);

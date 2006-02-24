@@ -64,7 +64,7 @@ public:
 		gettimeofday(&tv2, NULL);
 		return (u_int32_t)((tv2.tv_sec - tv.tv_sec) * 1000 ) + ( (tv2.tv_usec - tv.tv_usec) / 1000);
 #endif
-	};
+	}
 private:
 
 	Semaphore s;
@@ -74,11 +74,11 @@ private:
 #ifndef _WIN32
 		gettimeofday(&tv, NULL);
 #endif
-	};
+	}
 
 	virtual ~TimerManager() throw() {
 		shutdown();
-	};
+	}
 
 	virtual int run();
 	

@@ -47,7 +47,7 @@ BufferedSocket::~BufferedSocket() throw() {
 void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 	
-	dcdebug("BufferedSocket::accept() %p\n", this);
+	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
 	secure; // avoid warning
 	sock = new Socket;
 
@@ -76,7 +76,7 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
-	dcdebug("BufferedSocket::connect() %p\n", this);
+	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
 	secure; // avoid warning
 	sock = new Socket;
 
@@ -198,7 +198,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 		return;
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
-	size_t bufSize =  sockSize * 16;		// Perhaps make this a setting?
+	size_t bufSize = max(sockSize, (size_t)64*1024);
 	dcdebug("threadSendFile buffer size: %lu\n", bufSize);
 	AutoArray<u_int8_t> buf(bufSize);
 
@@ -216,19 +216,18 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 			if(disconnecting)
 				return;
 
-			int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
-			if(w & Socket::WAIT_READ) {
-				threadRead();
-			}
-			if(w & Socket::WAIT_WRITE) {
-				int written = sock->write(buf + done, min(sockSize, actual - done));
-				if(written > 0) {
-					done += written;
+			int written = sock->write(buf + done, min(sockSize, actual - done));
+			if(written > 0) {
+				done += written;
 
-					size_t doneReadNow = static_cast<size_t>((static_cast<double>(done)/actual) * bytesRead);
+				size_t doneReadNow = static_cast<size_t>((static_cast<double>(done)/actual) * bytesRead);
 
-					fire(BufferedSocketListener::BytesSent(), doneReadNow - doneRead, written);
-					doneRead = doneReadNow;
+				fire(BufferedSocketListener::BytesSent(), doneReadNow - doneRead, written);
+				doneRead = doneReadNow;
+			} else if(written == -1) {
+				int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
+				if(w & Socket::WAIT_READ) {
+					threadRead();
 				}
 			}
 		}
@@ -339,7 +338,7 @@ void BufferedSocket::checkSocket() {
  * @todo Fix the polling...
  */
 int BufferedSocket::run() {
-	dcdebug("BufferedSocket::run() start %p\n", this);
+	dcdebug("BufferedSocket::run() start %p\n", (void*)this);
 	while(true) {
 		try {
 			if(!checkEvents())
@@ -349,7 +348,7 @@ int BufferedSocket::run() {
 			fail(e.getError());
 		}
 	}
-	dcdebug("BufferedSocket::run() end %p\n", this);
+	dcdebug("BufferedSocket::run() end %p\n", (void*)this);
 	delete this;
 	return 0;
 }
@@ -363,7 +362,6 @@ void BufferedSocket::shutdown() {
 		// Socket thread not running yet, disconnect...
 		delete this;
 	}
-
 }
 
 /**

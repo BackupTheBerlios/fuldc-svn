@@ -296,6 +296,9 @@
 				RelativePath="..\windows\FavoritesFrm.cpp">
 			</File>
 			<File
+				RelativePath="..\windows\FinishedManager.cpp">
+			</File>
+			<File
 				RelativePath="..\windows\FulAdvancedPage.cpp">
 			</File>
 			<File
@@ -490,6 +493,9 @@
 			</File>
 			<File
 				RelativePath="..\windows\FinishedFrameBase.h">
+			</File>
+			<File
+				RelativePath="..\windows\FinishedManager.h">
 			</File>
 			<File
 				RelativePath="..\windows\FinishedULFrame.h">

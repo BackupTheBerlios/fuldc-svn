@@ -405,7 +405,7 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 
 class RollbackException : public FileException {
 public:
-	RollbackException (const string& aError) : FileException(aError) { };
+	RollbackException (const string& aError) : FileException(aError) { }
 };
 
 template<bool managed>
@@ -416,7 +416,7 @@ public:
 		f->read(buf, n);
 		f->movePos(-((int64_t)bytes));
 	}
-	virtual ~RollbackOutputStream() throw() { delete[] buf; if(managed) delete s; };
+	virtual ~RollbackOutputStream() throw() { delete[] buf; if(managed) delete s; }
 
 	virtual size_t flush() throw(FileException) {
 		return s->flush();

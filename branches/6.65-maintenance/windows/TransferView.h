@@ -116,7 +116,7 @@ private:
 
 	class ItemInfo;
 public:
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };
+	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
 private:
 	enum {
 		ADD_ITEM,
@@ -151,7 +151,7 @@ private:
 	public:
 		enum Status {
 			STATUS_RUNNING,
-			STATUS_WAITING,
+			STATUS_WAITING
 		};
 
 		ItemInfo(const User::Ptr& u, bool aDownload);

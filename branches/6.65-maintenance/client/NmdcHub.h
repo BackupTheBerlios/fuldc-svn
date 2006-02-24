@@ -26,31 +26,28 @@
 #include "TimerManager.h"
 #include "SettingsManager.h"
 
-#include "ClientManager.h"
-
-#include "BufferedSocket.h"
 #include "User.h"
 #include "CriticalSection.h"
 #include "Text.h"
 #include "Client.h"
 
+class ClientManager;
+
 class NmdcHub : public Client, private TimerManagerListener, private Flags
 {
-	friend class ClientManager;
 public:
+	using Client::send;
+
 	typedef NmdcHub* Ptr;
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	enum SupportFlags {
-		SUPPORTS_USERCOMMAND = 0x01,
-		SUPPORTS_NOGETINFO = 0x02,
-		SUPPORTS_USERIP2 = 0x04
-	};
+	virtual void connect();
+	virtual void connect(const User::Ptr aUser);
+	virtual void disconnect(bool graceless) throw();
 
 #define checkstate() if(state != STATE_CONNECTED) return
 
-	virtual void connect(const User::Ptr aUser);
 	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
 	virtual void privateMessage(const User* aUser, const string& aMessage) { privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage); }
 	virtual void sendUserCmd(const string& aUserCmd) throw() {
@@ -71,7 +68,6 @@ public:
 
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
-	virtual void disconnect(bool graceless) throw();
 	void myInfo(bool alwaysSend);
 	
 	void refreshUserList(bool unknownOnly = false);
@@ -100,6 +96,12 @@ public:
 
 	GETSET(int, supportFlags, SupportFlags);
 private:
+	friend class ClientManager;
+	enum SupportFlags {
+		SUPPORTS_USERCOMMAND = 0x01,
+		SUPPORTS_NOGETINFO = 0x02,
+		SUPPORTS_USERIP2 = 0x04
+	};
 
 	enum States {
 		STATE_CONNECT,
@@ -130,8 +132,6 @@ private:
 	// Dummy
 	NmdcHub(const NmdcHub&);
 	NmdcHub& operator=(const NmdcHub&);
-
-	virtual void connect();
 
 	void clearUsers();
 	void onLine(const string& aLine) throw();

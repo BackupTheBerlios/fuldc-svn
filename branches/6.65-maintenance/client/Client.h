@@ -83,13 +83,8 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client(const string& hubURL, char separator, bool secure_);
-	virtual ~Client() throw();
-
 	virtual void connect();
-	bool isConnected() const { return socket && socket->isConnected(); }
-	void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
-
+	virtual void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
 
 	virtual void connect(const User::Ptr user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
@@ -103,6 +98,7 @@ public:
 	virtual int64_t getAvailable() const = 0;
 	virtual const string& getName() const = 0;
 	virtual const string& getNameWithTopic() const = 0;
+	bool isConnected() const { return socket && socket->isConnected(); }
 	virtual bool getOp() const = 0;
 
 	virtual User::NickMap& lockUserList() = 0;
@@ -111,14 +107,11 @@ public:
 	short getPort() const { return port; }
 	const string& getAddress() const { return address; }
 
-
-	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); };
-	string getIpPort() const { return getIp() + ':' + Util::toString(port); };
+	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); }
+	string getIpPort() const { return getIp() + ':' + Util::toString(port); }
 	string getLocalIp() const;
 
-	void updated(User::Ptr& aUser) { 
-		fire(ClientListener::UserUpdated(), this, aUser);
-	}
+	void updated(User::Ptr& aUser) { fire(ClientListener::UserUpdated(), this, aUser); }
 
 	static string getCounts() {
 		char buf[128];
@@ -140,6 +133,8 @@ public:
 		return sm;
 	}
 
+	void shutdown();
+
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
 	void send(const char* aMessage, size_t aLen) {
 		dcassert(socket);
@@ -158,12 +153,16 @@ public:
 	GETSET(bool, registered, Registered);
 
 protected:
+	friend class ClientManager;
+
+	Client(const string& hubURL, char separator, bool secure_);
+	virtual ~Client() throw();
 	struct Counts {
-		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { };
+		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { }
 		volatile long normal;
 		volatile long registered;
 		volatile long op;
-		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; };
+		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; }
 	};
 
 	BufferedSocket* socket;

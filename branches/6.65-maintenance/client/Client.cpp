@@ -29,8 +29,8 @@
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
-	socket(NULL), reconnDelay(120), 
-	lastActivity(0), registered(false), hubUrl(hubURL), port(0), separator(separator_),
+	reconnDelay(120), lastActivity(0), registered(false), socket(NULL), 
+	hubUrl(hubURL), 	port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
 	string file;
@@ -38,9 +38,15 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 }
 
 Client::~Client() throw() {
-	if(socket)
-		BufferedSocket::putSocket(socket);
+	dcassert(!socket);
 	updateCounts(true);
+}
+
+void Client::shutdown() {
+	if(socket) {
+		BufferedSocket::putSocket(socket);
+		socket = 0;
+	}
 }
 
 void Client::reloadSettings() {

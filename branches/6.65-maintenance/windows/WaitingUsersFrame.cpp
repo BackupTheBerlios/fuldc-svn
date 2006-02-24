@@ -208,7 +208,7 @@ LRESULT WaitingUsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		UploadManager::getInstance()->reserveSlot(user);
 	}
 	return 0; 
-};
+}
 
 LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();

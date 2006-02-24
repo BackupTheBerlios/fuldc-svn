@@ -308,7 +308,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 					rc.top += 2;
 					::MoveToEx(cd->nmcd.hdc,rc.left+1,rc.top,(LPPOINT)NULL);
 					::LineTo(cd->nmcd.hdc,rc.right-2,rc.top);
-				};
+				}
 				
 				// draw status text
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
@@ -667,6 +667,7 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			statusString += _T(" ");
 		}
 		statusString += buf;
+
 		ui->setStatusString(statusString);
 
 		v->push_back(ui);
@@ -698,7 +699,7 @@ LRESULT TransferView::onOpen(WORD , WORD wID, HWND , BOOL& ) {
 		path = ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE);
 	} else {
 		path = ii->getText(COLUMN_PATH);
-	} 
+	}
 
 	ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOW);
 
@@ -756,7 +757,7 @@ LRESULT TransferView::onPmAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	LineDlg dlg;
 	if(dlg.DoModal() == IDCANCEL)
 		return 0;
-	
+
 	tstring msg = dlg.line;
 
 	int i = -1;

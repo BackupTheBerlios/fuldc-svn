@@ -34,8 +34,8 @@ class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<
 	private FavoriteManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
-	UsersFrame() : closed(false), startup(true)	{ };
-	virtual ~UsersFrame() { };
+	UsersFrame() : closed(false), startup(true) { }
+	virtual ~UsersFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("UsersFrame"), IDR_USERS, 0, COLOR_3DFACE);
 		
@@ -113,7 +113,7 @@ private:
 		UserInfo(const User::Ptr& u) : UserInfoBase(u) { 
 			columns[COLUMN_NICK] = Text::toT(u->getNick());
 			update();
-		};
+		}
 
 		const tstring& getText(int col) const {
 			return columns[col];

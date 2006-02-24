@@ -33,10 +33,8 @@ public:
 	QueuePage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_QUEUE));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
-
-	virtual ~QueuePage() { 
-	};
+	}
+	virtual ~QueuePage() { }
 
 	BEGIN_MSG_MAP(QueuePage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
