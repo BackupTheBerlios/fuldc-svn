@@ -35,9 +35,31 @@
 #include "../client/StringSearch.h"
 #include "../client/FavoriteManager.h"
 #include "../client/ShareManager.h"
+#include "../client/ADLSearch.h"
+
+class ThreadedDirectoryListing;
 
 #define STATUS_MESSAGE_MAP 9
 #define VIEW_MESSAGE_MAP   10
+
+class UnloadDirectoryListing : public Thread
+{
+public:
+	UnloadDirectoryListing(DirectoryListing* aDirList) : mDirList(aDirList) { }
+
+private:
+	DirectoryListing* mDirList;
+
+	virtual int run()
+	{
+		//delete the directorylisting
+		delete mDirList;
+		//delete this thread object to cleanup after us
+		delete this;
+
+		return 0;
+	}
+};
 
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>,
 	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
@@ -64,7 +86,10 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	virtual ~DirectoryListingFrame() { 
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
-		delete dl; 
+	
+		//this will delete dl and then destroy itself
+		UnloadDirectoryListing* udl = new UnloadDirectoryListing(dl);
+		udl->start();
 	}
 
 
@@ -235,6 +260,8 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	}
 
 private:
+	friend class ThreadedDirectoryListing;
+	
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
@@ -382,6 +409,47 @@ private:
 	typedef FrameMap::iterator FrameIter;
 
 	static FrameMap frames;
+};
+
+class ThreadedDirectoryListing : public Thread
+{
+public:
+	ThreadedDirectoryListing(DirectoryListingFrame* pWindow, 
+		const string& pFile, const string& pTxt) : mWindow(pWindow),
+		mFile(pFile), mTxt(pTxt)
+	{ }
+
+protected:
+	DirectoryListingFrame* mWindow;
+	string mFile;
+	string mTxt;
+
+private:
+	virtual int run()
+	{
+		try
+		{
+			if(!mFile.empty()) {
+				mWindow->dl->loadFile(mFile);
+				ADLSearchManager::getInstance()->matchListing(mWindow->dl);
+				mWindow->refreshTree(Text::toT(WinUtil::getInitialDir(mWindow->dl->getUser())));
+			} else {
+				mWindow->refreshTree(Text::toT(Util::toNmdcFile(mWindow->dl->loadXML(mTxt, true))));
+			}
+		} catch(const Exception& e) {
+			mWindow->error = Text::toT(mWindow->dl->getUser()->getFullNick() + ": " + e.getError());
+		}
+
+		mWindow->initStatus();
+		mWindow->ctrlStatus.SetText(0, CTSTRING(LOADED_FILE_LIST));
+		//notify the user that we've loaded the list
+		mWindow->setDirty();
+
+		//cleanup the thread object
+		delete this;
+
+		return 0;
+	}
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)

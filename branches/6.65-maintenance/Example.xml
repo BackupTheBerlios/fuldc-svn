@@ -119,7 +119,6 @@
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
 		<String Name="FavoriteHubAlreadyExists">Hub already exists as a favorite</String>
 		<String Name="FavoriteHubDoesNotExist">This hub is not a favorite hub</String>
-		<String Name="FavoriteHubDupeAddress">There's already an entry for this address, please specify another one</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
 		<String Name="FavoriteHubRemoved">Favorite hub removed</String>
@@ -770,5 +769,7 @@
 		<String Name="ClientTooOld">Client too old to download from, no support for TTH</String>
 		<String Name="TotalFiles">Total Files</String>
 		<String Name="TotalSize">Total Size</String>
+		<String Name="LoadingFileList">Loading file list, this may take a while if the list is large.</String>
+		<String Name="LoadedFileList">File list loaded.</String>
 	</Strings>
 </Language>

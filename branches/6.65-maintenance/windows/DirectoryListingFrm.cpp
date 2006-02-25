@@ -92,31 +92,23 @@ DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
 }
 
 void DirectoryListingFrame::loadFile(const tstring& name) {
-	try {
-		dl->loadFile(Text::fromT(name));
-		ADLSearchManager::getInstance()->matchListing(dl);
-		refreshTree(Text::toT(WinUtil::getInitialDir(dl->getUser())));
-	} catch(const Exception& e) {
-		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
-	}
+	ctrlStatus.SetText(0, CTSTRING(LOADING_FILE_LIST));
+	//don't worry about cleanup, the object will delete itself once the thread has finished it's job
+	ThreadedDirectoryListing* tdl = new ThreadedDirectoryListing(this, Text::fromT(name), Util::emptyString);
+	tdl->start();
 
 	tstring filename = Util::getFileName(name);
 	if( Util::stricmp(filename, _T("files.xml.bz2")) == 0 )
 		mylist = true;
 	else if ( Util::strnicmp(filename, _T("MyList"), 6) == 0 )
 		mylist = true;
-
-	initStatus();
 }
 
 void DirectoryListingFrame::loadXML(const string& txt) {
-	try {
-		refreshTree(Text::toT(Util::toNmdcFile(dl->loadXML(txt, true))));
-	} catch(const Exception& e) {
-		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
-	}
-
-	initStatus();
+	ctrlStatus.SetText(0, CTSTRING(LOADING_FILE_LIST));
+	//don't worry about cleanup, the object will delete itself once the thread has finished it's job
+	ThreadedDirectoryListing* tdl = new ThreadedDirectoryListing(this, Util::emptyString, txt);
+	tdl->start();
 }
 
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {

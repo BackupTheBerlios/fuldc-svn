@@ -120,7 +120,6 @@ string ResourceManager::strings[] = {
 "Favorite hub added", 
 "Hub already exists as a favorite", 
 "This hub is not a favorite hub", 
-"There's already an entry for this address, please specify another one", 
 "Identification (leave blank for defaults)", 
 "Favorite Hub Properties", 
 "Favorite hub removed", 
@@ -771,6 +770,8 @@ string ResourceManager::strings[] = {
 "Client too old to download from, no support for TTH", 
 "Total Files", 
 "Total Size", 
+"Loading file list, this may take a while if the list is large.", 
+"File list loaded.", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -891,7 +892,6 @@ string ResourceManager::names[] = {
 "FavoriteHubAdded", 
 "FavoriteHubAlreadyExists", 
 "FavoriteHubDoesNotExist", 
-"FavoriteHubDupeAddress", 
 "FavoriteHubIdentity", 
 "FavoriteHubProperties", 
 "FavoriteHubRemoved", 
@@ -1542,4 +1542,6 @@ string ResourceManager::names[] = {
 "ClientTooOld", 
 "TotalFiles", 
 "TotalSize", 
+"LoadingFileList", 
+"LoadedFileList", 
 };

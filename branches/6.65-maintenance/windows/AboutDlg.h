@@ -50,7 +50,8 @@ _T("Thanks to fusbar for all his advice. ")
 _T("Thanks to farmer for his advice on default colors. ")
 _T("Thanks to manos for his nice icons. ")
 _T("Thanks to Banten for his lovely icons. ")
-_T("Thanks to Irean for her help with the graphics. ");
+_T("Thanks to Irean for her help with the graphics. ")
+_T("Thanks to xAyiDe for his threaded file list code.");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
 {
