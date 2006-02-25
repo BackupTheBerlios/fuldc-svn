@@ -183,15 +183,30 @@ LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	{
 		FavoriteHubEntry* e = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
 		dcassert(e != NULL);
-		FavHubProperties dlg(e);
-		if(dlg.DoModal(m_hWnd) == IDOK)
-		{
-			ctrlHubs.SetItemText(i, COLUMN_NAME, Text::toT(e->getName()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, Text::toT(e->getDescription()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_SERVER, Text::toT(e->getServer()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_NICK, Text::toT(e->getNick(false)).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*').c_str());
-			ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, Text::toT(e->getUserDescription()).c_str());
+		
+		FavoriteHubEntry newEntry = *e;
+		FavHubProperties dlg(&newEntry);
+		while(true) {
+			if(dlg.DoModal(m_hWnd) == IDOK)
+			{
+				if(Util::stricmp(e->getServer(), newEntry.getServer()) == 0 || 
+					FavoriteManager::getInstance()->getFavoriteHubEntry(newEntry.getServer()) == NULL) {
+					*e = newEntry;
+					ctrlHubs.SetItemText(i, COLUMN_NAME, Text::toT(e->getName()).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, Text::toT(e->getDescription()).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_SERVER, Text::toT(e->getServer()).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_NICK, Text::toT(e->getNick(false)).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*').c_str());
+					ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, Text::toT(e->getUserDescription()).c_str());
+					break;
+				} else {
+					MessageBox(
+						CTSTRING(FAVORITE_HUB_ALREADY_EXISTS), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONWARNING | MB_OK);
+				}
+
+			} else {
+				break;
+			}
 		}
 	}
 	return 0;

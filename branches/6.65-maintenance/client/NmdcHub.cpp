@@ -420,6 +420,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				feat.push_back("NoHello");
 				feat.push_back("UserIP2");
 				feat.push_back("TTHSearch");
+				feat.push_back("ZPipe");
 
 				if(BOOLSETTING(COMPRESS_TRANSFERS))
 					feat.push_back("GetZBlock");
@@ -569,8 +570,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		fire(ClientListener::GetPassword(), this);
 	} else if(cmd == "$BadPass") {
 		fire(ClientListener::BadPassword(), this);
-	} else if(cmd == "$LogedIn") {
-		
+	} else if(cmd == "$ZOn") {
+		socket->setMode (BufferedSocket::MODE_ZPIPE);
 	} else {
 		dcassert(cmd[0] == '$');
 		dcdebug("NmdcHub::onLine Unknown command %s\n", aLine.c_str());

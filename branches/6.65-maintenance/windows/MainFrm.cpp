@@ -589,25 +589,6 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	return true;
 }
 
-LRESULT MainFrame::onStaticFrame(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	switch(wID){
-		case ID_FILE_CONNECT:			PublicHubsFrame::openWindow(); break;
-		case IDC_FAVORITES:				FavoriteHubsFrame::openWindow(); break;
-		case IDC_FAVUSERS:				UsersFrame::openWindow(); break;
-		case IDC_QUEUE:					QueueFrame::openWindow(); break;
-		case IDC_VIEW_WAITING_USERS:	WaitingUsersFrame::openWindow(); break;
-		case IDC_FINISHED_DL:			FinishedDLFrame::openWindow(); break;
-		case IDC_FINISHED_UL:			FinishedULFrame::openWindow(); break;
-		case ID_FILE_SEARCH:			SearchFrame::openWindow(); break;
-		case IDC_FILE_ADL_SEARCH:		ADLSearchFrame::openWindow(); break;
-		case IDC_SEARCH_SPY:			SpyFrame::openWindow(); break;
-		case IDC_NOTEPAD:				NotepadFrame::openWindow(); break;
-		case IDC_NET_STATS:				StatsFrame::openWindow(); break;
-		case IDC_SYSTEM_LOG:			SystemFrame::openWindow();
-	}
-	return 0;
-}
-
 LRESULT MainFrame::onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if( !hashProgress.IsWindow() ){
 		hashProgress.Create( m_hWnd );
@@ -621,6 +602,26 @@ LRESULT MainFrame::onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	AboutDlg dlg;
 	dlg.DoModal(m_hWnd);
+	return 0;
+}
+
+LRESULT MainFrame::onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	switch(wID) {
+		case ID_FILE_SEARCH: SearchFrame::openWindow(); break;
+		case ID_FILE_CONNECT: PublicHubsFrame::openWindow(); break;
+		case IDC_FAVORITES: FavoriteHubsFrame::openWindow(); break;
+		case IDC_FAVUSERS: UsersFrame::openWindow(); break;
+		case IDC_NOTEPAD: NotepadFrame::openWindow(); break;
+		case IDC_QUEUE: QueueFrame::openWindow(); break;
+		case IDC_SEARCH_SPY: SpyFrame::openWindow(); break;
+		case IDC_FILE_ADL_SEARCH: ADLSearchFrame::openWindow(); break;
+		case IDC_NET_STATS: StatsFrame::openWindow(); break; 
+		case IDC_FINISHED_DL: FinishedDLFrame::openWindow(); break;
+		case IDC_FINISHED_UL: FinishedULFrame::openWindow(); break;
+		case IDC_VIEW_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
+		case IDC_SYSTEM_LOG: SystemFrame::openWindow(); break;
+		default: dcassert(0); break;
+	}
 	return 0;
 }
 

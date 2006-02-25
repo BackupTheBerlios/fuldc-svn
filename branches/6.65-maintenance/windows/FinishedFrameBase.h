@@ -392,4 +392,9 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, Res
 ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 
-#endif
+#endif // !defined(FINISHED_FRAME_BASE_H)
+
+/**
+* @file
+* $Id: FinishedFrameBase.h,v 1.2 2006/02/19 16:19:06 arnetheduck Exp $
+*/
