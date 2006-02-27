@@ -1190,7 +1190,7 @@ void MainFrame::on(PartialList, const User::Ptr& aUser, const string& text) thro
 	PostMessage(WM_SPEAKER, BROWSE_LISTING, (LPARAM)new DirectoryBrowseInfo(aUser, text));
 }
 
-void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
+void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t) throw() {
 	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 			// This is a file listing, show it...

@@ -136,6 +136,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_FULPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onMenuHelp)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(IDC_OPEN_OWN_LIST, onOpenOwnList)
@@ -401,7 +402,7 @@ private:
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw();	
 
 	// QueueManagerListener
-	virtual void on(QueueManagerListener::Finished, QueueItem* qi) throw();
+	virtual void on(QueueManagerListener::Finished, QueueItem* qi, int64_t) throw();
 	virtual void on(PartialList, const User::Ptr&, const string& text) throw();
 
 	// UPnP connectors

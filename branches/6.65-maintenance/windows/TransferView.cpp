@@ -242,7 +242,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		// Let's draw a box if needed...
-		if(cd->iSubItem == COLUMN_STATUS) {
+		if(ctrlTransfers.findColumn(cd->iSubItem) == COLUMN_STATUS) {
 			ItemInfo* ii = reinterpret_cast<ItemInfo*>(cd->nmcd.lItemlParam);
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
