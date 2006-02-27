@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ void NmdcHub::connect() {
 	reconnect = true;
 	supportFlags = 0;
 	lastMyInfoA.clear();
-	lastMyInfoB.clear();
+ 	lastMyInfoB.clear();
 	lastUpdate = 0;
 
 	state = STATE_LOCK;
@@ -466,12 +466,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			fire(ClientListener::UserUpdated(), this, u);
 		}
 	} else if(cmd == "$ForceMove") {
-		disconnect(false);
+		socket->disconnect(false);
 		fire(ClientListener::Redirect(), this, param);
 	} else if(cmd == "$HubIsFull") {
 		fire(ClientListener::HubFull(), this);
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
-		disconnect(false);
+		socket->disconnect(false);
 		fire(ClientListener::NickTaken(), this);
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
@@ -590,6 +590,8 @@ string NmdcHub::checkNick(const string& aNick) {
 void NmdcHub::myInfo(bool alwaysSend) {
 	checkstate();
 	
+	reloadSettings(false);
+
 	dcdebug("MyInfo %s...\n", getNick().c_str());
 	lastCounts = counts;
 	
@@ -631,12 +633,9 @@ void NmdcHub::myInfo(bool alwaysSend) {
 }
 
 void NmdcHub::disconnect(bool graceless) throw() {	
-	state = STATE_CONNECT;
 	Client::disconnect(graceless);
-	{ 
-		Lock l(cs);
-		clearUsers();
-	}
+	state = STATE_CONNECT;
+	clearUsers();
 }
 
 void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {
@@ -691,13 +690,12 @@ void NmdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 // BufferedSocketListener
 void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
-	{
-		Lock l(cs);
-		clearUsers();
-	}
+	clearUsers();
+
 	if(state == STATE_CONNECTED)
 		state = STATE_CONNECT;
-	fire(ClientListener::Failed(), this, aLine);
+
+	fire(ClientListener::Failed(), this, aLine); 
 }
 
 /**
