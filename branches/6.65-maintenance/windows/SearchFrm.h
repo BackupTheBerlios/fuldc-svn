@@ -241,6 +241,11 @@ private:
 
 		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) { 
 			sr->incRef(); update();
+
+			if( sr->getTTH() )
+				dupe = ShareManager::getInstance()->isTTHShared(*sr->getTTH());
+			else
+				dupe = false;
 		}
 		~SearchInfo() { 
 			sr->decRef(); 
