@@ -121,10 +121,11 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 }
 
 void shutdown() {
-	TimerManager::getInstance()->removeListeners();
-
+	TimerManager::getInstance()->shutdown();
 	HashManager::getInstance()->shutdown();
 	ConnectionManager::getInstance()->shutdown();
+
+	BufferedSocket::waitShutdown();
 
 	SettingsManager::getInstance()->save();
 	

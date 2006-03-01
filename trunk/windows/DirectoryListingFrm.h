@@ -44,8 +44,8 @@ class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame
 
 {
 public:
-	static void openWindow(const tstring& aFile, const User::Ptr& aUser);
-	static void openWindow(const User::Ptr& aUser, const string& txt);
+	static void openWindow(const tstring& aFile, const User::Ptr& aUser, int64_t aSpeed);
+	static void openWindow(const User::Ptr& aUser, const string& txt, int64_t aSpeed);
 	static void closeAll();
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame> baseClass;
@@ -59,12 +59,26 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COLUMN_TTH,
 		COLUMN_LAST
 	};
+
+	enum {
+		STATUS_TEXT,
+		STATUS_SPEED,
+		STATUS_TOTAL_FILES,
+		STATUS_TOTAL_SIZE,
+		STATUS_SELECTED_FILES,
+		STATUS_SELECTED_SIZE,
+		STATUS_FILE_LIST_DIFF,
+		STATUS_MATCH_QUEUE,
+		STATUS_FIND,
+		STATUS_NEXT,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
 	
-	DirectoryListingFrame(const User::Ptr& aUser);
+	DirectoryListingFrame(const User::Ptr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame() { 
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
-		delete dl; 
 	}
 
 
@@ -192,9 +206,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		clearList();
 		clearTree();
 		
-		delete dl;
-
-		dl = new DirectoryListing(user);
+		dl.reset(new DirectoryListing(user));
 	}
 
 	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -267,12 +279,12 @@ private:
 				dupe = ShareManager::getInstance()->isTTHShared( *f->getTTH() );
 			else
 				dupe = false;
-		};
+		}
 		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d), dupe(false) { 
 			columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(d->getTotalSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
-		};
+		}
 
 		const tstring& getText(int col) const {
 			dcassert(col >= 0 && col < COLUMN_LAST);
@@ -360,14 +372,15 @@ private:
 	int skipHits;
 
 	size_t files;
+	int64_t speed;		/**< Speed at which this file list was downloaded */
 
 	bool updating;
 	bool searching;
 	bool mylist;
 
-	int statusSizes[9];
+	int statusSizes[10];
 	
-	DirectoryListing* dl;
+	auto_ptr<DirectoryListing> dl;
 
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;

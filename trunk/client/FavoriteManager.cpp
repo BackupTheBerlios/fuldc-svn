@@ -280,7 +280,7 @@ void FavoriteManager::onHttpFinished() throw() {
 
 class XmlListLoader : public SimpleXMLReader::CallBack {
 public:
-	XmlListLoader(HubEntry::List& lst) : publicHubs(lst) { };
+	XmlListLoader(HubEntry::List& lst) : publicHubs(lst) { }
 	virtual ~XmlListLoader() { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool) {
 		if(name == "Hub") {
@@ -475,7 +475,7 @@ void FavoriteManager::load(SimpleXML* aXml) {
 			const string& nick = aXml->getChildAttrib("Nick");
 			const string& hubUrl = aXml->getChildAttrib("URL");
 
-			if(cid.empty()) {
+			if(cid.length() != 39) {
 				if(nick.empty() || hubUrl.empty())
 					continue;
 				u = ClientManager::getInstance()->getUser(nick, hubUrl);

@@ -55,13 +55,13 @@ public:
 	void infoUpdated();
 
 	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
-	User::Ptr getLegacyUser(const string& aNick) throw();
 	User::Ptr getUser(const CID& cid) throw();
 
 	string findHub(const string& ipPort);
 
 	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
+	User::Ptr findLegacyUser(const string& aNick) const throw();
 
 	bool isOnline(const User::Ptr& aUser) {
 		Lock l(cs);
@@ -79,7 +79,7 @@ public:
 	User::Ptr& getMe();
 	
 	void connect(const User::Ptr& p);
-	void send(AdcCommand& c);
+	void send(AdcCommand& c, const CID& to);
 	void privateMessage(const User::Ptr& p, const string& msg);
 
 	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility);
@@ -102,6 +102,10 @@ public:
  		}
  	}
 
+	string getCachedIp() const { Lock l(cs); return cachedIp; }
+
+	CID getMyCID();
+	const CID& getMyPID();
 private:
 	typedef HASH_MAP<string, User::Ptr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
@@ -114,15 +118,17 @@ private:
 	typedef pair<OnlineIter, OnlineIter> OnlinePair;
 
 	Client::List clients;
-	CriticalSection cs;
+	mutable CriticalSection cs;
 	
 	UserMap users;
-	LegacyMap legacyUsers;
 	OnlineMap onlineUsers;
 
 	User::Ptr me;
 	
 	Socket s;
+
+	string cachedIp;
+	CID pid;
 
 	friend class Singleton<ClientManager>;
 
@@ -138,6 +144,8 @@ private:
 
 	string getUsersFile() { return Util::getConfigPath() + "Users.xml"; }
 
+	void updateCachedIp();
+
 	// SettingsManagerListener
 	virtual void on(Load, SimpleXML*) throw();
 	virtual void on(Save, SimpleXML*) throw();
@@ -151,7 +159,7 @@ private:
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
 	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
 		int aFileType, const string& aString) throw();
-	virtual void on(AdcSearch, Client* c, const AdcCommand& adc) throw();
+	virtual void on(AdcSearch, Client* c, const AdcCommand& adc, const CID& from) throw();
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 };

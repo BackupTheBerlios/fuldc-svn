@@ -599,6 +599,11 @@
 #define IDC_DOWNLOAD_FAVORITE_DIRS      1370
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 1371
 #define IDC_FILTER_DROPDOWN             1372
+#define IDC_SETTINGS_AUTO_SEARCH_LIMIT  1373
+#define IDC_PRIVATE_ID                  1374
+#define IDC_AUTO_SEARCH_LIMIT           1375
+#define IDC_SETTINGS_UPLOAD_LINE_SPEED  1376
+#define IDC_SETTINGS_MEBIBITS           1377
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

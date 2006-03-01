@@ -29,8 +29,8 @@
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
-	socket(NULL), reconnDelay(120), 
-	lastActivity(0), registered(false), hubUrl(hubURL), port(0), separator(separator_),
+	reconnDelay(120), lastActivity(0), registered(false), socket(NULL), 
+	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
 	string file;
@@ -38,16 +38,27 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 }
 
 Client::~Client() throw() {
-	if(socket)
-		BufferedSocket::putSocket(socket);
+	dcassert(!socket);
 	updateCounts(true);
 }
 
-void Client::reloadSettings() {
+void Client::shutdown() {
+	if(socket) {
+		BufferedSocket::putSocket(socket);
+		socket = 0;
+	}
+}
+
+void Client::reloadSettings(bool updateNick) {
 	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubUrl());
 	if(hub) {
-		getMyIdentity().setNick(checkNick(hub->getNick(true)));
-		getMyIdentity().setDescription(hub->getUserDescription());
+		if(updateNick)
+			getMyIdentity().setNick(checkNick(hub->getNick(true)));
+		if(!hub->getUserDescription().empty()) {
+			getMyIdentity().setDescription(hub->getUserDescription());
+		} else {
+			getMyIdentity().setDescription(SETTING(DESCRIPTION));
+		}
 		setPassword(hub->getPassword());
 	} else {
 		getMyIdentity().setNick(checkNick(SETTING(NICK)));
@@ -62,7 +73,7 @@ void Client::connect() {
 		BufferedSocket::putSocket(socket);
 
 	setReconnDelay(120 + Util::rand(0, 60));
-	reloadSettings();
+	reloadSettings(true);
 	setRegistered(false);
 
 	try {
@@ -77,6 +88,13 @@ void Client::connect() {
 		fire(ClientListener::Failed(), this, e.getError());
 	}
 	updateActivity();
+}
+
+void Client::disconnect(bool graceLess) {
+	if(!socket)
+		return;
+	socket->removeListener(this);
+	socket->disconnect(graceLess);
 }
 
 void Client::updateActivity() {

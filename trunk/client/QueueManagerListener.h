@@ -29,6 +29,7 @@ class QueueItem;
 
 class QueueManagerListener {
 public:
+	virtual ~QueueManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Added;
@@ -43,7 +44,7 @@ public:
 	typedef X<9> SearchAlternates;
 
 	virtual void on(Added, QueueItem*) throw() { }
-	virtual void on(Finished, QueueItem*) throw() { }
+	virtual void on(Finished, QueueItem*, int64_t) throw() { }
 	virtual void on(Removed, QueueItem*) throw() { }
 	virtual void on(Moved, QueueItem*) throw() { }
 	virtual void on(SourcesUpdated, QueueItem*) throw() { }

@@ -34,10 +34,10 @@ public:
 	FavoriteDirsPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_FAVORITE_DIRS_PAGE));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 	virtual ~FavoriteDirsPage() {
 		ctrlDirectories.Detach();
-	};
+	}
 
 	BEGIN_MSG_MAP(FavoriteDirsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)

@@ -193,7 +193,6 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			return;
 		}
 		string nick = Text::acpToUtf8(x.substr(i, j-i));
-		User::Ptr user = ClientManager::getInstance()->getLegacyUser(nick);
 		i = j + 1;
 
 		// A file has 2 0x05, a directory only one
@@ -246,18 +245,28 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			return;
 		}
 		string hubName = Text::acpToUtf8(x.substr(i, j-i));
-		string tth;
-		if(hubName.compare(0, 4, "TTH:") == 0) {
-			tth = hubName.substr(4);
-			StringList names = ClientManager::getInstance()->getHubNames(user->getCID());
-			hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
-		}
 		i = j + 2;
 		if( (j = x.rfind(')')) == string::npos) {
 			return;
 		}
 		string hubIpPort = x.substr(i, j-i);
 		string url = ClientManager::getInstance()->findHub(hubIpPort);
+		
+		User::Ptr user = ClientManager::getInstance()->findUser(nick, url);
+		if(!user) {
+			// Could happen if hub has multiple URLs / IPs
+			user = ClientManager::getInstance()->findLegacyUser(nick);
+			if(!user)
+				return;
+		}
+
+		string tth;
+		if(hubName.compare(0, 4, "TTH:") == 0) {
+			tth = hubName.substr(4);
+			StringList names = ClientManager::getInstance()->getHubNames(user->getCID());
+			hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
+		}
+				
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
 			file, hubName, url, remoteIp, tth.empty() ? NULL : new TTHValue(tth), true);
 		fire(SearchManagerListener::SR(), sr);
@@ -266,8 +275,11 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		AdcCommand c(x.substr(0, x.length()-1));
 		if(c.getParameters().empty())
 			return;
+		string cid = c.getParam(0);
+		if(cid.size() != 39)
+			return;
 
-		User::Ptr user = ClientManager::getInstance()->findUser(c.getFrom());
+		User::Ptr user = ClientManager::getInstance()->findUser(CID(cid));
 		if(!user)
 			return;
 
@@ -276,7 +288,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		string file;
 		string tth;
 
-		for(StringIter i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
+		for(StringIter i = c.getParameters().begin() + 1; i != c.getParameters().end(); ++i) {
 			string& str = *i;
 			if(str.compare(0, 2, "FN") == 0) {
 				file = Util::toNmdcFile(str.substr(2));
@@ -311,12 +323,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 	}*/ // Needs further DoS investigation
 }
 
-void SearchManager::respond(const AdcCommand& adc) {
+void SearchManager::respond(const AdcCommand& adc, const CID& from) {
 	// Filter own searches
-	if(adc.getFrom() == ClientManager::getInstance()->getMe()->getCID())
+	if(from == ClientManager::getInstance()->getMe()->getCID())
 		return;
 
-	User::Ptr p = ClientManager::getInstance()->findUser(adc.getFrom());
+	User::Ptr p = ClientManager::getInstance()->findUser(from);
 	if(!p)
 		return;
 
@@ -335,7 +347,7 @@ void SearchManager::respond(const AdcCommand& adc) {
 		cmd.setTo(adc.getFrom());
 		if(!token.empty())
 			cmd.addParam("TO", token);
-		ClientManager::getInstance()->send(cmd);
+		ClientManager::getInstance()->send(cmd, from);
 		(*i)->decRef();
 	}
 }

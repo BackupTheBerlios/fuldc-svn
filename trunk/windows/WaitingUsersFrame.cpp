@@ -181,7 +181,7 @@ LRESULT WaitingUsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		UploadManager::getInstance()->reserveSlot(user);
 	}
 	return 0; 
-};
+}
 
 LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();
@@ -190,7 +190,7 @@ LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		FavoriteManager::getInstance()->addFavoriteUser(user);
 	}
 	return 0;
-};
+}
 
 // Load all searches from manager
 void WaitingUsersFrame::LoadAll()
@@ -260,7 +260,6 @@ void WaitingUsersFrame::onAddFile(const User::Ptr aUser, const string& aFile) {
 		userNode = ctrlQueued.GetNextSiblingItem(userNode);
 	}
 
-	string aNick = aUser->getFirstNick();
 	userNode = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT, (WinUtil::getNicks(aUser) + _T(" - ") + WinUtil::getHubNames(aUser).first).c_str(), 
 		0, 0, 0, 0, (LPARAM)new UserPtr(aUser),	TVI_ROOT, TVI_LAST);
 	ctrlQueued.InsertItem(Text::toT(aFile).c_str(), userNode, TVI_LAST);

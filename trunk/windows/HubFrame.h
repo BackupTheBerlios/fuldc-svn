@@ -116,8 +116,7 @@ public:
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	
-	
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(tstring aLine, bool bold = true);
@@ -151,19 +150,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		HWND hWnd = (HWND)lParam;
-		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlClient.m_hWnd || hWnd == ctrlMessage.m_hWnd 
-			|| hWnd == ctrlFilter.m_hWnd || ctrlFilterSel.m_hWnd) {
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
-		} else {
-			return 0;
-		}
-	}
-
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		client->disconnect(false);
 		clearUserList();
@@ -182,7 +168,7 @@ public:
 private:
 	class UserInfo;
 public:
-	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; };
+	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
 
 	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, ADD_CHAT_LINE,
@@ -199,7 +185,6 @@ private:
 		COLUMN_NICK = COLUMN_FIRST, 
 		COLUMN_SHARED, 
 		COLUMN_DESCRIPTION, 
-		COLUMN_ISP,
 		COLUMN_TAG,
 		COLUMN_IP,
 		COLUMN_CONNECTION, 
@@ -215,13 +200,12 @@ private:
 		Identity identity;
 	};
 
-
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
 		UserInfo(const UpdateInfo& u, bool aStripIsp) : UserInfoBase(u.user), stripIsp(aStripIsp) { 
 			update(u.identity, -1); 
-		};
+		}
 
 		const tstring& getText(int col) const {
 			dcassert(col >= 0 && col < COLUMN_LAST);
@@ -258,7 +242,7 @@ private:
 
 	class PMInfo {
 	public:
-		PMInfo(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const string& m) : from(from_), to(to_), replyTo(replyTo_), msg(Text::toT(m)) { };
+		PMInfo(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const string& m) : from(from_), to(to_), replyTo(replyTo_), msg(Text::toT(m)) { }
 		User::Ptr from;
 		User::Ptr to;
 		User::Ptr replyTo;
@@ -350,10 +334,6 @@ private:
 	bool favShowJoins;
 	tstring complete;
 
-	tstring lastKick;
-	tstring lastRedir;
-	tstring lastServer;
-	
 	bool waitingForPW;
 	bool extraSort;
 	bool stripIsp;
@@ -373,7 +353,7 @@ private:
 
 	size_t getUserCount() const {
 		size_t sel = ctrlUsers.GetSelectedCount();
-		return sel>1?sel:client->getUserCount();
+		return sel > 1 ? sel : client->getUserCount();
 	}
 
 	int64_t getAvailable() {
@@ -446,14 +426,13 @@ private:
 	char *resolveBuffer;
 	bool isIP;
 	
-	int findUser(const User::Ptr& aUser);
-	UserInfo* findUser(tstring & nick);
-
 	bool updateUser(const UpdateInfo& u);
 	void removeUser(const User::Ptr& aUser);
 
 	void updateUserList(UserInfo* ui = NULL);
 	bool parseFilter(int& mode, int64_t& size);
+	UserInfo* findUser(const tstring& nick);
+
 	void addAsFavorite();
 	void removeFavoriteHub();
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);
@@ -486,16 +465,15 @@ private:
 	virtual void on(PrivateMessage, Client*, const OnlineUser&, const OnlineUser&, const OnlineUser&, const string&) throw();
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
-	virtual void on(UserIp, Client*, const OnlineUser::List&) throw();
 
-	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
-	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); };
+	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); }
+	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); }
 	void speak(Speakers s, const OnlineUser& u) { 
 		Lock l(updateCS);
 		updateList.push_back(make_pair(UpdateInfo(u), s));
 		updateUsers = true;
-	};
-	void speak(Speakers s, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(from, to, replyTo, line)); };
+	}
+	void speak(Speakers s, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(from, to, replyTo, line)); }
 
 	void openLinksInTopic();
 	bool resolve(const wstring& aDns);

@@ -54,13 +54,13 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	DirectoryItem() : priority(QueueItem::DEFAULT) { };
+	DirectoryItem() : priority(QueueItem::DEFAULT) { }
 	DirectoryItem(const User::Ptr& aUser, const string& aName, const string& aTarget, 
-		QueueItem::Priority p) : name(aName), target(aTarget), priority(p), user(aUser) { };
-	~DirectoryItem() { };
+		QueueItem::Priority p) : name(aName), target(aTarget), priority(p), user(aUser) { }
+	~DirectoryItem() { }
 	
-	User::Ptr& getUser() { return user; };
-	void setUser(const User::Ptr& aUser) { user = aUser; };
+	User::Ptr& getUser() { return user; }
+	void setUser(const User::Ptr& aUser) { user = aUser; }
 	
 	GETSET(string, name, Name);
 	GETSET(string, target, Target);
@@ -105,7 +105,7 @@ public:
 	
 	void getTargetsByRoot(StringList& sl, const TTHValue& tth);
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
-	void unlockQueue() throw() { cs.leave(); };
+	void unlockQueue() throw() { cs.leave(); }
 
 	Download* getDownload(User::Ptr& aUser, bool supportsTrees) throw();
 	void putDownload(Download* aDownload, bool finished) throw();
@@ -174,7 +174,7 @@ private:
 	/** All queue items by target */
 	class FileQueue {
 	public:
-		FileQueue() : lastInsert(queue.end()) { };
+		FileQueue() : lastInsert(queue.end()) { }
 		~FileQueue() {
 			for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i)
 				delete i->second;
@@ -188,8 +188,8 @@ private:
 		void find(QueueItem::List& ql, const TTHValue& tth);
 
 		QueueItem* findAutoSearch(StringList& recent);
-		size_t getSize() { return queue.size(); };
-		QueueItem::StringMap& getQueue() { return queue; };
+		size_t getSize() { return queue.size(); }
+		QueueItem::StringMap& getQueue() { return queue; }
 		void move(QueueItem* qi, const string& aTarget);
 		void remove(QueueItem* qi) {
 			if(lastInsert != queue.end() && Util::stricmp(*lastInsert->first, qi->getTarget()) == 0)
@@ -213,14 +213,14 @@ private:
 		QueueItem* getRunning(const User::Ptr& aUser);
 		void setRunning(QueueItem* qi, const User::Ptr& aUser);
 		void setWaiting(QueueItem* qi);
-		QueueItem::UserListMap& getList(int p) { return userQueue[p]; };
+		QueueItem::UserListMap& getList(int p) { return userQueue[p]; }
 		void remove(QueueItem* qi);
 		void remove(QueueItem* qi, const User::Ptr& aUser);
 
-		QueueItem::UserMap& getRunning() { return running; };
+		QueueItem::UserMap& getRunning() { return running; }
 		bool isRunning(const User::Ptr& aUser) const { 
 			return (running.find(aUser) != running.end());
-		};
+		}
 	private:
 		/** QueueItems by priority and user (this is where the download order is determined) */
 		QueueItem::UserListMap userQueue[QueueItem::LAST];

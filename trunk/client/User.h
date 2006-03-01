@@ -71,7 +71,7 @@ public:
 	User(const string& nick) : Flags(NMDC), firstNick(nick) { }
 	User(const CID& aCID) : cid(aCID) { }
 
-	virtual ~User() throw() { };
+	virtual ~User() throw() { }
 
 	operator CID() { return cid; }
 
@@ -97,12 +97,13 @@ public:
 		NMDC_PASSIVE = 1 << NMDC_PASSIVE_BIT
 	};
 
-	Identity(): userIp(false) { }
-	Identity(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), hubUrl(aHubUrl), userIp(false) { }
-	Identity(const Identity& rhs) : user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info), userIp(false) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; info = rhs.info; userIp = rhs.userIp; return *this; }
+	Identity() { }
+	Identity(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), hubUrl(aHubUrl) { }
+	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
+	GS(Nick, "NI")
 	GS(Description, "DE")
 	GS(Ip, "I4")
 	GS(UdpPort, "U4")
@@ -146,39 +147,7 @@ public:
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubUrl, HubUrl);
-	//used with nmdc hubs to determine if the ip was sent by the hub.
-	//Need this for the fakenick check, don't trust any ip not sent by the hub.
-	GETSET(bool, userIp, UserIp);
-	
-	const string& getNick() const { return get("NI"); }
-	const string& getShortNick() const { return get("SN"); }
-	const string& getPrefix() const { return get("PF"); }
-	
-	void setNick(const string& aNick) {
-		set("NI", aNick);
-		setShortNick(aNick);
-	}
-	
 private:
-	void setShortNick(const string& aNick) {
-		string::size_type pos = aNick.find("[");
-		if( pos != string::npos ) {
-			string::size_type rpos = aNick.rfind("]");
-			if( rpos == aNick.length() -1 && rpos > 0 )
-				rpos = aNick.rfind("]", rpos-1);
-			if(rpos != tstring::npos) {
-				set("SN", aNick.substr(rpos+1));
-				set("PF", aNick.substr(0, rpos+1));
-			} else {
-				set("SN", aNick);
-				set("PF", Util::emptyString);
-			}
-		} else {
-			set("SN", aNick);
-			set("PF", Util::emptyString);
-		}
-	}
-
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
 
@@ -193,8 +162,7 @@ public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
 
-	OnlineUser() : client(NULL) { }
-	OnlineUser(const User::Ptr& ptr, Client& client_);
+	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
 
 	operator User::Ptr&() { return user; }
 	operator const User::Ptr&() const { return user; }
@@ -206,7 +174,7 @@ public:
 
 	GETSET(User::Ptr, user, User);
 	GETSET(Identity, identity, Identity);
-
+	GETSET(u_int32_t, sid, SID);
 private:
 	friend class NmdcHub;
 

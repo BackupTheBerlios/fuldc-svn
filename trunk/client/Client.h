@@ -29,7 +29,7 @@
 
 class Client;
 class AdcCommand;
-
+class ClientManager;
 class ClientListener  
 {
 public:
@@ -74,8 +74,7 @@ public:
 	virtual void on(NickTaken, Client*) throw() { }
 	virtual void on(SearchFlood, Client*, const string&) throw() { }
 	virtual void on(NmdcSearch, Client*, const string&, int, int64_t, int, const string&) throw() { }
-	virtual void on(AdcSearch, Client*, const AdcCommand&) throw() { }
-	virtual void on(UserIp, Client*, const User::List&) throw() { }
+	virtual void on(AdcSearch, Client*, const AdcCommand&, const CID&) throw() { }
 };
 
 /** Yes, this should probably be called a Hub */
@@ -85,12 +84,8 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client(const string& hubURL, char separator, bool secure_);
-	virtual ~Client() throw();
-
 	virtual void connect();
-	bool isConnected() const { return socket && socket->isConnected(); }
-	void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
+	virtual void disconnect(bool graceless);
 
 	virtual void connect(const OnlineUser& user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
@@ -102,32 +97,36 @@ public:
     
 	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
-	
+
+	virtual void send(const AdcCommand& command) = 0;
+
+	virtual string escape(string const& str) const { return str; }
+
+	bool isConnected() const { return socket && socket->isConnected(); }
 	bool isOp() const { return getMyIdentity().isOp(); }
 
 	short getPort() const { return port; }
 	const string& getAddress() const { return address; }
 
-	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); };
-	string getIpPort() const { return getIp() + ':' + Util::toString(port); };
+	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); }
+	string getIpPort() const { return getIp() + ':' + Util::toString(port); }
 	string getLocalIp() const;
 
-	void updated(const OnlineUser& aUser) { 
-		fire(ClientListener::UserUpdated(), this, aUser);
-	}
+	void updated(const OnlineUser& aUser) { fire(ClientListener::UserUpdated(), this, aUser); }
 
 	static string getCounts() {
 		char buf[128];
 		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
-	virtual string escape(string const& str) const { return str; };
 	StringMap& escapeParams(StringMap& sm) {
 		for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
 			i->second = escape(i->second);
 		}
 		return sm;
 	}
+
+	void shutdown();
 
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
 	void send(const char* aMessage, size_t aLen) {
@@ -137,10 +136,10 @@ public:
 		updateActivity();
 		socket->write(aMessage, aLen);
 	}
+
 	const string& getMyNick() const { return getMyIdentity().getNick(); }
 	const string& getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
 	const string& getHubDescription() const { return getHubIdentity().getDescription(); }
-	const string getHubNameWithDescription() { return getHubName() + " - " + getHubDescription(); }
 
 	Identity& getMyIdentity() { return myIdentity; }
 	Identity& getHubIdentity() { return hubIdentity; }
@@ -156,12 +155,15 @@ public:
 	GETSET(bool, registered, Registered);
 
 protected:
+	friend class ClientManager;
+	Client(const string& hubURL, char separator, bool secure_);
+	virtual ~Client() throw();
 	struct Counts {
-		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { };
+		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { }
 		volatile long normal;
 		volatile long registered;
 		volatile long op;
-		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; };
+		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; }
 	};
 
 	BufferedSocket* socket;
@@ -172,8 +174,8 @@ protected:
 	void updateCounts(bool aRemove);
 	void updateActivity();
 
-	// reload nick from settings, other details from favmanager
-	void reloadSettings();
+	/** Reload details from favmanager or settings */
+	void reloadSettings(bool updateNick);
 
 	virtual string checkNick(const string& nick) = 0;
 

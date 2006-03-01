@@ -46,7 +46,7 @@ public:
 		ACTIVE						// In one up/downmanager
 	};
 
-	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), user(aUser) { };
+	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), user(aUser) { }
 	
 	User::Ptr& getUser() { return user; }
 	const User::Ptr& getUser() const { return user; }
@@ -165,13 +165,13 @@ private:
 	friend class Singleton<ConnectionManager>;
 	ConnectionManager();
 
-	virtual ~ConnectionManager() throw() { shutdown(); };
+	virtual ~ConnectionManager() throw() { shutdown(); }
 	
 	UserConnection* getConnection(bool aNmdc, bool secure) throw();
 	void putConnection(UserConnection* aConn);
 
 	void addUploadConnection(UserConnection* uc);
-	void addDownloadConnection(UserConnection* uc, bool sendNTD);
+	void addDownloadConnection(UserConnection* uc);
 
 	ConnectionQueueItem* getCQI(const User::Ptr& aUser, bool download);
 	void putCQI(ConnectionQueueItem* cqi);
@@ -189,7 +189,6 @@ private:
 
 	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener

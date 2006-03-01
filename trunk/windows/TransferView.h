@@ -120,7 +120,7 @@ private:
 
 	class ItemInfo;
 public:
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };
+	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
 private:
 	enum {
 		ADD_ITEM,

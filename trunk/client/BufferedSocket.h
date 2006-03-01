@@ -27,6 +27,7 @@
 #include "Thread.h"
 #include "Speaker.h"
 #include "Util.h"
+#include "ZUtils.h"
 #include "Socket.h"
 
 class InputStream;
@@ -35,6 +36,7 @@ class SocketException;
 
 class BufferedSocketListener {
 public:
+	virtual ~BufferedSocketListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;
@@ -61,6 +63,7 @@ class BufferedSocket : public Speaker<BufferedSocketListener>, public Thread
 public:
 	enum Modes {
 		MODE_LINE,
+		MODE_ZPIPE,
 		MODE_DATA
 	};
 
@@ -69,17 +72,22 @@ public:
 	 * @param sep Line separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep) throw(ThreadException) { 
+	static BufferedSocket* getSocket(char sep) throw() { 
 		return new BufferedSocket(sep); 
-	};
+	}
 
 	static void putSocket(BufferedSocket* aSock) { 
 		aSock->removeListeners(); 
 		aSock->shutdown();
-	};
+	}
 
-	void accept(const Socket& srv, bool secure) throw(SocketException);
-	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException);
+	static void waitShutdown() {
+		while(sockets)
+			Thread::sleep(100);
+	}
+
+	void accept(const Socket& srv, bool secure) throw(SocketException, ThreadException);
+	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException);
 
 	/** Sets data mode for aBytes bytes. Must be called within onLine. */
 	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }
@@ -88,8 +96,9 @@ public:
 	 * should be treated as data.
 	 * Must be called from within onData. 
 	 */
-	void setLineMode(size_t aRollback) { mode = MODE_LINE; rollback = aRollback; }
-	Modes getMode() const { return mode; };
+	void setLineMode(size_t aRollback) { setMode (MODE_LINE, aRollback);}
+	void setMode(Modes mode, size_t aRollback = 0);
+	Modes getMode() const { return mode; }
 	const string& getIp() { return sock ? sock->getIp() : Util::emptyString; }
 	bool isConnected() { return sock && sock->isConnected(); }
 	
@@ -114,7 +123,7 @@ private:
 	};
 
 	struct TaskData { 
-		virtual ~TaskData() { };
+		virtual ~TaskData() { }
 	};
 	struct ConnectInfo : public TaskData {
 		ConnectInfo(string addr_, short port_, bool proxy_) : addr(addr_), port(port_), proxy(proxy_) { }
@@ -127,7 +136,7 @@ private:
 		InputStream* stream;
 	};
 
-	BufferedSocket(char aSeparator) throw(ThreadException);
+	BufferedSocket(char aSeparator) throw();
 
 	// Dummy...
 	BufferedSocket(const BufferedSocket&);
@@ -141,9 +150,10 @@ private:
 	vector<pair<Tasks, TaskData*> > tasks;
 
 	Modes mode;
+	UnZFilter *filterIn;
 	int64_t dataBytes;
 	size_t rollback;
-	
+	bool failed;
 	string line;
 	vector<u_int8_t> inbuf;
 	vector<u_int8_t> writeBuf;
@@ -164,12 +174,15 @@ private:
 		if(sock)
 			sock->disconnect();
 		fire(BufferedSocketListener::Failed(), aError);
+		failed = true;
 	}
+	
+	static size_t sockets;
 
 	bool checkEvents();
 	void checkSocket();
 
-	void shutdown() { Lock l(cs); disconnecting = true; addTask(SHUTDOWN, 0); }
+	void shutdown();
 	void addTask(Tasks task, TaskData* data) { tasks.push_back(make_pair(task, data)); taskSem.signal(); }
 };
 

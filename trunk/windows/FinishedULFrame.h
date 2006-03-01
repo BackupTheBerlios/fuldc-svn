@@ -35,9 +35,9 @@ public:
 		columnWidth   = SettingsManager::FINISHED_UL_WIDTHS;
 		columnOrder   = SettingsManager::FINISHED_UL_ORDER;
 		columnVisible = SettingsManager::FINISHED_UL_VISIBLE;
-	};
+	}
 
-	virtual ~FinishedULFrame() { };
+	virtual ~FinishedULFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
 		

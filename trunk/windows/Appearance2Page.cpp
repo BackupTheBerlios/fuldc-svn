@@ -162,7 +162,7 @@ LRESULT Appearance2Page::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 			break;
 		default:
 			break;
-	};
+	}
 	return true;
 }
 

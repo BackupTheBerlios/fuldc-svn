@@ -632,9 +632,11 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	} else if(Util::stricmp(cmd.c_str(), _T("away")) == 0) {
 		if(Util::getAway() && param.empty()) {
 			Util::setAway(false);
+			Util::setManualAway(false);
 			status = TSTRING(AWAY_MODE_OFF);
 		} else {
 			Util::setAway(true);
+			Util::setManualAway(true);
 			Util::setAwayMessage(Text::fromT(param));
 			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
 		}
@@ -836,8 +838,10 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 		if(file[0] == '/') // Remove any '/' in from of the file
 			file = file.substr(1);
 		try {
-			/// @todo check this...
-			QueueManager::getInstance()->addList(ClientManager::getInstance()->getLegacyUser(file), QueueItem::FLAG_CLIENT_VIEW);
+			User::Ptr user = ClientManager::getInstance()->findLegacyUser(file);
+			if(user)
+				QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
+			// @todo else report error
 		} catch(const Exception&) {
 			// ...
 		}

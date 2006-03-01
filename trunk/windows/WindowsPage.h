@@ -32,10 +32,9 @@ public:
 	WindowsPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle(CTSTRING(SETTINGS_WINDOWS));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 
-	virtual ~WindowsPage() { 
-	};
+	virtual ~WindowsPage() { }
 
 	BEGIN_MSG_MAP(WindowsPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)

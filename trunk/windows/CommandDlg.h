@@ -67,7 +67,7 @@ public:
 		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onChange)
 	END_MSG_MAP()
 
-	CommandDlg() : type(0), ctx(0) { };
+	CommandDlg() : type(0), ctx(0) { }
 
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlName.SetFocus();

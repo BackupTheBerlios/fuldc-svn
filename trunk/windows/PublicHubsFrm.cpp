@@ -336,6 +336,7 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	ctrlFilter.MoveWindow(rc);
 
 	//filter sel
+	rc.bottom += comboH;
 	rc.right += ((rc.right - rc.left - 12) / 2) ;
 	rc.left += ((rc.right - rc.left + 8) / 3) * 2;
 	ctrlFilterSel.MoveWindow(rc);
@@ -577,8 +578,8 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 		case COLUMN_USERS: entrySize = entry.getUsers(); break;
 		case COLUMN_SERVER: entryString = entry.getServer(); doSizeCompare = false; break;
 		case COLUMN_COUNTRY: entryString = entry.getCountry(); doSizeCompare = false; break;
-		case COLUMN_SHARED: entrySize = entry.getShared(); break;
-		case COLUMN_MINSHARE: entrySize = entry.getMinShare(); break;
+		case COLUMN_SHARED: entrySize = (double)entry.getShared(); break;
+		case COLUMN_MINSHARE: entrySize = (double)entry.getMinShare(); break;
 		case COLUMN_MINSLOTS: entrySize = entry.getMinSlots(); break;
 		case COLUMN_MAXHUBS: entrySize = entry.getMaxHubs(); break;
 		case COLUMN_MAXUSERS: entrySize = entry.getMaxUsers(); break;

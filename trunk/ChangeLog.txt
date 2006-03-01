@@ -1,13 +1,68 @@
-﻿-- 0.69 --
+﻿-- 0.guess.what --
+* Fixed XML file list generation for invalid filenames from other os's
+* Fixed a rare refresh crash
+* CID is now shown if no nick name is currently available for a user
+* Fixed another crash when loading file lists
+* Played some more with bufferedsocket performance
+* Fixed some VS 2005 issues (thanks trem)
+* Installer now removes old unicows library
+* Updated to yaSSL 1.1.5
+* Added possiblity to sort transfer view by all downloads first (thanks guitarm)
+* Some cleanup for frame creation (thanks martin)
+* Fixed some translation strings (thanks fleetcommand)
+* Fixed some finished transfers frames issues (thanks trem)
+* /pm and and a few other things work without user list in hub frame
+
+-- 0.686 2006-02-13 --
+* Fixed active search (oops)
+* Fixed a crash when clicking on dchub links
+
+-- 0.685 2006-02-12 --
+* Fixed "browse list" being available for NMDC users
+* [ADC] Removed obsolete CI field
+* Fixed missing upload progress
+* [bug 89] Readded dynamic compression disabling
+* Added filelist download speed to filelist browser status bar
+* Added advanced hublist filter (thanks trem)
+* [bug 579] Fixed 0-byte files not being created if directory doesn't exist
+* [bug 804] Cleaned up project files (thanks pothead)
+* Socket buffer size = 0 now means use system default
+* [bug 789] Fixed wrong nick being copied (thanks ullner)
+* [bug 794] [ADC] Fixed automatic reconnect (thanks ullner)
+* [bug 806] Fixed description for favorite hubs (thanks ullner)
+* Updated to latest ADC specs, this will break 0.68/0.681/0.6811 queue sources and fav users (for NMDC as well)
+* Fixed a bufferedsocket crash
+* [ADC] Fixed quitting user processing (thanks ullner)
+* Clarified upload speed setting (thanks pothead)
+* Manual away setting no longer cleared when un-minimizing (thanks pothead)
+* Search result automatching waits with match until file list is downloaded if auto-matching enabled
+* Slight performance improvement when sending files
+* Fixed an issue with nick names disappearing from hub
+* Added customizable maximum user count when autosearching
+* Changed to open source version unicows for win9x users, perhaps this one will work better for you (see it as a
+  last attempt; if it doesn't work, w9x support will be phased out completely unless someone else solves the win9x
+  issues)
+* [bug 774] Fixed invalid description being sent if hub modifies it
+* [bug 818] Fixed default exit mnemonic
+* Fixed some more crashes (thanks bigmuscle)
+* Fixed some shutdown issues
+* Updated country database
+
+-- 0.6811 2006-01-21 --
+* Fixed a socket race condition leading to failing connections and crashes
+
+-- 0.681 2006-01-21 --
 * Fixed a crash when using slow sources disconnect
 * Fixed system log overflow
 * Minor user command fix (thanks garg)
 * Removed some duplicate code (thanks trem)
 * Ctrl-a to select all items in a list (thanks garg)
-* Added a check for multiple refreshes running at the same time (thanks trem)
+* [bug 484] Added a check for multiple refreshes running at the same time (thanks trem)
 * Fixed a few crashes here and there
 * Fixed no-slots message not being sent out always
-
+* Fixed yassl build locations (thanks pothead)
+* Added ip resolve cache when searching (thanks trem)
+* [bug 413] Failed file moves are now reported to the system log
 
 -- 0.68 2006-01-08 --
 * Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of
@@ -80,7 +135,7 @@
 * [NMDC] Minislots are no longer given to old DC++ clients (<0.304)
 * [ADC] Directory size returned with search results
 * Fixed a rare deadlock
-
+  
 -- 0.674 2005-04-10 --
 *** WARNING ***
   This version fixes a security bug, upgrade unless you want to risk losing data

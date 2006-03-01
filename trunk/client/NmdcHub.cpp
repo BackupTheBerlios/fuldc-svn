@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,11 @@ void NmdcHub::connect() {
 	Client::connect();
 }
 
+#define checkstate() if(state != STATE_CONNECTED) return
+
 void NmdcHub::connect(const OnlineUser& aUser) {
 	checkstate(); 
-	dcdebug("NmdcHub::connectToMe %s\n", aUser.getIdentity().getNick().c_str());
+	dcdebug("NmdcHub::connect %s\n", aUser.getIdentity().getNick().c_str());
 	if(ClientManager::getInstance()->isActive()) {
 		connectToMe(aUser);
 	} else {
@@ -74,20 +76,6 @@ int64_t NmdcHub::getAvailable() const {
 	return x;
 }
 
-void NmdcHub::refreshUserList(bool unknownOnly /* = false */) {
-	if(unknownOnly) {
-		Lock l(cs);
-		for(NickIter i = users.begin(); i != users.end(); ++i) {
-			if(!i->second->getIdentity().isSet(Identity::GOT_INF)) {
-				getInfo(*i->second);
-			}
-		}
-	} else {
-		clearUsers();
-		getNickList();
-	}
-}
-
 OnlineUser& NmdcHub::getUser(const string& aNick) {
 	OnlineUser* u = NULL;
 	{
@@ -96,21 +84,33 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 		NickIter i = users.find(aNick);
 		if(i != users.end())
 			return *i->second;
+	}
 
-		User::Ptr p;
-		if(aNick == getMyNick()) {
-			p = ClientManager::getInstance()->getMe();
-			getMyIdentity().setUser(p);
-			getMyIdentity().setHubUrl(getHubUrl());
-		} else {
-			p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
-		}
-		u = users.insert(make_pair(aNick, new OnlineUser(p, *this))).first->second;
+	User::Ptr p;
+	if(aNick == getMyNick()) {
+		p = ClientManager::getInstance()->getMe();
+		getMyIdentity().setUser(p);
+		getMyIdentity().setHubUrl(getHubUrl());
+	} else {
+		p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
+	}
+
+	{
+		Lock l(cs);
+		u = users.insert(make_pair(aNick, new OnlineUser(p, *this, 0))).first->second;
 		u->getIdentity().setNick(aNick);
 	}
 
 	ClientManager::getInstance()->putOnline(*u);
 	return *u;
+}
+
+void NmdcHub::supports(const StringList& feat) { 
+	string x;
+	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+		x+= *i + ' ';
+	}
+	send("$Supports " + x + '|');
 }
 
 OnlineUser* NmdcHub::findUser(const string& aNick) {
@@ -490,6 +490,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				feat.push_back("NoHello");
 				feat.push_back("UserIP2");
 				feat.push_back("TTHSearch");
+				feat.push_back("ZPipe");
 
 				if(BOOLSETTING(COMPRESS_TRANSFERS))
 					feat.push_back("GetZBlock");
@@ -523,12 +524,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			fire(ClientListener::UserUpdated(), this, u);
 		}
 	} else if(cmd == "$ForceMove") {
-		disconnect(false);
+		socket->disconnect(false);
 		fire(ClientListener::Redirect(), this, param);
 	} else if(cmd == "$HubIsFull") {
 		fire(ClientListener::HubFull(), this);
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
-		disconnect(false);
+		socket->disconnect(false);
 		fire(ClientListener::NickTaken(), this);
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
@@ -549,9 +550,6 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 				u->getIdentity().setIp(it->substr(j+1));
 				v.push_back(u);
-				//if it's an internal ip it'll probably cause a mismatch in connection attempts.
-				if(!Util::isPrivateIp(it->substr(j+1)))
-					v.back()->getIdentity().setUserIp(true);
 			}
 
 			fire(ClientListener::UsersUpdated(), this, v);
@@ -647,6 +645,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		fire(ClientListener::GetPassword(), this);
 	} else if(cmd == "$BadPass") {
 		fire(ClientListener::BadPassword(), this);
+	} else if(cmd == "$ZOn") {
+		socket->setMode (BufferedSocket::MODE_ZPIPE);
 	} else {
 		dcassert(cmd[0] == '$');
 		dcdebug("NmdcHub::onLine Unknown command %s\n", aLine.c_str());
@@ -675,9 +675,16 @@ void NmdcHub::revConnectToMe(const OnlineUser& aUser) {
 	send("$RevConnectToMe " + toNmdc(getMyNick()) + " " + toNmdc(aUser.getIdentity().getNick()) + "|");
 }
 
+void NmdcHub::hubMessage(const string& aMessage) { 
+	checkstate(); 
+	send(toNmdc( "<" + getMyNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); 
+}
+
 void NmdcHub::myInfo(bool alwaysSend) {
 	checkstate();
 	
+	reloadSettings(false);
+
 	dcdebug("MyInfo %s...\n", getMyNick().c_str());
 	lastCounts = counts;
 	
@@ -718,8 +725,8 @@ void NmdcHub::myInfo(bool alwaysSend) {
 }
 
 void NmdcHub::disconnect(bool graceless) throw() {	
-	state = STATE_CONNECT;
 	Client::disconnect(graceless);
+	state = STATE_CONNECT;
 	clearUsers();
 }
 

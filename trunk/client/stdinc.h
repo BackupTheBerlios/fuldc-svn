@@ -33,7 +33,6 @@
 #define _ATL_NO_OLD_NAMES
 
 #if _MSC_VER == 1400
-//#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
 //disable the deperecated warnings for the crt functions.
 #define _CRT_SECURE_NO_DEPRECATE 1
 #define _ATL_SECURE_NO_DEPRECATE 1

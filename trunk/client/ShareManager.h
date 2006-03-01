@@ -59,9 +59,9 @@ public:
 	string translateTTH(const string& TTH) throw(ShareException);
 	string translateFileName(const string& aFile) throw(ShareException);
 	bool getTTH(const string& aFile, TTHValue& tth) throw();
-	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
+	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ThreadException, ShareException);
 	int refresh(const string& aDir);
-	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; };
+	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; }
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults);
@@ -78,11 +78,11 @@ public:
 
 	size_t getSharedFiles() throw();
 
-	string getShareSizeString() { return Util::toString(getShareSize()); };
-	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
+	string getShareSizeString() { return Util::toString(getShareSize()); }
+	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); }
 	
-	int64_t getListLen() { return generateNmdcList(), listLen; };
-	string getListLenString() { return Util::toString(getListLen()); };
+	int64_t getListLen() { return generateNmdcList(), listLen; }
+	string getListLenString() { return Util::toString(getListLen()); }
 	
 	SearchManager::TypeModes getType(const string& fileName);
 
@@ -135,17 +135,21 @@ private:
 			typedef set<File, FileLess> Set;
 			typedef Set::iterator Iter;
 
-			File() : size(0), parent(NULL) { };
+			File() : size(0), parent(NULL) { }
 			File(const string& aName, int64_t aSize, Directory* aParent, const TTHValue& aRoot) : 
-			name(aName), tth(aRoot), size(aSize), parent(aParent) { };
+			name(aName), tth(aRoot), size(aSize), parent(aParent) { }
 			File(const File& rhs) : 
-			name(rhs.getName()), tth(rhs.getTTH()), size(rhs.getSize()), parent(rhs.getParent()) { };
+			name(rhs.getName()), tth(rhs.getTTH()), size(rhs.getSize()), parent(rhs.getParent()) { }
 
 			~File() { }
 
 			File& operator=(const File& rhs) {
 				name = rhs.name; size = rhs.size; parent = rhs.parent; tth = rhs.tth;
 				return *this;
+			}
+
+			bool operator==(const File& rhs) const {
+				return getParent() == rhs.getParent() && (Util::stricmp(getName(), rhs.getName()) == 0);
 			}
 
 			string getADCPath() const { return parent->getADCPath() + name; }
@@ -175,7 +179,7 @@ private:
 
 		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : 
 		size(0), name(aName), parent(aParent), fileTypes(0) { 
-		};
+		}
 
 		~Directory();
 
@@ -322,7 +326,7 @@ private:
 	void addTree(Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
 		
-	void removeTTH(const TTHValue& tth, const Directory::File::Iter&);
+	void removeTTH(const TTHValue& tth, const Directory::File& file);
 
 	Directory* getDirectory(const string& fname);
 

@@ -32,10 +32,9 @@ public:
 	AdvancedPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_ADVANCED));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 
-	virtual ~AdvancedPage() {
-	};
+	virtual ~AdvancedPage() { }
 
 	BEGIN_MSG_MAP(AdvancedPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)

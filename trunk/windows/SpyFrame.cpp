@@ -208,7 +208,7 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	else
 		SearchFrame::openWindow(searchString);
 	return 0;
-};
+}
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
 	if(ignoreTth && s.compare(0, 4, "TTH:") == 0)

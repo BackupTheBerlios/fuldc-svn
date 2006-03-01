@@ -43,8 +43,8 @@ class FinishedFrameBase: public MDITabChildWindowImpl<T>, public StaticFrame<T, 
 	protected FinishedManagerListener
 {
 public:
-	FinishedFrameBase(): totalBytes(0), totalTime(0), closed(false) { };
-	virtual ~FinishedFrameBase() { };
+	FinishedFrameBase() : totalBytes(0), totalTime(0), closed(false) { }
+	virtual ~FinishedFrameBase() { }
 
 	BEGIN_MSG_MAP(T)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -336,6 +336,7 @@ protected:
 		COLUMN_HUB,
 		COLUMN_SIZE,
 		COLUMN_SPEED,
+		COLUMN_CRC32,
 		COLUMN_LAST
 	};
 
@@ -432,12 +433,17 @@ protected:
 };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED };
+int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80 };
+int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH, 
-ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED
+ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 
-#endif
+#endif // !defined(FINISHED_FRAME_BASE_H)
+
+/**
+* @file
+* $Id: FinishedFrameBase.h,v 1.2 2006/02/19 16:19:06 arnetheduck Exp $
+*/

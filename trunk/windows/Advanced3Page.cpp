@@ -41,6 +41,7 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_BIND_ADDRESS, ResourceManager::SETTINGS_BIND_ADDRESS },
 	{ IDC_SETTINGS_MAX_FILELIST_SIZE, ResourceManager::SETTINGS_MAX_FILELIST_SIZE },
 	{ IDC_SETTINGS_MB, ResourceManager::MiB },
+	{ IDC_SETTINGS_AUTO_SEARCH_LIMIT, ResourceManager::SETTINGS_AUTO_SEARCH_LIMIT },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -55,7 +56,8 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_MAX_FILELIST_SIZE, SettingsManager::MAX_FILELIST_SIZE, PropPage::T_INT },
 	{ IDC_SOCKET_IN_BUFFER, SettingsManager::SOCKET_IN_BUFFER, PropPage::T_INT },
 	{ IDC_SOCKET_OUT_BUFFER, SettingsManager::SOCKET_OUT_BUFFER, PropPage::T_INT },
-	{ IDC_CLIENT_ID, SettingsManager::CLIENT_ID, PropPage::T_STR },
+	{ IDC_PRIVATE_ID, SettingsManager::PRIVATE_ID, PropPage::T_STR },
+	{ IDC_AUTO_SEARCH_LIMIT, SettingsManager::AUTO_SEARCH_LIMIT, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 

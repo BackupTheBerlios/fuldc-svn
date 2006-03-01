@@ -23,11 +23,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "CID.h"
 #include "SettingsManager.h"
 #include "Exception.h"
 
 STANDARD_EXCEPTION(ParseException);
+
+class CID;
 
 class AdcCommand {
 public:
@@ -67,14 +68,12 @@ public:
 		SEV_FATAL = 2
 	};
 
-	static const char TYPE_UDP_ACTIVE = 'A';
 	static const char TYPE_BROADCAST = 'B';
 	static const char TYPE_CLIENT = 'C';
 	static const char TYPE_DIRECT = 'D';
 	static const char TYPE_FEATURE = 'F';
 	static const char TYPE_INFO = 'I';
 	static const char TYPE_HUB = 'H';
-	static const char TYPE_TCP_ACTIVE = 'T';
 	static const char TYPE_UDP = 'U';
 
 #define C(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
@@ -94,13 +93,15 @@ public:
 	C(GET, 'G','E','T');
 	C(GFI, 'G','F','I');
 	C(SND, 'S','N','D');
-	C(NTD, 'N','T','D');
+	C(SID, 'S','I','D');
 	// Extensions
 	C(CMD, 'C','M','D');
 #undef C
 
+	static const u_int32_t HUB_SID = 0x41414141;		// AAAA in base32
+
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT);
-	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget);
+	explicit AdcCommand(u_int32_t aCmd, const u_int32_t aTarget);
 	explicit AdcCommand(Severity sev, Error err, const string& desc, char aType = TYPE_CLIENT);
 	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException);
 	void parse(const string& aLine, bool nmdc = false) throw(ParseException);
@@ -108,11 +109,14 @@ public:
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
 	void setType(char t) { type = t; }
+	
+	AdcCommand& setFeatures(const string& feat) { features = feat; return *this; }
 
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
 
-	string toString(bool nmdc = false, bool old = false) const;
+	string toString(const CID& aCID) const;
+	string toString(u_int32_t sid, bool nmdc = false) const;
 
 	AdcCommand& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
@@ -133,36 +137,26 @@ public:
 
 	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
 
-	static string escape(const string& str, bool old) {
-		string tmp = str;
-		string::size_type i = 0;
-		while( (i = tmp.find_first_of(" \n\\", i)) != string::npos) {
-			if(old) {
-				tmp.insert(i, "\\");
-			} else {
-				switch(tmp[i]) {
-				case ' ': tmp.replace(i, 1, "\\s"); break;
-				case '\n': tmp.replace(i, 1, "\\n"); break;
-				case '\\': tmp.replace(i, 1, "\\\\"); break;
-				}
-			}
-			i+=2;
-		}
-		return tmp;
-	}
-	const CID& getTo() const { return to; }
-	AdcCommand& setTo(const CID& cid) { to = cid; return *this; }
-	const CID& getFrom() const { return from; }
+	static string escape(const string& str, bool old);
+	u_int32_t getTo() const { return to; }
+	AdcCommand& setTo(const u_int32_t sid) { to = sid; return *this; }
+	u_int32_t getFrom() const { return from; }
 
+	static u_int32_t toSID(const string& aSID) { return *reinterpret_cast<const u_int32_t*>(aSID.data()); }
+	static string fromSID(const u_int32_t aSID) { return string(reinterpret_cast<const char*>(&aSID), sizeof(aSID)); }
 private:
+	string getHeaderString(const CID& cid) const;
+	string getHeaderString(u_int32_t sid, bool nmdc) const;
+	string getParamString(bool nmdc) const;
 	StringList parameters;
+	string features;
 	union {
 		char cmdChar[4];
 		u_int8_t cmd[4];
 		u_int32_t cmdInt;
 	};
-	CID from;
-	CID to;
+	u_int32_t from;
+	u_int32_t to;
 	char type;
 
 };
@@ -191,12 +185,12 @@ public:
 				C(GET);
 				C(GFI);
 				C(SND);
-				C(NTD);
+				C(SID);
 				C(CMD);
 			default: 
 				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
 				break;
-#undef CMD
+#undef C
 
 			}
 		} catch(const ParseException&) {

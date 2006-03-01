@@ -45,8 +45,8 @@
 #include <limits>
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
-	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
-	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), refreshing(0),
+	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), listN(0), refreshing(0), lFile(NULL), 
+	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20),
 	lastIncomingUpdate(GET_TICK()), shareXmlDirty(false)
 { 
 	SettingsManager::getInstance()->addListener(this);
@@ -114,7 +114,7 @@ ShareManager::Directory::~Directory() {
 		delete i->second;
 	
 	for(File::Iter i = files.begin(); i != files.end(); ++i) {
-		ShareManager::getInstance()->removeTTH(i->getTTH(), i);
+		ShareManager::getInstance()->removeTTH(i->getTTH(), *i);
 	}
 }
 
@@ -673,10 +673,10 @@ void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 	bloom.add(Text::toLower(f.getName()));
 }
 
-void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& iter) {
+void ShareManager::removeTTH(const TTHValue& tth, const Directory::File& file) {
 	pair<HashFileIter, HashFileIter> range = tthIndex.equal_range(const_cast<TTHValue*>(&tth));
 	for(HashFileIter j = range.first; j != range.second; ++j) {
-		if(j->second == iter) {
+		if(*j->second == file) {
 			tthIndex.erase(j);
 			break;
 		}
@@ -684,7 +684,7 @@ void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& i
 }
 
 int ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */, 
-						   bool incoming /* = false */, bool dir /* = false*/) throw(ShareException) 
+						   bool incoming /* = false */, bool dir /* = false*/) throw(ThreadException, ShareException)
 {
 	if(Thread::safeInc(refreshing) > 1) {
 		Thread::safeDec(refreshing);
@@ -697,11 +697,15 @@ int ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bo
 	refreshIncoming = incoming;
 	refreshDir = dir;
 	join();
-	start();
-	if(block) {
-		join();
-	} else {
-		setThreadPriority(Thread::LOW);
+	try {
+		start();
+		if(block) {
+			join();
+		} else {
+			setThreadPriority(Thread::LOW);
+		}		
+	} catch(const ThreadException& e) {
+		LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FAILED) + e.getError());
 	}
 
 	return REFRESH_STARTED;
@@ -1031,10 +1035,10 @@ MemoryInputStream* ShareManager::getTree(const string& aFile) {
 }
 
 static const string& escaper(const string& n, string& tmp) {
-	if(SimpleXML::needsEscape(n, false, false)) {
+	if(SimpleXML::needsEscape(n, true, false)) {
 		tmp.clear();
 		tmp.append(n);
-		return SimpleXML::escape(tmp, false, false);
+		return SimpleXML::escape(tmp, true, false);
 	}
 	return n;
 }
@@ -1340,20 +1344,20 @@ ShareManager::AdcSearch::AdcSearch(const StringList& params) : include(&includeX
 			hasRoot = true;
 			root = TTHValue(p.substr(2));
 			return;
-		} else if(toCode('+', '+') == cmd) {
+		} else if(toCode('A', 'N') == cmd) {
 			includeX.push_back(StringSearch(p.substr(2)));		
-		} else if(toCode('-', '-') == cmd) {
+		} else if(toCode('N', 'O') == cmd) {
 			exclude.push_back(StringSearch(p.substr(2)));
 		} else if(toCode('E', 'X') == cmd) {
 			ext.push_back(p.substr(2));
-		} else if(toCode('>', '=') == cmd) {
+		} else if(toCode('G', 'E') == cmd) {
 			gt = Util::toInt64(p.substr(2));
-		} else if(toCode('<', '=') == cmd) {
+		} else if(toCode('L', 'E') == cmd) {
 			lt = Util::toInt64(p.substr(2));
-		} else if(toCode('=', '=') == cmd) {
+		} else if(toCode('E', 'Q') == cmd) {
 			lt = gt = Util::toInt64(p.substr(2));
-		} else if(toCode('D', 'O') == cmd) {
-			isDirectory = (p[2] != '0');
+		} else if(toCode('T', 'Y') == cmd) {
+			isDirectory = (p[2] == '2');
 		}
 	}
 }
@@ -1500,7 +1504,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const T
         Directory::File::Iter i = d->findFile(Util::getFileName(fname));
 		if(i != d->files.end()) {
 			if(root != i->getTTH())
-				removeTTH(i->getTTH(), i);
+				removeTTH(i->getTTH(), *i);
 			// Get rid of false constness...
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
 			f->setTTH(root);

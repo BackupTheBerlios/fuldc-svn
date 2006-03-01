@@ -32,9 +32,9 @@ public:
 	GeneralPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_GENERAL));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
-	virtual ~GeneralPage() { };
-
+	}
+	virtual ~GeneralPage() { }
+	
 	BEGIN_MSG_MAP(GeneralPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)

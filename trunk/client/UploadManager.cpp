@@ -305,7 +305,7 @@ void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, 
 		removeUpload(u);
 	}
 
-	removeConnection(aSource, false);
+	removeConnection(aSource);
 }
 
 void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSource) throw() {
@@ -384,7 +384,7 @@ const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const User::Ptr
 	return waitingFiles.find(u)->second;
 }
 
-void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
+void UploadManager::removeConnection(UserConnection::Ptr aConn) {
 	dcassert(aConn->getUpload() == NULL);
 	aConn->removeListener(this);
 	if(aConn->isSet(UserConnection::FLAG_HASSLOT)) {
@@ -412,10 +412,6 @@ void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() { 
 	conn->listLen(ShareManager::getInstance()->getListLenString()); 
-}
-
-void UploadManager::on(AdcCommand::NTD, UserConnection* aConn, const AdcCommand&) throw() {
-	removeConnection(aConn, true);
 }
 
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
@@ -456,7 +452,7 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 
 void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcCommand& c) throw() {
 	if(c.getParameters().size() < 2) {
-		aSource->sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Missing parameters");
+		aSource->send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Missing parameters"));
 		return;
 	}
 
@@ -468,13 +464,13 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 		StringList sl;
 
 		if(ident.compare(0, 4, "TTH/") != 0) {
-			aSource->sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Invalid identifier");
+			aSource->send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Invalid identifier"));
 			return;
 		}
 		sl.push_back("TH" + ident.substr(4));
 		ShareManager::getInstance()->search(l, sl, 1);
 		if(l.empty()) {
-			aSource->sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, "Not found");
+			aSource->send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, "Not found"));
 		} else {
 			aSource->send(l[0]->toRES(AdcCommand::TYPE_CLIENT));
 			l[0]->decRef();
@@ -509,7 +505,7 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
-				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFirstNick());
+				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + Util::toString(ClientManager::getInstance()->getNicks(aUser->getCID())));
 			}
 		}
 	}

@@ -25,17 +25,17 @@
 
 #include "Client.h"
 #include "AdcCommand.h"
+#include "TimerManager.h"
 #include "User.h"
 
 class ClientManager;
 
-class AdcHub : public Client, public CommandHandler<AdcHub> {
+class AdcHub : public Client, public CommandHandler<AdcHub>, private TimerManagerListener {
 public:
-
 	using Client::send;
 
 	virtual void connect(const OnlineUser& user);
-	virtual void connect(const OnlineUser& user, string const& token, bool secure);
+	void connect(const OnlineUser& user, string const& token, bool secure);
 	virtual void disconnect(bool graceless);
 	
 	virtual void hubMessage(const string& aMessage);
@@ -48,28 +48,13 @@ public:
 	virtual size_t getUserCount() const { Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
-	template<typename T> void handle(T, AdcCommand&) { 
-		//Speaker<AdcHubListener>::fire(t, this, c);
-	}
+	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); }
+	virtual void send(const AdcCommand& cmd);
 
-	void send(const AdcCommand& cmd) { dcassert(socket); if(socket) socket->write(cmd.toString(false)); };
-	void sendUDP(const AdcCommand& cmd);
-
-	void handle(AdcCommand::SUP, AdcCommand& c) throw();
-	void handle(AdcCommand::MSG, AdcCommand& c) throw();
-	void handle(AdcCommand::INF, AdcCommand& c) throw();
-	void handle(AdcCommand::GPA, AdcCommand& c) throw();
-	void handle(AdcCommand::QUI, AdcCommand& c) throw();
-	void handle(AdcCommand::CTM, AdcCommand& c) throw();
-	void handle(AdcCommand::RCM, AdcCommand& c) throw();
-	void handle(AdcCommand::STA, AdcCommand& c) throw();
-	void handle(AdcCommand::SCH, AdcCommand& c) throw();
-	void handle(AdcCommand::CMD, AdcCommand& c) throw();
-
-	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
-
+	string getMySID() { return AdcCommand::fromSID(sid); }
 private:
 	friend class ClientManager;
+	friend class CommandHandler<AdcHub>;
 
 	enum States {
 		STATE_PROTOCOL,
@@ -84,31 +69,56 @@ private:
 	AdcHub& operator=(const AdcHub&);
 	virtual ~AdcHub() throw();
 
-	typedef HASH_MAP_X(CID, OnlineUser*, CID::Hash, equal_to<CID>, less<CID>) CIDMap;
-	typedef CIDMap::iterator CIDIter;
+	/** Map session id to OnlineUser */
+	typedef HASH_MAP<u_int32_t, OnlineUser*> SIDMap;
+	typedef SIDMap::iterator SIDIter;
 
-	CIDMap users;
+	SIDMap users;
 	StringMap lastInfoMap;
 	mutable CriticalSection cs;
 
 	string salt;
 
+	u_int32_t sid;
+	bool reconnect;
+
 	static const string CLIENT_PROTOCOL;
 	static const string SECURE_CLIENT_PROTOCOL;
 	static const string ADCS_FEATURE;
+	static const string TCP4_FEATURE;
+	static const string UDP4_FEATURE;
 	 
 	virtual string checkNick(const string& nick);
 	
-	OnlineUser& getUser(const CID& cid);
-	OnlineUser* findUser(const CID& cid);
-	void putUser(const CID& cid);
+	OnlineUser& getUser(const u_int32_t aSID, const CID& aCID);
+	OnlineUser* findUser(const u_int32_t sid);
+	void putUser(const u_int32_t sid);
 
 	void clearUsers();
+
+	void handle(AdcCommand::SUP, AdcCommand& c) throw();
+	void handle(AdcCommand::SID, AdcCommand& c) throw();
+	void handle(AdcCommand::MSG, AdcCommand& c) throw();
+	void handle(AdcCommand::INF, AdcCommand& c) throw();
+	void handle(AdcCommand::GPA, AdcCommand& c) throw();
+	void handle(AdcCommand::QUI, AdcCommand& c) throw();
+	void handle(AdcCommand::CTM, AdcCommand& c) throw();
+	void handle(AdcCommand::RCM, AdcCommand& c) throw();
+	void handle(AdcCommand::STA, AdcCommand& c) throw();
+	void handle(AdcCommand::SCH, AdcCommand& c) throw();
+	void handle(AdcCommand::CMD, AdcCommand& c) throw();
+
+	template<typename T> void handle(T, AdcCommand&) { 
+		//Speaker<AdcHubListener>::fire(t, this, c);
+	}
+
+	void sendUDP(const AdcCommand& cmd);
 
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string& aLine) throw();
 	virtual void on(Failed, const string& aLine) throw();
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 };
 
 #endif // !defined(ADC_HUB_H)

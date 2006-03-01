@@ -35,7 +35,8 @@
 #define HAVE_HASH 1
 
 // This enables stlport's debug mode (and slows it down to a crawl...)
-//# define _STLP_DEBUG 1
+//#define _STLP_DEBUG 1
+//#define _STLP_USE_NEWALLOC 1
 
 // --- Shouldn't have to change anything under here...
 
@@ -62,6 +63,7 @@
 # pragma warning(disable: 4127) // constant expression
 # pragma warning(disable: 4710) // function not inlined
 # pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
+
 # if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
 
 typedef signed char int8_t;

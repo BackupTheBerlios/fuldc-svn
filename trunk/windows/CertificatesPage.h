@@ -33,9 +33,9 @@ public:
 	CertificatesPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_CERTIFICATES));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 
-	virtual ~CertificatesPage() { };
+	virtual ~CertificatesPage() { }
 
 	BEGIN_MSG_MAP(CertificatesPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)

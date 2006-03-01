@@ -35,11 +35,9 @@ public:
 	UCPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_USER_COMMANDS));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 
-	virtual ~UCPage() {
-		ctrlCommands.Detach();
-	};
+	virtual ~UCPage() { 	ctrlCommands.Detach(); }
 
 	BEGIN_MSG_MAP(UCPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)

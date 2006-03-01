@@ -82,13 +82,13 @@ public:
 	void decRef() { 
 		if(Thread::safeDec(ref) == 0) 
 			delete this; 
-	};
+	}
 
 private:
 	friend class SearchManager;
 
 	SearchResult();
-	~SearchResult() { delete tth; };
+	~SearchResult() { delete tth; }
 
 	SearchResult(const SearchResult& rhs);
 
@@ -139,7 +139,7 @@ public:
 	}
 	static string clean(const string& aSearchString);
 	
-	void respond(const AdcCommand& cmd);
+	void respond(const AdcCommand& cmd, const CID& cid);
 
 	short getPort()
 	{
@@ -170,7 +170,7 @@ private:
 	u_int32_t lastSearch;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  };
+	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  }
 
 	virtual int run();
 
@@ -183,7 +183,7 @@ private:
 #endif
 			delete socket;
 		}
-	};
+	}
 
 	void onData(const u_int8_t* buf, size_t aLen, const string& address);
 };

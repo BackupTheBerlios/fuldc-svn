@@ -34,6 +34,7 @@
 
 class TimerManagerListener {
 public:
+	virtual ~TimerManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Second;
@@ -47,6 +48,11 @@ public:
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
 {
 public:
+	void shutdown() {
+		s.signal();
+		join();
+	}
+
 	static time_t getTime() {
 		return (time_t)time(NULL);
 	}
@@ -58,7 +64,7 @@ public:
 		gettimeofday(&tv2, NULL);
 		return (u_int32_t)((tv2.tv_sec - tv.tv_sec) * 1000 ) + ( (tv2.tv_usec - tv.tv_usec) / 1000);
 #endif
-	};
+	}
 private:
 
 	Semaphore s;
@@ -68,13 +74,13 @@ private:
 #ifndef _WIN32
 		gettimeofday(&tv, NULL);
 #endif
-	};
-	
+	}
+
 	virtual ~TimerManager() throw() {
-		s.signal();
-		join();
-	};
-	
+		dcassert(listeners.empty());
+		shutdown();
+	}
+
 	virtual int run();
 	
 #ifndef _WIN32

@@ -75,7 +75,7 @@ const string SettingsManager::settingTags[] =
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoUpdateList",
-	"UseSsl",
+	"UseSsl", "AutoSearchLimit", 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "HighPrioSample",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -247,6 +247,8 @@ SettingsManager::SettingsManager()
 	setDefault(BOLD_SYSTEM_LOG, true);
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(USE_SSL, false);
+	setDefault(AUTO_SEARCH_LIMIT, 5);
+
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
 	setDefault(CHATBUFFERSIZE, 25000);
@@ -367,8 +369,8 @@ void SettingsManager::load(string const& aFileName)
 		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
 
-		if(v <= 0.674 || CID(SETTING(CLIENT_ID)).isZero()) {
-			set(CLIENT_ID, CID::generate().toBase32());
+		if(v <= 0.674 || SETTING(PRIVATE_ID).length() != 39 || CID(SETTING(PRIVATE_ID)).isZero()) {
+			set(PRIVATE_ID, CID::generate().toBase32());
 
 			// Formats changed, might as well remove these...
 			set(LOG_FORMAT_POST_DOWNLOAD, Util::emptyString);
@@ -387,7 +389,7 @@ void SettingsManager::load(string const& aFileName)
 
 
 #ifdef _DEBUG
-		set(CLIENT_ID, CID::generate().toBase32());
+		set(PRIVATE_ID, CID::generate().toBase32());
 #endif
 		setDefault(UDP_PORT, SETTING(TCP_PORT));
 
@@ -416,8 +418,8 @@ void SettingsManager::load(string const& aFileName)
 		xml.stepOut();
 
 	} catch(const Exception&) {
-		if(CID(SETTING(CLIENT_ID)).isZero())
-			set(CLIENT_ID, CID::generate().toBase32());
+		if(CID(SETTING(PRIVATE_ID)).isZero())
+			set(PRIVATE_ID, CID::generate().toBase32());
 	}
 }
 

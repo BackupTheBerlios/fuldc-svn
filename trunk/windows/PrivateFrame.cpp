@@ -383,7 +383,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 		params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 		params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
 		params["userCID"] = replyTo->getCID().toBase32(); 
-		params["userNI"] = replyTo->getFirstNick();
+		params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 		params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 		LOG(LogManager::PM, params);
 	}
@@ -451,7 +451,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 		return;
 
 	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams, true);
-};
+}
 
 LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	try {
@@ -622,7 +622,7 @@ void PrivateFrame::readLog() {
 	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	params["userCID"] = replyTo->getCID().toBase32(); 
-	params["userNI"] = replyTo->getFirstNick();
+	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 
 	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params));

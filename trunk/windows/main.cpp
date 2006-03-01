@@ -126,7 +126,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	f.close();
 
 	if( IDYES == MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an error and will terminate. If you would like to report this error, click yes and follow the steps on the website that you're taken to."), _T("fulDC Has Crashed"), MB_YESNO | MB_ICONERROR)) {
-		WinUtil::openLink(_T("http://paxi.myftp.org/crash/"));
+		WinUtil::openLink(_T("http://www.fuldc.net/crash/"));
 	}
 
 #ifndef _DEBUG
@@ -297,8 +297,11 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
 	
 	int nRet = theLoop.Run();
-	
+
 	_Module.RemoveMessageLoop();
+
+	shutdown();
+
 	return nRet;
 }
 

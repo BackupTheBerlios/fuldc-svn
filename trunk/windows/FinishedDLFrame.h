@@ -35,8 +35,8 @@ public:
 		columnWidth   = SettingsManager::FINISHED_WIDTHS;
 		columnVisible = SettingsManager::FINISHED_VISIBLE;
 		iconName = _T("FinishedDL.ico");
-	};
-	virtual ~FinishedDLFrame() { };
+	}
+	virtual ~FinishedDLFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedDLFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
 		

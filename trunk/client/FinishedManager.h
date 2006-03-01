@@ -44,7 +44,7 @@ public:
 	{
 	}
 
-	int64_t getAvgSpeed() { return milliSeconds > 0 ? (chunkSize * ((int64_t)1000) / milliSeconds) : 0; };
+	int64_t getAvgSpeed() { return milliSeconds > 0 ? (chunkSize * ((int64_t)1000) / milliSeconds) : 0; }
 
 	GETSET(string, target, Target);
 	GETSET(string, user, User);
@@ -62,6 +62,7 @@ private:
 
 class FinishedManagerListener {
 public:
+	virtual ~FinishedManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> AddedUl;
@@ -84,8 +85,8 @@ class FinishedManager : public Singleton<FinishedManager>,
 	public Speaker<FinishedManagerListener>, private DownloadManagerListener, private UploadManagerListener
 {
 public:
-	FinishedItem::List& lockList(bool upload = false) { cs.enter(); return upload ? uploads : downloads; };
-	void unlockList() { cs.leave(); };
+	FinishedItem::List& lockList(bool upload = false) { cs.enter(); return upload ? uploads : downloads; }
+	void unlockList() { cs.leave(); }
 
 	void remove(FinishedItem *item, bool upload = false);
 	void removeAll(bool upload = false);
