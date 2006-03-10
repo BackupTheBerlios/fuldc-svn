@@ -66,7 +66,7 @@ void DirectoryListing::loadFile(const string& name) {
 
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
-	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) { 
+	ListLoader(DirectoryListing* aList, DirectoryListing::Directory* root, bool aUpdating) : list(aList), cur(root), base("/"), inListing(false), updating(aUpdating) { 
 	};
 
 	virtual ~ListLoader() { }
@@ -76,6 +76,7 @@ public:
 
 	const string& getBase() const { return base; }
 private:
+	DirectoryListing* list;
 	DirectoryListing::Directory* cur;
 
 	StringMap params;
@@ -85,7 +86,7 @@ private:
 };
 
 string DirectoryListing::loadXML(const string& xml, bool updating) {
-	ListLoader ll(getRoot(), updating);
+	ListLoader ll(this, getRoot(), updating);
 	SimpleXMLReader(&ll).fromXML(xml);
 	return ll.getBase();
 }
@@ -100,6 +101,10 @@ static const string sSize = "Size";
 static const string sTTH = "TTH";
 
 void ListLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
+	if(list->getAbort()) {
+		throw AbortException();
+	}
+
 	if(inListing) {
 		if(name == sFile) {
 			const string& n = getAttrib(attribs, sName, 0);

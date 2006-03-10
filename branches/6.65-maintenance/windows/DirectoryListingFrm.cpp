@@ -82,7 +82,7 @@ void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt
 DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
 		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false),
-		mylist(false)
+		mylist(false), loading(true)
 {
 	tstring tmp;
 
@@ -95,6 +95,7 @@ void DirectoryListingFrame::loadFile(const tstring& name) {
 	ctrlStatus.SetText(0, CTSTRING(LOADING_FILE_LIST));
 	//don't worry about cleanup, the object will delete itself once the thread has finished it's job
 	ThreadedDirectoryListing* tdl = new ThreadedDirectoryListing(this, Text::fromT(name), Util::emptyString);
+	loading = true;
 	tdl->start();
 
 	tstring filename = Util::getFileName(name);
@@ -108,6 +109,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 	ctrlStatus.SetText(0, CTSTRING(LOADING_FILE_LIST));
 	//don't worry about cleanup, the object will delete itself once the thread has finished it's job
 	ThreadedDirectoryListing* tdl = new ThreadedDirectoryListing(this, Util::emptyString, txt);
+	loading = true;
 	tdl->start();
 }
 
@@ -220,6 +222,10 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
+		if(!loading) {
+			throw AbortException();
+		}
+
 		tstring name;
 		name = Text::toT((*i)->getName());
 		int index = (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
@@ -230,6 +236,9 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 	}
 }
 void DirectoryListingFrame::refreshTree(const tstring& root) {
+	if(!loading) {
+		throw AbortException();
+	}
 	
 	ctrlTree.SetRedraw(FALSE);
 
@@ -1090,6 +1099,24 @@ LRESULT DirectoryListingFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 	}
 
 	return CDRF_DODEFAULT;
+}
+
+LRESULT DirectoryListingFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	switch(wParam) {
+		case FINISHED:
+			loading = false;
+			initStatus();
+			ctrlStatus.SetText(0, CTSTRING(LOADED_FILE_LIST));
+			//notify the user that we've loaded the list
+			setDirty();
+			break;
+		case ABORTED:
+			loading = false;
+			PostMessage(WM_CLOSE, 0, 0);
+			break;
+		default: dcassert(0); break;
+	}
+	return 0;
 }
 /**
  * @file

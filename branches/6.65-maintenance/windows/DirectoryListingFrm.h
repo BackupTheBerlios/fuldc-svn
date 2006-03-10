@@ -81,6 +81,11 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COLUMN_TTH,
 		COLUMN_LAST
 	};
+
+	enum {
+		FINISHED,
+		ABORTED
+	};
 	
 	DirectoryListingFrame(const User::Ptr& aUser);
 	virtual ~DirectoryListingFrame() { 
@@ -109,6 +114,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
@@ -132,6 +138,7 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -173,6 +180,13 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	}
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if(loading) {
+			//tell the thread to abort and wait until we get a notification
+			//that it's done.
+			dl->setAbort(true);
+			return 0;
+		}
+
 		ctrlList.SetRedraw(FALSE);
 		clearList();
 		
@@ -217,7 +231,9 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		clearList();
 		clearTree();
 		
-		delete dl;
+		//this will delete dl and then destroy itself
+		UnloadDirectoryListing* udl = new UnloadDirectoryListing(dl);
+		udl->start();
 
 		dl = new DirectoryListing(user);
 	}
@@ -391,6 +407,7 @@ private:
 	bool updating;
 	bool searching;
 	bool mylist;
+	bool loading;
 
 	int statusSizes[9];
 	
@@ -436,14 +453,13 @@ private:
 			} else {
 				mWindow->refreshTree(Text::toT(Util::toNmdcFile(mWindow->dl->loadXML(mTxt, true))));
 			}
+
+			mWindow->PostMessage(WM_SPEAKER, DirectoryListingFrame::FINISHED);
+		}catch(const AbortException) {
+			mWindow->PostMessage(WM_SPEAKER, DirectoryListingFrame::ABORTED);
 		} catch(const Exception& e) {
 			mWindow->error = Text::toT(mWindow->dl->getUser()->getFullNick() + ": " + e.getError());
 		}
-
-		mWindow->initStatus();
-		mWindow->ctrlStatus.SetText(0, CTSTRING(LOADED_FILE_LIST));
-		//notify the user that we've loaded the list
-		mWindow->setDirty();
 
 		//cleanup the thread object
 		delete this;
