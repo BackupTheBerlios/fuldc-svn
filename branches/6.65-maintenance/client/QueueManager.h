@@ -148,6 +148,7 @@ public:
 	int changePriority(const string& /*search*/, int /*priority*/);
 	void SearchAlternates(const string /*path*/);
 	u_int64_t getTotalSize(const string & path);
+	int64_t getQueueSize();
 
 private:
 	//MY STUFF =)

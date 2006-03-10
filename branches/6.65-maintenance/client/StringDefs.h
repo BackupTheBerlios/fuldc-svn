@@ -769,11 +769,12 @@ enum Strings { // @DontAdd
 	TIMER_STARTED, // "Timer started"
 	TIMER_STOPPED, // "Timer stopped"
 	TIMER, // "Timer"
-	OLD_CLIENT, // "Old client detected, disconnecting. User=%[user] Hub=%[hub]"
+	OLD_CLIENT, // "Old client detected, disconnecting. User=%[user] IP=%[ip] Hub=%[hub]"
 	CLIENT_TOO_OLD, // "Client too old to download from, no support for TTH"
 	TOTAL_FILES, // "Total Files"
 	TOTAL_SIZE, // "Total Size"
 	LOADING_FILE_LIST, // "Loading file list, this may take a while if the list is large."
 	LOADED_FILE_LIST, // "File list loaded."
+	STATUS_QUEUE, // "Queue: "
 	LAST // @DontAdd
 };

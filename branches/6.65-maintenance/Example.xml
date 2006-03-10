@@ -765,11 +765,12 @@
 		<String Name="TimerStarted">Timer started</String>
 		<String Name="TimerStopped">Timer stopped</String>
 		<String Name="Timer">Timer</String>
-		<String Name="OldClient">Old client detected, disconnecting. User=%[user] Hub=%[hub]</String>
+		<String Name="OldClient">Old client detected, disconnecting. User=%[user] IP=%[ip] Hub=%[hub]</String>
 		<String Name="ClientTooOld">Client too old to download from, no support for TTH</String>
 		<String Name="TotalFiles">Total Files</String>
 		<String Name="TotalSize">Total Size</String>
 		<String Name="LoadingFileList">Loading file list, this may take a while if the list is large.</String>
 		<String Name="LoadedFileList">File list loaded.</String>
+		<String Name="StatusQueue">Queue: </String>
 	</Strings>
 </Language>

@@ -361,7 +361,7 @@ private:
 
 	int lastUpload;
 
-	int statusSizes[7];
+	int statusSizes[8];
 	
 	HANDLE stopperThread;
 

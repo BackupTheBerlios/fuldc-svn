@@ -204,8 +204,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ctrlStatus.Attach(m_hWndStatusBar);
 	ctrlStatus.SetSimple(FALSE);
-	int w[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	ctrlStatus.SetParts(8, w);
+	int w[9] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	ctrlStatus.SetParts(9, w);
 	statusSizes[0] = WinUtil::getTextWidth(TSTRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 
@@ -521,7 +521,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
 			bool u = false;
 			ctrlStatus.SetText(1, str[0].c_str());
-			for(int i = 1; i < 7; i++) {
+			for(int i = 1; i < 8; i++) {
 				int w = WinUtil::getTextWidth(str[i], dc);
 				
 				if(statusSizes[i] < w) {
@@ -1159,6 +1159,7 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 	TStringList* str = new TStringList();
 	str->push_back(Util::getAway() ? TSTRING(AWAY) : _T(""));
+	str->push_back(TSTRING(STATUS_QUEUE) + Util::formatBytesW(QueueManager::getInstance()->getQueueSize()));
 	str->push_back(Text::toT("H: " + Client::getCounts()));
 	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - static_cast<int>(UploadManager::getInstance()->getUploadCount())) + '/' + Util::toString(SETTING(SLOTS))));
 	str->push_back(Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));

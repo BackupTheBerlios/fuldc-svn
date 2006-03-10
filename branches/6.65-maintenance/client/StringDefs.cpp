@@ -766,12 +766,13 @@ string ResourceManager::strings[] = {
 "Timer started", 
 "Timer stopped", 
 "Timer", 
-"Old client detected, disconnecting. User=%[user] Hub=%[hub]", 
+"Old client detected, disconnecting. User=%[user] IP=%[ip] Hub=%[hub]", 
 "Client too old to download from, no support for TTH", 
 "Total Files", 
 "Total Size", 
 "Loading file list, this may take a while if the list is large.", 
 "File list loaded.", 
+"Queue: ", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1544,4 +1545,5 @@ string ResourceManager::names[] = {
 "TotalSize", 
 "LoadingFileList", 
 "LoadedFileList", 
+"StatusQueue", 
 };

@@ -1607,6 +1607,21 @@ u_int64_t QueueManager::getTotalSize(const string & path){
 	else
 		return i->second;
 }
+
+int64_t QueueManager::getQueueSize() {
+	Lock l(cs);
+	QueueItem::StringMap &files = fileQueue.getQueue();
+
+	int64_t tmp = 0;
+
+	for(QueueItem::StringIter i = files.begin(); i != files.end(); ++i) {
+		if(!i->second->isSet(QueueItem::FLAG_USER_LIST)) {
+			tmp += i->second->getSize();
+		}
+	}
+
+	return tmp;
+}
 /**
  * @file
  * $Id: QueueManager.cpp,v 1.11 2004/02/15 16:08:42 trem Exp $

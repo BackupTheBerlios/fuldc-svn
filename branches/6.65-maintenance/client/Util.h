@@ -503,6 +503,12 @@ public:
 		return buf;
 	}
 
+	static wstring toStringW( int64_t val ) {
+		wchar_t buf[32];
+		swprintf(buf, L"%ld", val);
+		return buf;
+	}
+
 	static wstring toStringW( DWORD val ) {
 		wchar_t buf[16];
 		swprintf(buf, L"%d", val);
