@@ -123,6 +123,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 					sr->decRef();
 				}
 			} catch(const SocketException& /* e */) {
+				s.disconnect();
 				dcdebug("Search caught error\n");
 			}
 		}

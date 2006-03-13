@@ -171,7 +171,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		HTREEITEM item = ctrlDirs.GetRootItem();
 		do{
 			expand(item);
-			//ctrlDirs.Expand(item, TVE_EXPAND);
 		}while((item = ctrlDirs.GetNextSiblingItem(item)) != NULL);
 	}
 
@@ -696,7 +695,10 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
 			if(!showTree || isCurDir(ii->getPath())) {
 				dcassert(ctrlQueue.findItem(ii) != -1);
-				ii->update();
+				{
+					Lock l(cs);
+					ii->update();
+				}
 				ctrlQueue.updateItem(ii);
 			}
 		}
