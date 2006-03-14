@@ -39,6 +39,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
+		MESSAGE_HANDLER(WM_RBUTTONDOWN, onRButtonDown)
 	END_MSG_MAP()
 
 	PopupWnd(const tstring& aMsg, CRect rc, HBITMAP hBmp, u_int32_t aId): visible(GET_TICK()), id(aId) {
@@ -67,6 +68,12 @@ public:
 
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
 		::PostMessage(WinUtil::mainWnd, WM_SPEAKER, WM_CLOSE, (LPARAM)id);
+		bHandled = TRUE;
+		return 0;
+	}
+	LRESULT onRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled){
+		//use the 0x10000 to represent the right mousebutton
+		::PostMessage(WinUtil::mainWnd, WM_SPEAKER, WM_CLOSE, (LPARAM)(id | 0x10000));
 		bHandled = TRUE;
 		return 0;
 	}

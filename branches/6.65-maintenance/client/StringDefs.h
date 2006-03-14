@@ -569,7 +569,7 @@ enum Strings { // @DontAdd
 	VIRTUAL_NAME_LONG, // "Name under which the others see the directory"
 	WAITING, // "Waiting..."
 	WAITING_TO_RETRY, // "Waiting to retry..."
-	WAITING_USERS, // "Waiting Users\tCtrl+W"
+	WAITING_USERS, // "Waiting Users"
 	WAITING_USER_ONLINE, // "Waiting (User online)"
 	WAITING_USERS_ONLINE, // "Waiting (%d of %d users online)"
 	YES_STR, // "Yes"
@@ -778,5 +778,7 @@ enum Strings { // @DontAdd
 	STATUS_QUEUE, // "Queue: "
 	STATUS_USERS, // "Users: "
 	STATUS_FILES, // "Files: "
+	STATUS_AVG_QUEUE_TIME, // "Avg Time: "
+	MENU_WAITING_USERS, // "Waiting Users\tCtrl+W"
 	LAST // @DontAdd
 };

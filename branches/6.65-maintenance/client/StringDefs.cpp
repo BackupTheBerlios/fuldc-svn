@@ -566,7 +566,7 @@ string ResourceManager::strings[] = {
 "Name under which the others see the directory", 
 "Waiting...", 
 "Waiting to retry...", 
-"Waiting Users\tCtrl+W", 
+"Waiting Users", 
 "Waiting (User online)", 
 "Waiting (%d of %d users online)", 
 "Yes", 
@@ -775,6 +775,8 @@ string ResourceManager::strings[] = {
 "Queue: ", 
 "Users: ", 
 "Files: ", 
+"Avg Time: ", 
+"Waiting Users\tCtrl+W", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1550,4 +1552,6 @@ string ResourceManager::names[] = {
 "StatusQueue", 
 "StatusUsers", 
 "StatusFiles", 
+"StatusAvgQueueTime", 
+"MenuWaitingUsers", 
 };

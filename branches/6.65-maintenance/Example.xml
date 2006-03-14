@@ -565,7 +565,7 @@
 		<String Name="VirtualNameLong">Name under which the others see the directory</String>
 		<String Name="Waiting">Waiting...</String>
 		<String Name="WaitingToRetry">Waiting to retry...</String>
-		<String Name="WaitingUsers">Waiting Users	Ctrl+W</String>
+		<String Name="WaitingUsers">Waiting Users</String>
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>
 		<String Name="YesStr">Yes</String>
@@ -774,5 +774,7 @@
 		<String Name="StatusQueue">Queue: </String>
 		<String Name="StatusUsers">Users: </String>
 		<String Name="StatusFiles">Files: </String>
+		<String Name="StatusAvgQueueTime">Avg Time: </String>
+		<String Name="MenuWaitingUsers">Waiting Users	Ctrl+W</String>
 	</Strings>
 </Language>

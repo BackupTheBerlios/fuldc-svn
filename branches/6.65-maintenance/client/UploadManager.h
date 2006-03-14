@@ -144,6 +144,22 @@ public:
 		return waitingUsers.size();
 	}
 
+	u_int32_t getWaitingUserAvgQueueTime() {
+		Lock l(cs);
+		u_int32_t now = GET_TICK();
+		u_int32_t avgTime = 0;
+
+		if(waitingUsers.size() > 0) {
+			for(UserDeque::iterator i = waitingUsers.begin(); i != waitingUsers.end(); ++i) {
+				avgTime += (now - i->second);
+			}
+			
+			//convert from ticks to second while calculating the average.
+			avgTime /= (1000 * waitingUsers.size());
+		}
+		return avgTime;
+	}
+
 	/** @internal */
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
