@@ -117,6 +117,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		StringMap params;
 		params["user"] = getUser()->getNick();
 		params["hub"] = getUser()->getClientAddressPort();
+		params["ip"] = getRemoteIp();
 		string tmp = Util::formatParams(STRING(OLD_CLIENT), params);
 		LogManager::getInstance()->message(tmp);
 	} else if(cmd == "$GetZBlock" || cmd == "$UGetZBlock" || cmd == "$UGetBlock") {
@@ -125,6 +126,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		StringMap params;
 		params["user"] = getUser()->getNick();
 		params["hub"] = getUser()->getClientAddressPort();
+		params["ip"] = getRemoteIp();
 		string tmp = Util::formatParams(STRING(OLD_CLIENT), params);
 		LogManager::getInstance()->message(tmp);
 	} else if(cmd == "$Key") {

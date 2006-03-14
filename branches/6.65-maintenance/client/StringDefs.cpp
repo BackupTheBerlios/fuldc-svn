@@ -250,7 +250,7 @@ string ResourceManager::strings[] = {
 "Settings...\tCtrl+E", 
 "Show", 
 "&Status bar\tCtrl+2", 
-"System Log", 
+"System Log\tCtrl+Y", 
 "&Toolbar\tCtrl+1", 
 "T&ransfers\tCtrl+3", 
 "Vertical Tile", 
@@ -566,7 +566,7 @@ string ResourceManager::strings[] = {
 "Name under which the others see the directory", 
 "Waiting...", 
 "Waiting to retry...", 
-"Waiting Users", 
+"Waiting Users\tCtrl+W", 
 "Waiting (User online)", 
 "Waiting (%d of %d users online)", 
 "Yes", 
@@ -773,6 +773,8 @@ string ResourceManager::strings[] = {
 "Loading file list, this may take a while if the list is large.", 
 "File list loaded.", 
 "Queue: ", 
+"Users: ", 
+"Files: ", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1546,4 +1548,6 @@ string ResourceManager::names[] = {
 "LoadingFileList", 
 "LoadedFileList", 
 "StatusQueue", 
+"StatusUsers", 
+"StatusFiles", 
 };

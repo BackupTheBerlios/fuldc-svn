@@ -200,6 +200,7 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, onLButtonUp)
+		MESSAGE_HANDLER(WM_MBUTTONUP, onMButtonUp)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		COMMAND_ID_HANDLER(IDC_CHEVRON, onChevron)
@@ -217,7 +218,7 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					if(wParam & MK_SHIFT)
+					if(wParam & MK_SHIFT || wParam & MK_XBUTTON1)
 						::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
 					else 
 						moving = t;
@@ -245,7 +246,7 @@ public:
 						if(t == moving) 
 							::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
 						else{
-							//check if the pointer is on the left or right half of the tab
+							//check if the cursor is on the left or right half of the tab
 							//to determine where to insert the tab
 							moveTabs(t, xPos > (t->xpos + (t->getWidth()/2)));
 						}
@@ -257,6 +258,25 @@ public:
 			if(moveLast)
 				moveTabs(tabs.back(), true);
 			moving = NULL;
+		}
+		return 0;
+	}
+
+	LRESULT onMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		int xPos = GET_X_LPARAM(lParam); 
+		int yPos = GET_Y_LPARAM(lParam); 
+		int row = getRows() - ((yPos / getTabHeight()) + 1);
+
+		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
+			TabInfo* t = *i;
+			if((row == t->row) && (xPos >= t->xpos) && (xPos < (t->xpos + t->getWidth())) ) {
+				// Bingo, this was clicked
+				HWND hWnd = GetParent();
+				if(hWnd) {
+					::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
+				}
+				break;
+			}
 		}
 		return 0;
 	}

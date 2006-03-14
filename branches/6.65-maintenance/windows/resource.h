@@ -619,7 +619,6 @@
 #define IDC_DOWNLOADDIRTO               5500
 #define IDC_SELECT_WINDOW               6000
 #define IDC_USER_COMMAND                6500
-#define IDC_VIEW_WAITING_USERS          6628
 #define IDR_WAITING_USERS               6629
 #define IDC_DOWNLOADTO                  7500
 #define IDC_REMOVE_SOURCES              8000
@@ -648,6 +647,7 @@
 #define IDC_SWITCH_WINDOW_8             32805
 #define IDC_SWITCH_WINDOW_9             32806
 #define IDC_SWITCH_WINDOW_0             32807
+#define IDC_WAITING_USERS               32821
 #define ID_WINDOW_MINIMIZE_ALL          57654
 #define ID_WINDOW_RESTORE_ALL           57655
 
@@ -657,7 +657,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        313
-#define _APS_NEXT_COMMAND_VALUE         32821
+#define _APS_NEXT_COMMAND_VALUE         32824
 #define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           137
 #endif

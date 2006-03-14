@@ -249,7 +249,7 @@
 		<String Name="MenuSettings">Settings...	Ctrl+E</String>
 		<String Name="MenuShow">Show</String>
 		<String Name="MenuStatusBar">&amp;Status bar	Ctrl+2</String>
-		<String Name="MenuSystemLog">System Log</String>
+		<String Name="MenuSystemLog">System Log	Ctrl+Y</String>
 		<String Name="MenuToolbar">&amp;Toolbar	Ctrl+1</String>
 		<String Name="MenuTransferView">T&amp;ransfers	Ctrl+3</String>
 		<String Name="MenuVerticalTile">Vertical Tile</String>
@@ -565,7 +565,7 @@
 		<String Name="VirtualNameLong">Name under which the others see the directory</String>
 		<String Name="Waiting">Waiting...</String>
 		<String Name="WaitingToRetry">Waiting to retry...</String>
-		<String Name="WaitingUsers">Waiting Users</String>
+		<String Name="WaitingUsers">Waiting Users	Ctrl+W</String>
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>
 		<String Name="YesStr">Yes</String>
@@ -772,5 +772,7 @@
 		<String Name="LoadingFileList">Loading file list, this may take a while if the list is large.</String>
 		<String Name="LoadedFileList">File list loaded.</String>
 		<String Name="StatusQueue">Queue: </String>
+		<String Name="StatusUsers">Users: </String>
+		<String Name="StatusFiles">Files: </String>
 	</Strings>
 </Language>

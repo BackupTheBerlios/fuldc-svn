@@ -56,7 +56,7 @@ public:
 	/** We don't keep leaves for blocks smaller than this... */
 	static const int64_t MIN_BLOCK_SIZE = 64*1024;
 
-	HashManager() {
+	HashManager(): lastSave(0) {
 		TimerManager::getInstance()->addListener(this);
 	}
 	virtual ~HashManager() throw() {
@@ -260,14 +260,19 @@ private:
 	/** Single node tree where node = root, no storage in HashData.dat */
 	static const int64_t SMALL_TREE = -1;
 
+	u_int32_t lastSave;
+
 	void hashDone(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, int64_t speed);
 	void doRebuild() {
 		Lock l(cs);
 		store.rebuild();
 	}
 	virtual void on(TimerManagerListener::Minute, u_int32_t) throw() {
-		Lock l(cs);
-		store.save();
+		if(GET_TICK() - lastSave > 15*60*1000) {
+			Lock l(cs);
+			store.save();
+			lastSave = GET_TICK();
+		}
 	}
 };
 

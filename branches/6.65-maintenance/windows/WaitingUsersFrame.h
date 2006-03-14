@@ -31,7 +31,7 @@
 
 #define UPLOADQUEUE_MESSAGE_MAP 666
 
-class WaitingUsersFrame : public MDITabChildWindowImpl<WaitingUsersFrame>, public UploadManagerListener, public StaticFrame<WaitingUsersFrame, ResourceManager::WAITING_USERS, IDC_VIEW_WAITING_USERS>
+class WaitingUsersFrame : public MDITabChildWindowImpl<WaitingUsersFrame>, public UploadManagerListener, public StaticFrame<WaitingUsersFrame, ResourceManager::WAITING_USERS, IDC_WAITING_USERS>
 {
 public:
 
@@ -126,10 +126,12 @@ private:
 		return selectedItem ? reinterpret_cast<UserPtr *>(ctrlQueued.GetItemData(selectedItem))->u:User::Ptr(0);
 	}
 
+	void updateStatus();
+
 	// Communication with manager
 	void LoadAll();
 	void UpdateSearch(int index, BOOL doDelete = TRUE);
-
+	
 	// UploadManagerListener
 	virtual void on(UploadManagerListener::WaitingRemoveUser, const User::Ptr) throw();
 	virtual void on(UploadManagerListener::WaitingAddFile, const User::Ptr, const string&) throw();
@@ -138,6 +140,7 @@ private:
 
 	// Contained controls
 	CTreeViewCtrl ctrlQueued;
+	CStatusBarCtrl ctrlStatus;
 	CMenu contextMenu;
 };
 

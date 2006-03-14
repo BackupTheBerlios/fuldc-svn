@@ -103,7 +103,7 @@ public:
 	}
 	
 	/** @return Number of free slots. */
-	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
+	int getFreeSlots() {return max((SETTING(SLOTS) - running), 0); }
 	
 	/** @internal */
 	bool getAutoSlot() {
@@ -128,6 +128,21 @@ public:
 	void clearUserFiles(const User::Ptr&);
 	vector<User::Ptr> getWaitingUsers();
 	const FileSet& getWaitingUserFiles(const User::Ptr &);
+
+	int getWaitingUserFileCount() {
+		Lock l(cs);
+		int count = 0;
+		for(FilesMap::iterator i = waitingFiles.begin(); i != waitingFiles.end(); ++i) {
+			count += i->second.size();
+		}
+
+		return count;
+	}
+
+	int getWaitingUserCount() {
+		Lock l(cs);
+		return waitingUsers.size();
+	}
 
 	/** @internal */
 	void addConnection(UserConnection::Ptr conn) {

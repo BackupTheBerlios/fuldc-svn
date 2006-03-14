@@ -30,8 +30,10 @@
 #include "PrivateFrame.h"
 
 // Frame creation
-LRESULT WaitingUsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
+LRESULT WaitingUsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
+	ctrlStatus.Attach(m_hWndStatusBar);
+
 	// Create tree control
 	ctrlQueued.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, 0U);
@@ -60,6 +62,9 @@ LRESULT WaitingUsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	// Load all waiting users & files.
 	LoadAll();
+
+	UpdateLayout(TRUE);
+	updateStatus();
 
 	WinUtil::SetIcon(m_hWnd, _T("wuicon.ico"));
 
@@ -94,16 +99,34 @@ LRESULT WaitingUsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 }
 
 // Recalculate frame control layout
-void WaitingUsersFrame::UpdateLayout(BOOL /* bResizeBars = TRUE */) 
-{
+void WaitingUsersFrame::UpdateLayout(BOOL bResizeBars) {
 	RECT rect;
 	GetClientRect(&rect);
 
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+		w[2] = sr.right - 16;
+		w[1] = max(w[2] - 100, 0);
+		w[0] = max(w[1] - 100, 0);
+
+		ctrlStatus.SetParts(4, w);
+	}
+
 	// Position tree control
-	CRect rc = rect;
-	rc.top += 1;
-	rc.bottom -= 2;
+	CRect rc(rect);
+//	rc.top += 1;
+//	rc.bottom -= 2;
 	ctrlQueued.MoveWindow(rc);
+}
+
+void WaitingUsersFrame::updateStatus() {
+	ctrlStatus.SetText(1, (TSTRING(STATUS_FILES) + Util::toStringW(UploadManager::getInstance()->getWaitingUserFileCount())).c_str());
+	ctrlStatus.SetText(2, (TSTRING(STATUS_USERS) + Util::toStringW(UploadManager::getInstance()->getWaitingUserCount())).c_str());
 }
 
 // Keyboard shortcuts
@@ -360,11 +383,13 @@ LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		delete p;
 		if(BOOLSETTING(BOLD_WAITING_USERS))
 			setDirty();
+		updateStatus();
 	} else if(wParam == SPEAK_REMOVE_USER) {
 		onRemoveUser(reinterpret_cast<UserPtr *>(lParam)->u);
 		delete reinterpret_cast<UserPtr *>(lParam);
 		if(BOOLSETTING(BOLD_WAITING_USERS))
 			setDirty();
+		updateStatus();
 	}
 	return 0;
 }

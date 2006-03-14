@@ -138,7 +138,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		//View
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
@@ -170,7 +170,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
@@ -188,10 +188,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 	}
 
-	
-
-	
-
 	// remove old menu
 	SetMenu(NULL);
 
@@ -204,7 +200,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ctrlStatus.Attach(m_hWndStatusBar);
 	ctrlStatus.SetSimple(FALSE);
-	int w[9] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	int w[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	ctrlStatus.SetParts(9, w);
 	statusSizes[0] = WinUtil::getTextWidth(TSTRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
@@ -247,7 +243,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
 	if(BOOLSETTING(OPEN_QUEUE)) PostMessage(WM_COMMAND, IDC_QUEUE);
 	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_DL);
-	if(BOOLSETTING(OPEN_WAITING_USERS)) PostMessage(WM_COMMAND, IDC_VIEW_WAITING_USERS);
+	if(BOOLSETTING(OPEN_WAITING_USERS)) PostMessage(WM_COMMAND, IDC_WAITING_USERS);
 	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_UL);
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
 	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
@@ -419,7 +415,7 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_VIEW_WAITING_USERS;
+	tb[n].idCommand = IDC_WAITING_USERS;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
@@ -618,7 +614,7 @@ LRESULT MainFrame::onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		case IDC_NET_STATS: StatsFrame::openWindow(); break; 
 		case IDC_FINISHED_DL: FinishedDLFrame::openWindow(); break;
 		case IDC_FINISHED_UL: FinishedULFrame::openWindow(); break;
-		case IDC_VIEW_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
+		case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
 		case IDC_SYSTEM_LOG: SystemFrame::openWindow(); break;
 		default: dcassert(0); break;
 	}
@@ -776,7 +772,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
 			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
-			case IDC_VIEW_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
+			case IDC_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
 			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
 			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case IDC_REFRESH_FILE_LIST: stringId = ResourceManager::MENU_REFRESH_FILE_LIST; break;

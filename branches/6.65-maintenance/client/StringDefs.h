@@ -253,7 +253,7 @@ enum Strings { // @DontAdd
 	MENU_SETTINGS, // "Settings...\tCtrl+E"
 	MENU_SHOW, // "Show"
 	MENU_STATUS_BAR, // "&Status bar\tCtrl+2"
-	MENU_SYSTEM_LOG, // "System Log"
+	MENU_SYSTEM_LOG, // "System Log\tCtrl+Y"
 	MENU_TOOLBAR, // "&Toolbar\tCtrl+1"
 	MENU_TRANSFER_VIEW, // "T&ransfers\tCtrl+3"
 	MENU_VERTICAL_TILE, // "Vertical Tile"
@@ -569,7 +569,7 @@ enum Strings { // @DontAdd
 	VIRTUAL_NAME_LONG, // "Name under which the others see the directory"
 	WAITING, // "Waiting..."
 	WAITING_TO_RETRY, // "Waiting to retry..."
-	WAITING_USERS, // "Waiting Users"
+	WAITING_USERS, // "Waiting Users\tCtrl+W"
 	WAITING_USER_ONLINE, // "Waiting (User online)"
 	WAITING_USERS_ONLINE, // "Waiting (%d of %d users online)"
 	YES_STR, // "Yes"
@@ -776,5 +776,7 @@ enum Strings { // @DontAdd
 	LOADING_FILE_LIST, // "Loading file list, this may take a while if the list is large."
 	LOADED_FILE_LIST, // "File list loaded."
 	STATUS_QUEUE, // "Queue: "
+	STATUS_USERS, // "Users: "
+	STATUS_FILES, // "Files: "
 	LAST // @DontAdd
 };

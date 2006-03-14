@@ -105,7 +105,6 @@ public:
 
 		bool nmdcOnly;
 	};
-	void checkAdcItems(CMenu& menu) { menu; /*avoid warning*/ }
 
 	void appendUserItems(CMenu& menu) {
 		menu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
