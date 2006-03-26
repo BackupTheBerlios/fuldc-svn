@@ -1084,13 +1084,13 @@ endCheck:
 
 void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
 	string x;
-	StringList removeList;
+	string removeRunning;
 	{
 		Lock l(cs);
 		QueueItem* qi = NULL;
 		while( (qi = userQueue.getNext(aUser, QueueItem::PAUSED)) != NULL) {
 			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
-				removeList.push_back(qi->getTarget());
+				remove(qi->getTarget());
 			} else {
 				userQueue.remove(qi, aUser);
 				qi->removeSource(aUser, reason);
@@ -1102,7 +1102,7 @@ void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
 		qi = userQueue.getRunning(aUser);
 		if(qi != NULL) {
 			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
-				removeList.push_back(qi->getTarget());
+				removeRunning = qi->getTarget();
 			} else {
 				userQueue.setWaiting(qi);
 				userQueue.remove(qi, aUser);
@@ -1117,8 +1117,8 @@ void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
 	if(!x.empty()) {
 		DownloadManager::getInstance()->abortDownload(x);
 	}
-	for(StringIter i = removeList.begin(); i != removeList.end(); ++i) {
-		remove(*i);
+	if(!removeRunning.empty()) {
+		remove(removeRunning);
 	}
 }
 

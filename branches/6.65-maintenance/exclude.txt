@@ -10,6 +10,8 @@ res\32bpp\.svn
 windows\.svn
 zlib\.svn
 vc7.1.project\.svn
+vc7.1.project\app
+vc7.1.project\vc7
 fulDC.rar
 fulDC-src.rar
 DCPlusPlus.ncb

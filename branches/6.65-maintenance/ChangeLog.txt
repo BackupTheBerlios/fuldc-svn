@@ -1,4 +1,15 @@
-﻿-- 0.guess.what --
+﻿-- 0.688 2006-03-18 --
+* Fixed public hubs sorting (thanks pothead)
+* Fixed a ZPipe issue (thanks jove)
+* [bug 858] Fixed a 100% cpu / crash bug
+* [bug 872] Fixed a pm issue hopefully
+* [bug 812] Fixed pm's being sent to bots
+* Files with invalid crc-32, as per their sfv file, are no longer shared
+* [bug 873] Added connect to hub option (thanks joakim tosteberg)
+* Fixed an issue with linux file reading (thanks bart vullings and steven)
+* Added back/forward mouse/keyboard navigation to directory listing frame
+
+-- 0.687 2006-02-26 --
 * Fixed XML file list generation for invalid filenames from other os's
 * Fixed a rare refresh crash
 * CID is now shown if no nick name is currently available for a user
@@ -12,6 +23,8 @@
 * Fixed some translation strings (thanks fleetcommand)
 * Fixed some finished transfers frames issues (thanks trem)
 * /pm and and a few other things work without user list in hub frame
+* Added support for the ZPipe extension (test version) (thanks jove)
+* Moved to subversion, CVS will no longer be maintained
 
 -- 0.686 2006-02-13 --
 * Fixed active search (oops)

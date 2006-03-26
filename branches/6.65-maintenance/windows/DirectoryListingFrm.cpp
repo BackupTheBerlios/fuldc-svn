@@ -40,7 +40,6 @@ int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::EXACT_SIZE, ResourceManager::SIZE, ResourceManager::TTH_ROOT };
 
-
 DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
 
 void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
@@ -80,7 +79,8 @@ void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt
 }
 
 DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
-	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
+	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP), treeContainer(WC_TREEVIEW, this, CONTROL_MESSAGE_MAP),
+		listContainer(WC_LISTVIEW, this, CONTROL_MESSAGE_MAP), historyIndex(0),
 		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false),
 		mylist(false), loading(true)
 {
@@ -120,7 +120,9 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	statusContainer.SubclassWindow(ctrlStatus.m_hWnd);
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
+	treeContainer.SubclassWindow(ctrlTree);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
+	listContainer.SubclassWindow(ctrlList);
 	ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 	
 	ctrlList.SetBkColor(WinUtil::bgColor);
@@ -322,10 +324,19 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 	if(p->itemNew.state & TVIS_SELECTED) {
 		DirectoryListing::Directory* d = (DirectoryListing::Directory*)p->itemNew.lParam;
 		changeDir(d, TRUE);
+		addHistory(dl->getPath(d));
 	}
 	return 0;
 }
 
+
+void DirectoryListingFrame::addHistory(const string& name) {
+	history.erase(history.begin() + historyIndex, history.end());
+	while(history.size() > 25)
+		history.pop_front();
+	history.push_back(name);
+	historyIndex = history.size();
+}
 
 void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enableRedraw)
 {
@@ -352,6 +363,25 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 		} else {
 			ctrlStatus.SetText(0, CTSTRING(USER_OFFLINE));
 		}
+	}
+}
+
+void DirectoryListingFrame::back() {
+	if(history.size() > 1 && historyIndex > 1) {
+		size_t n = min(historyIndex, history.size()) - 1;
+		deque<string> tmp = history;
+		selectItem(Text::toT(history[n - 1]));
+		historyIndex = n;
+		history = tmp;
+	}
+}
+void DirectoryListingFrame::forward() {
+	if(history.size() > 1 && historyIndex < history.size()) {
+		size_t n = min(historyIndex, history.size() - 1);
+		deque<string> tmp = history;
+		selectItem(Text::toT(history[n]));
+		historyIndex = n + 1;
+		history = tmp;
 	}
 }
 
@@ -697,6 +727,18 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 
 	bHandled = FALSE;
 	return FALSE; 
+}
+
+HRESULT DirectoryListingFrame::onXButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /* lParam */, BOOL& /* bHandled */) {
+	if(GET_XBUTTON_WPARAM(wParam) & XBUTTON1) {
+		back();
+		return TRUE;
+	} else if(GET_XBUTTON_WPARAM(wParam) & XBUTTON2) {
+		forward();
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

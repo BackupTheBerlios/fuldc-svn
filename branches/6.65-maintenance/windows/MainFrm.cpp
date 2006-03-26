@@ -988,13 +988,13 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	
 	if(ctrlStatus.IsWindow() && ctrlLastLines.IsWindow()) {
 		CRect sr;
-		int w[8];
+		int w[9];
 		ctrlStatus.GetClientRect(sr);
-		w[7] = sr.right - 16;
+		w[8] = sr.right - 16;
 #define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
-		setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
+		setw(7); setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
 
-		ctrlStatus.SetParts(8, w);
+		ctrlStatus.SetParts(9, w);
 		ctrlLastLines.SetMaxTipWidth(w[0]);
 	}
 	CRect rc = rect;
