@@ -17,16 +17,16 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.688"
-#define VERSIONFLOAT 0.688
+#define VERSIONSTRING "0.689"
+#define VERSIONFLOAT 0.689
 
 #define FULDC "fulDC"
 #define MAJORVERSIONFLOAT 6.75
-#define MINORVERSIONFLOAT 4
+#define MINORVERSIONFLOAT 5
 #ifdef _DEBUG
-#define FULVERSIONSTRING "6.75 Beta 4 svn$revision"
+#define FULVERSIONSTRING "6.75 Beta 5 svn$revision"
 #else
-#define FULVERSIONSTRING "6.75 Beta 4"
+#define FULVERSIONSTRING "6.75 Beta 5"
 #endif
 
 /* Update the .rc file as well... */

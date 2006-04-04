@@ -195,17 +195,18 @@ private:
 					return a->download ? -1 : 1;
 				}
 			} else {
-				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
-			}
+				//return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+			//}
 
-			switch(col) {
-				case COLUMN_STATUS: return 0;
-				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
-				case COLUMN_TOTALTIMELEFT: return compare(a->totalTimeLeft, b->totalTimeLeft);
-				case COLUMN_SPEED: return compare(a->speed, b->speed);
-				case COLUMN_SIZE: return compare(a->size, b->size);
-				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
-				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+				switch(col) {
+					case COLUMN_STATUS: return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+					case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
+					case COLUMN_TOTALTIMELEFT: return compare(a->totalTimeLeft, b->totalTimeLeft);
+					case COLUMN_SPEED: return compare(a->speed, b->speed);
+					case COLUMN_SIZE: return compare(a->size, b->size);
+					case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
+					default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+				}
 			}
 		}
 	};

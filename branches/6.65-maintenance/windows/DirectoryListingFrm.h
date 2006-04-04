@@ -236,8 +236,11 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		clearTree();
 		
 		//this will delete dl and then destroy itself
-		UnloadDirectoryListing* udl = new UnloadDirectoryListing(dl);
-		udl->start();
+		//UnloadDirectoryListing* udl = new UnloadDirectoryListing(dl);
+		//udl->start();
+
+		//use this for now, too tired to do any more troubleshooting to find the real problem
+		delete dl;
 
 		dl = new DirectoryListing(user);
 	}

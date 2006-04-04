@@ -111,7 +111,7 @@ void PopupManager::AutoRemove(){
 }
 
 void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
-	bool rButton = pos & 0x10000 > 0;
+	bool rButton = (pos & 0x10000) > 0;
 	pos = pos & 0xFFFF; // remove the right mouse button bit.
 	
 	if(popups.empty()) { //seems like we hit a bit of a race condition here

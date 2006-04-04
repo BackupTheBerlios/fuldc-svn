@@ -108,14 +108,13 @@ void WaitingUsersFrame::UpdateLayout(BOOL bResizeBars) {
 
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[4];
+		int w[3];
 		ctrlStatus.GetClientRect(sr);
-		w[3] = sr.right - 16;
-		w[2] = max(w[3] - 100, 0);
+		w[2] = sr.right - 16;
 		w[1] = max(w[2] - 100, 0);
 		w[0] = max(w[1] - 140, 0);
 
-		ctrlStatus.SetParts(4, w);
+		ctrlStatus.SetParts(3, w);
 	}
 
 	// Position tree control
@@ -126,9 +125,8 @@ void WaitingUsersFrame::UpdateLayout(BOOL bResizeBars) {
 }
 
 void WaitingUsersFrame::updateStatus() {
-	ctrlStatus.SetText(1, (TSTRING(STATUS_AVG_QUEUE_TIME) + Util::formatSecondsW(UploadManager::getInstance()->getWaitingUserAvgQueueTime())).c_str());
-	ctrlStatus.SetText(2, (TSTRING(STATUS_FILES) + Util::toStringW(UploadManager::getInstance()->getWaitingUserFileCount())).c_str());
-	ctrlStatus.SetText(3, (TSTRING(STATUS_USERS) + Util::toStringW(UploadManager::getInstance()->getWaitingUserCount())).c_str());
+	ctrlStatus.SetText(1, (TSTRING(STATUS_FILES) + Util::toStringW(UploadManager::getInstance()->getWaitingUserFileCount())).c_str());
+	ctrlStatus.SetText(2, (TSTRING(STATUS_USERS) + Util::toStringW(UploadManager::getInstance()->getWaitingUserCount())).c_str());
 }
 
 // Keyboard shortcuts
@@ -379,6 +377,8 @@ HTREEITEM WaitingUsersFrame::GetParentItem() {
 }
 
 LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	//disable drawing here to avoid the flicker while updating the tree
+	ctrlQueued.SetRedraw(FALSE);
 	if(wParam == SPEAK_ADD_FILE) {
 		const pair<User::Ptr, string> *p = (pair<User::Ptr, string> *)lParam;
 		onAddFile(p->first, p->second);
@@ -393,6 +393,8 @@ LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 			setDirty();
 		updateStatus();
 	}
+	ctrlQueued.SetRedraw(TRUE);
+
 	return 0;
 }
 

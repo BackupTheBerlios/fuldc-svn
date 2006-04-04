@@ -1157,8 +1157,8 @@ void QueueFrame::updateStatus() {
 
 		}
 
-		tstring tmp1 = Text::toT(STRING(TOTAL_FILES) + ": " + Util::toString(cnt));
-		tstring tmp2 = Text::toT(STRING(TOTAL_SIZE) + ": " + Util::formatBytes(total));
+		tstring tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(cnt));
+		tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
 		bool u = false;
 
 		int w = WinUtil::getTextWidth(tmp1, ctrlStatus.m_hWnd);
@@ -1175,8 +1175,8 @@ void QueueFrame::updateStatus() {
 		ctrlStatus.SetText(3, tmp2.c_str());
 
 		if(dirty) {
-			tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(queueItems));
-			tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(queueSize));
+			tmp1 = Text::toT(STRING(TOTAL_FILES) + ": " + Util::toString(queueItems));
+			tmp2 = Text::toT(STRING(TOTAL_SIZE) + ": " + Util::formatBytes(queueSize));
 
 			w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
 			if(statusSizes[3] < w) {

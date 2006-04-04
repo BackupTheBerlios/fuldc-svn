@@ -271,7 +271,7 @@ private:
 			const tstring& tgt;
 		};
 		struct CheckSize {
-			CheckSize() : size(-1), op(true), hasTTH(false), firstTTH(true) { }
+			CheckSize() : size(-1), op(true), hasTTH(false), firstTTH(true), oneHub(true) { }
 			void operator()(SearchInfo* si);
 			tstring ext;
 			int64_t size;
