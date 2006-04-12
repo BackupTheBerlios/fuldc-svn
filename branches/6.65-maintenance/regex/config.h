@@ -80,7 +80,7 @@ default default. */
 
 #ifndef MATCH_LIMIT
 //#define MATCH_LIMIT 10000000
-#define MATCH_LIMIT 1000
+#define MATCH_LIMIT 10000
 #endif
 
 /* When calling PCRE via the POSIX interface, additional working storage is
