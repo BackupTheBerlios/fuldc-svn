@@ -328,6 +328,7 @@ protected:
 		COLUMN_SIZE,
 		COLUMN_SPEED,
 		COLUMN_CRC32,
+		COLUMN_TTH,
 		COLUMN_LAST
 	};
 
@@ -384,12 +385,12 @@ protected:
 };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
+int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32, COLUMN_TTH };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
+int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90, 100 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH, 
-ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
+ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED, ResourceManager::TTH_ROOT
 };
 
 #endif // !defined(FINISHED_FRAME_BASE_H)

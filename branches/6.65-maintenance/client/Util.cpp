@@ -783,32 +783,7 @@ string fixedftime(const string& format, struct tm* t) {
 
 string Util::formatTime(const string &msg, const time_t t) {
 	if (!msg.empty()) {
-		size_t bufsize = msg.size() + 256;
-		struct tm* loc = localtime(&t);
-
-		if(!loc) {
-			return Util::emptyString;
-		}
-#if _WIN32
-		AutoArray<TCHAR> buf(bufsize);
-
-		if(!_tcsftime(buf, bufsize-1, Text::toT(msg).c_str(), loc)) {
-			return fixedftime(msg, loc);
-		}
-
-		return Text::fromT(tstring(buf));
-#else
-		// will this give wide representations for %a and %A?
-		// surely win32 can't have a leg up on linux/unixen in this area. - Todd
-		AutoArray<char> buf(bufsize);
-
-		while(!strftime(buf, bufsize-1, msg.c_str(), loc)) {
-			bufsize+=64;
-			buf = new char[bufsize];
-		}
-
-		return string(buf);
-#endif
+		return Text::fromT(formatTime(Text::toT(msg), t));
 	}
 	return Util::emptyString;
 }

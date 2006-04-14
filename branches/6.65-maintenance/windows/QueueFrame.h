@@ -230,7 +230,7 @@ private:
 			path(Text::toT(Util::getFilePath(aQI->getTarget()))),
 			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
 			added(aQI->getAdded()), tth(aQI->getTTH()), priority(aQI->getPriority()), status(aQI->getStatus()),
-			updateMask((u_int32_t)-1), display(NULL)
+			updateMask((u_int32_t)-1), display(NULL), online(0)
 		{ 
 			for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
 				sources.push_back(SourceInfo(*(*i)));
@@ -299,6 +299,8 @@ private:
 		
 		GETSET(tstring, target, Target);
 		GETSET(tstring, path, Path);
+		GETSET(tstring, users, Users);
+		GETSET(int, online, Online);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
 		GETSET(u_int32_t, added, Added);

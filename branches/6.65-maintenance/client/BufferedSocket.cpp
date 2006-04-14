@@ -330,8 +330,8 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 						if(w & Socket::WAIT_READ) {
 							threadRead();
 						}
-						if(w & Socket::WAIT_WRITE) { 
-							break; 
+						if(w & Socket::WAIT_WRITE) {
+							break;
 						}
 					}
 				}

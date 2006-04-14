@@ -188,20 +188,8 @@ void QueueFrame::QueueItemInfo::update() {
 		if(colMask & MASK_TARGET) {
 			display->columns[COLUMN_TARGET] = Util::getFileName(getTarget());
 		}
-		int online = 0;
 		if(colMask & MASK_USERS || colMask & MASK_STATUS) {
-			tstring tmp;
-
-			for(SourceIter j = getSources().begin(); j != getSources().end(); ++j) {
-				if(tmp.size() > 0)
-					tmp += _T(", ");
-
-				if(j->getUser()->isOnline())
-					online++;
-
-				tmp += Text::toT(j->getUser()->getFullNick());
-			}
-			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
+			display->columns[COLUMN_USERS] = getUsers().empty() ? TSTRING(NO_USERS) : getUsers();
 		}
 		if(colMask & MASK_STATUS) {
 			if(getStatus() == QueueItem::STATUS_WAITING) {
@@ -625,6 +613,19 @@ void QueueFrame::on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) {
 					ii->getSources().push_back(QueueItemInfo::SourceInfo(*(*j)));
 				}
 			}
+			tstring tmp;
+			int online = 0;
+			for(QueueItemInfo::SourceIter j = ii->getSources().begin(); j != ii->getSources().end(); ++j) {
+				if(tmp.size() > 0)
+					tmp += _T(", ");
+
+				if(j->getUser()->isOnline())
+					online++;
+
+				tmp += Text::toT(j->getUser()->getFullNick());
+			}
+			ii->setUsers(tmp);
+			ii->setOnline(online);
 		}
 		{
 			for(QueueItemInfo::SourceIter i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ) {
