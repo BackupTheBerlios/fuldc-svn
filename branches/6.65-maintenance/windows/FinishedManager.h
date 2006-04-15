@@ -56,7 +56,7 @@ public:
 		COLUMN_LAST
 	};
 
-	FinishedItem(string const& aTarget, string const& aUser, string const& aHub, TTHValue* aTTH,
+	FinishedItem(string const& aTarget, string const& aUser, string const& aHub, string const& aTTH,
 		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, time_t aTime, 
 		bool aCrc32 = false) : 
 		size(aSize), chunkSize(aChunkSize),
@@ -70,7 +70,7 @@ public:
 		columns[COLUMN_SIZE]  = Text::toT(Util::formatBytes(aSize));
 		columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(getAvgSpeed()) + "/s");
 		columns[COLUMN_CRC32] = getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR);
-		columns[COLUMN_TTH]	  = aTTH == NULL ? Util::emptyStringW : Text::toT(aTTH->toBase32());
+		columns[COLUMN_TTH]	  = Text::toT(aTTH);
 		
 		//cache this, should be cheaper to do it once a file is added instead of
 		//a few thousand calls once the list is created

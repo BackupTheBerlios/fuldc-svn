@@ -273,8 +273,8 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_TEXTCOLOR, RGB(0, 0, 0));
 	setDefault(FREE_SLOTS_EXTENSIONS, "*.nfo|*.sfv");
 	setDefault(FREE_SLOTS_SIZE, 64);
-	setDefault(SKIPLIST_SHARE, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db");
-	setDefault(SKIPLIST_DOWNLOAD, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db|");
+	setDefault(SKIPLIST_SHARE, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db|*.bad");
+	setDefault(SKIPLIST_DOWNLOAD, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db|*.bad|*.missing");
 	setDefault(TAB_SHOW_ICONS, true);
 	setDefault(CUSTOM_SOUND, false);
 	setDefault(TAB_SIZE, 20);
@@ -301,7 +301,7 @@ SettingsManager::SettingsManager()
 	setDefault(REFRESH_SHARE_BEGIN, 0);
 	setDefault(REFRESH_SHARE_END, 0);
 	setDefault(MUTE_ON_AWAY, false);
-	setDefault(HIGH_PRIO_FILES, "*.sfv|*.nfo|*sample*|*subs*");
+	setDefault(HIGH_PRIO_FILES, "*.sfv|*.nfo|*sample*|*subs*|*.jpg|*cover*|*.pls|*.m3u");
 	setDefault(NOTIFY_UPDATES, true);
 	setDefault(NOTIFY_BETA_UPDATES, false);
 	setDefault(SPY_IGNORE_TTH, true);

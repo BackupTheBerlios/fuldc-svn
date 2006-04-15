@@ -636,6 +636,8 @@ void NmdcHub::disconnect(bool graceless) throw() {
 	Client::disconnect(graceless);
 	state = STATE_CONNECT;
 	clearUsers();
+
+	fire(ClientListener::Failed(), this, Util::emptyString); 
 }
 
 void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {

@@ -311,6 +311,20 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	
 	bool updateDir = (directories.find(dir) == directories.end());
 	directories.insert(make_pair(dir, ii));
+
+	tstring tmp;
+	int online = 0;
+	for(QueueItemInfo::SourceIter j = ii->getSources().begin(); j != ii->getSources().end(); ++j) {
+		if(tmp.size() > 0)
+			tmp += _T(", ");
+
+		if(j->getUser()->isOnline())
+			online++;
+
+		tmp += Text::toT(j->getUser()->getFullNick());
+	}
+	ii->setUsers(tmp);
+	ii->setOnline(online);
 	
 	if(updateDir) {
 		addDirectory(dir, ii->isSet(QueueItem::FLAG_USER_LIST));
