@@ -59,6 +59,7 @@ faq_secret.html
 dev_createpatch.html
 dev_applypatch.html
 links.html
+external_sfv.html
 
 [ALIAS]
 IDC_HELP_CHANGELOG=changelog.html

@@ -96,6 +96,10 @@ const string SettingsManager::settingTags[] =
 
 SettingsManager::SettingsManager()
 {
+	//make sure it can fit our events without using push_back since
+	//that might cause them to be in the wrong position.
+	fileEvents.resize(2);
+
 	connectionSpeeds.push_back("0.005");
 	connectionSpeeds.push_back("0.01");
 	connectionSpeeds.push_back("0.02");
@@ -399,6 +403,25 @@ void SettingsManager::load(string const& aFileName)
 		}
 
 		xml.resetCurrentChild();
+		if(xml.findChild("FileEvents")) {
+			xml.stepIn();
+			if(xml.findChild("OnFileComplete")) {
+				StringPair sp;
+				sp.first = xml.getChildAttrib("Command");
+				sp.second = xml.getChildAttrib("CommandLine");
+				fileEvents[ON_FILE_COMPLETE] = sp;
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("OnDirCreated")) {
+				StringPair sp;
+				sp.first = xml.getChildAttrib("Command");
+				sp.second = xml.getChildAttrib("CommandLine");
+				fileEvents[ON_DIR_CREATED] = sp;
+			}
+			xml.stepOut();
+		}
+
+		xml.resetCurrentChild();
 
 		fire(SettingsManagerListener::Load(), &xml);
 
@@ -471,6 +494,16 @@ void SettingsManager::save(string const& aFileName) {
 			xml.addTag("Filter", tmp);
 		}
 	}
+	xml.stepOut();
+
+	xml.addTag("FileEvents");
+	xml.stepIn();
+	xml.addTag("OnFileComplete");
+	xml.addChildAttrib("Command", fileEvents[ON_FILE_COMPLETE].first);
+	xml.addChildAttrib("CommandLine", fileEvents[ON_FILE_COMPLETE].second);
+	xml.addTag("OnDirCreated");
+	xml.addChildAttrib("Command", fileEvents[ON_DIR_CREATED].first);
+	xml.addChildAttrib("CommandLine", fileEvents[ON_DIR_CREATED].second);
 	xml.stepOut();
 	
 	fire(SettingsManagerListener::Save(), &xml);

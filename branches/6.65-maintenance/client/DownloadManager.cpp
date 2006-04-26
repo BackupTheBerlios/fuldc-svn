@@ -156,6 +156,28 @@ int DownloadManager::FileMover::run() {
 				LogManager::getInstance()->message(STRING(UNABLE_TO_RENAME) + next.first + ": " + e.getError());
 			}
 		}
+		if(File::getSize(next.second) != -1) {
+			StringPair sp = SettingsManager::getInstance()->getFileEvent(SettingsManager::ON_FILE_COMPLETE);
+			if(sp.first.length() > 0) {
+				STARTUPINFO si = { sizeof(si), 0 };
+				PROCESS_INFORMATION pi = { 0 };
+				StringMap params;
+				params["file"] = next.second;
+				wstring cmdLine = Text::toT(Util::formatParams(sp.second, params));
+				wstring cmd = Text::toT(sp.first);
+
+				AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);
+				_tcscpy(cmdLineBuf, cmdLine.c_str());
+
+				AutoArray<TCHAR> cmdBuf(cmd.length() + 1);
+				_tcscpy(cmdBuf, cmd.c_str());
+
+				if(::CreateProcess(cmdBuf, cmdLineBuf, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+					::CloseHandle(pi.hThread);
+					::CloseHandle(pi.hProcess);
+				}
+			}
+		}
 	}
 }
 
@@ -470,18 +492,18 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 	} else if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 		d->setFile(new TreeOutputStream(d->getTigerTree()));
 	} else {
-		string target = d->getDownloadTarget();
-		File::ensureDirectory(target);
-		if(d->isSet(Download::FLAG_USER_LIST)) {
-			if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
-				target += ".xml.bz2";
-			} else {
-				target += ".DcLst";
-			}
-		}
-
 		File* file = NULL;
 		try {
+			string target = d->getDownloadTarget();
+			File::ensureDirectory(target);
+			if(d->isSet(Download::FLAG_USER_LIST)) {
+				if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+					target += ".xml.bz2";
+				} else {
+					target += ".DcLst";
+				}
+			}
+
 			// Let's check if we can find this file in a any .SFV...
 			int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
 			file = new File(target, File::RW, File::OPEN | File::CREATE | trunc);
@@ -789,6 +811,29 @@ void DownloadManager::moveFile(const string& source, const string& target) {
 		}
 	}
 
+	int64_t size = File::getSize(target);
+	if(size > -1 && size <= MOVER_LIMIT) {
+		StringPair sp = SettingsManager::getInstance()->getFileEvent(SettingsManager::ON_FILE_COMPLETE);
+		if(sp.first.length() > 0) {
+			STARTUPINFO si = { sizeof(si), 0 };
+			PROCESS_INFORMATION pi = { 0 };
+			StringMap params;
+			params["file"] = target;
+			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params));
+			wstring cmd = Text::toT(sp.first);
+
+			AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);
+			_tcscpy(cmdLineBuf, cmdLine.c_str());
+
+			AutoArray<TCHAR> cmdBuf(cmd.length() + 1);
+			_tcscpy(cmdBuf, cmd.c_str());
+
+			if(::CreateProcess(cmdBuf, cmdLineBuf, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+				::CloseHandle(pi.hThread);
+				::CloseHandle(pi.hProcess);
+			}
+		}
+	}
 }
 
 void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) throw() { 

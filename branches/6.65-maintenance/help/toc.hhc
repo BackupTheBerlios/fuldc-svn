@@ -20,6 +20,10 @@
 		<param name="Name" value="Chat Commands">
 		<param name="Local" value="chat_commands.html">
 		</OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="External SFV Tool">
+    <param name="Local" value="external_sfv.html">
+    </OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Windows">
 		</OBJECT>

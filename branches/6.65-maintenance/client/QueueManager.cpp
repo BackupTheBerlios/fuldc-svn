@@ -322,7 +322,10 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getConfigPath() + "Q
 	ClientManager::getInstance()->addListener(this);
 
 	regexp.Init("[Rr0-9][Aa0-9][Rr0-9]");
-	File::ensureDirectory(Util::getConfigPath() + FILELISTS_DIR);
+	try	{
+		File::ensureDirectory(Util::getConfigPath() + FILELISTS_DIR);
+	} catch (const FileException){ }
+	
 }
 
 QueueManager::~QueueManager() throw() { 
@@ -450,6 +453,29 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 	}
 
 	string target = checkTarget(aTarget, aSize, aFlags);
+
+	if(File::ensureDirectory(target)) {
+		StringPair sp = SettingsManager::getInstance()->getFileEvent(SettingsManager::ON_DIR_CREATED);
+		if(sp.first.length() > 0) {
+			STARTUPINFO si = { sizeof(si), 0 };
+			PROCESS_INFORMATION pi = { 0 };
+			StringMap params;
+			params["dir"] = target;
+			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params));
+			wstring cmd = Text::toT(sp.first);
+
+			AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);
+			_tcscpy(cmdLineBuf, cmdLine.c_str());
+
+			AutoArray<TCHAR> cmdBuf(cmd.length() + 1);
+			_tcscpy(cmdBuf, cmd.c_str());
+
+			if(::CreateProcess(cmdBuf, cmdLineBuf, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+				::CloseHandle(pi.hThread);
+				::CloseHandle(pi.hProcess);
+			}
+		}
+	}
 
 	// Check if it's a zero-byte file, if so, create and return...
 	if(aSize == 0) {

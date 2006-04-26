@@ -120,7 +120,9 @@ void LogPage::write()
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
 		SettingsManager::getInstance()->set(SettingsManager::LOG_DIRECTORY, s + '\\');
 	}
-	File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	try {
+		File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	} catch (const FileException) {	}
 
 	//make sure we save the last edit too, the user
 	//might not have changed the selection

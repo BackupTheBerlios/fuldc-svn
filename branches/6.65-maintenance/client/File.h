@@ -208,18 +208,22 @@ public:
 		}
 	}
 
-	static void ensureDirectory(const string& aFile) {
+	static bool ensureDirectory(const string& aFile) throw (FileException) {
+		int result;
 		// Skip the first dir...
 		tstring file;
 		Text::toT(aFile, file);
-		wstring::size_type start = file.find_first_of(L"\\/");
-		if(start == string::npos)
-			return;
-		start++;
-		while( (start = file.find_first_of(L"\\/", start)) != string::npos) {
-			CreateDirectory(file.substr(0, start+1).c_str(), NULL);
-			start++;
-		}
+		wstring::size_type end = file.find_last_of(L"\\/");
+		if(end == string::npos)
+			return false;
+
+		result = SHCreateDirectory(NULL, file.substr(0, end).c_str());
+		if(result == ERROR_SUCCESS)
+			return true;
+		else if(result == ERROR_ALREADY_EXISTS)
+			return false;
+		else //we can't recover from these gracefully so throw.
+			throw FileException(Util::translateError(result));
 	}
 
 #else // _WIN32

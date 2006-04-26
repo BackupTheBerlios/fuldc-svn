@@ -44,6 +44,7 @@
 #include <windows.h>
 #include <crtdbg.h>
 #include <tchar.h>
+#include <ShlObj.h>
 
 #else
 #include <unistd.h>

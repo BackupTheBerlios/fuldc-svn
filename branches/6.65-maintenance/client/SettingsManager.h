@@ -114,6 +114,8 @@ public:
 		INCOMING_FIREWALL_PASSIVE };
 	enum {	OUTGOING_DIRECT, OUTGOING_SOCKS5 };
 
+	enum FileEvents { ON_FILE_COMPLETE, ON_DIR_CREATED};
+
 
 	const string& get(StrSetting key, bool useDefault = true) const {
 		return (isSet[key] || !useDefault) ? strSettings[key - STR_FIRST] : strDefaults[key - STR_FIRST];
@@ -262,6 +264,10 @@ public:
 		filterHistory.clear();
 	}
 
+	StringPair getFileEvent(SettingsManager::FileEvents fe) {
+		return fileEvents[fe];
+	}
+
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
@@ -281,6 +287,7 @@ private:
 
 	TStringList		searchHistory;
 	TStringList		filterHistory;
+	StringPairList fileEvents;
 };
 
 // Shorthand accessor macros

@@ -258,7 +258,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
 
-	File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	try {
+		File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	} catch (const FileException) {	}
 
 	startSocket();
 	
