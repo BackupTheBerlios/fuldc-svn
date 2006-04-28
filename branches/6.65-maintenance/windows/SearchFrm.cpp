@@ -529,14 +529,6 @@ void SearchFrame::SearchInfo::getList() {
 	}
 }
 
-void SearchFrame::SearchInfo::browseList() {
-	try {
-		QueueManager::getInstance()->addPfs(sr->getUser(), Text::fromT(getPath()));
-	} catch(const Exception&) {
-		// Ignore for now...
-	}
-}
-
 void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	if(!si->getTTH().empty()) {
 		if(firstTTH) {
@@ -1153,11 +1145,6 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 
 LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ctrlResults.forEachSelected(&SearchInfo::getList);
-	return 0;
-}
-
-LRESULT SearchFrame::onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	ctrlResults.forEachSelected(&SearchInfo::browseList);
 	return 0;
 }
 

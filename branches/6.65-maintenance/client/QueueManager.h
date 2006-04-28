@@ -81,8 +81,6 @@ public:
 		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
-	/** Queue a partial file list download */
-	void addPfs(const User::Ptr& aUser, const string& aDir) throw();
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 
@@ -112,7 +110,7 @@ public:
 
 	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {
 		Lock l(cs);
-		return (pfsQueue.find(aUser->getCID()) != pfsQueue.end()) || (userQueue.getNext(aUser, minPrio) != NULL);
+		return (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
 	void loadQueue() throw();
@@ -158,9 +156,6 @@ private:
 	bool addAlternates(string, User::Ptr);
 	void onTimerSearch();
 	void checkNotify();
-
-	typedef HASH_MAP_X(CID, string, CID::Hash, equal_to<CID>, less<CID>) PfsQueue;
-	typedef PfsQueue::iterator PfsIter;
 
 	typedef map<string, u_int64_t> StringInt64Map;
 	typedef StringInt64Map::iterator StringInt64Iter;
@@ -235,8 +230,6 @@ private:
 	
 	CriticalSection cs;
 	
-	/** Partial file list queue */
-	PfsQueue pfsQueue;
 	/** QueueItems by target */
 	FileQueue fileQueue;
 	/** QueueItems by user */

@@ -355,15 +355,6 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	ctrlList.SetRedraw(enableRedraw);
 	updating = false;
 	updateStatus();
-
-	if(!d->getComplete()) {
-		if(dl->getUser()->isOnline()) {
-			QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
-			ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_LIST));
-		} else {
-			ctrlStatus.SetText(0, CTSTRING(USER_OFFLINE));
-		}
-	}
 }
 
 void DirectoryListingFrame::up() {

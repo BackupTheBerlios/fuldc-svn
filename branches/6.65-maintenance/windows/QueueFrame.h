@@ -212,25 +212,11 @@ private:
 		typedef vector<SourceInfo> SourceList;
 		typedef SourceList::iterator SourceIter;
 
-		enum {
-			MASK_TARGET = 1 << COLUMN_TARGET,
-			MASK_STATUS = 1 << COLUMN_STATUS,
-			MASK_SIZE = 1 << COLUMN_SIZE,
-			MASK_DOWNLOADED = 1 << COLUMN_DOWNLOADED,
-			MASK_PRIORITY = 1 << COLUMN_PRIORITY,
-			MASK_USERS = 1 << COLUMN_USERS,
-			MASK_PATH = 1 << COLUMN_PATH,
-			MASK_ERRORS = 1 << COLUMN_ERRORS,
-			MASK_ADDED = 1 << COLUMN_ADDED,
-			MASK_TTH = 1 << COLUMN_TTH,
-			MASK_TYPE = 1 << COLUMN_TYPE
-		};
-
 		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(Text::toT(aQI->getTarget())),
 			path(Text::toT(Util::getFilePath(aQI->getTarget()))),
 			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
 			added(aQI->getAdded()), tth(aQI->getTTH()), priority(aQI->getPriority()), status(aQI->getStatus()),
-			updateMask((u_int32_t)-1), display(NULL), online(0)
+			display(NULL), online(0)
 		{ 
 			for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
 				sources.push_back(SourceInfo(*(*i)));
@@ -296,6 +282,26 @@ private:
 			}
 			return false;
 		}
+
+		QueueItemInfo& operator=(const QueueItemInfo& rhs) {
+			delete display;
+			display = rhs.display;
+			added = rhs.added;
+			sources = rhs.sources;
+			badSources = rhs.badSources;
+			downloadedBytes = rhs.downloadedBytes;
+			online = rhs.online;
+			path = rhs.path;
+			priority = rhs.priority;
+			size = rhs.size;
+			status = rhs.status;
+			target = rhs.target;
+			tth = rhs.tth;
+			type = rhs.type;
+			users = rhs.users;
+
+			return *this;
+		}
 		
 		GETSET(tstring, target, Target);
 		GETSET(tstring, path, Path);
@@ -308,15 +314,13 @@ private:
 		GETSET(QueueItem::Status, status, Status);
 		GETSET(TTHValue*, tth, TTH);
 		GETSET(tstring, type, Type);
-		u_int32_t updateMask;
 	
 	private:
 
 		Display* display;
 
 		QueueItemInfo(const QueueItemInfo&);
-		QueueItemInfo& operator=(const QueueItemInfo&);
-		
+				
 		SourceList sources;
 		SourceList badSources;
 
@@ -360,10 +364,7 @@ private:
 
 	HTREEITEM fileLists;
 
-	typedef hash_map<QueueItem*, QueueItemInfo*, PointerHash<QueueItem> > QueueMap;
-	typedef QueueMap::iterator QueueIter;
-	QueueMap queue;
-	
+
 	typedef HASH_MULTIMAP_X(tstring, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
@@ -479,7 +480,7 @@ private:
 	const tstring& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((tstring*)ctrlDirs.GetItemData(ht)); }
 
 	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
-	virtual void on(QueueManagerListener::Moved, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Moved, QueueItem* aQI, string aSource) throw();
 	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
