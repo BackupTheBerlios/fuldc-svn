@@ -104,12 +104,13 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	BEGIN_MSG_MAP(DirectoryListingFrame)
 		NOTIFY_HANDLER(IDC_FILES, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, ctrlList.onColumnClick)
-		NOTIFY_HANDLER(IDC_FILES, NM_CUSTOMDRAW, onCustomDraw)
+		NOTIFY_HANDLER(IDC_FILES, NM_CUSTOMDRAW, onCustomDrawList)
 		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
+		NOTIFY_HANDLER(IDC_DIRECTORIES, NM_CUSTOMDRAW, onCustomDrawTree)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -159,7 +160,8 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onCustomDrawList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onCustomDrawTree(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void downloadList(const tstring& aTarget, bool view = false);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
@@ -316,13 +318,8 @@ private:
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
 			if(f->getTTH() != NULL)
 				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
-
-			if( f->getTTH() )
-				dupe = ShareManager::getInstance()->isTTHShared( *f->getTTH() );
-			else
-				dupe = false;
 		};
-		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d), dupe(false) { 
+		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) { 
 			columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(d->getTotalSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
@@ -381,11 +378,8 @@ private:
 			return Util::emptyStringT;
 		}
 		
-		bool isDupe() const { return dupe; }
 	private:
 		tstring columns[COLUMN_LAST];
-
-		bool dupe;
 	};
 	
 	CMenu targetMenu;
@@ -465,6 +459,7 @@ private:
 			if(!mFile.empty()) {
 				mWindow->dl->loadFile(mFile);
 				ADLSearchManager::getInstance()->matchListing(mWindow->dl);
+				mWindow->dl->checkDupes();
 				mWindow->refreshTree(Text::toT(WinUtil::getInitialDir(mWindow->dl->getUser())));
 			} else {
 				mWindow->refreshTree(Text::toT(Util::toNmdcFile(mWindow->dl->loadXML(mTxt, true))));

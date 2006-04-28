@@ -23,6 +23,7 @@
 
 #include "QueueManager.h"
 #include "SearchManager.h"
+#include "ShareManager.h"
 
 #include "StringTokenizer.h"
 #include "SimpleXML.h"
@@ -312,6 +313,34 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 			x += (*i)->getTotalFileCount(adls);
 	}
 	return x;
+}
+
+u_int8_t DirectoryListing::Directory::checkDupes() {
+	u_int8_t result;
+	for(Directory::Iter i = directories.begin(); i != directories.end(); ++i) {
+		result = (*i)->checkDupes();
+		if(getDupe() == Directory::NONE)
+			setDupe(result);
+		else if(getDupe() == Directory::DUPE && result != Directory::DUPE)
+			setDupe(Directory::PARTIAL_DUPE);
+	}
+	for(File::Iter i = files.begin(); i != files.end(); ++i) {
+		//don't count 0 byte files since it'll give lots of partial dupes
+		//of no interest
+		if((*i)->getSize() > 0) {
+			(*i)->setDupe((*i)->getTTH() != NULL ? ShareManager::getInstance()->isTTHShared(*(*i)->getTTH()) : false);
+			if(getDupe() == Directory::NONE && (*i)->getDupe())
+				setDupe(Directory::DUPE);
+			else if(getDupe() == Directory::DUPE && !(*i)->getDupe())
+				setDupe(Directory::PARTIAL_DUPE);
+		}
+	}
+	return getDupe();
+}
+
+void DirectoryListing::checkDupes() {
+	root->checkDupes();
+	root->setDupe(false); //newer show the root as a dupe or partial dupe.
 }
 
 /**

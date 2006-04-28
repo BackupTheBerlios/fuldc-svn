@@ -1134,7 +1134,7 @@ LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARA
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+LRESULT DirectoryListingFrame::onCustomDrawList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>( pnmh );
 
 	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
@@ -1143,9 +1143,61 @@ LRESULT DirectoryListingFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
 		ItemInfo *ii = reinterpret_cast<ItemInfo*>(plvcd->nmcd.lItemlParam);
 
-		if(!mylist && ii->isDupe()) {
-			plvcd->clrTextBk = SETTING(DUPE_COLOR);
+		if(!mylist) {
+			//check if the file or dir is a dupe, then use the dupesetting color
+			if( ( ii->type == ItemInfo::FILE && ii->file->getDupe() ) || 
+				( ii->type == ItemInfo::DIRECTORY && ii->dir->getDupe() == DirectoryListing::Directory::DUPE )
+				) {
+				plvcd->clrTextBk = SETTING(DUPE_COLOR);
+
+			//if it's a partial dupe, try to use some simple blending to indicate that
+			//a dupe exists somewhere down the directory tree.
+			} else if(ii->type == ItemInfo::DIRECTORY && ii->dir->getDupe() == DirectoryListing::Directory::PARTIAL_DUPE) {
+				BYTE r, b, g;
+				//cache these to avoid unnecessary calls.
+				DWORD dupe = SETTING(DUPE_COLOR);
+				DWORD bg = SETTING(BACKGROUND_COLOR);
+
+				r = static_cast<BYTE>(( static_cast<DWORD>(GetRValue(dupe)) + static_cast<DWORD>(GetRValue(bg)) ) / 2);
+				g = static_cast<BYTE>(( static_cast<DWORD>(GetGValue(dupe)) + static_cast<DWORD>(GetGValue(bg)) ) / 2);
+				b = static_cast<BYTE>(( static_cast<DWORD>(GetBValue(dupe)) + static_cast<DWORD>(GetBValue(bg)) ) / 2);
+				plvcd->clrTextBk = RGB(r, g, b);
+			}
 		}
+
+	}
+
+	return CDRF_DODEFAULT;
+}
+LRESULT DirectoryListingFrame::onCustomDrawTree(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>( pnmh );
+
+	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
+		return CDRF_NOTIFYITEMDRAW;
+
+	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
+		DirectoryListing::Directory* dir = reinterpret_cast<DirectoryListing::Directory*>(plvcd->nmcd.lItemlParam);
+
+		if(!mylist) {
+			//check if the dir is a dupe, then use the dupesetting color
+			if( dir->getDupe() == DirectoryListing::Directory::DUPE ) {
+				plvcd->clrTextBk = SETTING(DUPE_COLOR);
+
+			//if it's a partial dupe, try to use some simple blending to indicate that
+			//a dupe exists somewhere down the directory tree.
+			} else if(dir->getDupe() == DirectoryListing::Directory::PARTIAL_DUPE) {
+				BYTE r, b, g;
+				//cache these to avoid unnecessary calls.
+				DWORD dupe = SETTING(DUPE_COLOR);
+				DWORD bg = SETTING(BACKGROUND_COLOR);
+
+				r = static_cast<BYTE>(( static_cast<DWORD>(GetRValue(dupe)) + static_cast<DWORD>(GetRValue(bg)) ) / 2);
+				g = static_cast<BYTE>(( static_cast<DWORD>(GetGValue(dupe)) + static_cast<DWORD>(GetGValue(bg)) ) / 2);
+				b = static_cast<BYTE>(( static_cast<DWORD>(GetBValue(dupe)) + static_cast<DWORD>(GetBValue(bg)) ) / 2);
+				plvcd->clrTextBk = RGB(r, g, b);
+			}
+		}
+
 	}
 
 	return CDRF_DODEFAULT;

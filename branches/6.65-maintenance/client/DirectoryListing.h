@@ -49,20 +49,20 @@ public:
 		typedef List::iterator Iter;
 		
 		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)), adls(false)
+			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)), adls(false), dupe(false)
 		{ 
 		};
 		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(NULL), adls(false)
+			name(aName), size(aSize), parent(aDir), tthRoot(NULL), adls(false), dupe(false)
 		{ 
 		};
 			
-		File(const File& rhs, bool _adls = false) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot)), adls(_adls)
+		File(const File& rhs, bool _adls = false) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot)), adls(_adls), dupe(rhs.dupe)
 		{
 		}
 
 		File& operator=(const File& rhs) {
-			name = rhs.name; size = rhs.size; parent = rhs.parent; tthRoot = rhs.tthRoot ? new TTHValue(*rhs.tthRoot) : NULL;
+			name = rhs.name; size = rhs.size; parent = rhs.parent; tthRoot = rhs.tthRoot ? new TTHValue(*rhs.tthRoot) : NULL; dupe = rhs.dupe;
 			return *this;
 		}
 
@@ -79,6 +79,7 @@ public:
 		GETSET(Directory*, parent, Parent);
 		GETSET(TTHValue*, tthRoot, TTH);
 		GETSET(bool, adls, Adls);
+		GETSET(bool, dupe, Dupe)
 	};
 
 	class Directory : public FastAlloc<Directory> {
@@ -94,9 +95,11 @@ public:
 		
 		List directories;
 		File::List files;
+
+		enum { NONE, PARTIAL_DUPE, DUPE };
 		
 		Directory(Directory* aParent, const string& aName, bool _adls, bool aComplete) 
-			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
+			: name(aName), parent(aParent), adls(_adls), complete(aComplete), dupe(0) { };
 		
 		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction());
@@ -127,11 +130,13 @@ public:
 			
 			return getName() + '\\';
 		}
+		u_int8_t checkDupes();
 
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
 		GETSET(bool, adls, Adls);
 		GETSET(bool, complete, Complete);
+		GETSET(u_int8_t, dupe, Dupe)
 
 	private:
 		Directory(const Directory&);
@@ -168,6 +173,8 @@ public:
 
 	const Directory* getRoot() const { return root; }
 	Directory* getRoot() { return root; }
+
+	void checkDupes();
 
 	GETSET(User::Ptr, user, User);
 	GETSET(bool, abort, Abort);
