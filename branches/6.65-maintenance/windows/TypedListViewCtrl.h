@@ -209,6 +209,7 @@ public:
 	}
 	void updateItem(T* item) { int i = findItem(item); if(i != -1) updateItem(i); }
 	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); }
+	void deleteItem(const tstring& item) { int i = findItem(item); if(i != -1) DeleteItem(i); }
 
 	int getSortPos(T* a) {
 		int high = GetItemCount();

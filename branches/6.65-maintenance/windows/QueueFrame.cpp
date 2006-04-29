@@ -188,7 +188,8 @@ void QueueFrame::QueueItemInfo::update() {
 		display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Util::formatExactSize(getSize());
 		display->columns[COLUMN_PATH] = Util::getFilePath(getTarget());
 		display->columns[COLUMN_ADDED] = Text::toT(Util::formatTime("%Y-%m-%d %H:%M", getAdded()));
-		display->columns[COLUMN_TTH] = Text::toT(getTTH()->toBase32());
+		if(getTTH())
+			display->columns[COLUMN_TTH] = Text::toT(getTTH()->toBase32());
 
 		display->columns[COLUMN_TYPE] = Util::getFileExt(getTarget());
 		if(display->columns[COLUMN_TYPE].size() > 0 && display->columns[COLUMN_TYPE][0] == '.')
@@ -560,18 +561,24 @@ void QueueFrame::on(QueueManagerListener::Removed, QueueItem* aQI) {
 
 void QueueFrame::on(QueueManagerListener::Moved, QueueItem* aQI, string aSource) {
 	QueueItemInfo* qi = new QueueItemInfo(aQI);
+	QueueItemInfo* tmp = NULL;
 	tstring source = Text::toT(aSource);
-	pair<DirectoryIter, DirectoryIter> i = directories.equal_range(Util::getFilePath(source));
-	DirectoryIter j;
-	for(j = i.first; j != i.second; ++j) {
-		if(Util::stricmp(source, j->second->getTarget()))
-			break;
+	{
+		Lock l(cs);
+		pair<DirectoryIter, DirectoryIter> i = directories.equal_range(Util::getFilePath(source));
+		DirectoryIter j;
+		for(j = i.first; j != i.second; ++j) {
+			if(Util::stricmp(source, j->second->getTarget()))
+				break;
+		}
+		if(j != i.second) {
+			tmp = j->second;
+		}
 	}
+	
 
-	if(j != i.second) {
-		speak(REMOVE_ITEM, j->second);
-	}
-
+	if(tmp != NULL)
+		speak(REMOVE_ITEM, tmp);
 	speak(ADD_ITEM, qi);
 }
 
@@ -587,15 +594,15 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	for(TaskIter ti = tasks.begin(); ti != tasks.end(); ++ti) {
 		if(ti->first == ADD_ITEM) {
 			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
-			dcassert(ctrlQueue.findItem(ii) == -1);
+			dcassert(ctrlQueue.findItem(ii->getText(COLUMN_TARGET)) == -1);
 			addQueueItem(ii, false);
 			updateStatus();
 		} else if(ti->first == REMOVE_ITEM) {
 			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
 			
 			if(!showTree || isCurDir(ii->getPath()) ) {
-				dcassert(ctrlQueue.findItem(ii) != -1);
-				ctrlQueue.deleteItem(ii);
+				dcassert(ctrlQueue.findItem(ii->getText(COLUMN_TARGET)) != -1);
+				ctrlQueue.deleteItem(ii->getText(COLUMN_TARGET));
 			}
 
 			if(!ii->isSet(QueueItem::FLAG_USER_LIST)) {
