@@ -68,7 +68,6 @@ public:
 
 	StringPairList getDirectories() const { RLock<> l(cs); return virtualMap; }
 
-	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
 	MemoryInputStream* getTree(const string& aFile);
 
 	AdcCommand getFileInfo(const string& aFile) throw(ShareException);
@@ -103,7 +102,6 @@ public:
 	}
 
 	GETSET(u_int32_t, hits, Hits);
-	GETSET(string, listFile, ListFile);
 	GETSET(string, bzXmlFile, BZXmlFile);
 
 	bool loadXmlList();

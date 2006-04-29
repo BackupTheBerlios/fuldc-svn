@@ -60,6 +60,7 @@ public:
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
+		NOTIFY_HANDLER(IDC_USERS, NM_CUSTOMDRAW, onCustomDraw)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
@@ -115,6 +116,34 @@ public:
 	LRESULT onShowHubLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>(pnmh);
+
+		switch(plvcd->nmcd.dwDrawStage) {
+			case CDDS_PREPAINT:
+				return CDRF_NOTIFYITEMDRAW;
+			case CDDS_ITEMPREPAINT:
+				return CDRF_NOTIFYSUBITEMDRAW;
+			case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
+				if(plvcd->iSubItem == 0) { // det är bara första kolumnen som är intressant för nicket
+					UserInfo* ui = reinterpret_cast<UserInfo*>(plvcd->nmcd.lItemlParam);
+					if(ui->getUser()->getNick().find("@") != string::npos) { //kolla att användaren är op nånstans
+																			 // opar har ett @ i nicket så enklast 
+																			 //att söka efter det
+						plvcd->clrText = RGB(255, 128, 255); //ändra till nån färg du tycker är fin
+						//använd den här raden om du vill ha en bakgrundsfärg också
+						//plvcd->clrTextBk = RGB(255, 128, 255);
+					}
+				} else {
+					plvcd->clrText = SETTING(TEXT_COLOR);
+				}
+			default:
+				return CDRF_DODEFAULT;
+		}
+
+		return CDRF_DODEFAULT;
+	}
 	
 	
 	
@@ -317,6 +346,7 @@ private:
 		tabList.push_back(_T("/getlist"));
 		tabList.push_back(_T("/grant"));
 		tabList.push_back(_T("/help"));
+		tabList.push_back(_T("/history"));
 		tabList.push_back(_T("/join"));
 		tabList.push_back(_T("/lastlog"));
 		tabList.push_back(_T("/log"));

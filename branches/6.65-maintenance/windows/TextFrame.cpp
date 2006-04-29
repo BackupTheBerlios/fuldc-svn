@@ -58,7 +58,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 
 	if(file.empty()){
-		SetWindowText(CTSTRING(SETTINGS_LASTLOG));
+		SetWindowText(CTSTRING(HISTORY));
 		ctrlPad.SetFont(WinUtil::font);
 		ctrlPad.SetBackgroundColor(WinUtil::bgColor);
 		ctrlPad.SetTextColor(WinUtil::textColor);

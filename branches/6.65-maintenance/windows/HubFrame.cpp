@@ -340,6 +340,8 @@ void HubFrame::onEnter() {
 				}
 			}else if(Util::stricmp(cmd.c_str(), _T("lastlog")) == 0) {
 				TextFrame::openWindow(ctrlClient.LastLog());
+			} else if(Util::stricmp(cmd.c_str(), _T("history")) == 0) {
+				TextFrame::openWindow(ctrlClient.LastLog());
 			}else if(Util::stricmp(cmd.c_str(), _T("me")) == 0) {
 				client->hubMessage(Text::fromT(s));
 #ifdef DEBUG

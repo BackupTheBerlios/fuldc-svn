@@ -627,7 +627,6 @@
 		<String Name="SettingsStMinislotsSize">Minislots file size in KiB</String>
 		<String Name="SettingsStPaths">Separate paths with |</String>
 		<String Name="SettingsSbWebShortcuts">Web Shortcuts</String>
-		<String Name="SettingsSbHighlight">Highlight Settings</String>
 		<String Name="SettingsSbSettings">Settings</String>
 		<String Name="SettingsStMatchType">Match Type</String>
 		<String Name="SettingsBtnUpdate">Update</String>
@@ -643,7 +642,7 @@
 		<String Name="SettingsCaseSensitive">Case Sensitive</String>
 		<String Name="SettingsEntireWord">Entire Word</String>
 		<String Name="SettingsTabColor">Change Tabcolor</String>
-		<String Name="SettingsLastlog">Lastlog</String>
+		<String Name="SettingsLastlog">Add to history</String>
 		<String Name="SettingsDupes">Dupes Background Color</String>
 		<String Name="SettingsDupeDescription">Background color used in file lists and search window to show which files that's already shared</String>
 		<String Name="SettingsNotthBox">Missing TTH Color</String>
@@ -778,5 +777,15 @@
 		<String Name="StatusFiles">Files: </String>
 		<String Name="StatusAvgQueueTime">Avg Time: </String>
 		<String Name="MenuWaitingUsers">Waiting Users	Ctrl+W</String>
+		<String Name="HighlightAdd">Add...</String>
+		<String Name="HighlightChange">Change...</String>
+		<String Name="HighlightDialogTitle">Highlight settings</String>
+		<String Name="HighlightTextStyles">Text styles</String>
+		<String Name="HighlightMatchOptions">Match options</String>
+		<String Name="HighlightActions">Actions</String>
+		<String Name="HighlightTextToMatch">Text to match</String>
+		<String Name="HighlightOk">OK</String>
+		<String Name="HighlightCancel">Cancel</String>
+		<String Name="History">History</String>
 	</Strings>
 </Language>

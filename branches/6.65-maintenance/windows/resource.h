@@ -175,6 +175,8 @@
 #define IDC_BOLD_BOOLEANS               311
 #define IDC_SETTINGS_BOLD_CONTENTS      312
 #define IDC_FILELIST_DIFF               313
+#define IDD_FULHIGHLIGHTPROPERTIES      313
+#define IDD_HIGHLIGHTDIALOG             313
 #define IDC_PRIORITY_PAUSED             314
 #define IDC_PRIORITY_LOWEST             315
 #define IDC_PRIORITY_LOW                316
@@ -566,9 +568,14 @@
 #define IDD_WINDOWSPAGE                 1329
 #define IDC_BUTTON3                     1329
 #define IDC_FILTER_HISTORY              1329
+#define IDC_TEXT_STYLE                  1329
+#define IDC_TEXT_STYLES                 1329
 #define IDC_SET_MINISLOT_SIZE           1330
+#define IDC_MATCH_OPTIONS               1330
 #define IDC_SETTINGS_TEXT_MINISLOT      1331
+#define IDC_ACTIONS                     1331
 #define IDC_SETTINGS_KB2                1332
+#define IDC_TEXT_TO_MATCH               1332
 #define IDC_DIRECT                      1333
 #define IDC_DIRECT_OUT                  1334
 #define IDC_EXTERNAL_IP                 1335
@@ -656,9 +663,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        313
+#define _APS_NEXT_RESOURCE_VALUE        314
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1329
+#define _APS_NEXT_CONTROL_VALUE         1333
 #define _APS_NEXT_SYMED_VALUE           137
 #endif
 #endif

@@ -53,7 +53,7 @@ UploadManager::~UploadManager() throw() {
 	}
 }
 
-bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes, bool listRecursive) {
+bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes) {
 	if(aSource->getState() != UserConnection::STATE_GET) {
 		dcdebug("UM:prepFile Wrong state, ignoring\n");
 		return false;
@@ -121,20 +121,6 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			is = mis;
 			leaves = true;
 			free = true;
-		} else if(aType == "list") {
-			// Partial file list
-			MemoryInputStream* mis = ShareManager::getInstance()->generatePartialList(aFile, listRecursive);
-			if(mis == NULL) {
-				aSource->fileNotAvail();
-				return false;
-			}
-			// Some old dc++ clients err here...
-			aBytes = -1;
-			size = mis->getSize();
-			aStartPos = 0;
-			is = mis;
-			free = true;
-			partList = true;
 		} else {
 			aSource->fileNotAvail();
 			return false;
@@ -394,7 +380,7 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 	const string& type = c.getParam(0);
 	string tmp;
 
-	if(prepareFile(aSource, type, fname, aStartPos, aBytes, c.hasFlag("RE", 4))) {
+	if(prepareFile(aSource, type, fname, aStartPos, aBytes)) {
 		Upload* u = aSource->getUpload();
 		dcassert(u != NULL);
 		if(aBytes == -1)

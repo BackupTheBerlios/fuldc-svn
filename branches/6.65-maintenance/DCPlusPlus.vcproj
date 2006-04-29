@@ -435,6 +435,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\FulHighlightDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\FulHighlightPage.cpp"
 				>
 			</File>
@@ -705,6 +709,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\FulEditCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\FulHighlightDialog.h"
 				>
 			</File>
 			<File

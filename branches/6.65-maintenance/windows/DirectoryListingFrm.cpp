@@ -1166,7 +1166,7 @@ LRESULT DirectoryListingFrame::onCustomDrawTree(int /*idCtrl*/, LPNMHDR pnmh, BO
 	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
 		return CDRF_NOTIFYITEMDRAW;
 
-	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
+	if( (CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage) && ((plvcd->nmcd.uItemState & CDIS_SELECTED) == 0)) {
 		DirectoryListing::Directory* dir = reinterpret_cast<DirectoryListing::Directory*>(plvcd->nmcd.lItemlParam);
 
 		if(!mylist) {
