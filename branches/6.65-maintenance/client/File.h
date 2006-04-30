@@ -210,7 +210,6 @@ public:
 
 	static bool ensureDirectory(const string& aFile) throw (FileException) {
 		int result;
-		// Skip the first dir...
 		tstring file;
 		Text::toT(aFile, file);
 		wstring::size_type end = file.find_last_of(L"\\/");
@@ -222,7 +221,7 @@ public:
 			return true;
 		else if(result == ERROR_ALREADY_EXISTS)
 			return false;
-		else //we can't recover from these gracefully so throw.
+		else //we can't recover from these gracefully.
 			throw FileException(Util::translateError(result));
 	}
 

@@ -53,7 +53,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling Help File"
-						CommandLine="compile.cmd"
+						CommandLine="compile.cmd&#x0D;&#x0A;"
 						AdditionalDependencies="$(ProjectDir)changelog.html;$(ProjectDir)index.hhk;$(ProjectDir)toc.hhc;..\windows\resource.h"
 						Outputs="$(SolutionDir)app\DCPlusPlus.chm"
 					/>
@@ -106,6 +106,10 @@
 			</File>
 			<File
 				RelativePath=".\dev_createpatch.html"
+				>
+			</File>
+			<File
+				RelativePath=".\external_sfv.html"
 				>
 			</File>
 			<File

@@ -29,5 +29,18 @@
 	        <dt>OnDirCreated</dt>
 	        <dd>%[dir] - the full path of the directory being created.</dd>
 	    </dl>
+	    <h2>Return values</h2>
+	    <div style="margin-left: 40px;">
+	        <p>This is how fulDC handles the return values of the sfv tool used, read the manual for
+	        your tool to find out if it's compatible with fulDC.</p>
+	        <dl>
+	            <dt>OnDirCreated</dt>
+	            <dd>OnDirCreated use the return value to signal if the folder should be downloaded. 0 means
+	            that the folder is good to go. Anything but 0 means that the folder should not be downloaded
+	            and it's not added to the download queue.</dd>
+	            <dt>OnFileComplete</dt>
+	            <dd>Return value is ignored</dd>
+	        </dl>
+	    </div>
 	</body>
 </html>

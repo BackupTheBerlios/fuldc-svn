@@ -791,5 +791,6 @@ enum Strings { // @DontAdd
 	HIGHLIGHT_OK, // "OK"
 	HIGHLIGHT_CANCEL, // "Cancel"
 	HISTORY, // "History"
+	DUPE_ERROR, // "An external sfv tool stopped the download of this file"
 	LAST // @DontAdd
 };

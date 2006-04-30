@@ -438,7 +438,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 	}
 
 	string target = checkTarget(aTarget, aSize, aFlags);
-
+ 
 	if(File::ensureDirectory(target)) {
 		StringPair sp = SettingsManager::getInstance()->getFileEvent(SettingsManager::ON_DIR_CREATED);
 		if(sp.first.length() > 0) {
@@ -456,6 +456,39 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 			_tcscpy(cmdBuf, cmd.c_str());
 
 			if(::CreateProcess(cmdBuf, cmdLineBuf, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+				//wait for the process to finish executing
+				if(WAIT_OBJECT_0 == WaitForSingleObject(pi.hProcess, INFINITE)) {
+					DWORD code = 0;
+					//retrieve the error code to check if we should stop this download.
+					if(0 != GetExitCodeProcess(pi.hProcess, &code)) {
+						if(code != 0) { //assume 0 is the only valid return code, everything else is an error
+							string::size_type end = target.find_last_of("\\/");
+							if(end != string::npos) {
+								tstring tmp = Text::toT(target.substr(0, end));
+								RemoveDirectory(tmp.c_str());
+
+								//the directory we removed might be a sub directory of
+								//the real one, check to see if that's the case.
+								end = tmp.find_last_of(_T("\\/"));
+								if(end != string::npos) {
+									tstring dir = tmp.substr(end+1);
+									if( Util::strnicmp(dir, _T("sample"), 6) == 0 ||
+										Util::strnicmp(dir, _T("subs"), 4) == 0 ||
+										Util::strnicmp(dir, _T("cover"), 5) == 0 ||
+										Util::strnicmp(dir, _T("cd"), 2) == 0) {
+											RemoveDirectory(tmp.substr(0, end).c_str());
+									}
+								}
+								
+								::CloseHandle(pi.hThread);
+								::CloseHandle(pi.hProcess);
+
+								throw QueueException(STRING(DUPE_ERROR));
+							}
+						}
+					}
+				}
+				
 				::CloseHandle(pi.hThread);
 				::CloseHandle(pi.hProcess);
 			}

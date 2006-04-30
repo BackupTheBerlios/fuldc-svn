@@ -788,6 +788,7 @@ string ResourceManager::strings[] = {
 "OK", 
 "Cancel", 
 "History", 
+"An external sfv tool stopped the download of this file", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1576,4 +1577,5 @@ string ResourceManager::names[] = {
 "HighlightOk", 
 "HighlightCancel", 
 "History", 
+"DupeError", 
 };

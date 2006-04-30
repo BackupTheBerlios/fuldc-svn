@@ -787,5 +787,6 @@
 		<String Name="HighlightOk">OK</String>
 		<String Name="HighlightCancel">Cancel</String>
 		<String Name="History">History</String>
+		<String Name="DupeError">An external sfv tool stopped the download of this file</String>
 	</Strings>
 </Language>
