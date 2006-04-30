@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ const string& QueueItem::getTempTarget() {
 				sm["targetdrive"] = target.substr(0, 3);
 			else
 				sm["targetdrive"] = Util::getConfigPath().substr(0, 3);
-			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
+			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm, true) + getTempName(getTargetFileName(), getTTH()));
 #else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
 #endif //_WIN32
@@ -446,7 +446,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 			PROCESS_INFORMATION pi = { 0 };
 			StringMap params;
 			params["dir"] = target;
-			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params));
+			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params, true));
 			wstring cmd = Text::toT(sp.first);
 
 			AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);

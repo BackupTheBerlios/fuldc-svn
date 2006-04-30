@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,6 +121,24 @@ string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
 	HashFileIter i = tthIndex.find(&v);
 	if(i != tthIndex.end()) {
 		return i->second->getADCPath();
+	} else {
+		throw ShareException("File Not Available");
+	}
+}
+
+string ShareManager::getPhysicalPath(TTHValue& tth) {
+	HashFileIter i = tthIndex.find(&tth);
+	if(i != tthIndex.end()) {
+		string tmp = i->second->getFullName();
+		string::size_type end = tmp.find("\\");
+		if(end == string::npos) {
+			throw ShareException("File Not Available");
+		}
+		StringPairIter i = lookupVirtual(tmp.substr(0, end));
+		if(i == virtualMap.end()) {
+			throw ShareException("File Not Available");
+		}
+		return i->second + tmp.substr(end+1);
 	} else {
 		throw ShareException("File Not Available");
 	}

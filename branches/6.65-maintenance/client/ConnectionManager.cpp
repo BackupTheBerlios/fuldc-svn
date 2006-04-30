@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -418,7 +418,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 				StringMap params;
 				params["ip"] = aSource->getRemoteIp();
 				params["hub"] = aSource->getUser()->getClientAddressPort();
-				string tmp = Util::formatParams(STRING(DROP_STUPID_CONNECTION_LOG), params);
+				string tmp = Util::formatParams(STRING(DROP_STUPID_CONNECTION_LOG), params, false);
 
 				LogManager::getInstance()->message(tmp);
 				putConnection(aSource);
@@ -433,7 +433,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 				params["nick"] = aNick;
 				params["ip"] = aSource->getRemoteIp();
 				params["hub"] = aSource->getUser()->getClientAddressPort();
-				string tmp = Util::formatParams(STRING(DROP_FAKE_NICK_CONNECTION_LOG), params);
+				string tmp = Util::formatParams(STRING(DROP_FAKE_NICK_CONNECTION_LOG), params, false);
 								
 				LogManager::getInstance()->message(tmp);
 
@@ -698,8 +698,9 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 		} else if(*i == UserConnection::FEATURE_TTHL) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHL);
 		} else if(*i == UserConnection::FEATURE_TTHF) {
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF); 
-			conn->getUser()->setFlag(User::TTH_GET);
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF);
+			if(conn->getUser())
+				conn->getUser()->setFlag(User::TTH_GET);
 		}
 	}
 }

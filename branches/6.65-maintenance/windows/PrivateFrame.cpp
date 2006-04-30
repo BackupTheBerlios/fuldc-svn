@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -458,7 +458,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 	user->getParams(ucParams);
 	user->clientEscapeParams(ucParams);
 
-	user->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
+	user->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams, false));
 	return;
 };
 
@@ -616,7 +616,7 @@ void PrivateFrame::readLog() {
 	params["mycid"] = user->getClientCID().toBase32();	
 	params["cid"] = user->getCID().toBase32();	
 	params["hubaddr"] = user->getClientAddressPort();	
-	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params));
+	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true));
 
 	try {
 		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {

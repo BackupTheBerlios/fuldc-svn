@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,7 +163,7 @@ int DownloadManager::FileMover::run() {
 				PROCESS_INFORMATION pi = { 0 };
 				StringMap params;
 				params["file"] = next.second;
-				wstring cmdLine = Text::toT(Util::formatParams(sp.second, params));
+				wstring cmdLine = Text::toT(Util::formatParams(sp.second, params, false));
 				wstring cmd = Text::toT(sp.first);
 
 				AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);
@@ -323,7 +323,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		StringMap params;
 		params["user"] = aConn->getUser()->getNick();
 		params["hub"] = aConn->getUser()->getClientAddressPort();
-		string tmp = Util::formatParams(STRING(OLD_CLIENT), params);
+		string tmp = Util::formatParams(STRING(OLD_CLIENT), params, false);
 		LogManager::getInstance()->message(tmp);
 		
 		removeDownload(d);
@@ -819,7 +819,7 @@ void DownloadManager::moveFile(const string& source, const string& target) {
 			PROCESS_INFORMATION pi = { 0 };
 			StringMap params;
 			params["file"] = target;
-			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params));
+			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params, false));
 			wstring cmd = Text::toT(sp.first);
 
 			AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);

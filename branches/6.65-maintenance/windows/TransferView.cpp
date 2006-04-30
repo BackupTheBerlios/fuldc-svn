@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,7 +209,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		itemI->user->getParams(tmp);
 		itemI->user->clientEscapeParams(tmp);
-		itemI->user->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+		itemI->user->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false));
 	}
 	return;
 };

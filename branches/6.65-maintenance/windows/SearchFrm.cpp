@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -881,7 +881,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		sr->getUser()->getParams(tmp);
 		sr->getUser()->clientEscapeParams(tmp);
-		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false));
 	}
 	return;
 };

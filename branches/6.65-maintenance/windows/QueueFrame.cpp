@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -619,6 +619,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 					break;
 			}
 			dcassert(j != i.second);
+			delete j->second;
 			directories.erase(j);
 			if(directories.count(ii->getPath()) == 0) {
 				removeDirectory(ii->getPath(), ii->isSet(QueueItem::FLAG_USER_LIST));
@@ -652,6 +653,8 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			if(!showTree || (isCurDir(updated->getPath()) && old != NULL)) {
 				ctrlQueue.updateItem(old);
 			}
+
+			delete updated;
 		} 
 	}
 	if(tasks.size() > 0) {

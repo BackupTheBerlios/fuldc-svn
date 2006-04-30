@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -258,7 +258,7 @@ void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, 
 		sm["user"] = aSource->getUser()->getNick();
 		sm["error"] = aError;
 
-		LogManager::getInstance()->message(Util::formatParams(STRING(UPLOAD_FAILED), sm));
+		LogManager::getInstance()->message(Util::formatParams(STRING(UPLOAD_FAILED), sm, false));
 
 		fire(UploadManagerListener::Failed(), u, aError);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -594,8 +594,15 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 }
 
 HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
-
+	if(TRUE == fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND)) {
+		fileMenu.RemoveMenu(fileMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+	}
+	if(fileMenu.GetMenuItemCount() > 7) {
+		for(int i = 0; i < 3; ++i) {
+			fileMenu.RemoveMenu(fileMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+		}
+	}
+	
 	if (reinterpret_cast<HWND>(wParam) == ctrlList && ctrlList.GetSelectedCount() > 0) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		
@@ -644,9 +651,17 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 				}
 			}
 
+			if(ii->file->getDupe()) {
+				fileMenu.AppendMenu(MF_SEPARATOR);
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
+			}
+
 			if(ii->file->getAdls())	{
+				fileMenu.AppendMenu(MF_SEPARATOR);
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
+
 			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientAddressPort()), dl->getUser()->isClientOp());
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			cleanMenu(fileMenu);
@@ -669,8 +684,16 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
 				}
 			}
+			//don't care about partial dupes since their folders might not be the same so we can't find
+			//them in our folder structure
+			if(ctrlList.GetSelectedCount() == 1 && ii->dir->getDupe() == DirectoryListing::Directory::DUPE) {
+				fileMenu.AppendMenu(MF_SEPARATOR);
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
+			}
 			if(ii->type == ItemInfo::DIRECTORY && ii->type == ItemInfo::DIRECTORY && 
 			   ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
+			    fileMenu.AppendMenu(MF_SEPARATOR);
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
 
@@ -1076,7 +1099,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		User::Ptr tmpPtr = dl->getUser();
 		tmpPtr->getParams(tmp);
 		tmpPtr->clientEscapeParams(tmp);
-		tmpPtr->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+		tmpPtr->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false));
 	}
 }
 
@@ -1209,6 +1232,44 @@ LRESULT DirectoryListingFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
 			break;
 		default: dcassert(0); break;
 	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+
+	try {
+		tstring path;
+		
+		if(ii->type == ItemInfo::FILE) {
+			if(ii->file->getTTH()) {
+				path = Text::toT(ShareManager::getInstance()->getPhysicalPath(*ii->file->getTTH()));
+			}
+		} else {
+			if(ii->dir->getFileCount() > 0) {
+				for(DirectoryListing::File::Iter i = ii->dir->files.begin(); i != ii->dir->files.end(); ++i) {
+					if((*i)->getDupe() && (*i)->getTTH())
+						break;
+				}
+				if(i != ii->dir->files.end()) {
+					path = Text::toT(ShareManager::getInstance()->getPhysicalPath(*((*i)->getTTH())));
+					wstring::size_type end = path.find_last_of(_T("\\"));
+					if(end != wstring::npos) {
+						path = path.substr(0, end);
+					}
+				}
+			}
+		}
+
+		if(wID == IDC_OPEN) {
+			WinUtil::openFile(path);
+		} else {
+			WinUtil::openFolder(path);
+		}
+	} catch(const ShareException& se) {
+		error = Text::toT(se.getError());
+	}
+
 	return 0;
 }
 /**

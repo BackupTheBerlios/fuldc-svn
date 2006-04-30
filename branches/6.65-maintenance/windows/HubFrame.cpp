@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -891,7 +891,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
-		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
+		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams, false));
 	} else {
 		int sel = -1;
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
@@ -899,7 +899,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 			StringMap tmp = ucParams;
 			u->user->getParams(tmp);
 			client->escapeParams(tmp);
-			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false));
 		}
 	}
 	return;
