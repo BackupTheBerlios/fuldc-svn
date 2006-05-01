@@ -1008,6 +1008,12 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 			WinUtil::getContextMenuPos(ctrlResults, pt);
 		}
 
+		if(resultsMenu.GetMenuItemCount() > 21) {
+			for(int i = 0; i < 3; ++i) {
+				resultsMenu.RemoveMenu(resultsMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+			}
+		}
+
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
@@ -1066,6 +1072,12 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_ENABLED);
 		} else {
 			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_GRAYED);
+		}
+
+		if(ctrlResults.GetSelectedCount() == 1 && ctrlResults.getSelectedItem()->isDupe()) {
+			resultsMenu.AppendMenu(MF_SEPARATOR);
+			resultsMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
+			resultsMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
 		}
 		
 		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);
@@ -1235,6 +1247,29 @@ void SearchFrame::SearchInfo::update() {
 		setTTH(Text::toT(sr->getTTH()->toBase32()));
 }
 
+LRESULT SearchFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	SearchInfo* si = ctrlResults.getSelectedItem();
+
+	try {
+		tstring path;
+
+		if(si->sr->getType() == SearchResult::TYPE_FILE) {
+			if(si->sr->getTTH()) {
+				path = Text::toT(ShareManager::getInstance()->getPhysicalPath(*si->sr->getTTH()));
+			}
+		} 
+
+		if(wID == IDC_OPEN) {
+			WinUtil::openFile(path);
+		} else {
+			WinUtil::openFolder(path);
+		}
+	} catch(const ShareException&) {
+		//error = Text::toT(se.getError());
+	}
+
+	return 0;
+}
 /**
  * @file
  * $Id: SearchFrm.cpp,v 1.8 2004/02/14 13:55:25 trem Exp $

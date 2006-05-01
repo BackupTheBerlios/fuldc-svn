@@ -1247,7 +1247,8 @@ LRESULT DirectoryListingFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /
 			}
 		} else {
 			if(ii->dir->getFileCount() > 0) {
-				for(DirectoryListing::File::Iter i = ii->dir->files.begin(); i != ii->dir->files.end(); ++i) {
+				DirectoryListing::File::Iter i = ii->dir->files.begin();
+				for(; i != ii->dir->files.end(); ++i) {
 					if((*i)->getDupe() && (*i)->getTTH())
 						break;
 				}

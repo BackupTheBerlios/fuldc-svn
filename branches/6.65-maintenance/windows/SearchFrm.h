@@ -89,8 +89,10 @@ public:
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_SEARCH_HISTORY, onClearHistory)
 		COMMAND_ID_HANDLER(IDC_FILTER_HISTORY, onClearHistory)
-		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST+2, onCopy)
+		COMMAND_ID_HANDLER(IDC_OPEN, onOpenDupe)
+		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpenDupe)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
+		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY+COLUMN_LAST+2, onCopy)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOADTO, IDC_DOWNLOADTO + IDC_COMMAND_RANGE, onDownloadTo); 
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TO, IDC_DOWNLOAD_WHOLE_TO + IDC_COMMAND_RANGE, onDownloadWholeTo); 
 		CHAIN_COMMANDS(ucBase)
@@ -143,6 +145,7 @@ public:
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClearHistory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onOpenDupe(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);

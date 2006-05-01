@@ -57,7 +57,7 @@
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="true"
-				ForceConformanceInForLoopScope="false"
+				ForceConformanceInForLoopScope="true"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				WarningLevel="4"
