@@ -1049,6 +1049,30 @@ string Util::replace(const string& aString, const string& fStr, const string& rS
 
 	return tmp;
 }
+
+string Util::trim(string aString, string aChars) {
+	if(aString.empty())
+		return aString;
+		
+	size_t length = aString.length()-1;
+	int i = 0;
+
+	while(i < aChars.length())  {
+		if(aString[0] == aChars[i]) {
+			aString.erase(0, 1);
+			i = 0;
+			--length;
+		} else if(aString[length] == aChars[i]) {
+			aString.erase(length, length);
+			i = 0;
+			--length;
+		} else {
+			++i;
+		}
+	}
+	
+	return aString;
+}
 /**
  * @file
  * $Id: Util.cpp,v 1.4 2004/02/14 13:26:28 trem Exp $

@@ -79,15 +79,15 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 			MessageBox(CTSTRING(INCOMPLETE_FAV_HUB), _T(""), MB_ICONWARNING | MB_OK);
 			return 0;
 		}
-		entry->setServer(Text::fromT(buf));
+		entry->setServer(Util::trim(Text::fromT(buf)));
 		GetDlgItemText(IDC_HUBNAME, buf, 256);
 		entry->setName(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBDESCR, buf, 256);
 		entry->setDescription(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBNICK, buf, 256);
-		entry->setNick(Text::fromT(buf));
+		entry->setNick(Util::trim(Text::fromT(buf)));
 		GetDlgItemText(IDC_HUBPASS, buf, 256);
-		entry->setPassword(Text::fromT(buf));
+		entry->setPassword(Util::trim(Text::fromT(buf)));
 		GetDlgItemText(IDC_HUBUSERDESCR, buf, 256);
 		entry->setUserDescription(Text::fromT(buf));
 		entry->setStripIsp(IsDlgButtonChecked(IDC_STRIPISP) == BST_CHECKED);

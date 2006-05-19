@@ -516,6 +516,10 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 		if(size == 0) {
 			ok = true;
 			break;
+		} else if(size < 0) {
+			::CloseHandle(over.hEvent);
+			::CloseHandle(h);
+			throw HashException(STRING(FILE_SIZE_MISMATCH));
 		}
 
 		if (!res) { 
@@ -581,7 +585,9 @@ int HashManager::Hasher::run() {
 
 		if(!fname.empty()) {
 			int64_t size = File::getSize(fname);
-			int64_t sizeLeft = size;
+			//re-initalize currentSize here to avoid size differences if the file's changed
+			//since it's been added to the hash queue
+			int64_t sizeLeft = currentSize = size;
 #ifdef _WIN32
 			if(buf == NULL) {
 				virtualBuf = true;

@@ -298,14 +298,12 @@ private:
 			target = rhs.target;
 			tth = rhs.tth;
 			type = rhs.type;
-			users = rhs.users;
 
 			return *this;
 		}
 		
 		GETSET(tstring, target, Target);
 		GETSET(tstring, path, Path);
-		GETSET(tstring, users, Users);
 		GETSET(int, online, Online);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);

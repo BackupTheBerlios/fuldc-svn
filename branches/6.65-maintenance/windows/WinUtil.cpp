@@ -808,6 +808,7 @@ void WinUtil::openLink(const tstring& url) {
 		x = _T("http");
 	}
 	x += _T("\\shell\\open\\command");
+
 	if(key.Open(HKEY_CLASSES_ROOT, x.c_str(), KEY_READ) == ERROR_SUCCESS) {
 		if(key.QueryStringValue(NULL, regbuf, &len) == ERROR_SUCCESS) {
 			/*

@@ -792,5 +792,6 @@ enum Strings { // @DontAdd
 	HIGHLIGHT_CANCEL, // "Cancel"
 	HISTORY, // "History"
 	DUPE_ERROR, // "An external sfv tool stopped the download of this file"
+	FILE_SIZE_MISMATCH, // "File size has changed, refresh to add it again."
 	LAST // @DontAdd
 };

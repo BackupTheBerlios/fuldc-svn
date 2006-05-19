@@ -35,6 +35,7 @@ separator(aSeparator), mode(MODE_LINE),
 dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false), filterIn(NULL)
 {
 	sockets++;
+	sock = new Socket;
 }
 
 size_t BufferedSocket::sockets = 0;
@@ -71,11 +72,11 @@ void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
 }
 
 void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
-	dcassert(!sock);
 	
 	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
 	secure; // avoid warning
-	sock = new Socket;
+	if(!sock)
+		sock = new Socket;
 
 	sock->accept(srv);
 	if(SETTING(SOCKET_IN_BUFFER) > 0)
@@ -100,11 +101,11 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 }
 
 void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
-	dcassert(!sock);
 
 	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
 	secure; // avoid warning
-	sock = new Socket;
+	if(!sock)
+		sock = new Socket;
 
 	sock->create();
 	if(SETTING(SOCKET_IN_BUFFER) >= 1024)
@@ -112,6 +113,8 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
 		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
+
+	sock->bind(0, SETTING(BIND_ADDRESS));
 
 	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
 

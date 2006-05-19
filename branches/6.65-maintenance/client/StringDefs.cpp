@@ -789,6 +789,7 @@ string ResourceManager::strings[] = {
 "Cancel", 
 "History", 
 "An external sfv tool stopped the download of this file", 
+"File size has changed, refresh to add it again.", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1578,4 +1579,5 @@ string ResourceManager::names[] = {
 "HighlightCancel", 
 "History", 
 "DupeError", 
+"FileSizeMismatch", 
 };

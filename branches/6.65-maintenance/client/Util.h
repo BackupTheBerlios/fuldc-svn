@@ -304,6 +304,11 @@ public:
 	static tstring replace(const tstring& aString, const tstring& fStr, const tstring& rStr);
 	static string replace(const string& aString, const string& fStr, const string& rStr);
 
+	static string trim(string aString) {
+		return trim(aString, " \t\r\n");
+	}
+	static string trim(string aString, string aChars);
+
 	static string getTimeString() {
 		char buf[64];
 		time_t _tt;

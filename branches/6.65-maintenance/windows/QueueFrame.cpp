@@ -183,7 +183,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 void QueueFrame::QueueItemInfo::update() {
 	if(display != NULL) {
 		display->columns[COLUMN_TARGET] = Util::getFileName(getTarget());
-		display->columns[COLUMN_USERS] = getUsers().empty() ? TSTRING(NO_USERS) : getUsers();
 		display->columns[COLUMN_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Text::toT(Util::formatBytes(getSize()));
 		display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Util::formatExactSize(getSize());
 		display->columns[COLUMN_PATH] = Util::getFilePath(getTarget());
@@ -207,7 +206,7 @@ void QueueFrame::QueueItemInfo::update() {
 
 				tmp += Text::toT(j->getUser()->getFullNick());
 			}
-			setUsers(tmp);
+			display->columns[COLUMN_USERS] = tmp;
 			
 			TCHAR buf[64];
 			if(online > 0) {
@@ -296,20 +295,6 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	bool updateDir = (directories.find(dir) == directories.end());
 	directories.insert(make_pair(dir, ii));
 
-	tstring tmp;
-	int online = 0;
-	for(QueueItemInfo::SourceIter j = ii->getSources().begin(); j != ii->getSources().end(); ++j) {
-		if(tmp.size() > 0)
-			tmp += _T(", ");
-
-		if(j->getUser()->isOnline())
-			online++;
-
-		tmp += Text::toT(j->getUser()->getFullNick());
-	}
-	ii->setUsers(tmp);
-	ii->setOnline(online);
-	
 	if(updateDir) {
 		addDirectory(dir, ii->isSet(QueueItem::FLAG_USER_LIST));
 	} 
