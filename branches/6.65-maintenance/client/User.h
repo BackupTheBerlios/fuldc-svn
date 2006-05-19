@@ -26,7 +26,6 @@
 #include "Util.h"
 #include "Pointer.h"
 #include "CriticalSection.h"
-#include "CID.h"
 
 class Client;
 class FavoriteUser;
@@ -63,8 +62,6 @@ public:
 	typedef List::iterator Iter;
 	typedef HASH_MAP_X(string,Ptr,noCaseStringHash,noCaseStringEq,noCaseStringLess) NickMap;
 	typedef NickMap::iterator NickIter;
-	typedef HASH_MAP_X(CID, Ptr, CID::Hash, equal_to<CID>, less<CID>) CIDMap;
-	typedef CIDMap::iterator CIDIter;
 
 	struct HashFunction {
 		static const size_t bucket_size = 4;
@@ -73,7 +70,6 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); };
 	};
 
-	User(const CID& aCID) : cid(aCID), bytesShared(0), slots(0), udpPort(0), client(NULL), favoriteUser(NULL), userIp(false) { }
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), slots(0), udpPort(0), client(NULL), favoriteUser(NULL), userIp(false) { 
 		string::size_type pos = aNick.find("[");
 		if( pos != string::npos ) {
@@ -97,9 +93,8 @@ public:
 	void setClient(Client* aClient);
 	void connect();
 	const string& getClientNick() const;
-	CID getClientCID() const;
 	const string& getClientName() const;
-	string getClientAddressPort() const;
+	string getClientUrl() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
 	bool isClientOp() const;
@@ -145,7 +140,6 @@ public:
 	GETSET(string, lastHubAddress, LastHubAddress);
 	GETSET(string, lastHubName, LastHubName);
 	GETSET(string, ip, Ip);
-	GETSET(CID, cid, CID);
 	GETSET(int64_t, bytesShared, BytesShared);
 	GETSET(int, slots, Slots);
 	GETSET(short, udpPort, UDPPort);
@@ -160,30 +154,6 @@ private:
 
 	Client* client;
 	FavoriteUser* favoriteUser;
-};
-
-/** One of possibly many identities of a user, mainly for UI purposes */
-class Identity : public Flags {
-public:
-	Identity(const User::Ptr& ptr) : user(ptr) { }
-	Identity(const Identity& rhs) : user(rhs.user), hubURL(rhs.hubURL), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubURL = rhs.hubURL; info = rhs.info; }
-
-	const string& getNick() { return get("NI"); }
-	const string& getDescription() { return get("DE"); }
-
-	const string& get(const char* name) {
-		InfIter i = info.find(*(short*)name);
-		return i == info.end() ? Util::emptyString : i->second;
-	}
-
-	GETSET(User::Ptr, user, User);
-	GETSET(string, hubURL, HubURL);
-private:
-	typedef map<short, string> InfMap;
-	typedef InfMap::iterator InfIter;
-
-	InfMap info;
 };
 
 #endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)

@@ -50,15 +50,13 @@ public:
 	enum {
 		FLAG_USER_LIST = 0x01,
 		FLAG_RESUME = 0x02,
-		FLAG_ROLLBACK = 0x04,
-		FLAG_ZDOWNLOAD = 0x08,
-		FLAG_CALC_CRC32 = 0x10,
-		FLAG_CRC32_OK = 0x20,
-		FLAG_ANTI_FRAG = 0x40,
-		FLAG_TREE_DOWNLOAD = 0x80,
-		FLAG_TREE_TRIED = 0x100,
-		FLAG_PARTIAL_LIST = 0x200,
-		FLAG_TTH_CHECK = 0x400
+		FLAG_ZDOWNLOAD = 0x04,
+		FLAG_CALC_CRC32 = 0x08,
+		FLAG_CRC32_OK = 0x10,
+		FLAG_ANTI_FRAG = 0x20,
+		FLAG_TREE_DOWNLOAD = 0x40,
+		FLAG_TREE_TRIED = 0x80,
+		FLAG_TTH_CHECK = 0x100
 	};
 
 	Download() throw();
@@ -89,7 +87,6 @@ public:
 
 	/** @internal */
 	TigerTree& getTigerTree() { return tt; }
-	string& getPFS() { return pfs; }
 
 	int64_t getTotalSecondsLeft();
 
@@ -111,7 +108,6 @@ private:
 	Download& operator=(const Download&);
 
 	TigerTree tt;
-	string pfs;
 };
 
 
@@ -266,7 +262,6 @@ private:
 	Download::List downloads;
 	UserConnection::List idlers;
 
-	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn);
 	void removeDownload(Download* aDown);
 	void fileNotAvailable(UserConnection* aSource);
@@ -298,6 +293,8 @@ private:
 	void checkDownloads(UserConnection* aConn);
 	void handleEndData(UserConnection* aSource);
 	
+	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
+	
 	// UserConnectionListener
 	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
@@ -307,9 +304,7 @@ private:
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
-	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 };

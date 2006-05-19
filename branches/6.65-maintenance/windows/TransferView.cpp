@@ -149,7 +149,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			itemI = ctrlTransfers.getItemData(i);
 			bCustomMenu = true;
 
-			prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
+			prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientUrl()), itemI->user->isClientOp());
 			//userMenu.AppendMenu(MF_SEPARATOR);
 		}
 
@@ -203,7 +203,6 @@ void TransferView::runUserCommand(UserCommand& uc) {
 			continue;
 
 		ucParams["mynick"] = itemI->user->getClientNick();
-		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
 		ucParams["file"] = Text::fromT(itemI->getText(COLUMN_PATH)) + Text::fromT(itemI->getText(COLUMN_FILE));
 
 		StringMap tmp = ucParams;
@@ -574,18 +573,12 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 
 		tstring statusString;
 
-		if(d->getUserConnection()->isSecure()) {
-			statusString += _T("[S]");
-		}
 		if(d->isSet(Download::FLAG_TTH_CHECK)) {
 			statusString += _T("[T]");
 		}
 		if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
 			statusString += _T("[Z]");
 		} 
-		if(d->isSet(Download::FLAG_ROLLBACK)) {
-			statusString += _T("[R]");
-		}
 		if(!statusString.empty()) {
 			statusString += _T(" ");
 		}
@@ -656,9 +649,6 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 
 		tstring statusString;
 		
-		if(u->getUserConnection()->isSecure()) {
-			statusString += _T("[S]");
-		}
 		if(u->isSet(Upload::FLAG_ZUPLOAD)) {
 			statusString += _T("[Z]");
 		}

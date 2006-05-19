@@ -793,5 +793,6 @@ enum Strings { // @DontAdd
 	HISTORY, // "History"
 	DUPE_ERROR, // "An external sfv tool stopped the download of this file"
 	FILE_SIZE_MISMATCH, // "File size has changed, refresh to add it again."
+	NO_XML_BZLIST_SUPPORT, // "User does not support xml file lists."
 	LAST // @DontAdd
 };

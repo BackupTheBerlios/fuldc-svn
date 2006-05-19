@@ -73,7 +73,7 @@ void Client::connect() {
 	try {
 		socket = BufferedSocket::getSocket(separator);
 		socket->addListener(this);
-		socket->connect(address, port, secure, true);
+		socket->connect(address, port, true);
 	} catch(const Exception& e) {
 		if(socket) {
 			BufferedSocket::putSocket(socket);

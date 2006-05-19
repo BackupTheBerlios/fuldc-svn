@@ -409,10 +409,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\client\CID.h"
-				>
-			</File>
-			<File
 				RelativePath=".\client\Client.h"
 				>
 			</File>

@@ -116,7 +116,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		disconnect();
 		StringMap params;
 		params["user"] = getUser()->getNick();
-		params["hub"] = getUser()->getClientAddressPort();
+		params["hub"] = getUser()->getClientUrl();
 		params["ip"] = getRemoteIp();
 		string tmp = Util::formatParams(STRING(OLD_CLIENT), params, false);
 		LogManager::getInstance()->message(tmp);
@@ -125,7 +125,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		disconnect();
 		StringMap params;
 		params["user"] = getUser()->getNick();
-		params["hub"] = getUser()->getClientAddressPort();
+		params["hub"] = getUser()->getClientUrl();
 		params["ip"] = getRemoteIp();
 		string tmp = Util::formatParams(STRING(OLD_CLIENT), params, false);
 		LogManager::getInstance()->message(tmp);
@@ -173,24 +173,14 @@ void UserConnection::connect(const string& aServer, short aPort) throw(SocketExc
 
 	socket = BufferedSocket::getSocket(0);
 	socket->addListener(this);
-	socket->connect(aServer, aPort, secure, true);
+	socket->connect(aServer, aPort, true);
 }
 
 void UserConnection::accept(const Socket& aServer) throw(SocketException, ThreadException) {
 	dcassert(!socket);
 	socket = BufferedSocket::getSocket(0);
 	socket->addListener(this);
-	socket->accept(aServer, secure);
-}
-
-void UserConnection::inf(bool withToken) { 
-	/*AdcCommand c(AdcCommand::CMD_INF);
-	c.addParam("CI", ClientManager::getInstance()->getMe()->getCID().toBase32());
-	if(withToken) {
-		c.addParam("TO", getToken());
-	}
-	send(c);
-	*/
+	socket->accept(aServer);
 }
 
 void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) throw() {

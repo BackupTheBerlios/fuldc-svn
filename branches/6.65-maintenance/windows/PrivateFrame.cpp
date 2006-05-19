@@ -411,10 +411,8 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 		params["message"] = Text::fromT(aLine);
 		params["user"] = user->getNick();
 		params["hub"] = user->getClientName();
-		params["hubaddr"] = user->getClientAddressPort();
+		params["hubaddr"] = user->getClientUrl();
 		params["mynick"] = user->getClientNick(); 
-		params["mycid"] = user->getClientCID().toBase32(); 
-		params["cid"] = user->getCID().toBase32(); 
 		LOG(LogManager::PM, params);
 	}
 
@@ -429,7 +427,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientUrl()), user->isClientOp());
 	
 	if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
 		tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
@@ -453,7 +451,6 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 		return;
 
 	ucParams["mynick"] = user->getClientNick();
-	ucParams["mycid"] = user->getClientCID().toBase32();
 
 	user->getParams(ucParams);
 	user->clientEscapeParams(ucParams);
@@ -568,10 +565,8 @@ LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	StringMap params;
 	params["user"] = user->getNick();
 	params["hub"] = user->getClientName();
-	params["hubaddr"] = user->getClientAddressPort();
+	params["hubaddr"] = user->getClientUrl();
 	params["mynick"] = user->getClientNick(); 
-	params["mycid"] = user->getClientCID().toBase32(); 
-	params["cid"] = user->getCID().toBase32(); 
 	
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())
@@ -591,7 +586,7 @@ LRESULT PrivateFrame::onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT PrivateFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+	QueueManager::getInstance()->removeUserFromQueue(user, QueueItem::Source::FLAG_REMOVED);
 
 	return 0;
 }
@@ -613,9 +608,7 @@ void PrivateFrame::readLog() {
 	params["user"] = user->getNick();	
 	params["hub"] = user->getClientName();
 	params["mynick"] = user->getClientNick();	
-	params["mycid"] = user->getClientCID().toBase32();	
-	params["cid"] = user->getCID().toBase32();	
-	params["hubaddr"] = user->getClientAddressPort();	
+	params["hubaddr"] = user->getClientUrl();	
 	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true));
 
 	try {

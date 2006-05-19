@@ -662,7 +662,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
 
-			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientAddressPort()), dl->getUser()->isClientOp());
+			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientUrl()), dl->getUser()->isClientOp());
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			cleanMenu(fileMenu);
 		} else {
@@ -697,7 +697,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
 
-			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientAddressPort()), dl->getUser()->isClientOp());
+			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientUrl()), dl->getUser()->isClientOp());
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			cleanMenu(fileMenu);
 		}
@@ -1075,7 +1075,6 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		if(!dl->getUser()->isOnline())
 			return;
 		ucParams["mynick"] = dl->getUser()->getClientNick();
-		ucParams["mycid"] = dl->getUser()->getClientCID().toBase32();
 		ucParams["tth"] = "NONE";
 		if(ii->type == ItemInfo::FILE) {
 			ucParams["type"] = "File";

@@ -58,7 +58,7 @@ void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
 }
 void UserInfoBase::removeAll() {
-	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+	QueueManager::getInstance()->removeUserFromQueue(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 void UserInfoBase::ignore() {
@@ -72,10 +72,8 @@ void UserInfoBase::showLog() {
 	StringMap params;
 	params["user"] = user->getNick();
 	params["hub"] = user->getClientName();
-	params["hubaddr"] = user->getClientAddressPort();
+	params["hubaddr"] = user->getClientUrl();
 	params["mynick"] = user->getClientNick(); 
-	params["mycid"] = user->getClientCID().toBase32(); 
-	params["cid"] = user->getCID().toBase32(); 
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())

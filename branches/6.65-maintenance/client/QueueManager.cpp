@@ -1052,7 +1052,7 @@ void QueueManager::remove(const string& aTarget) throw() {
 	}
 }
 
-void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn /* = true */) throw() {
+void QueueManager::removeUserFromFile(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn /* = true */) throw() {
 	string x;
 	bool removeCompletely = false;
 	{
@@ -1108,7 +1108,7 @@ endCheck:
 	}
 }
 
-void QueueManager::removeSources(User::Ptr aUser, int reason) throw() {
+void QueueManager::removeUserFromQueue(User::Ptr aUser, int reason) throw() {
 	string x;
 	string removeRunning;
 	{

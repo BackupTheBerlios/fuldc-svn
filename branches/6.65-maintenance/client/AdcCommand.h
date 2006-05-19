@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "CID.h"
 #include "SettingsManager.h"
 #include "Exception.h"
 
@@ -95,8 +94,7 @@ public:
 	CMD(NTD, 'N','T','D');
 #undef CMD
 
-	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), type(aType) { }
-	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
+	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), type(aType) { }
 
 	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
 		parse(aLine, nmdc);
@@ -149,9 +147,6 @@ public:
 		}
 		return tmp;
 	}
-	const CID& getTo() const { return to; }
-	void setTo(const CID& cid) { to = cid; }
-	const CID& getFrom() const { return from; }
 
 private:
 	StringList parameters;
@@ -160,8 +155,6 @@ private:
 		u_int8_t cmd[4];
 		u_int32_t cmdInt;
 	};
-	CID from;
-	CID to;
 	char type;
 
 };

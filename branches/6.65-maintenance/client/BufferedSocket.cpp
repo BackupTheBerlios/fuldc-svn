@@ -71,10 +71,9 @@ void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
 	}
 }
 
-void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
+void BufferedSocket::accept(const Socket& srv) throw(SocketException, ThreadException) {
 	
 	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
-	secure; // avoid warning
 	if(!sock)
 		sock = new Socket;
 
@@ -100,10 +99,9 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	addTask(ACCEPTED, 0);
 }
 
-void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
+void BufferedSocket::connect(const string& aAddress, short aPort, bool proxy) throw(SocketException, ThreadException) {
 
 	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
-	secure; // avoid warning
 	if(!sock)
 		sock = new Socket;
 

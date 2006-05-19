@@ -558,8 +558,8 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 		size = -1;
 	}
 	if(oneHub && hub.empty()) {
-		hub = Text::toT(si->sr->getUser()->getClientAddressPort());
-	} else if(hub != Text::toT(si->sr->getUser()->getClientAddressPort())) {
+		hub = Text::toT(si->sr->getUser()->getClientUrl());
+	} else if(hub != Text::toT(si->sr->getUser()->getClientUrl())) {
 		oneHub = false;
 		hub.clear();
 	}
@@ -870,7 +870,6 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		if(!sr->getUser()->isOnline())
 			return;
 		ucParams["mynick"] = sr->getUser()->getClientNick();
-		ucParams["mycid"] = sr->getUser()->getClientCID().toBase32();
 		ucParams["file"] = sr->getFile();
 		ucParams["filesize"] = Util::toString(sr->getSize());
 		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());

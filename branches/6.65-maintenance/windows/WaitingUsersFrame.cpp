@@ -255,7 +255,7 @@ LRESULT WaitingUsersFrame::onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	User::Ptr user = getSelectedUser();
 	if (user) {
 		try {
-			QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+			QueueManager::getInstance()->removeUserFromQueue(user, QueueItem::Source::FLAG_REMOVED);
 		} catch(const Exception&) { }
 	}
 	return 0;
@@ -283,10 +283,8 @@ LRESULT WaitingUsersFrame::onShowLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		StringMap params;
 		params["user"] = user->getNick();
 		params["hub"] = user->getClientName();
-		params["hubaddr"] = user->getClientAddressPort();
+		params["hubaddr"] = user->getClientUrl();
 		params["mynick"] = user->getClientNick(); 
-		params["mycid"] = user->getClientCID().toBase32(); 
-		params["cid"] = user->getCID().toBase32(); 
 
 		tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 		if(!path.empty())

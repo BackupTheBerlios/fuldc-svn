@@ -887,7 +887,6 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 		return;
 
 	ucParams["mynick"] = client->getNick();
-	ucParams["mycid"] = client->getMe()->getCID().toBase32();
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);

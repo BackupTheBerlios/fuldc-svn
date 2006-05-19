@@ -74,8 +74,6 @@ public:
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void infoUpdated();
 
-	User::Ptr getUser(const CID& cid, bool createUser);
-	User::Ptr getUser(const CID& cid, Client* aClient, bool putOnline = true);
 	User::Ptr getUser(const string& aNick, const string& aHint = Util::emptyString);
 	User::Ptr getUser(const string& aNick, Client* aClient, bool putOnline = true);
 	
@@ -118,15 +116,10 @@ private:
 	typedef UserMap::iterator UserIter;
 	typedef pair<UserIter, UserIter> UserPair;
 
-	typedef HASH_MULTIMAP_X(CID, User::Ptr, CID::Hash, equal_to<CID>, less<CID>) AdcMap;
-	typedef AdcMap::iterator AdcIter;
-	typedef pair<AdcIter, AdcIter> AdcPair;
-
 	Client::List clients;
 	mutable CriticalSection cs;
 	
 	UserMap users;
-	AdcMap adcUsers;
 
 	string cachedIp;
 
@@ -149,7 +142,7 @@ private:
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
 	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
 		int aFileType, const string& aString) throw();
-	virtual void on(AdcSearch, Client* c, const AdcCommand& adc) throw();
+	
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 };

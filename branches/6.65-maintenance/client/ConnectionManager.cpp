@@ -31,7 +31,7 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0), server(0), secureServer(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : port(0), floodCounter(0), server(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
@@ -40,7 +40,6 @@ ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0)
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
 
-	adcFeatures.push_back("+BAS0");
 }
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
@@ -55,7 +54,7 @@ void ConnectionManager::listen() throw(Exception){
 
 	while(true) {
 		try {
-			server = new Server(false, lastPort, SETTING(BIND_ADDRESS));
+			server = new Server(lastPort, SETTING(BIND_ADDRESS));
 			port = lastPort;
 			break;
 		} catch(const Exception&) {
@@ -66,24 +65,6 @@ void ConnectionManager::listen() throw(Exception){
 			lastPort = newPort;
 		}
 	}
-	/* not using ssl(adc), why try to listen?
-
-	lastPort++;
-	firstPort = lastPort;
-
-	while(true) {
-		try {
-			secureServer = new Server(true, lastPort, SETTING(BIND_ADDRESS));
-			securePort = lastPort;
-			break;
-		} catch(const Exception&) {
-			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
-				throw Exception("Could not find a suitable free port");
-			}
-			lastPort = newPort;
-		}
-	}*/
 }
 
 /**
@@ -132,8 +113,8 @@ void ConnectionManager::putCQI(ConnectionQueueItem* cqi) {
 	delete cqi;
 }
 
-UserConnection* ConnectionManager::getConnection(bool aNmdc, bool secure) throw() {
-	UserConnection* uc = new UserConnection(secure);
+UserConnection* ConnectionManager::getConnection(bool aNmdc) throw() {
+	UserConnection* uc = new UserConnection();
 	uc->addListener(this);
 	{
 		Lock l(cs);
@@ -231,7 +212,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	}
 
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
-		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);
+		QueueManager::getInstance()->removeUserFromQueue(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
 }
 
@@ -248,7 +229,7 @@ void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw(
 static const u_int32_t FLOOD_TRIGGER = 20000;
 static const u_int32_t FLOOD_ADD = 2000;
 
-ConnectionManager::Server::Server(bool secure_, short port, const string& ip /* = "0.0.0.0" */) : secure(secure_), die(false) {
+ConnectionManager::Server::Server(short port, const string& ip /* = "0.0.0.0" */) : die(false) {
 	sock.create();
 	sock.bind(port, ip);
 	sock.listen();
@@ -262,7 +243,7 @@ static const u_int32_t POLL_TIMEOUT = 250;
 int ConnectionManager::Server::run() throw() {
 	while(!die) {
 		if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
-			ConnectionManager::getInstance()->accept(sock, secure);
+			ConnectionManager::getInstance()->accept(sock);
 		}
 	}
 	return 0;
@@ -272,7 +253,7 @@ int ConnectionManager::Server::run() throw() {
  * Someone's connecting, accept the connection and wait for identification...
  * It's always the other fellow that starts sending if he made the connection.
  */
-void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
+void ConnectionManager::accept(const Socket& sock) throw() {
 	u_int32_t now = GET_TICK();
 
 	if(now > floodCounter) {
@@ -291,7 +272,7 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 			floodCounter += FLOOD_ADD;
 		}
 	}
-	UserConnection* uc = getConnection(false, secure);
+	UserConnection* uc = getConnection(false);
 	uc->setFlag(UserConnection::FLAG_INCOMING);
 	uc->setState(UserConnection::STATE_SUPNICK);
 	uc->setLastActivity(GET_TICK());
@@ -307,7 +288,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 	if(shuttingDown)
 		return;
 
-	UserConnection* uc = getConnection(true, false);
+	UserConnection* uc = getConnection(true);
 	uc->setNick(aNick);
 	uc->setHubUrl(hubUrl);
 	uc->setState(UserConnection::STATE_CONNECT);
@@ -320,59 +301,12 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 	}
 }
 
-void ConnectionManager::adcConnect(const string& aServer, short aPort, const string& aToken, bool secure) {
-	if(shuttingDown)
-		return;
-	
-	aToken; //avoid warning
-/*
-	UserConnection* uc = getConnection(false, secure);
-	uc->setToken(aToken);
-	uc->setState(UserConnection::STATE_CONNECT);
-	if(aUser.getIdentity().isOp()) {
-		uc->setFlag(UserConnection::FLAG_OP);
-	}
-	try {
-		uc->connect(aUser.getIdentity().getIp(), aPort);
-	} catch(const Exception&) {
-		putConnection(uc);
-		delete uc;
-	}
-	*/
-}
-
-void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand&) throw() {
-	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
-		// Already got this once, ignore...
-		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
-		return;
-	}
-
-	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
-		aSource->sup(adcFeatures);
-		aSource->inf(false);
-	} else {
-		aSource->inf(true);
-	}
-	aSource->setState(UserConnection::STATE_INF);
-}
-
-void ConnectionManager::on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw() {
-
-}
-
-void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() {
-
-}
-
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
 		aSource->myNick(aSource->getNick());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-	} else {
-		aSource->sup(adcFeatures);
-	}
+	} 
 	aSource->setState(UserConnection::STATE_SUPNICK);
 }
 
@@ -417,7 +351,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 				
 				StringMap params;
 				params["ip"] = aSource->getRemoteIp();
-				params["hub"] = aSource->getUser()->getClientAddressPort();
+				params["hub"] = aSource->getUser()->getClientUrl();
 				string tmp = Util::formatParams(STRING(DROP_STUPID_CONNECTION_LOG), params, false);
 
 				LogManager::getInstance()->message(tmp);
@@ -432,7 +366,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
                 StringMap params;
 				params["nick"] = aNick;
 				params["ip"] = aSource->getRemoteIp();
-				params["hub"] = aSource->getUser()->getClientAddressPort();
+				params["hub"] = aSource->getUser()->getClientUrl();
 				string tmp = Util::formatParams(STRING(DROP_FAKE_NICK_CONNECTION_LOG), params, false);
 								
 				LogManager::getInstance()->message(tmp);
@@ -521,7 +455,7 @@ void ConnectionManager::on(UserConnectionListener::Direction, UserConnection* aS
 	aSource->setState(UserConnection::STATE_KEY);
 }
 
-void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) {
+void ConnectionManager::addDownloadConnection(UserConnection* uc) {
 
 	dcassert(uc->isSet(UserConnection::FLAG_DOWNLOAD));
 	bool addConn = false;
@@ -545,11 +479,6 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 
 	if(addConn) {
 		DownloadManager::getInstance()->addConnection(uc);
-	} else if(sendNTD) {
-		uc->ntd();
-		uc->unsetFlag(UserConnection::FLAG_DOWNLOAD);
-		uc->setFlag(UserConnection::FLAG_UPLOAD);
-		addUploadConnection(uc);
 	} else {
 		putConnection(uc);
 	}
@@ -592,34 +521,8 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 	dcassert(aSource->getUser());
 
 	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-		addDownloadConnection(aSource, false);
+		addDownloadConnection(aSource);
 	} else {
-		addUploadConnection(aSource);
-	}
-}
-
-void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCommand& cmd) throw() {
-	if(aSource->getState() != UserConnection::STATE_INF) {
-		// Already got this once, ignore...
-		aSource->sta(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Expecting INF");
-		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
-		return;
-	}
-
-	aSource->setUser(ClientManager::getInstance()->getUser(cmd.getFrom(), false));
-
-	if(!aSource->getUser()) {
-		dcdebug("CM::onINF: User not found");
-		aSource->sta(AdcCommand::SEV_FATAL, AdcCommand::ERROR_GENERIC, "User not found");
-		putConnection(aSource);
-		return;
-	}
-
-	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
-		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
-		addDownloadConnection(aSource, true);
-	} else {
-		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 		addUploadConnection(aSource);
 	}
 }

@@ -69,7 +69,6 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 {
 public:
 	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
-	void adcConnect(const string& aServer, short aPort, const string& aToken, bool secure);
 	
 	void getDownloadConnection(const User::Ptr& aUser);
 
@@ -81,25 +80,22 @@ public:
 	void listen() throw(Exception);
 	void disconnect() throw() {
 		delete server;
-		delete secureServer;
 
-		server = secureServer = 0;
-		port = securePort = 0;
+		server = 0;
+		port = 0;
 	}
 
 	unsigned short getPort() { return port; }
-	unsigned short getSecurePort() { return securePort;	}
 private:
 
 	class Server : public Thread {
 	public:
-		Server(bool secure_, short port, const string& ip = "0.0.0.0");
+		Server(short port, const string& ip = "0.0.0.0");
 		virtual ~Server() { die = true; join(); }
 	private:
 		virtual int run() throw();
 
 		Socket sock;
-		bool secure;
 		bool die;
 	};
 
@@ -107,7 +103,6 @@ private:
 
 	CriticalSection cs;
 	short port;
-	short securePort;
 
 	/** All ConnectionQueueItems */
 	ConnectionQueueItem::List downloads;
@@ -119,12 +114,10 @@ private:
 	User::List checkIdle;
 
 	StringList features;
-	StringList adcFeatures;
 
 	u_int32_t floodCounter;
 
 	Server* server;
-	Server* secureServer;
 
 	bool shuttingDown;
 
@@ -133,16 +126,16 @@ private:
 
 	virtual ~ConnectionManager() throw() { shutdown(); }
 	
-	UserConnection* getConnection(bool aNmdc, bool secure) throw();
+	UserConnection* getConnection(bool aNmdc) throw();
 	void putConnection(UserConnection* aConn);
 
 	void addUploadConnection(UserConnection* uc);
-	void addDownloadConnection(UserConnection* uc, bool sendNTD);
+	void addDownloadConnection(UserConnection* uc);
 
 	ConnectionQueueItem* getCQI(const User::Ptr& aUser, bool download);
 	void putCQI(ConnectionQueueItem* cqi);
 
-	void accept(const Socket& sock, bool secure) throw();
+	void accept(const Socket& sock) throw();
 
 	// UserConnectionListener
 	virtual void on(Connected, UserConnection*) throw();
@@ -152,11 +145,6 @@ private:
 	virtual void on(Direction, UserConnection*, const string&, const string&) throw();
 	virtual void on(MyNick, UserConnection*, const string&) throw();
 	virtual void on(Supports, UserConnection*, const StringList&) throw();
-
-	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();	

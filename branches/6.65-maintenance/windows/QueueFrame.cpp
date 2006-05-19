@@ -901,10 +901,8 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		if(wID == IDC_READD) {
 			// re-add all sources
 			try {
-				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ++s) {
 					QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
-					//reset the iterator since it won't be valid after the call to readd
-					s = ii->getBadSources().begin();
 				} 
 			} catch (const QueueException& e) {
 				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
@@ -913,10 +911,8 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		} else if(wID == IDC_READD_QUEUE) {
 			// re-add all sources
 			try {
-				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ++s) {
 					QueueManager::getInstance()->readdUser(s->getUser());
-					//reset the iterator since it won't be valid after the call to readdUser
-					s = ii->getBadSources().begin();
 				} 
 			} catch (const QueueException& e) {
 				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
@@ -950,13 +946,13 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 		if(wID == IDC_REMOVE_SOURCE) {
-			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
-				QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ++si) {
+				QueueManager::getInstance()->removeUserFromFile(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
 			QueueItemInfo::SourceInfo* si = getSourceInfo(removeMenu, wID);
 			if(si) {
-				QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+				QueueManager::getInstance()->removeUserFromFile(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		}
 	}
@@ -969,13 +965,13 @@ LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 
 		if(wID == IDC_REMOVE_SOURCES) {
-			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
-				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ++si) {
+				QueueManager::getInstance()->removeUserFromQueue(si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
 			QueueItemInfo::SourceInfo* si = getSourceInfo(removeQueueMenu, wID);
 			if(si) {
-				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
+				QueueManager::getInstance()->removeUserFromQueue(si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		}
 	}	

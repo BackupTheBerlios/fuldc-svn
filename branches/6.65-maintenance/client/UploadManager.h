@@ -201,8 +201,6 @@ private:
 	virtual void on(TransmitDone, UserConnection*) throw();
 	
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
 
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes);
 };

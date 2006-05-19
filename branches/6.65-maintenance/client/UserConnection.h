@@ -232,22 +232,12 @@ public:
 	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); }
 	void error(const string& aError) { send("$Error " + aError + '|'); }
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
-	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full"); }
-	void fileNotAvail() { isSet(FLAG_NMDC) ? send("$Error " + FILE_NOT_AVAILABLE + "|") : sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE); }
+	void maxedOut() { send("$MaxedOut|"); }
+	void fileNotAvail() { send("$Error " + FILE_NOT_AVAILABLE + "|"); }
 	void notSupported() { send("$Error " + COMMAND_NOT_SUPPORTED + "|"); }
 
-	// ADC Stuff
-	void sup(const StringList& features) { 
-		AdcCommand c(AdcCommand::CMD_SUP);
-		for(StringIterC i = features.begin(); i != features.end(); ++i)
-			c.addParam(*i);
-		send(c);
-	}
-	void inf(bool withToken);
 	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_GET).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 	void snd(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_SND).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
-	void ntd() { send(AdcCommand(AdcCommand::CMD_NTD)); }
-	void sta(AdcCommand::Severity sev, AdcCommand::Error err, const string& desc) { send(AdcCommand(AdcCommand::CMD_STA).addParam(Util::toString(100 * sev + err)).addParam(desc)); }
 
 	void send(const AdcCommand& c) { send(c.toString(isSet(FLAG_NMDC), isSet(FLAG_SUPPORTS_ADCGET))); }
 
@@ -273,7 +263,6 @@ public:
 	}
 
 	User::Ptr& getUser() { return user; }
-	bool isSecure() const { return secure; }
 
 	string getRemoteIp() const { return socket->getIp(); }
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; }
@@ -281,15 +270,8 @@ public:
 	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; }
 	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; }
 
-	void handle(AdcCommand::SUP t, const AdcCommand& c) { fire(t, this, c); }
-	void handle(AdcCommand::INF t, const AdcCommand& c) { fire(t, this, c); }
 	void handle(AdcCommand::GET t, const AdcCommand& c) { fire(t, this, c); }
 	void handle(AdcCommand::SND t, const AdcCommand& c) { fire(t, this, c);	}
-	void handle(AdcCommand::STA t, const AdcCommand& c) { fire(t, this, c);	}
-	void handle(AdcCommand::NTD t, const AdcCommand& c) { fire(t, this, c);	}
-	void handle(AdcCommand::RES t, const AdcCommand& c) { fire(t, this, c); }
-	void handle(AdcCommand::GFI t, const AdcCommand& c) { fire(t, this, c);	}
-
 	// Ignore any other ADC commands for now
 	template<typename T> void handle(T , const AdcCommand& ) { }
 
@@ -302,7 +284,6 @@ public:
 private:
 	BufferedSocket* socket;
 	User::Ptr user;
-	bool secure;
 	
 	static const string UPLOAD, DOWNLOAD;
 	
@@ -312,8 +293,8 @@ private:
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection(bool secure_) throw() : /*cqi(NULL),*/ state(STATE_UNCONNECTED), lastActivity(0),
-		socket(0), secure(secure_), download(NULL) { 
+	UserConnection() throw() : /*cqi(NULL),*/ state(STATE_UNCONNECTED), lastActivity(0),
+		socket(0), download(NULL) { 
 	}
 
 	virtual ~UserConnection() throw() {

@@ -67,15 +67,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		case ' ': 
 			// New parameter...
 			{
-				if(!fromSet) {
-					from = CID(cur);
-					fromSet = true;
-				} else if(type == TYPE_DIRECT && !toSet) {
-					to = CID(cur);
-					toSet = true;
-				} else {
-					parameters.push_back(cur);
-				}
+				parameters.push_back(cur);
 				cur.clear();
 			}
 			break;
@@ -85,15 +77,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		++i;
 	}
 	if(!cur.empty()) {
-		if(!fromSet) {
-			to = CID(cur);
-			fromSet = true;
-		} else if(type == TYPE_DIRECT && !toSet) {
-			from = CID(cur);
-			toSet = true;
-		} else {
-			parameters.push_back(cur);
-		}
+		parameters.push_back(cur);
 	}
 }
 
@@ -106,16 +90,6 @@ string AdcCommand::toString(bool nmdc /* = false */, bool old /* = false */) con
 	}
 
 	tmp += cmdChar;
-
-	if(!nmdc) {
-		tmp += ' ';
-		tmp += from.toBase32();
-	}
-
-	if(getType() == TYPE_DIRECT) {
-		tmp += ' ';
-		tmp += to.toBase32();
-	}
 
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 		tmp += ' ';

@@ -61,8 +61,6 @@ AdcCommand Download::getCommand(bool zlib, bool tthf) {
 	AdcCommand cmd(AdcCommand::CMD_GET);
 	if(isSet(FLAG_TREE_DOWNLOAD)) {
 		cmd.addParam("tthl");
-	} else if(isSet(FLAG_PARTIAL_LIST)) {
-		cmd.addParam("list");
 	} else {
 		cmd.addParam("file");
 	}
@@ -287,13 +285,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		(d->getTigerTree().getLeaves().size() > 1 || aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL))) {
 			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), start));
 		} else {
-			int rollback = SETTING(ROLLBACK);
-			if(rollback > start) {
-				d->setStartPos(0);
-			} else {
-				d->setStartPos(start - rollback);
-				d->setFlag(Download::FLAG_ROLLBACK);
-			}
+			dcassert(0); //this should never happens since we don't download from non-tth sources
 		}
 		
 	} else {
@@ -322,7 +314,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	} else {
 		StringMap params;
 		params["user"] = aConn->getUser()->getNick();
-		params["hub"] = aConn->getUser()->getClientAddressPort();
+		params["hub"] = aConn->getUser()->getClientUrl();
 		string tmp = Util::formatParams(STRING(OLD_CLIENT), params, false);
 		LogManager::getInstance()->message(tmp);
 		
@@ -330,7 +322,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		string target = d->getTarget();
 		aConn->setDownload(NULL);
 		QueueManager::getInstance()->putDownload(d, false);
-		QueueManager::getInstance()->removeSource(target, aConn->getUser(), QueueItem::Source::FLAG_OLD_CLIENT, false);
+		QueueManager::getInstance()->removeUserFromFile(target, aConn->getUser(), QueueItem::Source::FLAG_OLD_CLIENT, false);
 		removeConnection(aConn);
 	}
 }
@@ -412,8 +404,7 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 	const string& type = cmd.getParam(0);
 	int64_t bytes = Util::toInt64(cmd.getParam(3));
 
-	if(!(type == "file" || (type == "tthl" && aSource->getDownload()->isSet(Download::FLAG_TREE_DOWNLOAD)) ||
-		(type == "list" && aSource->getDownload()->isSet(Download::FLAG_PARTIAL_LIST))) )
+	if(!(type == "file" || (type == "tthl" && aSource->getDownload()->isSet(Download::FLAG_TREE_DOWNLOAD))))
 	{
 		// Uhh??? We didn't ask for this?
 		aSource->disconnect();
@@ -424,50 +415,6 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 		aSource->setDataMode();
 	}
 }
-
-class RollbackException : public FileException {
-public:
-	RollbackException (const string& aError) : FileException(aError) { }
-};
-
-template<bool managed>
-class RollbackOutputStream : public OutputStream {
-public:
-	RollbackOutputStream(File* f, OutputStream* aStream, size_t bytes) : s(aStream), pos(0), bufSize(bytes), buf(new u_int8_t[bytes]) {
-		size_t n = bytes;
-		f->read(buf, n);
-		f->movePos(-((int64_t)bytes));
-	}
-	virtual ~RollbackOutputStream() throw() { delete[] buf; if(managed) delete s; }
-
-	virtual size_t flush() throw(FileException) {
-		return s->flush();
-	}
-
-	virtual size_t write(const void* b, size_t len) throw(FileException) {
-		if(buf != NULL) {
-			size_t n = min(len, bufSize - pos);
-
-			u_int8_t* wb = (u_int8_t*)b;
-			if(memcmp(buf + pos, wb, n) != 0) {
-				throw RollbackException(STRING(ROLLBACK_INCONSISTENCY));
-			}
-			pos += n;
-			if(pos == bufSize) {
-				delete buf;
-				buf = NULL;
-			}
-		}
-		return s->write(b, len);
-	}
-
-private:
-	OutputStream* s;
-	size_t pos;
-	size_t bufSize;
-	u_int8_t* buf;
-};
-
 
 bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool z) {
 	Download* d = aSource->getDownload();
@@ -487,9 +434,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 
 	dcassert(d->getSize() != -1);
 
-	if(d->isSet(Download::FLAG_PARTIAL_LIST)) {
-		d->setFile(new StringOutputStream(d->getPFS()));
-	} else if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+	if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 		d->setFile(new TreeOutputStream(d->getTigerTree()));
 	} else {
 		File* file = NULL;
@@ -497,11 +442,10 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			string target = d->getDownloadTarget();
 			File::ensureDirectory(target);
 			if(d->isSet(Download::FLAG_USER_LIST)) {
-				if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
-					target += ".xml.bz2";
-				} else {
-					target += ".DcLst";
-				}
+				if(!aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+					throw Exception(STRING(NO_XML_BZLIST_SUPPORT));
+				} 
+				target += ".xml.bz2";
 			}
 
 			// Let's check if we can find this file in a any .SFV...
@@ -552,10 +496,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 				d->setFlag(Download::FLAG_TTH_CHECK);
 			}
 		}
-		if(d->isSet(Download::FLAG_ROLLBACK)) {
-			d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
-		}
-
 	}
 
 	if(z) {
@@ -585,17 +525,6 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 			handleEndData(aSource);
 			aSource->setLineMode(0);
 		}
-	} catch(const RollbackException& e) {
-		string target = d->getTarget();
-		QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY);
-		removeDownload(d);
-		fire(DownloadManagerListener::Failed(), d, e.getError());
-
-		d->resetPos();
-		aSource->setDownload(NULL);
-		QueueManager::getInstance()->putDownload(d, false);
-		removeConnection(aSource);
-		return;
 	} catch(const FileException& e) {
 		removeDownload(d);
 		fire(DownloadManagerListener::Failed(), d, e.getError());
@@ -645,7 +574,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 			aSource->setDownload(NULL);
 			QueueManager::getInstance()->putDownload(d, false);
 
-			QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_BAD_TREE, false);
+			QueueManager::getInstance()->removeUserFromFile(target, aSource->getUser(), QueueItem::Source::FLAG_BAD_TREE, false);
 			checkDownloads(aSource);
 			return;
 		}
@@ -752,7 +681,7 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t c
 			aSource->setDownload(NULL);
 			QueueManager::getInstance()->putDownload(d, false);
 
-			QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
+			QueueManager::getInstance()->removeUserFromFile(target, aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
 			checkDownloads(aSource);
 			return false;
 		} 
@@ -926,36 +855,6 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 	fileNotAvailable(aSource);
 }
 
-/** @todo Handle errors better */
-void DownloadManager::on(AdcCommand::STA, UserConnection* aSource, const AdcCommand& cmd) throw() {
-	if(cmd.getParameters().size() < 2) {
-		aSource->disconnect();
-		return;
-	}
-
-	const string& err = cmd.getParameters()[0];
-	if(err.length() < 3) {
-		aSource->disconnect();
-		return;
-	}
-
-	switch(Util::toInt(err.substr(0, 1))) {
-	case AdcCommand::SEV_FATAL:
-		aSource->disconnect();
-		return;
-	case AdcCommand::SEV_RECOVERABLE:
-		switch(Util::toInt(err.substr(1))) {
-		case AdcCommand::ERROR_FILE_NOT_AVAILABLE:
-			fileNotAvailable(aSource);
-			return;
-		case AdcCommand::ERROR_SLOTS_FULL:
-			noSlots(aSource);
-			return;
-		}
-	}
-	aSource->disconnect();
-}
-
 void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
@@ -972,7 +871,7 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 	aSource->setDownload(NULL);
 
-	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), d->isSet(Download::FLAG_TREE_DOWNLOAD) ? QueueItem::Source::FLAG_NO_TREE : QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
+	QueueManager::getInstance()->removeUserFromFile(d->getTarget(), aSource->getUser(), d->isSet(Download::FLAG_TREE_DOWNLOAD) ? QueueItem::Source::FLAG_NO_TREE : QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);

@@ -149,12 +149,7 @@ public:
 	}
 	static string clean(const string& aSearchString);
 	
-	void respond(const AdcCommand& cmd);
-
-	short getPort()
-	{
-		return port;
-	}
+	short getPort()	{ return port; }
 
 	void listen() throw(Exception);
 	void disconnect() throw();

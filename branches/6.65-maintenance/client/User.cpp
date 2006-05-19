@@ -48,15 +48,6 @@ const string& User::getClientNick() const {
 	}
 }
 
-CID User::getClientCID() const {
-	RLock<> l(cs);
-	if(client) {
-		return client->getMe()->getCID();
-	} else {
-		return CID(SETTING(CLIENT_ID));
-	}
-}
-
 void User::updated(User::Ptr& aUser) {
 	RLock<> l(aUser->cs);
 	if(aUser->client) {
@@ -75,7 +66,7 @@ const string& User::getClientName() const {
 	}
 }
 
-string User::getClientAddressPort() const {
+string User::getClientUrl() const {
 	RLock<> l(cs);
 	if(client) {
 		return client->getHubUrl();
@@ -138,7 +129,6 @@ void User::setClient(Client* aClient) {
 
 void User::getParams(StringMap& ucParams) {
 	ucParams["nick"] = getNick();
-	ucParams["cid"] = getCID().toBase32();
 	ucParams["tag"] = getTag();
 	ucParams["description"] = getDescription();
 	ucParams["email"] = getEmail();

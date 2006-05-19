@@ -130,10 +130,6 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	}
 }
 
-void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc) throw() {
-	SearchManager::getInstance()->respond(adc);
-}
-
 User::Ptr ClientManager::getUser(const string& aNick, const string& aHint /* = Util::emptyString */) {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
@@ -276,47 +272,6 @@ void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub /*= false*/) {
 	fire(ClientManagerListener::UserUpdated(), aUser);
 }
 
-User::Ptr ClientManager::getUser(const CID& cid, bool createUser) {
-	Lock l(cs);
-	dcassert(!cid.isZero());
-	AdcIter i = adcUsers.find(cid);
-	if(i != adcUsers.end())
-		return i->second;
-
-	return createUser ? adcUsers.insert(make_pair(cid, new User(cid)))->second : User::Ptr();
-}
-
-User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline /* = true */) {
-	Lock l(cs);
-	dcassert(!cid.isZero());
-	dcassert(aClient != NULL && find(clients.begin(), clients.end(), aClient) != clients.end());
-
-	AdcPair p = adcUsers.equal_range(cid);
-	for(AdcIter i = p.first; i != p.second; ++i) {
-		User::Ptr& u = i->second;
-		if(u->isClient(aClient))
-			return u;
-	}
-
-	if(putOnline) {
-		User::Ptr up;
-		for(AdcIter i = p.first; i != p.second; ++i) {
-			if(!i->second->isOnline()) {
-				up = i->second;
-			}
-		}
-		if(!up)
-			up = adcUsers.insert(make_pair(cid, new User(cid)))->second;
-
-		up->setClient(aClient);
-		fire(ClientManagerListener::UserUpdated(), up);
-		return up;
-	}
-
-	// Create a new user
-	return adcUsers.insert(make_pair(cid, new User(cid)))->second;
-}
-
 void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
 	Lock l(cs);
 
@@ -327,14 +282,6 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 			users.erase(i++);
 		} else {
 			++i;
-		}
-	}
-	AdcIter k = adcUsers.begin();
-	while(k != adcUsers.end()) {
-		if(k->second->unique()) {
-			adcUsers.erase(k++);
-		} else {
-			++k;
 		}
 	}
 
