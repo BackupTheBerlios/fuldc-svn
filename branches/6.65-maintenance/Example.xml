@@ -790,5 +790,6 @@
 		<String Name="DupeError">An external sfv tool stopped the download of this file</String>
 		<String Name="FileSizeMismatch">File size has changed, refresh to add it again.</String>
 		<String Name="NoXmlBzlistSupport">User does not support xml file lists.</String>
+		<String Name="Clear">Clear</String>
 	</Strings>
 </Language>

@@ -29,6 +29,7 @@
 #include "FuleditCtrl.h"
 #include "PopupManager.h"
 #include "WinUtil.h"
+#include "TextFrame.h"
 
 #include <MMSystem.h>
 
@@ -71,6 +72,16 @@ LRESULT CFulEditCtrl::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	if( isSet(MENU_SEARCH_MENU) )
 		menu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)searchMenu, CTSTRING(SEARCH_SITES));
+	
+	if( isSet(MENU_CLEAR) || isSet(MENU_HISTORY) )
+		menu.AppendMenu(MF_SEPARATOR);
+
+	if( isSet(MENU_HISTORY ))
+		menu.AppendMenu(MF_STRING, IDC_HISTORY, CTSTRING(HISTORY));
+
+	if( isSet(MENU_CLEAR) )
+		menu.AppendMenu(MF_STRING, IDC_CLEAR, CTSTRING(CLEAR));
+
 
 	//Set the MNS_NOTIFYBYPOS flag to receive WM_MENUCOMMAND
 	MENUINFO inf;
@@ -707,6 +718,12 @@ LRESULT CFulEditCtrl::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 				break;
 			case IDC_SEARCH_BY_TTH:
 				WinUtil::search(searchTerm, 0, true);
+				break;
+			case IDC_HISTORY:
+				TextFrame::openWindow(LastLog());;
+				break;
+			case IDC_CLEAR:
+				Clear();
 				break;
 		}
 

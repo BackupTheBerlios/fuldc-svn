@@ -56,7 +56,9 @@ public:
 		MENU_PASTE			= 256,
 		MENU_SEARCH			= 512,
 		MENU_SEARCH_TTH		= 1024,
-		MENU_SEARCH_MENU	= 2048
+		MENU_SEARCH_MENU	= 2048,
+		MENU_HISTORY		= 4096,
+		MENU_CLEAR			= 8192
 	};
 
 	bool	AddLine(const tstring & line, bool timeStamps = false);

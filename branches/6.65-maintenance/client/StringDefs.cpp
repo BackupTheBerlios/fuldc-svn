@@ -791,6 +791,7 @@ string ResourceManager::strings[] = {
 "An external sfv tool stopped the download of this file", 
 "File size has changed, refresh to add it again.", 
 "User does not support xml file lists.", 
+"Clear", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1582,4 +1583,5 @@ string ResourceManager::names[] = {
 "DupeError", 
 "FileSizeMismatch", 
 "NoXmlBzlistSupport", 
+"Clear", 
 };

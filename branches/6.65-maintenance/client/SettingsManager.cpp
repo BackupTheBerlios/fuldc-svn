@@ -26,7 +26,6 @@
 #include "Util.h"
 #include "File.h"
 #include "version.h"
-#include "CID.h"
 #include "StringTokenizer.h"
 
 StringList SettingsManager::connectionSpeeds;
@@ -376,12 +375,6 @@ void SettingsManager::load(string const& aFileName)
 		// if(v < 0.x) { // Fix old settings here }
 
 
-		if(CID(SETTING(CLIENT_ID)).isZero())
-			set(CLIENT_ID, CID::generate().toBase32());
-
-#ifdef _DEBUG
-		set(CLIENT_ID, CID::generate().toBase32());
-#endif
 		setDefault(UDP_PORT, SETTING(TCP_PORT));
 
 		xml.resetCurrentChild();
@@ -427,10 +420,7 @@ void SettingsManager::load(string const& aFileName)
 
 		xml.stepOut();
 
-	} catch(const Exception&) {
-		if(CID(SETTING(CLIENT_ID)).isZero())
-			set(CLIENT_ID, CID::generate().toBase32());
-	}
+	} catch(const Exception&) {	}
 }
 
 void SettingsManager::save(string const& aFileName) {

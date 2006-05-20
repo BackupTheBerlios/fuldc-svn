@@ -39,8 +39,6 @@
 #endif
 #include <locale.h>
 
-#include "CID.h"
-
 #include "FastAlloc.h"
 
 #ifndef _DEBUG
