@@ -577,7 +577,9 @@
 #define IDC_SETTINGS_KB2                1332
 #define IDC_TEXT_TO_MATCH               1332
 #define IDC_DIRECT                      1333
+#define IDC_PAUSE                       1333
 #define IDC_DIRECT_OUT                  1334
+#define IDC_BUTTON2                     1334
 #define IDC_EXTERNAL_IP                 1335
 #define IDC_FIREWALL_NAT                1336
 #define IDC_FIREWALL_PASSIVE            1337
@@ -666,7 +668,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        314
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1333
+#define _APS_NEXT_CONTROL_VALUE         1335
 #define _APS_NEXT_SYMED_VALUE           137
 #endif
 #endif

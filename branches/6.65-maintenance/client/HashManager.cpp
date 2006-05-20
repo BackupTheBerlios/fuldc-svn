@@ -563,6 +563,8 @@ int HashManager::Hasher::run() {
 		s.wait();
 		if(stop)
 			break;
+		if(paused) 
+			p.wait();
 		if(rebuild) {
 			HashManager::getInstance()->doRebuild();
 			rebuild = false;

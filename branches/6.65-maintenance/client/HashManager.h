@@ -114,11 +114,25 @@ public:
 		store.save();
 	}
 
+	void pause() {
+		hasher.pause();
+	}
+
+	void resume() {
+		hasher.resume();
+	}
+
+	bool isPaused() const { return hasher.isPaused(); }
+
+	void clear() {
+		hasher.clear();
+	}
+
 private:
 
 	class Hasher : public Thread {
 	public:
-		Hasher() : stop(false), running(false), rebuild(false), currentSize(0) { }
+		Hasher() : stop(false), running(false), paused(false), rebuild(false), currentSize(0) { }
 
 		void hashFile(const string& fileName, int64_t size) {
 			Lock l(cs);
@@ -163,6 +177,22 @@ private:
 			s.signal();
 		}
 
+		void pause() {
+			paused = true;
+		}
+
+		void resume() {
+			paused = false;
+			p.signal();
+		}
+
+		bool isPaused() const { return paused; }
+
+		void clear() {
+			Lock l(cs);
+			w.clear();
+		}
+
 	private:
 		// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless.
 		// map because it's sorted (to avoid random hash order that would create quite strange shares while hashing)
@@ -172,7 +202,9 @@ private:
 		WorkMap w;
 		CriticalSection cs;
 		Semaphore s;
+		Semaphore p;
 
+		bool paused;
 		bool stop;
 		bool running;
 		bool rebuild;

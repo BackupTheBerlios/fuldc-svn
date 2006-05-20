@@ -710,6 +710,7 @@ int ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bo
 }
 
 int ShareManager::run() {
+	HashManager::getInstance()->pause();
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
 	{
 		if( refreshDir && !refreshDirs ){
@@ -810,6 +811,7 @@ int ShareManager::run() {
 	Thread::safeDec(refreshing);
 
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
+	HashManager::getInstance()->resume();
 	if(update) {
 		ClientManager::getInstance()->infoUpdated();
 	}

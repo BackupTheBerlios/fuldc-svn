@@ -792,6 +792,9 @@ string ResourceManager::strings[] = {
 "File size has changed, refresh to add it again.", 
 "User does not support xml file lists.", 
 "Clear", 
+"Clear Queue", 
+"Pause", 
+"Resume", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1584,4 +1587,7 @@ string ResourceManager::names[] = {
 "FileSizeMismatch", 
 "NoXmlBzlistSupport", 
 "Clear", 
+"ClearQueue", 
+"Pause", 
+"Resume", 
 };

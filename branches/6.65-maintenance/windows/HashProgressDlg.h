@@ -42,6 +42,8 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+		COMMAND_ID_HANDLER(IDC_CLEAR, onClear)
+		COMMAND_ID_HANDLER(IDC_PAUSE, onPause)
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -50,6 +52,8 @@ public:
 		SetDlgItemText(IDOK, CTSTRING(HASH_PROGRESS_BACKGROUND));
 		SetDlgItemText(IDC_STATISTICS, CTSTRING(HASH_PROGRESS_STATS));
 		SetDlgItemText(IDC_HASH_INDEXING, CTSTRING(HASH_PROGRESS_TEXT));
+		SetDlgItemText(IDC_PAUSE, CTSTRING(PAUSE));
+		SetDlgItemText(IDC_CLEAR, CTSTRING(CLEAR_QUEUE));
 
 		string tmp;
 		startTime = GET_TICK();
@@ -91,11 +95,12 @@ public:
 			return;
 		}
 		double diff = tick - startTime;
-		if(diff < 1000 || files == 0 || bytes == 0) {
+		if(diff < 1000 || files == 0 || bytes == 0 || HashManager::getInstance()->isPaused()) {
 			SetDlgItemText(IDC_FILES_PER_HOUR, Text::toT("-.-- " + STRING(FILES_PER_HOUR) + ", " + Util::toString((u_int32_t)files) + " " + STRING(FILES_LEFT)).c_str());
 			SetDlgItemText(IDC_HASH_SPEED, Text::toT("-.-- B/s, " + Util::formatBytes(bytes) + " " + STRING(LEFT)).c_str());
 			SetDlgItemText(IDC_TIME_LEFT, Text::toT("-:--:-- " + STRING(LEFT)).c_str());
-			progress.SetPos(0);
+			if(!HashManager::getInstance()->isPaused())
+				progress.SetPos(0);
 		} else {
 			double filestat = (((double)(startFiles - files)) * 60 * 60 * 1000) / diff;
 			double speedStat = (((double)(startBytes - bytes)) * 1000) / diff;
@@ -129,6 +134,22 @@ public:
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if( IsWindow() )
 			DestroyWindow();
+		return 0;
+	}
+
+	LRESULT onClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		HashManager::getInstance()->clear();
+		return 0;
+	}
+
+	LRESULT onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		if(HashManager::getInstance()->isPaused()) {
+			HashManager::getInstance()->resume();
+			SetDlgItemText(IDC_PAUSE, CTSTRING(PAUSE));
+		} else {
+			HashManager::getInstance()->pause();
+			SetDlgItemText(IDC_PAUSE, CTSTRING(RESUME));
+		}
 		return 0;
 	}
 

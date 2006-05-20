@@ -795,5 +795,8 @@ enum Strings { // @DontAdd
 	FILE_SIZE_MISMATCH, // "File size has changed, refresh to add it again."
 	NO_XML_BZLIST_SUPPORT, // "User does not support xml file lists."
 	CLEAR, // "Clear"
+	CLEAR_QUEUE, // "Clear Queue"
+	PAUSE, // "Pause"
+	RESUME, // "Resume"
 	LAST // @DontAdd
 };

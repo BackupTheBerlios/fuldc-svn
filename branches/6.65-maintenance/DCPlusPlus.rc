@@ -451,7 +451,9 @@ BEGIN
     LTEXT           "0.0 MiB/s",IDC_HASH_SPEED,14,48,376,8
     LTEXT           "0:00:00 left",IDC_TIME_LEFT,14,57,376,8
     CONTROL         "",IDC_HASH_PROGRESS,"msctls_progress32",WS_BORDER | 0x1,7,74,416,14
-    DEFPUSHBUTTON   "Run in background",IDOK,147,92,109,14
+    DEFPUSHBUTTON   "Run in background",IDOK,314,92,109,14
+    PUSHBUTTON      "Pause",IDC_PAUSE,7,92,65,14
+    PUSHBUTTON      "Clear Queue",IDC_CLEAR,83,92,65,14
 END
 
 IDD_HUB_LIST DIALOGEX 0, 0, 262, 185

@@ -791,5 +791,8 @@
 		<String Name="FileSizeMismatch">File size has changed, refresh to add it again.</String>
 		<String Name="NoXmlBzlistSupport">User does not support xml file lists.</String>
 		<String Name="Clear">Clear</String>
+		<String Name="ClearQueue">Clear Queue</String>
+		<String Name="Pause">Pause</String>
+		<String Name="Resume">Resume</String>
 	</Strings>
 </Language>
