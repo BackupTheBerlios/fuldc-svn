@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@
 
 STANDARD_EXCEPTION(HashException);
 class File;
+class CRC32Filter;
 
 class HashManagerListener {
 public:
@@ -54,9 +55,9 @@ class HashManager : public Singleton<HashManager>, public Speaker<HashManagerLis
 public:
 
 	/** We don't keep leaves for blocks smaller than this... */
-	static const int64_t MIN_BLOCK_SIZE = 64*1024;
+	static const int64_t MIN_BLOCK_SIZE;
 
-	HashManager() {
+	HashManager(): lastSave(0) {
 		TimerManager::getInstance()->addListener(this);
 	}
 	virtual ~HashManager() throw() {
@@ -117,13 +118,12 @@ private:
 
 	class Hasher : public Thread {
 	public:
-		Hasher() : stop(false), running(false), rebuild(false), total(0) { }
+		Hasher() : stop(false), running(false), rebuild(false), currentSize(0) { }
 
 		void hashFile(const string& fileName, int64_t size) {
 			Lock l(cs);
 			if(w.insert(make_pair(fileName, size)).second) {
 				s.signal();
-				total += size;
 			}
 		}
 
@@ -131,7 +131,6 @@ private:
 			Lock l(cs);
 			for(WorkIter i = w.begin(); i != w.end(); ) {
 				if(Util::strnicmp(baseDir, i->first, baseDir.length()) == 0) {
-					total -= i->second;
 					w.erase(i++);
 				} else {
 					++i;
@@ -141,18 +140,19 @@ private:
 
 		virtual int run();
 #ifdef _WIN32
-		bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size);
+		bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32);
 #endif
 		void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {
 			Lock l(cs);
-			curFile = file;
+			curFile = currentFile;
 			filesLeft = w.size();
 			if(running)
 				filesLeft++;
-			// Just in case...
-			if(total < 0)
-				total = 0;
-			bytesLeft = total;
+			bytesLeft = 0;
+			for(WorkMap::const_iterator i = w.begin(); i != w.end(); ++i) {
+				bytesLeft += i->second;
+			}
+			bytesLeft += currentSize;
 		}
 		void shutdown() {
 			stop = true;
@@ -176,8 +176,8 @@ private:
 		bool stop;
 		bool running;
 		bool rebuild;
-		int64_t total;
-		string file;
+		string currentFile;
+		int64_t currentSize;
 	};
 
 	friend class Hasher;
@@ -260,20 +260,20 @@ private:
 	/** Single node tree where node = root, no storage in HashData.dat */
 	static const int64_t SMALL_TREE = -1;
 
+	u_int32_t lastSave;
+
 	void hashDone(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, int64_t speed);
 	void doRebuild() {
 		Lock l(cs);
 		store.rebuild();
 	}
 	virtual void on(TimerManagerListener::Minute, u_int32_t) throw() {
-		Lock l(cs);
-		store.save();
+		if(GET_TICK() - lastSave > 15*60*1000) {
+			Lock l(cs);
+			store.save();
+			lastSave = GET_TICK();
+		}
 	}
 };
 
 #endif // !defined(HASH_MANAGER_H)
-
-/**
- * @file
- * $Id: HashManager.h,v 1.2 2004/02/15 01:20:30 trem Exp $
- */

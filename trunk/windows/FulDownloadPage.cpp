@@ -30,9 +30,10 @@
 
 PropPage::TextItem FulDownloadPage::texts[] =  {
 	{ IDC_SB_SKIPLIST_DOWNLOAD,	ResourceManager::SETTINGS_SB_SKIPLIST_DOWNLOAD	},
-	{ IDC_ST_SKIPLIST_DOWNLOAD,	ResourceManager::SETTINGS_ST_SKIPLIST_DOWNLOAD	},
+	{ IDC_ST_SKIPLIST_DOWNLOAD,	ResourceManager::SETTINGS_ST_PATHS				},
 	{ IDC_SB_MAX_SOURCES,		ResourceManager::SETTINGS_SB_MAX_SOURCES		},
-	{ IDC_ST_PATHS,				ResourceManager::SETTINGS_ST_PATHS				},
+	{ IDC_ST_HIGH_PRIO_FILES,	ResourceManager::SETTINGS_ST_PATHS				},
+	{ IDC_SB_HIGH_PRIO_FILES,	ResourceManager::SETTINGS_SB_HIGH_PRIO_FILES	},
 	{ 0,						ResourceManager::SETTINGS_AUTO_AWAY				}
 
 };
@@ -40,6 +41,7 @@ PropPage::TextItem FulDownloadPage::texts[] =  {
 PropPage::Item FulDownloadPage::items[] = {
 	{ IDC_MAX_SOURCES,			SettingsManager::MAX_AUTO_MATCH_SOURCES,	PropPage::T_INT }, 
 	{ IDC_SKIPLIST_DOWNLOAD,	SettingsManager::SKIPLIST_DOWNLOAD,			PropPage::T_STR },
+	{ IDC_HIGH_PRIO_FILES,		SettingsManager::HIGH_PRIO_FILES,			PropPage::T_STR },
 	{ 0,						0,											PropPage::T_END }
 };
 

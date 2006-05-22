@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,46 +42,18 @@ public:
 	typedef X<1> Connected;
 	typedef X<2> Data;
 	typedef X<3> Failed;
-	typedef X<4> CLock;
-	typedef X<5> Key;
-	typedef X<6> Direction;
-	typedef X<7> Get;
-	typedef X<8> GetBlock;
-	typedef X<9> GetZBlock;
-	typedef X<10> Sending;
-	typedef X<11> FileLength;
-	typedef X<12> Send;
-	typedef X<13> GetListLength;
-	typedef X<14> MaxedOut;
-	typedef X<15> ModeChange;
-	typedef X<16> MyNick;
-	typedef X<17> TransmitDone;
-	typedef X<18> Supports;
-	typedef X<19> FileNotAvailable;
-	typedef X<20> ADCGet;
-	typedef X<21> ADCSnd;
-	typedef X<22> ADCSta;
+	typedef X<4> ModeChange;
+	typedef X<5> TransmitDone;
+	typedef X<6> ADCGet;
+	typedef X<7> ADCSnd;
+	typedef X<8> ADCSta;
 
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw() { }
 	virtual void on(Connected, UserConnection*) throw() { }
 	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw() { }
 	virtual void on(Failed, UserConnection*, const string&) throw() { }
-	virtual void on(CLock, UserConnection*, const string&, const string&) throw() { }
-	virtual void on(Key, UserConnection*, const string&) throw() { }
-	virtual void on(Direction, UserConnection*, const string&, const string&) throw() { }
-	virtual void on(Get, UserConnection*, const string&, int64_t) throw() { }
-	virtual void on(GetBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
-	virtual void on(GetZBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
-	virtual void on(Sending, UserConnection*, int64_t) throw() { }
-	virtual void on(FileLength, UserConnection*, int64_t) throw() { }
-	virtual void on(Send, UserConnection*) throw() { }
-	virtual void on(GetListLength, UserConnection*) throw() { }
-	virtual void on(MaxedOut, UserConnection*) throw() { }
 	virtual void on(ModeChange, UserConnection*) throw() { }
-	virtual void on(MyNick, UserConnection*, const string&) throw() { }
 	virtual void on(TransmitDone, UserConnection*) throw() { }
-	virtual void on(Supports, UserConnection*, const StringList&) throw() { }
-	virtual void on(FileNotAvailable, UserConnection*) throw() { }
 
 	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw() { }
@@ -227,23 +199,8 @@ public:
 	};
 
 	short getNumber() { return (short)((((size_t)this)>>2) & 0x7fff); }
-
-	// NMDC stuff
-	void myNick(const string& aNick) { send("$MyNick " + Text::utf8ToAcp(aNick) + '|'); }
-	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
-	void key(const string& aKey) { send("$Key " + aKey + '|'); }
-	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
-	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); } 	// No acp - utf conversion here...
-	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send((utf8 ? "$UGetZBlock " : "$GetZBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
-	void uGetBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$UGetBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
-	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
-	void startSend() { send("$Send|"); }
-	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); }
-	void error(const string& aError) { send("$Error " + aError + '|'); }
-	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
-	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full")); }
-	void fileNotAvail() { isSet(FLAG_NMDC) ? send("$Error " + FILE_NOT_AVAILABLE + "|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE)); }
-
+	void maxedOut() { send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full")); }
+	void fileNotAvail(const string msg = FILE_NOT_AVAILABLE) { send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, msg)); }
 	// ADC Stuff
 	void sup(const StringList& features) { 
 		AdcCommand c(AdcCommand::CMD_SUP);
@@ -255,15 +212,8 @@ public:
 	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_GET).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 	void snd(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_SND).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 
-	void send(const AdcCommand& c) { send(c.toString(0, isSet(FLAG_NMDC))); }
+	void send(const AdcCommand& c) { send(c.toString(0)); }
 
-	void supports(const StringList& feat) { 
-		string x;
-		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-			x+= *i + ' ';
-		}
-		send("$Supports " + x + '|');
-	}
 	void setDataMode(int64_t aBytes = -1) { dcassert(socket); socket->setDataMode(aBytes); }
 	void setLineMode(size_t rollback) { dcassert(socket); socket->setLineMode(rollback); }
 
@@ -361,8 +311,3 @@ private:
 };
 
 #endif // !defined(USER_CONNECTION_H)
-
-/**
- * @file
- * $Id: UserConnection.h,v 1.4 2004/02/25 00:27:26 trem Exp $
- */

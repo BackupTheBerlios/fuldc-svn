@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,10 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	PropPage::translate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
+	if(find(SettingsManager::connectionSpeeds.begin(), SettingsManager::connectionSpeeds.end(),
+			SETTING(UPLOAD_SPEED)) == SettingsManager::connectionSpeeds.end()) {
+		ctrlConnection.AddString(Text::toT(SETTING(UPLOAD_SPEED)).c_str());
+	}
 	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i)
 		ctrlConnection.AddString(Text::toT(*i).c_str());
 
@@ -111,8 +115,3 @@ LRESULT GeneralPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: GeneralPage.cpp,v 1.1 2003/12/15 16:52:01 trem Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,11 +96,6 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 	public Singleton<ConnectionManager>
 {
 public:
-	void nmdcExpect(const string& aNick, const string& aMyNick, const string& aHubUrl) {
-		expectedConnections.add(aNick, aMyNick, aHubUrl);
-	}
-
-	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
 	void adcConnect(const OnlineUser& aUser, short aPort, const string& aToken, bool secure);
 	
 	void getDownloadConnection(const User::Ptr& aUser);
@@ -181,11 +176,6 @@ private:
 	// UserConnectionListener
 	virtual void on(Connected, UserConnection*) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
-	virtual void on(CLock, UserConnection*, const string&, const string&) throw();
-	virtual void on(Key, UserConnection*, const string&) throw();
-	virtual void on(Direction, UserConnection*, const string&, const string&) throw();
-	virtual void on(MyNick, UserConnection*, const string&) throw();
-	virtual void on(Supports, UserConnection*, const StringList&) throw();
 
 	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw();
@@ -198,8 +188,3 @@ private:
 };
 
 #endif // !defined(CONNECTION_MANAGER_H)
-
-/**
- * @file
- * $Id: ConnectionManager.h,v 1.1 2003/12/15 16:51:38 trem Exp $
- */

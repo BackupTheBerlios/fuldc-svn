@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -208,18 +208,21 @@ public:
 		}
 	}
 
-	static void ensureDirectory(const string& aFile) {
-		// Skip the first dir...
+	static bool ensureDirectory(const string& aFile) throw (FileException) {
+		int result;
 		tstring file;
 		Text::toT(aFile, file);
-		wstring::size_type start = file.find_first_of(L"\\/");
-		if(start == string::npos)
-			return;
-		start++;
-		while( (start = file.find_first_of(L"\\/", start)) != string::npos) {
-			CreateDirectory(file.substr(0, start+1).c_str(), NULL);
-			start++;
-		}
+		wstring::size_type end = file.find_last_of(L"\\/");
+		if(end == string::npos)
+			return false;
+
+		result = SHCreateDirectory(NULL, file.substr(0, end).c_str());
+		if(result == ERROR_SUCCESS)
+			return true;
+		else if(result == ERROR_ALREADY_EXISTS)
+			return false;
+		else //we can't recover from these gracefully.
+			throw FileException(Util::translateError(result));
 	}
 
 #else // _WIN32
@@ -287,7 +290,7 @@ public:
 	virtual size_t read(void* buf, size_t& len) throw(FileException) {
 		ssize_t x = ::read(h, buf, len);
 		if(x == -1)
-			throw("Read error");
+			throw FileException("Read error");
 		len = x;
 		return (size_t)x;
 	}
@@ -437,8 +440,3 @@ private:
 };
 
 #endif // !defined(FILE_H)
-
-/**
- * @file
- * $Id: File.h,v 1.4 2004/02/14 13:24:48 trem Exp $
- */

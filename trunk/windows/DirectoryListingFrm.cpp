@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@ int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::EXACT_SIZE, ResourceManager::SIZE, ResourceManager::TTH_ROOT };
 
-
 DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
 
 void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser, int64_t aSpeed) {
@@ -53,7 +52,7 @@ void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aU
 			i->second->MDIActivate(i->second->m_hWnd);
 		}
 	} else {
-		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser, aSpeed);
+		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser);
 		if(BOOLSETTING(POPUNDER_FILELIST)) {
 			WinUtil::hiddenCreateEx(frame);
 		} else {
@@ -70,7 +69,7 @@ void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt
 		i->second->speed = aSpeed;
 		i->second->loadXML(txt);
 	} else {
-		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser, aSpeed);
+		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser);
 		if(BOOLSETTING(POPUNDER_FILELIST)) {
 			WinUtil::hiddenCreateEx(frame);
 		} else {
@@ -81,40 +80,35 @@ void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt
 	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser, int64_t aSpeed) :
-	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-		treeRoot(NULL), skipHits(0), files(0), speed(aSpeed), updating(false), dl(new DirectoryListing(aUser)), searching(false),
-		mylist(false)
+DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
+	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP), treeContainer(WC_TREEVIEW, this, CONTROL_MESSAGE_MAP),
+		listContainer(WC_LISTVIEW, this, CONTROL_MESSAGE_MAP), historyIndex(0),
+		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false),
+		mylist(false), loading(true)
 {
 	lists.insert(make_pair(aUser, this));
 }
 
 void DirectoryListingFrame::loadFile(const tstring& name) {
-	try {
-		dl->loadFile(Text::fromT(name));
-		ADLSearchManager::getInstance()->matchListing(*dl);
-		refreshTree(Text::toT(WinUtil::getInitialDir(dl->getUser())));
-	} catch(const Exception& e) {
-		error = WinUtil::getNicks(dl->getUser()) + Text::toT(": " + e.getError());
-	}
+	ctrlStatus.SetText(0, CTSTRING(LOADING_FILE_LIST));
+	//don't worry about cleanup, the object will delete itself once the thread has finished it's job
+	ThreadedDirectoryListing* tdl = new ThreadedDirectoryListing(this, Text::fromT(name), Util::emptyString);
+	loading = true;
+	tdl->start();
 
 	tstring filename = Util::getFileName(name);
 	if( Util::stricmp(filename, _T("files.xml.bz2")) == 0 )
 		mylist = true;
 	else if ( Util::strnicmp(filename, _T("MyList"), 6) == 0 )
 		mylist = true;
-
-	initStatus();
 }
 
 void DirectoryListingFrame::loadXML(const string& txt) {
-	try {
-		refreshTree(Text::toT(Util::toNmdcFile(dl->loadXML(txt, true))));
-	} catch(const Exception& e) {
-		error = WinUtil::getNicks(dl->getUser()) + Text::toT(": " + e.getError());
-	}
-
-	initStatus();
+	ctrlStatus.SetText(0, CTSTRING(LOADING_FILE_LIST));
+	//don't worry about cleanup, the object will delete itself once the thread has finished it's job
+	ThreadedDirectoryListing* tdl = new ThreadedDirectoryListing(this, Util::emptyString, txt);
+	loading = true;
+	tdl->start();
 }
 
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -124,7 +118,9 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	statusContainer.SubclassWindow(ctrlStatus.m_hWnd);
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
+	treeContainer.SubclassWindow(ctrlTree);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
+	listContainer.SubclassWindow(ctrlList);
 	ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 	
 	ctrlList.SetBkColor(WinUtil::bgColor);
@@ -226,6 +222,10 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
+		if(!loading) {
+			throw AbortException();
+		}
+
 		tstring name;
 		name = Text::toT((*i)->getName());
 		int index = (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
@@ -236,6 +236,9 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 	}
 }
 void DirectoryListingFrame::refreshTree(const tstring& root) {
+	if(!loading) {
+		throw AbortException();
+	}
 	
 	ctrlTree.SetRedraw(FALSE);
 
@@ -323,10 +326,19 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 	if(p->itemNew.state & TVIS_SELECTED) {
 		DirectoryListing::Directory* d = (DirectoryListing::Directory*)p->itemNew.lParam;
 		changeDir(d, TRUE);
+		addHistory(dl->getPath(d));
 	}
 	return 0;
 }
 
+
+void DirectoryListingFrame::addHistory(const string& name) {
+	history.erase(history.begin() + historyIndex, history.end());
+	while(history.size() > 25)
+		history.pop_front();
+	history.push_back(name);
+	historyIndex = history.size();
+}
 
 void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enableRedraw)
 {
@@ -345,14 +357,34 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	ctrlList.SetRedraw(enableRedraw);
 	updating = false;
 	updateStatus();
+}
 
-	if(!d->getComplete()) {
-		if(dl->getUser()->isOnline()) {
-			QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
-			ctrlStatus.SetText(STATUS_TEXT, CTSTRING(DOWNLOADING_LIST));
-		} else {
-			ctrlStatus.SetText(STATUS_TEXT, CTSTRING(USER_OFFLINE));
-		}
+void DirectoryListingFrame::up() {
+	HTREEITEM t = ctrlTree.GetSelectedItem();
+	if(t == NULL)
+		return;
+	t = ctrlTree.GetParentItem(t);
+	if(t == NULL)
+		return;
+	ctrlTree.SelectItem(t);
+}
+
+void DirectoryListingFrame::back() {
+	if(history.size() > 1 && historyIndex > 1) {
+		size_t n = min(historyIndex, history.size()) - 1;
+		deque<string> tmp = history;
+		selectItem(Text::toT(history[n - 1]));
+		historyIndex = n;
+		history = tmp;
+	}
+}
+void DirectoryListingFrame::forward() {
+	if(history.size() > 1 && historyIndex < history.size()) {
+		size_t n = min(historyIndex, history.size() - 1);
+		deque<string> tmp = history;
+		selectItem(Text::toT(history[n]));
+		historyIndex = n + 1;
+		history = tmp;
 	}
 }
 
@@ -564,8 +596,15 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 }
 
 HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
-
+	if(TRUE == fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND)) {
+		fileMenu.RemoveMenu(fileMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+	}
+	if(fileMenu.GetMenuItemCount() > 7) {
+		for(int i = 0; i < 3; ++i) {
+			fileMenu.RemoveMenu(fileMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+		}
+	}
+	
 	if (reinterpret_cast<HWND>(wParam) == ctrlList && ctrlList.GetSelectedCount() > 0) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		
@@ -600,6 +639,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 			if(ii->file->getTTH() != NULL) {
 				QueueManager::getInstance()->getTargetsByRoot(targets, *ii->file->getTTH());
 			}
+
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -613,7 +653,14 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 				}
 			}
 
+			if(ii->file->getDupe()) {
+				fileMenu.AppendMenu(MF_SEPARATOR);
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
+			}
+
 			if(ii->file->getAdls())	{
+				fileMenu.AppendMenu(MF_SEPARATOR);
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
 			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, ClientManager::getInstance()->getHubs(dl->getUser()->getCID()));
@@ -638,8 +685,16 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
 				}
 			}
+			//don't care about partial dupes since their folders might not be the same so we can't find
+			//them in our folder structure
+			if(ctrlList.GetSelectedCount() == 1 && ii->dir->getDupe() == DirectoryListing::Directory::DUPE) {
+				fileMenu.AppendMenu(MF_SEPARATOR);
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
+				fileMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
+			}
 			if(ii->type == ItemInfo::DIRECTORY && ii->type == ItemInfo::DIRECTORY && 
 			   ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
+			    fileMenu.AppendMenu(MF_SEPARATOR);
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
 
@@ -697,6 +752,18 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 
 	bHandled = FALSE;
 	return FALSE; 
+}
+
+HRESULT DirectoryListingFrame::onXButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /* lParam */, BOOL& /* bHandled */) {
+	if(GET_XBUTTON_WPARAM(wParam) & XBUTTON1) {
+		back();
+		return TRUE;
+	} else if(GET_XBUTTON_WPARAM(wParam) & XBUTTON2) {
+		forward();
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -799,15 +866,13 @@ LRESULT DirectoryListingFrame::onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/,
 LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 	if(kd->wVKey == VK_BACK) {
-		HTREEITEM cur = ctrlTree.GetSelectedItem();
-		if(cur != NULL)
-		{
-			HTREEITEM parent = ctrlTree.GetParentItem(cur);
-			if(parent != NULL)
-				ctrlTree.SelectItem(parent);
-		}
+		up();
 	} else if(kd->wVKey == VK_TAB) {
 		onTab();
+	} else if(kd->wVKey == VK_LEFT && WinUtil::isAlt()) {
+		back();
+	} else if(kd->wVKey == VK_RIGHT && WinUtil::isAlt()) {
+		forward();
 	} else if(kd->wVKey == VK_RETURN) {
 		if(ctrlList.GetSelectedCount() == 1) {
 			ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
@@ -1084,7 +1149,7 @@ LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARA
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+LRESULT DirectoryListingFrame::onCustomDrawList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>( pnmh );
 
 	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
@@ -1093,12 +1158,121 @@ LRESULT DirectoryListingFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 	if( CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage ) {
 		ItemInfo *ii = reinterpret_cast<ItemInfo*>(plvcd->nmcd.lItemlParam);
 
-		if(!mylist && ii->isDupe()) {
-			plvcd->clrTextBk = SETTING(DUPE_COLOR);
+		if(!mylist) {
+			//check if the file or dir is a dupe, then use the dupesetting color
+			if( ( ii->type == ItemInfo::FILE && ii->file->getDupe() ) || 
+				( ii->type == ItemInfo::DIRECTORY && ii->dir->getDupe() == DirectoryListing::Directory::DUPE )
+				) {
+				plvcd->clrTextBk = SETTING(DUPE_COLOR);
+
+			//if it's a partial dupe, try to use some simple blending to indicate that
+			//a dupe exists somewhere down the directory tree.
+			} else if(ii->type == ItemInfo::DIRECTORY && ii->dir->getDupe() == DirectoryListing::Directory::PARTIAL_DUPE) {
+				BYTE r, b, g;
+				//cache these to avoid unnecessary calls.
+				DWORD dupe = SETTING(DUPE_COLOR);
+				DWORD bg = SETTING(BACKGROUND_COLOR);
+
+				r = static_cast<BYTE>(( static_cast<DWORD>(GetRValue(dupe)) + static_cast<DWORD>(GetRValue(bg)) ) / 2);
+				g = static_cast<BYTE>(( static_cast<DWORD>(GetGValue(dupe)) + static_cast<DWORD>(GetGValue(bg)) ) / 2);
+				b = static_cast<BYTE>(( static_cast<DWORD>(GetBValue(dupe)) + static_cast<DWORD>(GetBValue(bg)) ) / 2);
+				plvcd->clrTextBk = RGB(r, g, b);
+			}
 		}
+
 	}
 
 	return CDRF_DODEFAULT;
+}
+LRESULT DirectoryListingFrame::onCustomDrawTree(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVCUSTOMDRAW* plvcd = reinterpret_cast<NMLVCUSTOMDRAW*>( pnmh );
+
+	if( CDDS_PREPAINT == plvcd->nmcd.dwDrawStage )
+		return CDRF_NOTIFYITEMDRAW;
+
+	if( (CDDS_ITEMPREPAINT == plvcd->nmcd.dwDrawStage) && ((plvcd->nmcd.uItemState & CDIS_SELECTED) == 0)) {
+		DirectoryListing::Directory* dir = reinterpret_cast<DirectoryListing::Directory*>(plvcd->nmcd.lItemlParam);
+
+		if(!mylist) {
+			//check if the dir is a dupe, then use the dupesetting color
+			if( dir->getDupe() == DirectoryListing::Directory::DUPE ) {
+				plvcd->clrTextBk = SETTING(DUPE_COLOR);
+
+			//if it's a partial dupe, try to use some simple blending to indicate that
+			//a dupe exists somewhere down the directory tree.
+			} else if(dir->getDupe() == DirectoryListing::Directory::PARTIAL_DUPE) {
+				BYTE r, b, g;
+				//cache these to avoid unnecessary calls.
+				DWORD dupe = SETTING(DUPE_COLOR);
+				DWORD bg = SETTING(BACKGROUND_COLOR);
+
+				r = static_cast<BYTE>(( static_cast<DWORD>(GetRValue(dupe)) + static_cast<DWORD>(GetRValue(bg)) ) / 2);
+				g = static_cast<BYTE>(( static_cast<DWORD>(GetGValue(dupe)) + static_cast<DWORD>(GetGValue(bg)) ) / 2);
+				b = static_cast<BYTE>(( static_cast<DWORD>(GetBValue(dupe)) + static_cast<DWORD>(GetBValue(bg)) ) / 2);
+				plvcd->clrTextBk = RGB(r, g, b);
+			}
+		}
+
+	}
+
+	return CDRF_DODEFAULT;
+}
+
+LRESULT DirectoryListingFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	switch(wParam) {
+		case FINISHED:
+			loading = false;
+			initStatus();
+			ctrlStatus.SetText(0, CTSTRING(LOADED_FILE_LIST));
+			//notify the user that we've loaded the list
+			setDirty();
+			break;
+		case ABORTED:
+			loading = false;
+			PostMessage(WM_CLOSE, 0, 0);
+			break;
+		default: dcassert(0); break;
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+
+	try {
+		tstring path;
+		
+		if(ii->type == ItemInfo::FILE) {
+			if(ii->file->getTTH()) {
+				path = Text::toT(ShareManager::getInstance()->getPhysicalPath(*ii->file->getTTH()));
+			}
+		} else {
+			if(ii->dir->getFileCount() > 0) {
+				DirectoryListing::File::Iter i = ii->dir->files.begin();
+				for(; i != ii->dir->files.end(); ++i) {
+					if((*i)->getDupe() && (*i)->getTTH())
+						break;
+				}
+				if(i != ii->dir->files.end()) {
+					path = Text::toT(ShareManager::getInstance()->getPhysicalPath(*((*i)->getTTH())));
+					wstring::size_type end = path.find_last_of(_T("\\"));
+					if(end != wstring::npos) {
+						path = path.substr(0, end);
+					}
+				}
+			}
+		}
+
+		if(wID == IDC_OPEN) {
+			WinUtil::openFile(path);
+		} else {
+			WinUtil::openFolder(path);
+		}
+	} catch(const ShareException& se) {
+		error = Text::toT(se.getError());
+	}
+
+	return 0;
 }
 /**
  * @file

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,9 @@ public:
 		VIEW_FILE_AND_DELETE,
 		STATUS_MESSAGE,
 		DOWNLOAD_COMPLETE,
-		REMOVE_POPUP
+		REMOVE_POPUP,
+		START_TIMER,
+		STOP_TIMER
 	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
@@ -122,7 +124,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_NET_STATS, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FINISHED_DL, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_VIEW_WAITING_USERS, onOpenWindows)
+		COMMAND_ID_HANDLER(IDC_WAITING_USERS, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_SYSTEM_LOG, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
@@ -134,6 +136,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_FULPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onMenuHelp)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(IDC_OPEN_OWN_LIST, onOpenOwnList)
@@ -358,11 +361,14 @@ private:
 
 	int lastUpload;
 
-	int statusSizes[7];
+	int statusSizes[8];
 	
 	HANDLE stopperThread;
 
 	bool missedAutoConnect;
+
+	u_int32_t timerTime;
+	tstring timerMsg;
 
 	struct {
 		tstring homepage;
@@ -405,8 +411,3 @@ private:
 };
 
 #endif // !defined(MAIN_FRM_H)
-
-/**
- * @file
- * $Id: MainFrm.h,v 1.11 2004/02/22 01:24:11 trem Exp $
- */

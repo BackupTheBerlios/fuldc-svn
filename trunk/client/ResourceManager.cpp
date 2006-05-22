@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,8 +67,3 @@ void ResourceManager::createWide() {
 		Text::utf8ToWide(strings[i], wstrings[i]);
 	}
 }
-
-/**
- * @file
- * $Id: ResourceManager.cpp,v 1.2 2004/02/14 13:25:17 trem Exp $
- */

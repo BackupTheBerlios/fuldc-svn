@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,7 @@ class TransferView : public CWindowImpl<TransferView>, private DownloadManagerLi
 public:
 	DECLARE_WND_CLASS(_T("TransferView"))
 
-	TransferView() {
-		headerBuf = new TCHAR[128];
-	};
+	TransferView() { }
 	virtual ~TransferView(void);
 
 	typedef UserInfoBaseHandler<TransferView> uibBase;
@@ -115,8 +113,6 @@ public:
 	}
 
 private:
-	/** Parameter map for user commands */
-	TCHAR * headerBuf;
 
 	class ItemInfo;
 public:
@@ -201,11 +197,9 @@ private:
 			} else {
 				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
 			}
-
 			switch(col) {
 				case COLUMN_STATUS: return 0;
 				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
-				case COLUMN_TOTALTIMELEFT: return compare(a->totalTimeLeft, b->totalTimeLeft);
 				case COLUMN_SPEED: return compare(a->speed, b->speed);
 				case COLUMN_SIZE: return compare(a->size, b->size);
 				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
@@ -227,7 +221,8 @@ private:
 			MASK_TOTALTIMELEFT = 1 << 8,
 			MASK_IP = 1 << 9,
 			MASK_STATUS_STRING = 1 << 10,
-			MASK_COUNTRY = 1 << 11
+			MASK_COUNTRY = 1 << 11,
+			MASK_FILE_LIST = 1 << 12
 		};
 
 		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
@@ -239,6 +234,7 @@ private:
 		User::Ptr user;
 		bool download;
 		bool transferFailed;
+		void setFileList(bool aFileList) { filelist = aFileList; updateMask |= MASK_FILE_LIST; }
 		bool filelist;
 		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
 		ItemInfo::Status status;
@@ -252,8 +248,8 @@ private:
 		int64_t actual;
 		void setSpeed(int64_t aSpeed) { speed = aSpeed; updateMask |= MASK_SPEED; }
 		int64_t speed;
-		void setTimeLeft(int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
-		int64_t timeLeft;
+		void setTimeLeft(u_int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
+		u_int64_t timeLeft;
 		void setTotalTimeLeft(int64_t aTotalTimeLeft) { totalTimeLeft = aTotalTimeLeft; updateMask |= MASK_TOTALTIMELEFT; }
 		int64_t totalTimeLeft;
 		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
@@ -300,8 +296,3 @@ private:
 };
 
 #endif // !defined(TRANSFER_VIEW_H)
-
-/**
- * @file
- * $Id: TransferView.h,v 1.2 2004/01/01 06:58:32 trem Exp $
- */

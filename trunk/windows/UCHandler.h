@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,8 +116,3 @@ private:
 };
 
 #endif // !defined(UC_HANDLER_H)
-
-/**
- * @file
- * $Id: UCHandler.h,v 1.11 2005/04/24 08:13:04 arnetheduck Exp $
- */

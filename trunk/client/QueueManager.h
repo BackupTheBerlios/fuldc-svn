@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,6 +150,7 @@ public:
 	int changePriority(const string& /*search*/, int /*priority*/);
 	void SearchAlternates(const string /*path*/);
 	u_int64_t getTotalSize(const string & path);
+	int64_t getQueueSize();
 
 private:
 	//MY STUFF =)
@@ -282,8 +283,3 @@ private:
 };
 
 #endif // !defined(QUEUE_MANAGER_H)
-
-/**
- * @file
- * $Id: QueueManager.h,v 1.6 2004/02/14 13:25:13 trem Exp $
- */

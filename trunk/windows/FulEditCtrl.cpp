@@ -465,8 +465,12 @@ int CFulEditCtrl::RegExpMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstring 
 		return tstring::npos;
 	
 	PME regexp(cs->getMatch().substr(4), _T("gims"));
+
+	//use this to avoid resetting the global flag in PME since
+	//i's using the address to check for a new string.
+	string tmp = Text::wideToAcp(line);
 				
-	while( regexp.match(line) > 0 ){
+	while( regexp.match(tmp) > 0 ){
 		found = true;
 
 		if( regexp.NumBackRefs() == 1){
@@ -600,7 +604,7 @@ LRESULT CFulEditCtrl::onDoubleClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	return bHandled = TRUE ? 0: 1;
 }
 
-LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
+LRESULT CFulEditCtrl::onFind(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	LPFINDREPLACE fr = reinterpret_cast<LPFINDREPLACE>(lParam);
 
 	if(fr->Flags & FR_DIALOGTERM){

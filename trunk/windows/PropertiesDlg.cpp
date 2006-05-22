@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@
 #include "FulIgnorePage.h"
 
 PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : 
-TreePropertySheet(_T("icons\\settings_tree.bmp"), CTSTRING(SETTINGS), 0, parent)
+TreePropertySheet(WinUtil::getIconPath(_T("settings_tree.bmp")), CTSTRING(SETTINGS), 0, parent)
 {
 	int n = 0;
 	pages[n++] = new GeneralPage(s);
@@ -107,9 +107,3 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	bHandled = FALSE;
 	return TRUE;
 }
-
-/**
- * @file
- * $Id: PropertiesDlg.cpp,v 1.3 2004/02/12 22:43:57 trem Exp $
- */
-

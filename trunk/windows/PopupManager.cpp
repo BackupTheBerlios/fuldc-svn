@@ -111,6 +111,13 @@ void PopupManager::AutoRemove(){
 }
 
 void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
+	bool rButton = (pos & 0x10000) > 0;
+	pos = pos & 0xFFFF; // remove the right mouse button bit.
+	
+	if(popups.empty()) { //seems like we hit a bit of a race condition here
+		return;			 //with the autoremove function, ohh well return and no harm done.
+	}
+	
 	//find the correct window
 	PopupIter i = popups.begin();
 
@@ -134,7 +141,7 @@ void PopupManager::Remove(int pos, bool	clicked /* = false*/) {
 	p->SendMessage(WM_CLOSE, 0, 0);
 	delete p;
 
-	if( clicked && BOOLSETTING(POPUP_ACTIVATE_ON_CLICK) ) {
+	if( clicked && BOOLSETTING(POPUP_ACTIVATE_ON_CLICK) && !rButton ) {
 		SetForegroundWindow(WinUtil::mainWnd);
 		if( IsIconic(WinUtil::mainWnd) )
 			ShowWindow(WinUtil::mainWnd, SW_RESTORE);

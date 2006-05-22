@@ -42,7 +42,6 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::EXPAND_QUEUE,					ResourceManager::EXPAND_QUEUE				},
 	{ SettingsManager::STRIP_ISP,						ResourceManager::STRIP_ISP					},
 	{ SettingsManager::STRIP_ISP_PM,					ResourceManager::STRIP_ISP_PM				},
-	{ SettingsManager::HIGH_PRIO_SAMPLE,				ResourceManager::HIGH_PRIO_SAMPLE			},
 	{ SettingsManager::HUBFRAME_CONFIRMATION,			ResourceManager::HUBFRAME_CONFIRMATION		},
 	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND				},
 	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC				}, 
@@ -50,6 +49,8 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::FLASH_WINDOW_ON_PM,				ResourceManager::FLASH_WINDOW_ON_PM			},
 	{ SettingsManager::FLASH_WINDOW_ON_NEW_PM,			ResourceManager::FLASH_WINDOW_ON_NEW_PM		},
 	{ SettingsManager::MUTE_ON_AWAY,					ResourceManager::MUTE_ON_AWAY				},
+	{ SettingsManager::NOTIFY_UPDATES,					ResourceManager::NOTIFY_UPDATES				},
+	{ SettingsManager::NOTIFY_BETA_UPDATES,				ResourceManager::NOTIFY_BETA_UPDATES		},
 	{ 0,												ResourceManager::SETTINGS_AUTO_AWAY			}
 };
 

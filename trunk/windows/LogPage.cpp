@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,9 @@ void LogPage::write()
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
 		SettingsManager::getInstance()->set(SettingsManager::LOG_DIRECTORY, s + '\\');
 	}
-	File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	try {
+		File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	} catch (const FileException) {	}
 
 	//make sure we save the last edit too, the user
 	//might not have changed the selection
@@ -159,8 +161,3 @@ LRESULT LogPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_LOGPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: LogPage.cpp,v 1.1 2004/12/29 19:52:36 arnetheduck Exp $
- */

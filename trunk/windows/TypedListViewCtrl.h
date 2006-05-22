@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,30 +125,7 @@ public:
 		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
 		if(di->item.mask & LVIF_TEXT) {
 			di->item.mask |= LVIF_DI_SETITEM;
-			int pos = di->item.iSubItem;
-			bool insert = false;
-			int j = 0;
-			TCHAR *buf = new TCHAR[512];
-			LVCOLUMN lvc;
-			lvc.mask = LVCF_TEXT;
-			lvc.pszText = buf;
-			lvc.cchTextMax = 512;
-			GetColumn(pos, &lvc);
-			if(columnList.size() > 0){
-				for(ColumnIter i = columnList.begin(); i != columnList.end(); ++i, ++j){
-					if((Util::stricmp(buf, (*i)->name.c_str()) == 0)){
-						if((*i)->visible == true)
-							insert = true;
-						break;
-					}
-				}
-			} else {
-				insert = true;
-			}
-			if(insert == true)
-				di->item.pszText = const_cast<TCHAR*>(((T*)di->item.lParam)->getText(j).c_str());
-
-			delete[] buf;
+			di->item.pszText = const_cast<TCHAR*>(((T*)di->item.lParam)->getText(columnIndexes[di->item.iSubItem]).c_str());
 		}
 		return 0;
 	}
@@ -232,6 +209,7 @@ public:
 	}
 	void updateItem(T* item) { int i = findItem(item); if(i != -1) updateItem(i); }
 	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); }
+	void deleteItem(const tstring& item) { int i = findItem(item); if(i != -1) DeleteItem(i); }
 
 	int getSortPos(T* a) {
 		int high = GetItemCount();
@@ -283,6 +261,7 @@ public:
 
 	int InsertColumn(int nCol, const tstring &columnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1 ){
 		columnList.push_back(new ColumnInfo(columnHeading, nCol, nFormat, nWidth));
+		columnIndexes.push_back(nCol);
 		return CListViewCtrl::InsertColumn(nCol, columnHeading.c_str(), nFormat, nWidth, nSubItem);
 	}
 
@@ -425,6 +404,8 @@ public:
 			SetColumn(pos, &lvcl);
 		}
 
+		updateColumnIndexes();
+
 		SetRedraw();
 		Invalidate();
 		UpdateWindow();
@@ -494,6 +475,8 @@ public:
 				removeColumn(*j);
 			}
 		}
+
+		updateColumnIndexes();
 	}
 
 	void setColumnOrderArray(int iCount, LPINT piArray ) {
@@ -505,29 +488,9 @@ public:
 		}
 	}
 
-	//find the current position for the column that was inserted at the specified pos
+	//find the original position of the column at the current position.
 	int findColumn(int col){
-		TCHAR *buf = new TCHAR[512];
-		LVCOLUMN lvcl;
-		lvcl.mask = LVCF_TEXT;
-		lvcl.pszText = buf;
-		lvcl.cchTextMax = 512;
-
-		GetColumn(col, &lvcl);
-
-		int result = -1;
-
-		int i = 0;
-		for(ColumnIter j = columnList.begin(); j != columnList.end(); ++i, ++j){
-			if(Util::stricmp((*j)->name.c_str(), buf) == 0){
-				result = i;
-				break;
-			}
-		}
-
-		delete[] buf;
-
-		return result;
+		return columnIndexes[col];
 	}					
 
 	void setOwnerDraw(bool handleDrawing) { ownerDraw = handleDrawing; }
@@ -552,6 +515,7 @@ private:
 	typedef ColumnList::iterator ColumnIter;
 
 	ColumnList columnList;
+	vector<int> columnIndexes;
 
 	void removeColumn(ColumnInfo* ci){
 		
@@ -600,11 +564,30 @@ private:
 
 		return result;
 	}
+
+	void updateColumnIndexes() {
+		columnIndexes.clear();
+		
+		int columns = GetHeader().GetItemCount();
+		
+		columnIndexes.reserve(columns);
+
+		TCHAR *buf = new TCHAR[100];
+		LVCOLUMN lvcl;
+
+		for(int i = 0; i < columns; ++i) {
+			lvcl.mask = LVCF_TEXT;
+			lvcl.pszText = buf;
+			lvcl.cchTextMax = 100;
+			GetColumn(i, &lvcl);
+			for(u_int32_t j = 0; j < columnList.size(); ++j) {
+				if(Util::stricmp(columnList[j]->name.c_str(), lvcl.pszText) == 0) {
+					columnIndexes.push_back(static_cast<int>(j));
+					break;
+				}
+			}
+		}
+	}
 };
 
 #endif // !defined(TYPED_LIST_VIEW_CTRL_H)
-
-/**
- * @file
- * $Id: TypedListViewCtrl.h,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
- */

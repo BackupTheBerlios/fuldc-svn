@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,6 +154,7 @@ private:
 	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
 	virtual void on(DownloadFailed, const string& l) throw() { speak(FAILED, l); }
 	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
+	virtual void on(PublicHubsUpdated) throw() { updateDropDown(); }
 
 	void speak(int x, const string& l) {
 		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(Text::toT(l)));
@@ -168,8 +169,3 @@ private:
 };
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)
-
-/**
- * @file
- * $Id: PublicHubsFrm.h,v 1.3 2004/01/07 01:40:29 trem Exp $
- */

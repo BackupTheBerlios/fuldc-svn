@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+* Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
-
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
@@ -31,8 +30,8 @@
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 #include "TextFrame.h"
+#include "FinishedManager.h"
 
-#include "../client/FinishedManager.h"
 #include "../client/ClientManager.h"
 #include "../client/StringTokenizer.h"
 #include "../client/QueueItem.h"
@@ -133,10 +132,6 @@ public:
 			checkButton(false);
 			frame = NULL;
 
-			//cleanup to avoid memory leak
-			for(int i = 0; i < ctrlList.GetItemCount(); ++i) {
-				delete ctrlList.getItemData(i);
-			}
 			ctrlList.DeleteAllItems();
 
 			bHandled = FALSE;
@@ -148,8 +143,8 @@ public:
 		NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;
 
 		if(item->iItem != -1) {
-			ItemInfo *ii = ctrlList.getItemData(item->iItem);
-			WinUtil::openFile(Text::toT(ii->entry->getTarget()));
+			FinishedItem *fi = ctrlList.getItemData(item->iItem);
+			WinUtil::openFile(fi->getText(COLUMN_PATH) + fi->getText(COLUMN_FILE));
 		}
 		return 0;
 	}
@@ -164,10 +159,6 @@ public:
 		} else if(wParam == SPEAK_REMOVE) {
 			updateStatus();
 		} else if(wParam == SPEAK_REMOVE_ALL) {
-			//cleanup to avoid memory leak
-			for(int i = 0; i < ctrlList.GetItemCount(); ++i) {
-				delete ctrlList.getItemData(i);
-			}
 			ctrlList.DeleteAllItems();
 			updateStatus();
 		}
@@ -181,10 +172,9 @@ public:
 			{
 				int i = -1;
 				while((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-					ItemInfo *ii = ctrlList.getItemData(i);
-					FinishedManager::getInstance()->remove(ii->entry, upload);
+					FinishedItem *fi = ctrlList.getItemData(i);
 					ctrlList.DeleteItem(i);
-					delete ii;
+					FinishedManager::getInstance()->remove(fi, upload);
 				}
 				break;
 			}
@@ -198,9 +188,9 @@ public:
 	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		int i;
 		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			ItemInfo *ii = ctrlList.getItemData(i);
-			if(ii != NULL)
-				TextFrame::openWindow(Text::toT(ii->entry->getTarget()));
+			FinishedItem *fi = ctrlList.getItemData(i);
+			if(fi != NULL)
+				TextFrame::openWindow(fi->getText(COLUMN_PATH) + fi->getText(COLUMN_FILE));
 		}
 		return 0;
 	}
@@ -208,9 +198,9 @@ public:
 	LRESULT onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		int i;
 		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			ItemInfo *ii = ctrlList.getItemData(i);
-			if(ii != NULL)
-				WinUtil::openFile(Text::toT(ii->entry->getTarget()));
+			FinishedItem *fi = ctrlList.getItemData(i);
+			if(fi != NULL)
+				WinUtil::openFile(fi->getText(COLUMN_PATH) + fi->getText(COLUMN_FILE));
 		}
 		return 0;
 	}
@@ -218,9 +208,9 @@ public:
 	LRESULT onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		int i;
 		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			ItemInfo *ii = ctrlList.getItemData(i);
-			if(ii != NULL)
-				::ShellExecute(NULL, NULL, Text::toT(Util::getFilePath(ii->entry->getTarget())).c_str(), NULL, NULL, SW_SHOWNORMAL);
+			FinishedItem *fi = ctrlList.getItemData(i);
+			if(fi != NULL)
+				::ShellExecute(NULL, NULL, fi->getText(COLUMN_PATH).c_str(), NULL, NULL, SW_SHOWNORMAL);
 		}
 		return 0;
 	}
@@ -258,9 +248,9 @@ public:
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		int i;
 		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			ItemInfo *ii = ctrlList.getItemData(i);
-			if(ii) {
-				User::Ptr u = ClientManager::getInstance()->findUser(ii->entry->getCID());
+			FinishedItem *fi = ctrlList.getItemData(i);
+			if(fi) {
+				User::Ptr u = ClientManager::getInstance()->getUser(fi->getCID());
 				if(u) {
 					QueueManager::getInstance()->addList(u, QueueItem::FLAG_CLIENT_VIEW);
 				} else {
@@ -277,9 +267,9 @@ public:
 	LRESULT onGrant(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		int i;
 		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			ItemInfo *ii = ctrlList.getItemData(i);
-			if(ii) {
-				User::Ptr u = ClientManager::getInstance()->findUser(ii->entry->getCID());
+			FinishedItem *fi = ctrlList.getItemData(i);
+			if(fi) {
+				User::Ptr u = ClientManager::getInstance()->getUser(fi->getCID());
 				if(u) {
 					UploadManager::getInstance()->reserveSlot(u);
 				} else {
@@ -337,52 +327,15 @@ protected:
 		COLUMN_SIZE,
 		COLUMN_SPEED,
 		COLUMN_CRC32,
+		COLUMN_TTH,
 		COLUMN_LAST
-	};
-
-	class ItemInfo {
-	public:
-		ItemInfo(FinishedItem* fi) {
-			entry = fi;
-
-			columns[COLUMN_FILE]  = Text::toT(Util::getFileName(entry->getTarget()));
-			columns[COLUMN_DONE]  = Text::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime()));
-			columns[COLUMN_PATH]  = Text::toT(Util::getFilePath(entry->getTarget()));
-			columns[COLUMN_NICK]  = Text::toT(entry->getUser());
-			columns[COLUMN_HUB]   = Text::toT(entry->getHub());
-			columns[COLUMN_SIZE]  = Text::toT(Util::formatBytes(entry->getSize()));
-			columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s");
-		}
-		tstring columns[COLUMN_LAST];
-
-		const tstring& getText(int col) const {
-			dcassert(col >= 0 && col < COLUMN_LAST);
-			return columns[col];
-		}
-
-		const tstring& copy(int col) {
-			if(col >= 0 && col < COLUMN_LAST)
-				return getText(col);
-
-			return Util::emptyStringT;
-		}
-
-		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
-			switch(col) {
-				case COLUMN_SPEED:	return compare(a->entry->getAvgSpeed(), b->entry->getAvgSpeed());
-				case COLUMN_SIZE:	return compare(a->entry->getSize(), b->entry->getSize());
-				default:			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
-			}
-		}
-
-		FinishedItem* entry;
 	};
 
 	CStatusBarCtrl ctrlStatus;
 	CMenu ctxMenu;
 	CMenu copyMenu;
 
-	TypedListViewCtrl<ItemInfo, id> ctrlList;
+	TypedListViewCtrl<FinishedItem, id> ctrlList;
 
 	int64_t totalBytes;
 	int64_t totalTime;
@@ -422,23 +375,21 @@ protected:
 	}
 
 	void addEntry(FinishedItem* entry) {
-		ItemInfo *ii = new ItemInfo(entry);
 		totalBytes += entry->getChunkSize();
 		totalTime += entry->getMilliSeconds();
 
-		int image = WinUtil::getIconIndex(Text::toT(entry->getTarget()));
-		int loc = ctrlList.insertItem(ii, image);
+		int loc = ctrlList.insertItem(entry, entry->getIconIndex());
 		ctrlList.EnsureVisible(loc, FALSE);
 	}
 };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
+int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32, COLUMN_TTH };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
+int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90, 100 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH, 
-ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
+ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED, ResourceManager::TTH_ROOT
 };
 
 #endif // !defined(FINISHED_FRAME_BASE_H)

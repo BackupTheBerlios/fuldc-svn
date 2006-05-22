@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include <windows.h>
 #include <crtdbg.h>
 #include <tchar.h>
+#include <ShlObj.h>
 
 #else
 #include <unistd.h>
@@ -133,8 +134,3 @@ using namespace stdext;
 #endif // __GLIBCPP__
 
 #endif // !defined(STDINC_H)
-
-/**
- * @file
- * $Id: stdinc.h,v 1.2 2003/12/30 13:31:45 trem Exp $
- */

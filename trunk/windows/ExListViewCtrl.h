@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ public:
  		SORT_STRING,
 		SORT_STRING_NOCASE,
 		SORT_INT,
-		SORT_FLOAT
+		SORT_FLOAT,
+		SORT_BYTES
 	};
 
 	typedef ListViewArrows<ExListViewCtrl> arrowBase;
@@ -143,7 +144,11 @@ public:
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
 			result = compare(_tstof(buf), _tstof(buf2));
-		}
+		} else if(result == SORT_BYTES) {
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
+			result = compare(Util::toBytes(buf), Util::toBytes(buf2));
+ 		}
 		if(!p->ascending)
 			result = -result;
 		return result;
@@ -172,8 +177,3 @@ public:
 };
 
 #endif // !defined(EX_LIST_VIEW_CTRL_H)
-
-/**
- * @file
- * $Id: ExListViewCtrl.h,v 1.1 2003/12/15 16:51:58 trem Exp $
- */

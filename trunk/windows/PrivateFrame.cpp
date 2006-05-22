@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "SearchFrm.h"
 #include "PopupManager.h"
 #include "TextFrame.h"
+#include "WinUtil.h"
 
 #include "../client/Client.h"
 #include "../client/ClientManager.h"
@@ -95,7 +96,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
-	const User::Ptr& user = (from == ClientManager::getInstance()->getMe()) ? to : replyTo;
+	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 	
 	FrameIter i = frames.find(user);
 	if(i == frames.end()) {
@@ -298,7 +299,7 @@ void PrivateFrame::onEnter()
 				PostMessage(WM_CLOSE);
 			} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
 				FavoriteManager::getInstance()->addFavoriteUser(getUser());
-				addStatus(TSTRING(FAVORITE_USER_ADDED));
+				addLine(TSTRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
@@ -625,7 +626,7 @@ void PrivateFrame::readLog() {
 	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 
-	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params));
+	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true));
 
 	try {
 		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
@@ -668,8 +669,3 @@ void PrivateFrame::readLog() {
 	} catch(const FileException&){
 	}
 }
-
-/**
- * @file
- * $Id: PrivateFrame.cpp,v 1.14 2004/02/21 15:15:02 trem Exp $
- */

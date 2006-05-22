@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -212,25 +212,11 @@ private:
 		typedef vector<SourceInfo> SourceList;
 		typedef SourceList::iterator SourceIter;
 
-		enum {
-			MASK_TARGET = 1 << COLUMN_TARGET,
-			MASK_STATUS = 1 << COLUMN_STATUS,
-			MASK_SIZE = 1 << COLUMN_SIZE,
-			MASK_DOWNLOADED = 1 << COLUMN_DOWNLOADED,
-			MASK_PRIORITY = 1 << COLUMN_PRIORITY,
-			MASK_USERS = 1 << COLUMN_USERS,
-			MASK_PATH = 1 << COLUMN_PATH,
-			MASK_ERRORS = 1 << COLUMN_ERRORS,
-			MASK_ADDED = 1 << COLUMN_ADDED,
-			MASK_TTH = 1 << COLUMN_TTH,
-			MASK_TYPE = 1 << COLUMN_TYPE
-		};
-
 		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(Text::toT(aQI->getTarget())),
 			path(Text::toT(Util::getFilePath(aQI->getTarget()))),
 			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
 			added(aQI->getAdded()), tth(aQI->getTTH()), priority(aQI->getPriority()), status(aQI->getStatus()),
-			updateMask((u_int32_t)-1), display(NULL)
+			display(NULL), online(0)
 		{ 
 			for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
 				sources.push_back(SourceInfo(*(*i)));
@@ -296,9 +282,31 @@ private:
 			}
 			return false;
 		}
+
+		QueueItemInfo& operator=(const QueueItemInfo& rhs) {
+			delete display;
+			display = rhs.display;
+			added = rhs.added;
+			sources = rhs.sources;
+			badSources = rhs.badSources;
+			downloadedBytes = rhs.downloadedBytes;
+			online = rhs.online;
+			path = rhs.path;
+			priority = rhs.priority;
+			size = rhs.size;
+			status = rhs.status;
+			target = rhs.target;
+			tth = rhs.tth;
+			type = rhs.type;
+			users = rhs.users;
+
+			return *this;
+		}
 		
 		GETSET(tstring, target, Target);
 		GETSET(tstring, path, Path);
+		GETSET(tstring, users, Users);
+		GETSET(int, online, Online);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
 		GETSET(u_int32_t, added, Added);
@@ -306,15 +314,13 @@ private:
 		GETSET(QueueItem::Status, status, Status);
 		GETSET(TTHValue*, tth, TTH);
 		GETSET(tstring, type, Type);
-		u_int32_t updateMask;
 	
 	private:
 
 		Display* display;
 
 		QueueItemInfo(const QueueItemInfo&);
-		QueueItemInfo& operator=(const QueueItemInfo&);
-		
+				
 		SourceList sources;
 		SourceList badSources;
 
@@ -358,10 +364,7 @@ private:
 
 	HTREEITEM fileLists;
 
-	typedef hash_map<QueueItem*, QueueItemInfo*, PointerHash<QueueItem> > QueueMap;
-	typedef QueueMap::iterator QueueIter;
-	QueueMap queue;
-	
+
 	typedef HASH_MULTIMAP_X(tstring, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
@@ -423,6 +426,42 @@ private:
 		delete (tstring*)ctrlDirs.GetItemData(item);
 	}
 
+	QueueItemInfo::SourceInfo* getSourceInfo(const CMenu& menu, WORD wID) {
+		TCHAR buf[50];
+
+		menu.GetMenuString(wID, &buf[0], 50, MF_BYCOMMAND);
+
+		QueueItemInfo *qii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
+
+		if(qii) {
+			string tmp = Text::fromT(buf);
+			QueueItemInfo::SourceIter i  = qii->getSources().begin();
+			for(; i != qii->getSources().end(); ++i) {
+				if(Util::stricmp(i->getUser()->getFirstNick(), tmp) == 0)
+					return &(*i);
+			}
+		}
+		return NULL;
+	}
+
+	QueueItemInfo::SourceInfo* getBadSourceInfo(const CMenu& menu, WORD wID) {
+		TCHAR buf[50];
+
+		menu.GetMenuString(wID, &buf[0], 50, MF_BYCOMMAND);
+
+		QueueItemInfo *qii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
+
+		if(qii) {
+			string tmp = Text::fromT(buf);
+			QueueItemInfo::SourceIter i  = qii->getBadSources().begin();
+			for(; i != qii->getBadSources().end(); ++i) {
+				if(Util::stricmp(i->getUser()->getFirstNick(), tmp) == 0)
+					return &(*i);
+			}
+		}
+		return NULL;
+	}
+
 	void removeSelected() {
 		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			ctrlQueue.forEachSelected(&QueueItemInfo::remove);
@@ -441,12 +480,12 @@ private:
 	const tstring& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((tstring*)ctrlDirs.GetItemData(ht)); }
 
 	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
-	virtual void on(QueueManagerListener::Moved, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Moved, QueueItem* aQI, string aSource) throw();
 	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
 	virtual void on(QueueManagerListener::SearchAlternates, string aMsg, int nr) throw();
-	void collapse(HTREEITEM item);
+	void expand(HTREEITEM item);
 };
 
 #endif // !defined(QUEUE_FRAME_H)

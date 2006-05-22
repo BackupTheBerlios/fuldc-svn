@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,13 +42,12 @@ ResourceManager::TIME_LEFT, ResourceManager::TOTAL_TIME_LEFT, ResourceManager::S
 ResourceManager::IP_BARE, ResourceManager::RATIO};
 
 TransferView::~TransferView() {
-	delete[] headerBuf;
 	arrows.Destroy();
 }
 
 LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 
-	arrows.CreateFromImage(_T("icons\\arrows.bmp"), 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	arrows.CreateFromImage(WinUtil::getIconPath(_T("arrows.bmp")).c_str(), 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
@@ -246,12 +245,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		// Let's draw a box if needed...
-		LVCOLUMN lvc;
-		lvc.mask = LVCF_TEXT;
-		lvc.pszText = headerBuf;
-		lvc.cchTextMax = 128;
-		ctrlTransfers.GetColumn(cd->iSubItem, &lvc);
-		if(Util::stricmp(headerBuf, CTSTRING_I(columnNames[COLUMN_STATUS])) == 0) {
+		if(ctrlTransfers.findColumn(cd->iSubItem) == COLUMN_STATUS) {
 			ItemInfo* ii = reinterpret_cast<ItemInfo*>(cd->nmcd.lItemlParam);
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
@@ -453,8 +447,10 @@ TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoB
 }
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
-	filelist = ui.filelist;
-
+	
+	if(ui.updateMask & UpdateInfo::MASK_FILE_LIST) {
+		filelist = ui.filelist;
+	}
 	if(ui.updateMask & UpdateInfo::MASK_STATUS) {
 		status = ui.status;
 	}
@@ -484,6 +480,7 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 		else
 			columns[COLUMN_TOTALTIMELEFT] = Util::emptyStringT;
 	}
+
 	if(ui.updateMask & UpdateInfo::MASK_SPEED) {
 		speed = ui.speed;
 		if (status == STATUS_RUNNING) {
@@ -538,7 +535,7 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 
 void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true);
-	ui->filelist = aDownload->isSet(Download::FLAG_USER_LIST);
+	ui->setFileList(aDownload->isSet(Download::FLAG_USER_LIST));
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
 	ui->setPos(aDownload->getTotal());
 	ui->setActual(aDownload->getActual());
@@ -622,7 +619,6 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 	UpdateInfo* ui = new UpdateInfo(aUpload->getUserConnection()->getUser(), false);
 
-	ui->filelist = aUpload->isSet(Upload::FLAG_USER_LIST);
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
 	ui->setPos(aUpload->getTotal());
 	ui->setActual(aUpload->getActual());
@@ -776,7 +772,3 @@ LRESULT TransferView::onPmAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 	return 0;	
 }
-/**
- * @file
- * $Id: TransferView.cpp,v 1.8 2004/02/21 10:46:10 trem Exp $
- */

@@ -244,10 +244,6 @@
 				>
 			</File>
 			<File
-				RelativePath="client\FinishedManager.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\client\HashManager.cpp"
 				>
 			</File>
@@ -265,10 +261,6 @@
 			</File>
 			<File
 				RelativePath=".\client\LogManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\client\NmdcHub.cpp"
 				>
 			</File>
 			<File
@@ -505,10 +497,6 @@
 				>
 			</File>
 			<File
-				RelativePath="client\FinishedManager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\client\HashManager.h"
 				>
 			</File>
@@ -538,10 +526,6 @@
 			</File>
 			<File
 				RelativePath=".\client\MerkleTree.h"
-				>
-			</File>
-			<File
-				RelativePath=".\client\NmdcHub.h"
 				>
 			</File>
 			<File

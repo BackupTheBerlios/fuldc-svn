@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,7 +134,6 @@ LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
 	checkButton(false);
-	frame = NULL;
 	
 	bHandled = FALSE;
 	return 0;
@@ -549,8 +548,3 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	// Update 'Active' check box
 	ctrlList.SetCheckState(index, search.isActive);
 }
-
-/**
- * @file
- * $Id: ADLSearchFrame.cpp,v 1.2 2004/01/06 01:52:08 trem Exp $
- */

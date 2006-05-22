@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom on home point se
+ * Henrik Engstrï¿½m, henrikengstrom on home point se
  */
 
 #if !defined(ADL_SEARCH_FRAME_H)
@@ -141,8 +141,3 @@ private:
 };
 
 #endif // !defined(ADL_SEARCH_FRAME_H)
-
-/**
- * @file
- * $Id: ADLSearchFrame.h,v 1.3 2004/01/07 01:40:29 trem Exp $
- */

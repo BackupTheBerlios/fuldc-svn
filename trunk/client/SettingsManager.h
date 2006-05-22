@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ public:
         SKIPLIST_DOWNLOAD, SKIPLIST_SHARE, POPUP_FONT, FREE_SLOTS_EXTENSIONS, 
 		HUBFRAME_VISIBLE, MAINFRAME_VISIBLE, SEARCHFRAME_VISIBLE, 
 		QUEUEFRAME_VISIBLE, DIRECTORYLISTINGFRAME_VISIBLE, FINISHED_VISIBLE, FINISHED_UL_VISIBLE,
+		HIGH_PRIO_FILES,
 		STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
@@ -72,7 +73,7 @@ public:
 		AUTO_SEARCH, TIME_STAMPS, CONFIRM_EXIT, IGNORE_OFFLINE, POPUP_OFFLINE,
 		LIST_DUPES, BUFFER_SIZE, DOWNLOAD_SLOTS, MAX_DOWNLOAD_SPEED, LOG_MAIN_CHAT, LOG_PRIVATE_CHAT,
 		LOG_DOWNLOADS, LOG_UPLOADS, STATUS_IN_CHAT, SHOW_JOINS, PRIVATE_MESSAGE_BEEP, PRIVATE_MESSAGE_BEEP_OPEN,
-		USE_SYSTEM_ICONS, POPUP_PMS, MIN_UPLOAD_SPEED, GET_USER_INFO, URL_HANDLER, MAIN_WINDOW_STATE,
+		POPUP_PMS, MIN_UPLOAD_SPEED, GET_USER_INFO, URL_HANDLER, MAIN_WINDOW_STATE,
 		MAIN_WINDOW_SIZE_X, MAIN_WINDOW_SIZE_Y, MAIN_WINDOW_POS_X, MAIN_WINDOW_POS_Y, AUTO_AWAY,
 		SOCKS_PORT, SOCKS_RESOLVE, KEEP_LISTS, AUTO_KICK, QUEUEFRAME_SHOW_TREE,
 		COMPRESS_TRANSFERS, SHOW_PROGRESS_BARS, SFV_CHECK, MAX_TAB_ROWS,
@@ -92,7 +93,7 @@ public:
 		OPEN_WAITING_USERS, BOLD_WAITING_USERS, OPEN_SYSTEM_LOG, BOLD_SYSTEM_LOG, AUTO_UPDATE_LIST, 
 		USE_SSL, AUTO_SEARCH_LIMIT, 
 		INCOMING_REFRESH_TIME, SHARE_REFRESH_TIME, CHATBUFFERSIZE, AUTO_UPDATE_INCOMING, EXPAND_QUEUE,
-		STRIP_ISP, STRIP_ISP_PM,HUB_BOLD_TABS, HIGH_PRIO_SAMPLE,
+		STRIP_ISP, STRIP_ISP_PM,HUB_BOLD_TABS,
 		POPUP_TIMEOUT, POPUP_AWAY, POPUP_MINIMIZED, POPUP_ON_PM, POPUP_ON_NEW_PM, POPUP_ON_HUBSTATUS,
 		HUBFRAME_CONFIRMATION,
 		TAB_ACTIVE_BG, TAB_ACTIVE_TEXT, TAB_ACTIVE_BORDER, TAB_INACTIVE_BG, TAB_SHOW_ICONS, 
@@ -102,7 +103,8 @@ public:
 		POPUP_DONT_SHOW_ON_ACTIVE, DUPE_COLOR, NO_TTH_COLOR, DROP_STUPID_CONNECTION, FLASH_WINDOW_ON_PM,
 		FLASH_WINDOW_ON_NEW_PM,
 		REFRESH_INCOMING_BETWEEN, REFRESH_SHARE_BETWEEN, REFRESH_INCOMING_BEGIN, 
-		REFRESH_INCOMING_END, REFRESH_SHARE_BEGIN, REFRESH_SHARE_END, MUTE_ON_AWAY, 
+		REFRESH_INCOMING_END, REFRESH_SHARE_BEGIN, REFRESH_SHARE_END, MUTE_ON_AWAY, NOTIFY_UPDATES,
+		NOTIFY_BETA_UPDATES, SPY_IGNORE_TTH,
         INT_LAST };
 
 	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
@@ -111,6 +113,8 @@ public:
 	enum {	INCOMING_DIRECT, INCOMING_FIREWALL_UPNP, INCOMING_FIREWALL_NAT,
 		INCOMING_FIREWALL_PASSIVE };
 	enum {	OUTGOING_DIRECT, OUTGOING_SOCKS5 };
+
+	enum FileEvents { ON_FILE_COMPLETE, ON_DIR_CREATED};
 
 
 	const string& get(StrSetting key, bool useDefault = true) const {
@@ -129,7 +133,7 @@ public:
 	}
 
 	void set(StrSetting key, string const& value) {
-		if(((key == DESCRIPTION) || (key == NICK)) && (value.size() > 35)) {
+		if(((key == DESCRIPTION) || (key == NICK) || (key == UPLOAD_SPEED)) && (value.size() > 35)) {
 			strSettings[key - STR_FIRST] = value.substr(0, 35);
 		} else {
 			strSettings[key - STR_FIRST] = value;
@@ -260,6 +264,10 @@ public:
 		filterHistory.clear();
 	}
 
+	StringPair getFileEvent(SettingsManager::FileEvents fe) {
+		return fileEvents[fe];
+	}
+
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
@@ -279,6 +287,7 @@ private:
 
 	TStringList		searchHistory;
 	TStringList		filterHistory;
+	StringPairList fileEvents;
 };
 
 // Shorthand accessor macros
@@ -286,8 +295,3 @@ private:
 #define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
 
 #endif // !defined(SETTINGS_MANAGER_H)
-
-/**
- * @file
- * $Id: SettingsManager.h,v 1.12 2004/02/23 16:02:19 trem Exp $
- */

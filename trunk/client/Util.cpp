@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
 #include "SettingsManager.h"
+#include "LogManager.h"
 #include "version.h"
 
 #ifndef _WIN32
@@ -307,6 +308,14 @@ string Util::validateFileName(string tmp) {
 	return tmp;
 }
 
+string Util::cleanPathChars(string aNick) {
+	string::size_type i = 0;
+
+	while( (i = aNick.find_first_of("/.\\", i)) != string::npos) {
+		aNick[i] = '_';
+	}
+	return aNick;
+}
 
 wstring Util::validateFileName(wstring tmp) {
 	wstring::size_type i = 0;
@@ -419,6 +428,24 @@ string Util::formatBytes(int64_t aBytes) {
 	}
 
 	return buf;
+}
+
+double Util::toBytes(TCHAR* aSize) {
+	double bytes = _tstof(aSize);
+
+	if (_tcsstr(aSize, CTSTRING(PIB))) {
+		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0;
+	} else if (_tcsstr(aSize, CTSTRING(TiB))) {
+		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0;
+	} else if (_tcsstr(aSize, CTSTRING(GiB))) {
+		return bytes * 1024.0 * 1024.0 * 1024.0;
+	} else if (_tcsstr(aSize, CTSTRING(MiB))) {
+		return bytes * 1024.0 * 1024.0;
+	} else if (_tcsstr(aSize, CTSTRING(KiB))) {
+		return bytes * 1024.0;
+	} else {
+		return bytes;
+	}
 }
 
 wstring Util::formatBytesW(int64_t aBytes) {
@@ -693,7 +720,7 @@ string Util::encodeURI(const string& aString, bool reverse) {
  * date/time and then finally written to the log file. If the parameter is not present at all,
  * it is removed from the string completely...
  */
-string Util::formatParams(const string& msg, StringMap& params) {
+string Util::formatParams(const string& msg, StringMap& params, bool filter) {
 	string result = msg;
 
 	string::size_type i, j, k;
@@ -708,13 +735,21 @@ string Util::formatParams(const string& msg, StringMap& params) {
 			result.erase(j, k-j + 1);
 			i = j;
 		} else {
-			if(smi->second.find('%') != string::npos) {
+			if(smi->second.find_first_of("%\\./") != string::npos) {
 				string tmp = smi->second;	// replace all % in params with %% for strftime
 				string::size_type m = 0;
 				while(( m = tmp.find('%', m)) != string::npos) {
 					tmp.replace(m, 1, "%%");
 					m+=2;
 				}
+				if(filter) {
+					// Filter chars that produce bad effects on file systems
+					m = 0;
+					while(( m = tmp.find_first_of("\\./", m)) != string::npos) {
+						tmp[m] = '_';
+					}
+				}
+				
 				result.replace(j, k-j + 1, tmp);
 				i = j + tmp.size();
 			} else {
@@ -764,32 +799,7 @@ string fixedftime(const string& format, struct tm* t) {
 
 string Util::formatTime(const string &msg, const time_t t) {
 	if (!msg.empty()) {
-		size_t bufsize = msg.size() + 256;
-		struct tm* loc = localtime(&t);
-
-		if(!loc) {
-			return Util::emptyString;
-		}
-#if _WIN32
-		AutoArray<TCHAR> buf(bufsize);
-
-		if(!_tcsftime(buf, bufsize-1, Text::toT(msg).c_str(), loc)) {
-			return fixedftime(msg, loc);
-		}
-
-		return Text::fromT(tstring(buf));
-#else
-		// will this give wide representations for %a and %A?
-		// surely win32 can't have a leg up on linux/unixen in this area. - Todd
-		AutoArray<char> buf(bufsize);
-
-		while(!strftime(buf, bufsize-1, msg.c_str(), loc)) {
-			bufsize+=64;
-			buf = new char[bufsize];
-		}
-
-		return string(buf);
-#endif
+		return Text::fromT(formatTime(Text::toT(msg), t));
 	}
 	return Util::emptyString;
 }
@@ -807,7 +817,7 @@ wstring Util::formatTime(const wstring& msg, const time_t t){
 
 		while(!wcsftime(buf, bufsize-1, msg.c_str(), loc)) {
 			bufsize += 64;
-			buf= new wchar_t[bufsize];
+			buf = new wchar_t[bufsize];
 		}
 
 		return wstring(buf);
@@ -1039,7 +1049,3 @@ string Util::replace(const string& aString, const string& fStr, const string& rS
 
 	return tmp;
 }
-/**
- * @file
- * $Id: Util.cpp,v 1.4 2004/02/14 13:26:28 trem Exp $
- */

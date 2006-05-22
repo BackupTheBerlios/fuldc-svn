@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,8 +207,3 @@ private:
 };
 
 #endif // !defined(PRIVATE_FRAME_H)
-
-/**
- * @file
- * $Id: PrivateFrame.h,v 1.10 2004/02/21 15:44:10 trem Exp $
- */

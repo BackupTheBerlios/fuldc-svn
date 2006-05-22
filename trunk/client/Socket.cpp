@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -367,6 +367,7 @@ void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int 
 	u_int8_t* buf = (u_int8_t*)aBuffer;
 	if(sock == INVALID_SOCKET) {
 		create(TYPE_UDP);
+		setSocketOpt(SO_SNDTIMEO, 250);
 	}
 
 	dcassert(type == TYPE_UDP);
@@ -580,8 +581,3 @@ void Socket::disconnect() throw() {
 	shutdown();
 	close();
 }
-
-/**
- * @file
- * $Id: Socket.cpp,v 1.3 2003/12/30 13:31:44 trem Exp $
- */

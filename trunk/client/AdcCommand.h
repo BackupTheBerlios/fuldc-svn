@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,8 +103,8 @@ public:
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT);
 	explicit AdcCommand(u_int32_t aCmd, const u_int32_t aTarget);
 	explicit AdcCommand(Severity sev, Error err, const string& desc, char aType = TYPE_CLIENT);
-	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException);
-	void parse(const string& aLine, bool nmdc = false) throw(ParseException);
+	explicit AdcCommand(const string& aLine) throw(ParseException);
+	void parse(const string& aLineB) throw(ParseException);
 
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
@@ -116,7 +116,7 @@ public:
 	const StringList& getParameters() const { return parameters; }
 
 	string toString(const CID& aCID) const;
-	string toString(u_int32_t sid, bool nmdc = false) const;
+	string toString(u_int32_t sid) const;
 
 	AdcCommand& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
@@ -137,7 +137,7 @@ public:
 
 	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
 
-	static string escape(const string& str, bool old);
+	static string escape(const string& str);
 	u_int32_t getTo() const { return to; }
 	AdcCommand& setTo(const u_int32_t sid) { to = sid; return *this; }
 	u_int32_t getFrom() const { return from; }
@@ -146,8 +146,8 @@ public:
 	static string fromSID(const u_int32_t aSID) { return string(reinterpret_cast<const char*>(&aSID), sizeof(aSID)); }
 private:
 	string getHeaderString(const CID& cid) const;
-	string getHeaderString(u_int32_t sid, bool nmdc) const;
-	string getParamString(bool nmdc) const;
+	string getHeaderString(u_int32_t sid) const;
+	string getParamString() const;
 	StringList parameters;
 	string features;
 	union {
@@ -164,9 +164,9 @@ private:
 template<class T>
 class CommandHandler {
 public:
-	void dispatch(const string& aLine, bool nmdc = false) {
+	void dispatch(const string& aLine) {
 		try {
-			AdcCommand c(aLine, nmdc);
+			AdcCommand c(aLine);
 
 #define C(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
 			switch(c.getCommand()) {
@@ -201,8 +201,3 @@ public:
 };
 
 #endif // !defined(ADC_COMMAND_H)
-
-/**
- * @file
- * $Id: AdcCommand.h,v 1.22 2005/04/24 08:13:11 arnetheduck Exp $
- */

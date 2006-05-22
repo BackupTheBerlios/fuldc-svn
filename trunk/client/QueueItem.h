@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ public:
 	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
 		Source::ConstIter i = getSource(aUser, badSources);
 		if(i != badSources.end())
-			return (*i)->isAnySet(exceptions^Source::FLAG_ERROR_MASK); 
+			return (*i)->isAnySet(exceptions^Source::FLAG_MASK); 
 		return false;
 	}
 
@@ -269,8 +269,3 @@ private:
 };
 
 #endif // !defined(QUEUE_ITEM_H)
-
-/**
- * @file
- * $Id: QueueItem.h,v 1.22 2005/04/24 08:13:11 arnetheduck Exp $
- */

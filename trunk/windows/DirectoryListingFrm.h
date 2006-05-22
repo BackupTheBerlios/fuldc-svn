@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,32 @@
 #include "../client/StringSearch.h"
 #include "../client/FavoriteManager.h"
 #include "../client/ShareManager.h"
+#include "../client/ADLSearch.h"
+
+class ThreadedDirectoryListing;
 
 #define STATUS_MESSAGE_MAP 9
 #define VIEW_MESSAGE_MAP   10
+#define CONTROL_MESSAGE_MAP 11
+
+class UnloadDirectoryListing : public Thread
+{
+public:
+	UnloadDirectoryListing(DirectoryListing* aDirList) : mDirList(aDirList) { }
+
+private:
+	DirectoryListing* mDirList;
+
+	virtual int run()
+	{
+		//delete the directorylisting
+		delete mDirList;
+		//delete this thread object to cleanup after us
+		delete this;
+
+		return 0;
+	}
+};
 
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>,
 	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
@@ -61,6 +84,11 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	};
 
 	enum {
+		FINISHED,
+		ABORTED
+	};
+
+	enum {
 		STATUS_TEXT,
 		STATUS_SPEED,
 		STATUS_TOTAL_FILES,
@@ -75,10 +103,14 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		STATUS_LAST
 	};
 	
-	DirectoryListingFrame(const User::Ptr& aUser, int64_t aSpeed);
+	DirectoryListingFrame(const User::Ptr& aUser);
 	virtual ~DirectoryListingFrame() { 
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
+	
+		//this will delete dl and then destroy itself
+		UnloadDirectoryListing* udl = new UnloadDirectoryListing(dl);
+		udl->start();
 	}
 
 
@@ -87,17 +119,19 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	BEGIN_MSG_MAP(DirectoryListingFrame)
 		NOTIFY_HANDLER(IDC_FILES, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, ctrlList.onColumnClick)
-		NOTIFY_HANDLER(IDC_FILES, NM_CUSTOMDRAW, onCustomDraw)
+		NOTIFY_HANDLER(IDC_FILES, NM_CUSTOMDRAW, onCustomDrawList)
 		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
+		NOTIFY_HANDLER(IDC_DIRECTORIES, NM_CUSTOMDRAW, onCustomDrawTree)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, onMenuCommand)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
@@ -106,10 +140,12 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET_DIR, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
+		COMMAND_ID_HANDLER(IDC_OPEN, onOpenDupe)
+		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpenDupe)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + IDC_COMMAND_RANGE, onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET_DIR, IDC_DOWNLOAD_TARGET_DIR + IDC_COMMAND_RANGE, onDownloadTargetDir)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + IDC_COMMAND_RANGE, onDownloadFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + IDC_COMMAND_RANGE, onDownloadWholeFavoriteDirs)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
@@ -118,9 +154,12 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		COMMAND_ID_HANDLER(IDC_NEXT, onNext)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_ID_HANDLER(IDC_FILELIST_DIFF, onListDiff)
+	ALT_MSG_MAP(CONTROL_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_XBUTTONUP, onXButtonUp)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -133,11 +172,14 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onXButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMenuCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onCustomDrawList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onCustomDrawTree(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onOpenDupe(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void downloadList(const tstring& aTarget, bool view = false);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
@@ -162,6 +204,13 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	}
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if(loading) {
+			//tell the thread to abort and wait until we get a notification
+			//that it's done.
+			dl->setAbort(true);
+			return 0;
+		}
+
 		ctrlList.SetRedraw(FALSE);
 		clearList();
 		
@@ -206,7 +255,14 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		clearList();
 		clearTree();
 		
-		dl.reset(new DirectoryListing(user));
+		//this will delete dl and then destroy itself
+		//UnloadDirectoryListing* udl = new UnloadDirectoryListing(dl);
+		//udl->start();
+
+		//use this for now, too tired to do any more troubleshooting to find the real problem
+		delete dl;
+
+		dl = new DirectoryListing(user);
 	}
 
 	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -247,10 +303,16 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 	}
 
 private:
+	friend class ThreadedDirectoryListing;
+	
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
 	void initStatus();
+	void addHistory(const string& name);
+	void up();
+	void back();
+	void forward();
 
 	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
@@ -274,17 +336,12 @@ private:
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
 			if(f->getTTH() != NULL)
 				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
-
-			if( f->getTTH() )
-				dupe = ShareManager::getInstance()->isTTHShared( *f->getTTH() );
-			else
-				dupe = false;
-		}
-		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d), dupe(false) { 
+		};
+		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) { 
 			columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(d->getTotalSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
-		}
+		};
 
 		const tstring& getText(int col) const {
 			dcassert(col >= 0 && col < COLUMN_LAST);
@@ -339,11 +396,8 @@ private:
 			return Util::emptyStringT;
 		}
 		
-		bool isDupe() const { return dupe; }
 	private:
 		tstring columns[COLUMN_LAST];
-
-		bool dupe;
 	};
 	
 	CMenu targetMenu;
@@ -353,8 +407,13 @@ private:
 	CMenu copyMenu;
 	CMenu searchMenu;
 	CContainedWindow statusContainer;
+	CContainedWindow treeContainer;
+	CContainedWindow listContainer;
 
 	StringList targets;
+	
+	deque<string> history;
+	size_t historyIndex;
 	
 	CTreeViewCtrl ctrlTree;
 	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;
@@ -377,10 +436,11 @@ private:
 	bool updating;
 	bool searching;
 	bool mylist;
+	bool loading;
 
 	int statusSizes[10];
 	
-	auto_ptr<DirectoryListing> dl;
+	DirectoryListing* dl;
 
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
@@ -395,6 +455,47 @@ private:
 	typedef FrameMap::iterator FrameIter;
 
 	static FrameMap frames;
+};
+
+class ThreadedDirectoryListing : public Thread
+{
+public:
+	ThreadedDirectoryListing(DirectoryListingFrame* pWindow, 
+		const string& pFile, const string& pTxt) : mWindow(pWindow),
+		mFile(pFile), mTxt(pTxt)
+	{ }
+
+protected:
+	DirectoryListingFrame* mWindow;
+	string mFile;
+	string mTxt;
+
+private:
+	virtual int run()
+	{
+		try
+		{
+			if(!mFile.empty()) {
+				mWindow->dl->loadFile(mFile);
+				ADLSearchManager::getInstance()->matchListing(*mWindow->dl);
+				mWindow->dl->checkDupes();
+				mWindow->refreshTree(Text::toT(WinUtil::getInitialDir(mWindow->dl->getUser())));
+			} else {
+				mWindow->refreshTree(Text::toT(Util::toNmdcFile(mWindow->dl->loadXML(mTxt, true))));
+			}
+
+			mWindow->PostMessage(WM_SPEAKER, DirectoryListingFrame::FINISHED);
+		}catch(const AbortException) {
+			mWindow->PostMessage(WM_SPEAKER, DirectoryListingFrame::ABORTED);
+		} catch(const Exception& e) {
+			mWindow->error = Text::toT(mWindow->dl->getUser()->getFirstNick() + ": " + e.getError());
+		}
+
+		//cleanup the thread object
+		delete this;
+
+		return 0;
+	}
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)

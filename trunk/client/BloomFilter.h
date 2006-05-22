@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,8 +91,3 @@ private:
 };
 
 #endif // !defined(BLOOM_FILTER_H)
-
-/**
- * @file
- * $Id: BloomFilter.h,v 1.1 2004/02/14 13:26:44 trem Exp $
- */

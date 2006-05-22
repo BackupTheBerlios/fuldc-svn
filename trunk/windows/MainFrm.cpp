@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
 closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL),
- hashProgress(false)
+ hashProgress(false), timerTime(0)
 { 
 	memset(statusSizes, 0, sizeof(statusSizes));
 	
@@ -122,9 +122,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(_T("icons\\toolbar.bmp"), 16, 31, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	images.CreateFromImage(WinUtil::getIconPath(_T("toolbar.bmp")).c_str(), 16, 33, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	m_CmdBar.m_hImageList = images;
-	if(images.GetImageCount() > 16) {
+	if(images.GetImageCount() > 22) {
 		//File
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_OPEN_OWN_LIST);
@@ -138,7 +138,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		//View
 		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
@@ -147,6 +147,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);
 		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 		m_CmdBar.m_arrCommand.Add(IDC_HASH_PROGRESS);
 		
@@ -159,30 +160,33 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_DISCONNECTED);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_PM);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_OFFLINE_PM);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_DIR_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_SEARCH_FRAME);
-	} else if(images.GetImageCount() == 16) {
-		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+	} else if(images.GetImageCount() == 22) {
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
 		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
 		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);	
 		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
 	}
-
-	
-
-	
 
 	// remove old menu
 	SetMenu(NULL);
@@ -196,8 +200,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ctrlStatus.Attach(m_hWndStatusBar);
 	ctrlStatus.SetSimple(FALSE);
-	int w[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	ctrlStatus.SetParts(8, w);
+	int w[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	ctrlStatus.SetParts(9, w);
 	statusSizes[0] = WinUtil::getTextWidth(TSTRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 
@@ -230,8 +234,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-	//c->addListener(this);
-	//c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	c->addListener(this);
+	c->downloadFile("http://www.fuldc.net/version.xml");
 
 	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
 	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_FILE_CONNECT);
@@ -239,7 +243,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
 	if(BOOLSETTING(OPEN_QUEUE)) PostMessage(WM_COMMAND, IDC_QUEUE);
 	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_DL);
-	if(BOOLSETTING(OPEN_WAITING_USERS)) PostMessage(WM_COMMAND, IDC_VIEW_WAITING_USERS);
+	if(BOOLSETTING(OPEN_WAITING_USERS)) PostMessage(WM_COMMAND, IDC_WAITING_USERS);
 	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_UL);
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
 	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
@@ -254,7 +258,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
 
-	File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	try {
+		File::ensureDirectory(SETTING(LOG_DIRECTORY));
+	} catch (const FileException) {	}
 
 	startSocket();
 	
@@ -350,8 +356,8 @@ void MainFrame::stopUPnP() {
 }
 
 HWND MainFrame::createToolbar() {
-	largeImages.CreateFromImage(_T("icons\\toolbar20.bmp"), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	largeImagesHot.CreateFromImage(_T("icons\\toolbar20-highlight.bmp"), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImages.CreateFromImage(WinUtil::getIconPath(_T("toolbar20.bmp")).c_str(), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImagesHot.CreateFromImage(WinUtil::getIconPath(_T("toolbar20-highlight.bmp")).c_str(), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	
 	ctrlToolBar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrlToolBar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
@@ -411,7 +417,7 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_VIEW_WAITING_USERS;
+	tb[n].idCommand = IDC_WAITING_USERS;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
@@ -513,7 +519,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
 			bool u = false;
 			ctrlStatus.SetText(1, str[0].c_str());
-			for(int i = 1; i < 7; i++) {
+			for(int i = 1; i < 8; i++) {
 				int w = WinUtil::getTextWidth(str[i], dc);
 				
 				if(statusSizes[i] < w) {
@@ -550,6 +556,13 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		PopupManager::getInstance()->Remove((int)lParam, true);
 	} else if(wParam == REMOVE_POPUP){
 		PopupManager::getInstance()->AutoRemove();
+	} else if(wParam == START_TIMER) {
+		auto_ptr<pair<u_int32_t, tstring> > msg(reinterpret_cast<pair<u_int32_t, tstring>* > (lParam));
+		timerTime = msg->first;
+		timerMsg = msg->second;
+	} else if(wParam == STOP_TIMER) {
+		timerTime = 0;
+		timerMsg = _T("");
 	}
 
 	return 0;
@@ -583,6 +596,7 @@ LRESULT MainFrame::onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
+
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	AboutDlg dlg;
 	dlg.DoModal(m_hWnd);
@@ -602,7 +616,7 @@ LRESULT MainFrame::onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		case IDC_NET_STATS: StatsFrame::openWindow(); break; 
 		case IDC_FINISHED_DL: FinishedDLFrame::openWindow(); break;
 		case IDC_FINISHED_UL: FinishedULFrame::openWindow(); break;
-		case IDC_VIEW_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
+		case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
 		case IDC_SYSTEM_LOG: SystemFrame::openWindow(); break;
 		default: dcassert(0); break;
 	}
@@ -647,74 +661,81 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 		xml.fromXML(versionInfo);
 		xml.stepIn();
 
-		string url = Text::fromT(links.homepage);
+		if(xml.findChild("Beta") && BOOLSETTING(NOTIFY_BETA_UPDATES)) {
+			xml.stepIn();
+			string url = Text::fromT(links.homepage);
 
-		if(xml.findChild("URL")) {
-			url = xml.getChildData();
-		}
-
-		xml.resetCurrentChild();
-		if(xml.findChild("Version")) {
-			if(Util::toDouble(xml.getChildData()) > VERSIONFLOAT) {
-				xml.resetCurrentChild();
-				xml.resetCurrentChild();
-				if(xml.findChild("Title")) {
-					const string& title = xml.getChildData();
-					xml.resetCurrentChild();
-					if(xml.findChild("Message")) {
-						if(url.empty()) {
-							const string& msg = xml.getChildData();
-							MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
-						} else {
-							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
-							if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO | MB_DEFBUTTON1) == IDYES) {
-								WinUtil::openLink(Text::toT(url));
-							}
-						}
-					}
-				}
+			if(xml.findChild("URL")) {
+				url = xml.getChildData();
 			}
 
 			xml.resetCurrentChild();
-			if(xml.findChild("Links")) {
-				xml.stepIn();
-				if(xml.findChild("Homepage")) {
-					links.homepage = Text::toT(xml.getChildData());
-				}
+			if(xml.findChild("MajorVersion")) {
+				float major, minor;
+				major = Util::toDouble(xml.getChildData());
 				xml.resetCurrentChild();
-				if(xml.findChild("Downloads")) {
-					links.downloads = Text::toT(xml.getChildData());
+				if(xml.findChild("MinorVersion")) {
+					minor = Util::toDouble(xml.getChildData());
+                    if( major > MAJORVERSIONFLOAT || ( major >= MAJORVERSIONFLOAT && minor > MINORVERSIONFLOAT )) {
+                        if(xml.findChild("Title")) {
+                            const string& title = xml.getChildData();
+                            xml.resetCurrentChild();
+                            if(xml.findChild("Message")) {
+                                if(url.empty()) {
+                                    const string& msg = xml.getChildData();
+                                    MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
+                                } else {
+                                    string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
+                                    if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO | MB_DEFBUTTON1) == IDYES) {
+                                        WinUtil::openLink(Text::toT(url));
+                                    }
+                                }
+                            }
+                        }
+                    }
 				}
-				xml.resetCurrentChild();
-				if(xml.findChild("GeoIP database update")) {
-					links.geoipfile = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Translations")) {
-					links.translations = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Faq")) {
-					links.faq = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Bugs")) {
-					links.bugs = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Features")) {
-					links.features = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Help")) {
-					links.help = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Forum")) {
-					links.discuss = Text::toT(xml.getChildData());
-				}
-				xml.stepOut();
 			}
+			xml.stepOut();
+			xml.resetCurrentChild();
+		}
+		
+		xml.resetCurrentChild();
+		if(xml.findChild("Stable") && BOOLSETTING(NOTIFY_UPDATES)) {
+			xml.stepIn();
+			string url = Text::fromT(links.homepage);
+
+			if(xml.findChild("URL")) {
+				url = xml.getChildData();
+			}
+
+			xml.resetCurrentChild();
+			if(xml.findChild("MajorVersion")) {
+				double major, minor;
+				major = Util::toDouble(xml.getChildData());
+				xml.resetCurrentChild();
+				if(xml.findChild("MinorVersion")) {
+					minor = Util::toDouble(xml.getChildData());
+                    if( major > MAJORVERSIONFLOAT || ( major >= MAJORVERSIONFLOAT && minor > MINORVERSIONFLOAT )) {
+                        if(xml.findChild("Title")) {
+                            const string& title = xml.getChildData();
+                            xml.resetCurrentChild();
+                            if(xml.findChild("Message")) {
+                                if(url.empty()) {
+                                    const string& msg = xml.getChildData();
+                                    MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
+                                } else {
+                                    string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
+                                    if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO | MB_DEFBUTTON1) == IDYES) {
+                                        WinUtil::openLink(Text::toT(url));
+                                    }
+                                }
+                            }
+                        }
+                    }
+				}
+			}
+			xml.stepOut();
+			xml.resetCurrentChild();
 		}
 		xml.stepOut();
 	} catch (const Exception&) {
@@ -753,13 +774,15 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
 			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
-			case IDC_VIEW_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
+			case IDC_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
 			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
 			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case IDC_REFRESH_FILE_LIST: stringId = ResourceManager::MENU_REFRESH_FILE_LIST; break;
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
+			case IDC_SYSTEM_LOG: stringId = ResourceManager::MENU_SYSTEM_LOG; break;
+			default: dcassert(false); break;
 		}
 		if(stringId != -1) {
 			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);
@@ -800,7 +823,7 @@ void MainFrame::updateTray(bool add /* = true */) {
 		nid.uID = 0;
 		nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
 		nid.uCallbackMessage = WM_APP + 242;
-		nid.hIcon = (HICON)::LoadImage(NULL, _T("icons\\dcplusplus.ico"), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
+		nid.hIcon = (HICON)::LoadImage(NULL, WinUtil::getIconPath(_T("dcplusplus.ico")).c_str(), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
 		_tcscpy(nid.szTip, _T("DC++"));
 		nid.szTip[63] = '\0';
 		lastMove = GET_TICK() - 1000;
@@ -946,7 +969,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
 	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
 	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/xclick/business=arnetheduck%40gmail.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
-	case IDC_HELP_FULPAGE: site = _T("http://ful.dcportal.net"); break;
+	case IDC_HELP_FULPAGE: site = _T("http://www.fuldc.net"); break;
 	default: dcassert(0);
 	}
 
@@ -964,13 +987,13 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	
 	if(ctrlStatus.IsWindow() && ctrlLastLines.IsWindow()) {
 		CRect sr;
-		int w[8];
+		int w[9];
 		ctrlStatus.GetClientRect(sr);
-		w[7] = sr.right - 16;
+		w[8] = sr.right - 16;
 #define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
-		setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
+		setw(7); setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
 
-		ctrlStatus.SetParts(8, w);
+		ctrlStatus.SetParts(9, w);
 		ctrlLastLines.SetMaxTipWidth(w[0]);
 	}
 	CRect rc = rect;
@@ -1127,6 +1150,7 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 	TStringList* str = new TStringList();
 	str->push_back(Util::getAway() ? TSTRING(AWAY) : _T(""));
+	str->push_back(TSTRING(STATUS_QUEUE) + Util::formatBytesW(QueueManager::getInstance()->getQueueSize()));
 	str->push_back(Text::toT("H: " + Client::getCounts()));
 	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - static_cast<int>(UploadManager::getInstance()->getUploadCount())) + '/' + Util::toString(SETTING(SLOTS))));
 	str->push_back(Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
@@ -1139,6 +1163,15 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	lastUpdate = aTick;
 	lastUp = Socket::getTotalUp();
 	lastDown = Socket::getTotalDown();
+
+	if(timerTime > 0) {
+		if(aTick > timerTime) {
+			WinUtil::flashWindow();
+			::MessageBox(WinUtil::mainWnd, timerMsg.c_str(), CTSTRING(TIMER), MB_OK);
+			timerTime = 0;
+			timerMsg = _T("");
+		}
+	}
 }
 
 void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
@@ -1253,7 +1286,3 @@ LRESULT MainFrame::onAppCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 	return ret;
 }
-/**
- * @file
- * $Id: MainFrm.cpp,v 1.13 2004/02/22 01:24:11 trem Exp $
- */

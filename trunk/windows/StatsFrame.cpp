@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@ LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		KillTimer(timerId);
 	
 	checkButton(false);	
-	frame = NULL;
 	
 	bHandled = FALSE;
 	return 0;
@@ -214,8 +213,3 @@ LRESULT StatsFrame::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 	
 }
-
-/**
- * @file
- * $Id: StatsFrame.cpp,v 1.2 2004/01/06 01:52:16 trem Exp $
- */

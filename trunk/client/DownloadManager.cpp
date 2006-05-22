@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,7 +147,36 @@ int DownloadManager::FileMover::run() {
 		try {
 			File::renameFile(next.first, next.second);
 		} catch(const FileException&) {
-			// Too bad...
+			try {
+				// Try to just rename it to the correct name  at least
+				string newTarget = Util::getFilePath(next.first) + Util::getFileName(next.second);
+				File::renameFile(next.first, newTarget);
+				LogManager::getInstance()->message(next.first + STRING(RENAMED_TO) + newTarget);
+			} catch(const FileException& e) {
+				LogManager::getInstance()->message(STRING(UNABLE_TO_RENAME) + next.first + ": " + e.getError());
+			}
+		}
+		if(File::getSize(next.second) != -1) {
+			StringPair sp = SettingsManager::getInstance()->getFileEvent(SettingsManager::ON_FILE_COMPLETE);
+			if(sp.first.length() > 0) {
+				STARTUPINFO si = { sizeof(si), 0 };
+				PROCESS_INFORMATION pi = { 0 };
+				StringMap params;
+				params["file"] = next.second;
+				wstring cmdLine = Text::toT(Util::formatParams(sp.second, params, false));
+				wstring cmd = Text::toT(sp.first);
+
+				AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);
+				_tcscpy(cmdLineBuf, cmdLine.c_str());
+
+				AutoArray<TCHAR> cmdBuf(cmd.length() + 1);
+				_tcscpy(cmdBuf, cmd.c_str());
+
+				if(::CreateProcess(cmdBuf, cmdLineBuf, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+					::CloseHandle(pi.hThread);
+					::CloseHandle(pi.hProcess);
+				}
+			}
 		}
 	}
 }
@@ -282,17 +311,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		downloads.push_back(d);
 	}
 
-	// File ok for adcget in nmdc-conns
-	bool adcOk = (aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) && d->getTTH() != NULL);
-
-	if(!aConn->isSet(UserConnection::FLAG_NMDC) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && adcOk)) {
-		aConn->send(d->getCommand(
-			aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET),
-			aConn->isSet(!aConn->isSet(UserConnection::FLAG_NMDC) || UserConnection::FLAG_SUPPORTS_TTHF)
-			));
-	} else {
-		dcdebug("remote client too old\r\n");
-	}
+	aConn->send(d->getCommand(
+		aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET),
+		aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF)
+		));
 }
 
 class DummyOutputStream : public OutputStream {
@@ -337,30 +359,6 @@ int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, i
 		startPos = blockPos;
 	} while(startPos > 0);
 	return startPos;
-}
-
-void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSource, int64_t aBytes) throw() {
-	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
-		dcdebug("DM::onFileLength Bad state, ignoring\n");
-		return;
-	}
-
-	if(prepareFile(aSource, (aBytes == -1) ? -1 : aSource->getDownload()->getPos() + aBytes, aSource->getDownload()->isSet(Download::FLAG_ZDOWNLOAD))) {
-		aSource->setDataMode();
-	}
-}
-
-void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSource, int64_t aFileLength) throw() {
-
-	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
-		dcdebug("DM::onFileLength Bad state, ignoring\n");
-		return;
-	}
-
-	if(prepareFile(aSource, aFileLength, aSource->getDownload()->isSet(Download::FLAG_ZDOWNLOAD))) {
-		aSource->setDataMode();
-		aSource->startSend();
-	}
 }
 
 void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcCommand& cmd) throw() {
@@ -455,10 +453,8 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 		string target = d->getDownloadTarget();
 		File::ensureDirectory(target);
 		if(d->isSet(Download::FLAG_USER_LIST)) {
-			if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+			if(aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 				target += ".xml.bz2";
-			} else {
-				target += ".DcLst";
 			}
 		}
 
@@ -777,11 +773,31 @@ void DownloadManager::moveFile(const string& source, const string& target) {
 		}
 	}
 
+	int64_t size = File::getSize(target);
+	if(size > -1 && size <= MOVER_LIMIT) {
+		StringPair sp = SettingsManager::getInstance()->getFileEvent(SettingsManager::ON_FILE_COMPLETE);
+		if(sp.first.length() > 0) {
+			STARTUPINFO si = { sizeof(si), 0 };
+			PROCESS_INFORMATION pi = { 0 };
+			StringMap params;
+			params["file"] = target;
+			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params, false));
+			wstring cmd = Text::toT(sp.first);
+
+			AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);
+			_tcscpy(cmdLineBuf, cmdLine.c_str());
+
+			AutoArray<TCHAR> cmdBuf(cmd.length() + 1);
+			_tcscpy(cmdBuf, cmd.c_str());
+
+			if(::CreateProcess(cmdBuf, cmdLineBuf, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+				::CloseHandle(pi.hThread);
+				::CloseHandle(pi.hProcess);
+			}
+		}
+	}
 }
 
-void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) throw() { 
-	noSlots(aSource);
-}
 void DownloadManager::noSlots(UserConnection* aSource) {
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH && aSource->getState() != UserConnection::STATE_TREE) {
 		dcdebug("DM::onMaxedOut Bad state, ignoring\n");
@@ -865,10 +881,6 @@ void DownloadManager::abortDownload(const string& aTarget) {
 	}
 }
 
-void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnection* aSource) throw() {
-	fileNotAvailable(aSource);
-}
-
 /** @todo Handle errors better */
 void DownloadManager::on(AdcCommand::STA, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(cmd.getParameters().size() < 2) {
@@ -920,8 +932,3 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);
 }
-
-/**
- * @file
- * $Id: DownloadManager.cpp,v 1.93 2004/03/02 09:30:19 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+/*
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ const string SettingsManager::settingTags[] =
 	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
+	"PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows",
@@ -77,7 +77,7 @@ const string SettingsManager::settingTags[] =
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoUpdateList",
 	"UseSsl", "AutoSearchLimit", 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
-	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs", "HighPrioSample",
+	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
 	"HubFrameConfirmation",
 	"TabActiveBG", "TabActiveText", "TabActiveBorder", "TabInactiveBG", "TabShowIcons",
@@ -86,7 +86,8 @@ const string SettingsManager::settingTags[] =
 	"ShowTopic", "MaxAutoMatchSource", "MaxMsgLength", "BlendTabs", "PopupActivateOnClick",
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
-    "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", 
+    "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", "NotifyUpdates", "NotifyBetaUpdates",
+	"SpyIgnoreTTH",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -95,6 +96,10 @@ const string SettingsManager::settingTags[] =
 
 SettingsManager::SettingsManager()
 {
+	//make sure it can fit our events without using push_back since
+	//that might cause them to be in the wrong position.
+	fileEvents.resize(2);
+
 	connectionSpeeds.push_back("0.005");
 	connectionSpeeds.push_back("0.01");
 	connectionSpeeds.push_back("0.02");
@@ -155,7 +160,6 @@ SettingsManager::SettingsManager()
 	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
 	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
-	setDefault(USE_SYSTEM_ICONS, true);
 	setDefault(USE_OEM_MONOFONT, false);
 	setDefault(POPUP_PMS, true);
 	setDefault(MIN_UPLOAD_SPEED, 0);
@@ -256,7 +260,6 @@ SettingsManager::SettingsManager()
 	setDefault(STRIP_ISP, false);
 	setDefault(STRIP_ISP_PM, false);
 	setDefault(HUB_BOLD_TABS, true);
-	setDefault(HIGH_PRIO_SAMPLE, false);
 	setDefault(POPUP_TIMEOUT, 5);
 	setDefault(POPUP_AWAY, false);
 	setDefault(POPUP_ON_PM, false);
@@ -276,8 +279,8 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_TEXTCOLOR, RGB(0, 0, 0));
 	setDefault(FREE_SLOTS_EXTENSIONS, "*.nfo|*.sfv");
 	setDefault(FREE_SLOTS_SIZE, 64);
-	setDefault(SKIPLIST_SHARE, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db");
-	setDefault(SKIPLIST_DOWNLOAD, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db|");
+	setDefault(SKIPLIST_SHARE, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db|*.bad");
+	setDefault(SKIPLIST_DOWNLOAD, ".*|*All-Files-CRC-OK*|Descript.ion|thumbs.db|*.bad|*.missing");
 	setDefault(TAB_SHOW_ICONS, true);
 	setDefault(CUSTOM_SOUND, false);
 	setDefault(TAB_SIZE, 20);
@@ -304,6 +307,10 @@ SettingsManager::SettingsManager()
 	setDefault(REFRESH_SHARE_BEGIN, 0);
 	setDefault(REFRESH_SHARE_END, 0);
 	setDefault(MUTE_ON_AWAY, false);
+	setDefault(HIGH_PRIO_FILES, "*.sfv|*.nfo|*sample*|*subs*|*.jpg|*cover*|*.pls|*.m3u");
+	setDefault(NOTIFY_UPDATES, true);
+	setDefault(NOTIFY_BETA_UPDATES, false);
+	setDefault(SPY_IGNORE_TTH, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -412,6 +419,25 @@ void SettingsManager::load(string const& aFileName)
 		}
 
 		xml.resetCurrentChild();
+		if(xml.findChild("FileEvents")) {
+			xml.stepIn();
+			if(xml.findChild("OnFileComplete")) {
+				StringPair sp;
+				sp.first = xml.getChildAttrib("Command");
+				sp.second = xml.getChildAttrib("CommandLine");
+				fileEvents[ON_FILE_COMPLETE] = sp;
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("OnDirCreated")) {
+				StringPair sp;
+				sp.first = xml.getChildAttrib("Command");
+				sp.second = xml.getChildAttrib("CommandLine");
+				fileEvents[ON_DIR_CREATED] = sp;
+			}
+			xml.stepOut();
+		}
+
+		xml.resetCurrentChild();
 
 		fire(SettingsManagerListener::Load(), &xml);
 
@@ -485,6 +511,16 @@ void SettingsManager::save(string const& aFileName) {
 		}
 	}
 	xml.stepOut();
+
+	xml.addTag("FileEvents");
+	xml.stepIn();
+	xml.addTag("OnFileComplete");
+	xml.addChildAttrib("Command", fileEvents[ON_FILE_COMPLETE].first);
+	xml.addChildAttrib("CommandLine", fileEvents[ON_FILE_COMPLETE].second);
+	xml.addTag("OnDirCreated");
+	xml.addChildAttrib("Command", fileEvents[ON_DIR_CREATED].first);
+	xml.addChildAttrib("CommandLine", fileEvents[ON_DIR_CREATED].second);
+	xml.stepOut();
 	
 	fire(SettingsManagerListener::Save(), &xml);
 
@@ -501,8 +537,3 @@ void SettingsManager::save(string const& aFileName) {
 		// ...
 	}
 }
-
-/**
- * @file
- * $Id: SettingsManager.cpp,v 1.13 2004/02/23 16:02:19 trem Exp $
- */

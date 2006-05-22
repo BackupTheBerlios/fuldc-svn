@@ -415,6 +415,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\finishedmanager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\FulAdvancedPage.cpp"
 				>
 			</File>
@@ -432,6 +436,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\FulEditCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\FulHighlightDialog.cpp"
 				>
 			</File>
 			<File
@@ -680,6 +688,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\finishedmanager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\FinishedULFrame.h"
 				>
 			</File>
@@ -705,6 +717,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\FulEditCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\FulHighlightDialog.h"
 				>
 			</File>
 			<File

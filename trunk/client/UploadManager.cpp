@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include "FavoriteManager.h"
 
 #include <functional>
+
 static const string UPLOAD_AREA = "Uploads";
 
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) { 
@@ -140,8 +141,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			aSource->fileNotAvail();
 			return false;
 		}
-	} catch(const ShareException&) {
-		aSource->fileNotAvail();
+	} catch(const ShareException& e) {
+		aSource->fileNotAvail(e.getError());
 		return false;
 	}
 
@@ -238,53 +239,6 @@ void UploadManager::reserveSlot(const User::Ptr& aUser) {
 	}
 	if(aUser->isOnline())
 		ClientManager::getInstance()->connect(aUser);
-}
-
-void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, const string& aFile, int64_t aResume) throw() {
-	if(prepareFile(aSource, "file", Util::toAdcFile(aFile), aResume, -1)) {
-		aSource->setState(UserConnection::STATE_SEND);
-		aSource->fileLength(Util::toString(aSource->getUpload()->getSize()));
-	}
-}
-
-void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int64_t aStartPos, int64_t aBytes, bool z) {
-	if(!z || BOOLSETTING(COMPRESS_TRANSFERS)) {
-		if(prepareFile(aSource, "file", Util::toAdcFile(aFile), aStartPos, aBytes)) {
-			Upload* u = aSource->getUpload();
-			dcassert(u != NULL);
-			if(aBytes == -1)
-				aBytes = u->getSize() - aStartPos;
-
-			dcassert(aBytes >= 0);
-
-			u->setStart(GET_TICK());
-
-			if(z) {
-				u->setFile(new FilteredInputStream<ZFilter, true>(u->getFile()));
-				u->setFlag(Upload::FLAG_ZUPLOAD);
-			}
-
-			aSource->sending(aBytes);
-			aSource->setState(UserConnection::STATE_DONE);
-			aSource->transmitFile(u->getFile());
-			fire(UploadManagerListener::Starting(), u);
-		}
-	}
-}
-
-void UploadManager::on(UserConnectionListener::Send, UserConnection* aSource) throw() {
-	if(aSource->getState() != UserConnection::STATE_SEND) {
-		dcdebug("UM::onSend Bad state, ignoring\n");
-		return;
-	}
-
-	Upload* u = aSource->getUpload();
-	dcassert(u != NULL);
-
-	u->setStart(GET_TICK());
-	aSource->setState(UserConnection::STATE_DONE);
-	aSource->transmitFile(u->getFile());
-	fire(UploadManagerListener::Starting(), u);
 }
 
 void UploadManager::on(UserConnectionListener::BytesSent, UserConnection* aSource, size_t aBytes, size_t aActual) throw() {
@@ -410,10 +364,6 @@ void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	waitingUsers.erase(i, waitingUsers.end());
 }
 
-void UploadManager::on(GetListLength, UserConnection* conn) throw() { 
-	conn->listLen(ShareManager::getInstance()->getListLenString()); 
-}
-
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
 	int64_t aBytes = Util::toInt64(c.getParam(3));
 	int64_t aStartPos = Util::toInt64(c.getParam(2));
@@ -501,7 +451,7 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 			Upload* u = *i;
 			if(u->getUser() == aUser) {
 				// Oops...adios...
-				u->getUserConnection()->disconnect();
+				u->getUserConnection()->disconnect(true);
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
@@ -515,8 +465,3 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 		clearUserFiles(aUser);
 	}
 }
-
-/**
- * @file
- * $Id: UploadManager.cpp,v 1.7 2004/02/23 16:00:32 trem Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ public:
 	static int fileImageCount;
 	static CImageList userImages;
 
-	typedef HASH_MAP<string, int> ImageMap;
+	typedef HASH_MAP<tstring, int> ImageMap;
 	typedef ImageMap::iterator ImageIter;
 	static ImageMap fileIndexes;
 	static HBRUSH bgBrush;
@@ -95,6 +95,7 @@ public:
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 	static tstring encodeFont(LOGFONT const& font);
 	
+	static tstring getIconPath(const tstring& filename);
 	static void SetIcon(HWND hWnd, tstring file, bool big = false);
 	static void setClipboard(const tstring & str);
 	static void search(tstring searchTerm, int searchMode, bool tth = false);
@@ -199,6 +200,8 @@ public:
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 
 	static bool isShift() { return (GetKeyState(VK_SHIFT) & 0x8000) > 0; }
+	static bool isAlt() { return (GetKeyState(VK_MENU) & 0x8000) > 0; }
+	static bool isCtrl() { return (GetKeyState(VK_CONTROL) & 0x8000) > 0; }
 
 	template<class T> static HWND hiddenCreateEx(T& p) throw() {
 		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);
@@ -219,8 +222,3 @@ private:
 };
 
 #endif // !defined(WIN_UTIL_H)
-
-/**
- * @file
- * $Id: WinUtil.h,v 1.13 2004/02/15 16:58:49 trem Exp $
- */

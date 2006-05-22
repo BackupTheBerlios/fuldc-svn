@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,9 +59,11 @@ public:
 	string translateTTH(const string& TTH) throw(ShareException);
 	string translateFileName(const string& aFile) throw(ShareException);
 	bool getTTH(const string& aFile, TTHValue& tth) throw();
-	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ThreadException, ShareException);
+	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
 	int refresh(const string& aDir);
-	void setDirty() { shareXmlDirty = xmlDirty = nmdcDirty = true; }
+	void setDirty() { shareXmlDirty = xmlDirty = true; };
+
+	string getPhysicalPath(TTHValue& tth);
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults);
@@ -81,8 +83,8 @@ public:
 	string getShareSizeString() { return Util::toString(getShareSize()); }
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); }
 	
-	int64_t getListLen() { return generateNmdcList(), listLen; }
-	string getListLenString() { return Util::toString(getListLen()); }
+	int64_t getListLen() { return 0; };
+	string getListLenString() { return Util::toString(getListLen()); };
 	
 	SearchManager::TypeModes getType(const string& fileName);
 
@@ -103,12 +105,10 @@ public:
 	}
 
 	GETSET(u_int32_t, hits, Hits);
-	GETSET(string, listFile, ListFile);
 	GETSET(string, bzXmlFile, BZXmlFile);
 
 	bool loadXmlList();
 	void generateXmlList(bool force = false);
-	void generateNmdcList(bool force = false);
 
 	bool isIncoming(const string& aDir);
 	void setIncoming(const string& aDir, bool incoming = true);
@@ -208,7 +208,6 @@ private:
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
 		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw();
 
-		void toNmdc(string& nmdc, string& indent, string& tmp2);
 		void toXml(SimpleXML* xml, bool recurse);
 		void filesToXml(SimpleXML* xml);
 		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
@@ -273,13 +272,11 @@ private:
 
 	HashFileMap tthIndex;
 
-	int64_t listLen;
 	int64_t bzXmlListLen;
 	TTHValue xmlbzRoot;
 	TTHValue xmlRoot;
 
 	bool xmlDirty;
-	bool nmdcDirty;
 	bool shareXmlDirty;
 
 	bool refreshDirs;
@@ -293,11 +290,9 @@ private:
 	
 	int listN;
 
-	File* lFile;
 	File* xFile;
 
 	u_int32_t lastXmlUpdate;
-	u_int32_t lastNmdcUpdate;
 	u_int32_t lastFullUpdate;
 	u_int32_t lastIncomingUpdate;
 

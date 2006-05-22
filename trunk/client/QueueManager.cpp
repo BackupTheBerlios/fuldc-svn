@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ const string& QueueItem::getTempTarget() {
 				sm["targetdrive"] = target.substr(0, 3);
 			else
 				sm["targetdrive"] = Util::getConfigPath().substr(0, 3);
-			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
+			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm, true) + getTempName(getTargetFileName(), getTTH()));
 #else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
 #endif //_WIN32
@@ -91,12 +91,15 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget,
 						  int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException) 
 {
-	if(p == QueueItem::DEFAULT)
+	if(p == QueueItem::NORMAL)
 		p = (aSize <= 64*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
 
-	if(BOOLSETTING(HIGH_PRIO_SAMPLE)){
-		if( (aTarget.find("sample") != string::npos || aTarget.find("subs") != string::npos) && (p !=  QueueItem::HIGHEST) )
+	if(!SETTING(HIGH_PRIO_FILES).empty() && p == QueueItem::NORMAL){
+		int pos = aTarget.rfind("\\")+1;
+
+		if(Wildcard::patternMatch(aTarget.substr(pos), SETTING(HIGH_PRIO_FILES), '|')) {
 			p = QueueItem::HIGH;
+		}
 	}
 	
 	QueueItem* qi = new QueueItem(aTarget, aSize, p, aFlags, aDownloadedBytes, aAdded, root);
@@ -319,7 +322,10 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getConfigPath() + "Q
 	ClientManager::getInstance()->addListener(this);
 
 	regexp.Init("[Rr0-9][Aa0-9][Rr0-9]");
-	File::ensureDirectory(Util::getConfigPath() + FILELISTS_DIR);
+	try	{
+		File::ensureDirectory(Util::getConfigPath() + FILELISTS_DIR);
+	} catch (const FileException){ }
+	
 }
 
 QueueManager::~QueueManager() throw() { 
@@ -388,7 +394,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 
 		if(BOOLSETTING(AUTO_SEARCH) && (aTick >= nextSearch) && (fileQueue.getSize() > 0)) {
 			// We keep 30 recent searches to avoid duplicate searches
-			while((recent.size() > fileQueue.getSize()) || (recent.size() > 30)) {
+			while((recent.size() >= fileQueue.getSize()) || (recent.size() > 30)) {
 				recent.erase(recent.begin());
 			}
 
@@ -442,11 +448,68 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 
 	// Check if we're not downloading something already in our share
 	if(BOOLSETTING(DONT_DL_ALREADY_SHARED) && root != NULL){
-		if (ShareManager::getInstance()->isTTHShared(*root))
+		if (ShareManager::getInstance()->isTTHShared(*root)){
 			throw QueueException(STRING(TTH_ALREADY_SHARED));
+		}
 	}
 
 	string target = checkTarget(aTarget, aSize, aFlags);
+ 
+	if(File::ensureDirectory(target)) {
+		StringPair sp = SettingsManager::getInstance()->getFileEvent(SettingsManager::ON_DIR_CREATED);
+		if(sp.first.length() > 0) {
+			STARTUPINFO si = { sizeof(si), 0 };
+			PROCESS_INFORMATION pi = { 0 };
+			StringMap params;
+			params["dir"] = target;
+			wstring cmdLine = Text::toT(Util::formatParams(sp.second, params, true));
+			wstring cmd = Text::toT(sp.first);
+
+			AutoArray<TCHAR> cmdLineBuf(cmdLine.length() + 1);
+			_tcscpy(cmdLineBuf, cmdLine.c_str());
+
+			AutoArray<TCHAR> cmdBuf(cmd.length() + 1);
+			_tcscpy(cmdBuf, cmd.c_str());
+
+			if(::CreateProcess(cmdBuf, cmdLineBuf, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+				//wait for the process to finish executing
+				if(WAIT_OBJECT_0 == WaitForSingleObject(pi.hProcess, INFINITE)) {
+					DWORD code = 0;
+					//retrieve the error code to check if we should stop this download.
+					if(0 != GetExitCodeProcess(pi.hProcess, &code)) {
+						if(code != 0) { //assume 0 is the only valid return code, everything else is an error
+							string::size_type end = target.find_last_of("\\/");
+							if(end != string::npos) {
+								tstring tmp = Text::toT(target.substr(0, end));
+								RemoveDirectory(tmp.c_str());
+
+								//the directory we removed might be a sub directory of
+								//the real one, check to see if that's the case.
+								end = tmp.find_last_of(_T("\\/"));
+								if(end != string::npos) {
+									tstring dir = tmp.substr(end+1);
+									if( Util::strnicmp(dir, _T("sample"), 6) == 0 ||
+										Util::strnicmp(dir, _T("subs"), 4) == 0 ||
+										Util::strnicmp(dir, _T("cover"), 5) == 0 ||
+										Util::strnicmp(dir, _T("cd"), 2) == 0) {
+											RemoveDirectory(tmp.substr(0, end).c_str());
+									}
+								}
+								
+								::CloseHandle(pi.hThread);
+								::CloseHandle(pi.hProcess);
+
+								throw QueueException(STRING(DUPE_ERROR));
+							}
+						}
+					}
+				}
+				
+				::CloseHandle(pi.hThread);
+				::CloseHandle(pi.hProcess);
+			}
+		}
+	}
 
 	// Check if it's a zero-byte file, if so, create and return...
 	if(aSize == 0) {
@@ -482,6 +545,10 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 			updateTotalSize(q->getTarget(), q->getSize(), true);
 			fire(QueueManagerListener::Added(), q);
 		} else {
+			// We don't add any more sources to user list downloads...
+			if(q->isSet(QueueItem::FLAG_USER_LIST))
+				return;
+
 			if(q->getSize() != aSize) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 			}
@@ -527,7 +594,7 @@ int QueueManager::readdUser(User::Ptr& aUser) throw() {
 			q = i->second;
 			if(q != NULL && q->isBadSource(aUser)) {
 				try{
-					wantConnection = addSource(q, aUser, QueueItem::Source::FLAG_ERROR_MASK);
+					wantConnection = addSource(q, aUser, QueueItem::Source::FLAG_MASK);
 					++matches;
 				} catch(const QueueException& /* e*/){
 				}
@@ -740,6 +807,8 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 		if(qt == NULL) {
 			// Good, update the target and move in the queue...
 			fileQueue.move(qs, target);
+			updateTotalSize(aSource, qs->getSize(), false);
+			updateTotalSize(aTarget, qs->getSize(), true);
 			fire(QueueManagerListener::Moved(), qs);
 			setDirty();
 		} else {
@@ -760,6 +829,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 
 	if(delSource) {
 		remove(aSource);
+		updateTotalSize(aSource, qs->getSize(), false);
 	}
 }
 
@@ -1200,6 +1270,8 @@ void QueueManager::saveQueue() throw() {
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
 
+		ClientManager::getInstance()->save();
+
 		dirty = false;
 	} catch(const FileException&) {
 		// ...
@@ -1592,7 +1664,18 @@ u_int64_t QueueManager::getTotalSize(const string & path){
 	else
 		return i->second;
 }
-/**
- * @file
- * $Id: QueueManager.cpp,v 1.11 2004/02/15 16:08:42 trem Exp $
- */
+
+int64_t QueueManager::getQueueSize() {
+	Lock l(cs);
+	QueueItem::StringMap &files = fileQueue.getQueue();
+
+	int64_t tmp = 0;
+
+	for(QueueItem::StringIter i = files.begin(); i != files.end(); ++i) {
+		if(!i->second->isSet(QueueItem::FLAG_USER_LIST)) {
+			tmp += i->second->getSize();
+		}
+	}
+
+	return tmp;
+}

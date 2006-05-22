@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlIgnoreTth.Create(ctrlStatus.m_hWnd, rcDefault, CTSTRING(IGNORE_TTH_SEARCHES), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlIgnoreTth.SetButtonStyle(BS_AUTOCHECKBOX, false);
 	ctrlIgnoreTth.SetFont(WinUtil::systemFont);
-	ctrlIgnoreTth.SetCheck(false);
+	ctrlIgnoreTth.SetCheck(ignoreTth ? BST_CHECKED : BST_UNCHECKED);
 	ignoreTthContainer.SubclassWindow(ctrlIgnoreTth.m_hWnd);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(SPYFRAME_ORDER), COLUMN_LAST);
@@ -76,9 +76,9 @@ LRESULT SpyFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		PostMessage(WM_CLOSE);
 	} else {
 		WinUtil::saveHeaderOrder(ctrlSearches, SettingsManager::SPYFRAME_ORDER, SettingsManager::SPYFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		SettingsManager::getInstance()->set(SettingsManager::SPY_IGNORE_TTH, ignoreTth);
 		
 		checkButton(false);
-		frame = NULL;
 
 		bHandled = FALSE;
 	}
@@ -232,8 +232,3 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 	perSecond[cur] = 0;
 	PostMessage(WM_SPEAKER, TICK_AVG, (LPARAM)f);
 }
-
-/**
- * @file
- * $Id: SpyFrame.cpp,v 1.2 2004/01/06 01:52:16 trem Exp $
- */

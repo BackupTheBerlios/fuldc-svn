@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,6 +129,21 @@ public:
 	vector<User::Ptr> getWaitingUsers();
 	const FileSet& getWaitingUserFiles(const User::Ptr &);
 
+	int getWaitingUserFileCount() {
+		Lock l(cs);
+		int count = 0;
+		for(FilesMap::iterator i = waitingFiles.begin(); i != waitingFiles.end(); ++i) {
+			count += i->second.size();
+		}
+
+		return count;
+	}
+
+	int getWaitingUserCount() {
+		Lock l(cs);
+		return waitingUsers.size();
+	}
+
 	/** @internal */
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
@@ -181,11 +196,6 @@ private:
 	// UserConnectionListener
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
-	virtual void on(Get, UserConnection*, const string&, int64_t) throw();
-	virtual void on(GetBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, false); }
-	virtual void on(GetZBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, true); }
-	virtual void on(Send, UserConnection*) throw();
-	virtual void on(GetListLength, UserConnection* conn) throw();
 	virtual void on(TransmitDone, UserConnection*) throw();
 	
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
@@ -196,8 +206,3 @@ private:
 };
 
 #endif // !defined(UPLOAD_MANAGER_H)
-
-/**
- * @file
- * $Id: UploadManager.h,v 1.4 2004/02/23 16:00:33 trem Exp $
- */

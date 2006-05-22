@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "PrivateFrame.h"
 #include "SearchFrm.h"
 #include "LineDlg.h"
+#include "MainFrm.h"
 #include "../client/WebShortcuts.h"
 
 #include "../client/Util.h"
@@ -209,7 +210,7 @@ void WinUtil::init(HWND hWnd) {
 
 	view.AppendMenu(MF_STRING, ID_FILE_CONNECT, CTSTRING(MENU_PUBLIC_HUBS));
 	view.AppendMenu(MF_STRING, IDC_QUEUE, CTSTRING(MENU_DOWNLOAD_QUEUE));
-	view.AppendMenu(MF_STRING, IDC_VIEW_WAITING_USERS, CTSTRING(WAITING_USERS));
+	view.AppendMenu(MF_STRING, IDC_WAITING_USERS, CTSTRING(MENU_WAITING_USERS));
 	view.AppendMenu(MF_STRING, IDC_FINISHED_DL, CTSTRING(FINISHED_DOWNLOADS));
 	view.AppendMenu(MF_STRING, IDC_FINISHED_UL, CTSTRING(FINISHED_UPLOADS));
 	view.AppendMenu(MF_STRING, IDC_FAVORITES, CTSTRING(MENU_FAVORITE_HUBS));
@@ -218,9 +219,9 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CTSTRING(MENU_ADL_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CTSTRING(MENU_SEARCH_SPY));
 	view.AppendMenu(MF_STRING, IDC_NOTEPAD, CTSTRING(MENU_NOTEPAD));
+	view.AppendMenu(MF_STRING, IDC_SYSTEM_LOG, CTSTRING(MENU_SYSTEM_LOG));
 	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
 	view.AppendMenu(MF_STRING, IDC_HASH_PROGRESS, CTSTRING(MENU_HASH_PROGRESS));
-	view.AppendMenu(MF_STRING, IDC_SYSTEM_LOG, CTSTRING(MENU_SYSTEM_LOG));
 	view.AppendMenu(MF_SEPARATOR);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
@@ -279,17 +280,17 @@ void WinUtil::init(HWND hWnd) {
 		fileImages.AddIcon(ic);
 		::DestroyIcon(fi.hIcon);
 	} else {
-		fileImages.CreateFromImage(_T("icons\\folders.bmp"), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+		fileImages.CreateFromImage(WinUtil::getIconPath(_T("folders.bmp")).c_str(), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	}
 #endif
 
-	fileImages.CreateFromImage(_T("icons\\folders.bmp"), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	fileImages.CreateFromImage(WinUtil::getIconPath(_T("folders.bmp")).c_str(), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	dirIconIndex = fileImageCount++;
 	dirMaskedIndex = fileImageCount++;
 
 	fileImageCount++;
 
-	userImages.CreateFromImage(_T("icons\\users.bmp"), 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	userImages.CreateFromImage(WinUtil::getIconPath(_T("users.bmp")).c_str(), 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 
 	LOGFONT lf, lf2;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -657,9 +658,9 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			}
 		} 
 	}else if(Util::stricmp(cmd.c_str(), _T("fuldc")) == 0) {
-		message = _T("http://ful.dcportal.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
+		message = _T("http://www.fuldc.net <fulDC ") _T(FULVERSIONSTRING) _T(">");
 	} else if(Util::stricmp(cmd.c_str(), _T("info")) == 0) {
-		message = WinUtil::UselessInfo();
+		status = WinUtil::UselessInfo();
 	} else if(Util::stricmp(cmd.c_str(), _T("fuptime")) == 0) {
 		message = TSTRING(FULDC_UPTIME) + _T(" ") + Util::formatTimeW(GET_TIME() - WinUtil::startTime, false);
 	} else if(Util::stricmp(cmd.c_str(), _T("uptime")) == 0) {
@@ -672,6 +673,37 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		message = WinUtil::DiskSpaceInfo();
 	} else if(Util::stricmp(cmd.c_str(), _T("regen")) == 0) {
 		ShareManager::getInstance()->generateXmlList(true);
+	} else if(Util::stricmp(cmd.c_str(), _T("timer")) == 0) {
+		int pos = param.find(_T(" "));
+		if(pos != tstring::npos) {
+			tstring time = param.substr(0, pos);
+			tstring msg = param.substr(pos+1);
+			u_int32_t seconds = 0;
+
+			TStringList tmp = StringTokenizer<tstring>(time, _T(":")).getTokens();
+			if(tmp.size() == 1) {
+				seconds = Util::toInt(tmp[0]);
+			} else if(tmp.size() == 2) {
+				seconds = Util::toInt(tmp[0]) * 60;
+				seconds += Util::toInt(tmp[1]);
+			} else if(tmp.size() == 3) {
+				seconds = Util::toInt(tmp[0]) * 3600;
+				seconds += Util::toInt(tmp[1]) * 60;
+				seconds += Util::toInt(tmp[2]);
+			} else {
+				status = TSTRING(INVALID_TIMER_FORMAT);
+			}
+			if(seconds > 0) {
+				seconds = GET_TICK() + seconds*1000; //convert to ticks
+				PostMessage(mainWnd, WM_SPEAKER, MainFrame::START_TIMER, (LPARAM) new pair<u_int32_t, tstring>(seconds, msg));
+				status = TSTRING(TIMER_STARTED);
+			}
+		} else {
+			status = TSTRING(INVALID_TIMER_FORMAT);
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("stoptimer")) == 0) {
+		PostMessage(mainWnd, WM_SPEAKER, MainFrame::STOP_TIMER, 0);
+		status = TSTRING(TIMER_STOPPED);
 	} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 		HtmlHelp(mainWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDC_CHATCOMMANDS);
 	} else {
@@ -881,24 +913,20 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 }
 
 int WinUtil::getIconIndex(const tstring& aFileName) {
-	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
-		SHFILEINFO fi;
-		string x = Text::toLower(Util::getFileExt(Text::fromT(aFileName)));
-		if(!x.empty()) {
-			ImageIter j = fileIndexes.find(x);
-			if(j != fileIndexes.end())
-				return j->second;
-		}
-		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
-		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		fileImages.AddIcon(fi.hIcon);
-		::DestroyIcon(fi.hIcon);
-
-		fileIndexes[x] = fileImageCount++;
-		return fileImageCount - 1;
-	} else {
-		return 2;
+	SHFILEINFO fi;
+	tstring x = Text::toLower(Util::getFileExt(aFileName));
+	if(!x.empty()) {
+		ImageIter j = fileIndexes.find(x);
+		if(j != fileIndexes.end())
+			return j->second;
 	}
+	tstring fn = Text::toLower(Util::getFileName(aFileName));
+	::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+	fileImages.AddIcon(fi.hIcon);
+	::DestroyIcon(fi.hIcon);
+
+	fileIndexes[x] = fileImageCount++;
+	return fileImageCount - 1;
 }
 
 int WinUtil::getOsMajor() {
@@ -1121,8 +1149,19 @@ void WinUtil::AppendSearchMenu(CMenu& menu) {
 	}
 }
 
+tstring WinUtil::getIconPath(const tstring& filename) {
+	if(Util::stricmp(Util::getFileExt(filename), _T(".bmp")) == 0) {
+		if (getOsMajor() == 5 && getOsMinor() == 0)
+			return _T("icons\\24bpp\\") + filename;
+		else
+			return _T("icons\\32bpp\\") + filename;
+	}
+
+	return _T("icons\\") + filename;
+}	
+
 void WinUtil::SetIcon(HWND hWnd, tstring file, bool big) {
-	tstring path = _T("icons\\") + file;
+	tstring path = getIconPath(file);
 	HICON hIconSm = (HICON)::LoadImage(NULL, path.c_str(), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
 	::SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIconSm);
 
@@ -1457,8 +1496,3 @@ bool WinUtil::flashWindow() {
 
 	return false;
 }
-
-/**
- * @file
- * $Id: WinUtil.cpp,v 1.21 2004/02/21 15:43:54 trem Exp $
- */

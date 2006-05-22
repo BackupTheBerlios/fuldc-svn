@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ size_t BufferedSocket::sockets = 0;
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
-	if (filterIn) delete filterIn;
+	delete filterIn;
 	sockets--;
 }
 
@@ -180,6 +180,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 					string::size_type pos = 0;
 					AutoArray<u_int8_t> buffer (BufSize);
 					size_t in;
+					l = line;
 					// decompress all input data and store in l.
 					while (left) {
 						in = BufSize;
@@ -200,7 +201,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 						l.erase (0, pos + 1 /* seperator char */);
 					}
 					// store remainder
-					line += l;
+					line = l;
 
 					break;
 				}
@@ -268,7 +269,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	size_t readPos = 0;
 
 	bool readDone = false;
-	dcdebug("Starting threadSend");
+	dcdebug("Starting threadSend\n");
 	while(true) {
 		if(!readDone && readBuf.size() > readPos) {
 			// Fill read buffer
@@ -308,7 +309,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 
 				fire(BufferedSocketListener::BytesSent(), 0, written);
 			} else if(written == -1) {
-				if(readPos < readBuf.size()) {
+				if(!readDone && readPos < readBuf.size()) {
 					// Read a little since we're blocking anyway...
 					size_t bytesRead = min(readBuf.size() - readPos, readBuf.size() / 2);
 					size_t actual = file->read(&readBuf[readPos], bytesRead);
@@ -323,9 +324,14 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 						readPos += actual;
 					}
 				} else {
-					int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
-					if(w & Socket::WAIT_READ) {
-						threadRead();
+					while(!disconnecting) {
+						int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
+						if(w & Socket::WAIT_READ) {
+							threadRead();
+						}
+						if(w & Socket::WAIT_WRITE) {
+							break;
+						}
 					}
 				}
 			}
@@ -462,8 +468,3 @@ void BufferedSocket::shutdown() {
 		delete this;
 	}
 }
-
-/**
- * @file
- * $Id: BufferedSocket.cpp,v 1.4 2004/02/14 13:23:55 trem Exp $
- */

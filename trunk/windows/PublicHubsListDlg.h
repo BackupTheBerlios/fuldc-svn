@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ public:
 			if(j > 0) {
 				tmp.erase(tmp.size()-1);
 			}
-			SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
+			FavoriteManager::getInstance()->setHubList(tmp);
 		}
 		EndDialog(wID);
 		return 0;
@@ -159,8 +159,3 @@ private:
 };
 
 #endif // !defined(PUBLIC_HUBS_LIST_DLG_H)
-
-/**
- * @file
- * $Id: PublicHubsListDlg.h,v 1.7 2005/04/24 08:13:05 arnetheduck Exp $
- */

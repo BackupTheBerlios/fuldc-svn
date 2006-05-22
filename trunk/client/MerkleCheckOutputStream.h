@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,8 +113,3 @@ private:
 };
 
 #endif // !defined(MERKLE_CHECK_OUTPUT_STREAM_H)
-
-/**
- * @file
- * $Id: MerkleCheckOutputStream.h,v 1.1 2005/01/13 15:08:00 arnetheduck Exp $
- */

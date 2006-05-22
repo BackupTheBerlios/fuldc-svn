@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include "ResourceManager.h"
 
 #include "AdcHub.h"
-#include "NmdcHub.h"
 
 
 Client* ClientManager::getClient(const string& aHubURL) {
@@ -40,8 +39,6 @@ Client* ClientManager::getClient(const string& aHubURL) {
 		c = new AdcHub(aHubURL, false);
 	} else if(Util::strnicmp("adcs://", aHubURL.c_str(), 7) == 0) {
 		c = new AdcHub(aHubURL, true);
-	} else {
-		c = new NmdcHub(aHubURL);
 	}
 
 	{
@@ -112,10 +109,11 @@ StringList ClientManager::getNicks(const CID& cid) {
 	if(lst.empty()) {
 		// Offline perhaps?
 		UserIter i = users.find(cid);
-		if(i != users.end())
+		if(i != users.end() && !i->second->getFirstNick().empty()) {
 			lst.push_back(i->second->getFirstNick());
-		else
+		} else {
 			lst.push_back('{' + cid.toBase32() + '}');
+		}
 	}
 	return lst;
 }
@@ -315,7 +313,7 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 		if(cmd.getType() == AdcCommand::TYPE_UDP && !u->getIdentity().isUdpActive()) {
 			cmd.setType(AdcCommand::TYPE_DIRECT);
 		}
-		cmd.setTo(u->getSID());
+		cmd.setTo(u->getIdentity().getSID());
 		u->getClient().send(cmd);
 	}
 }
@@ -391,7 +389,7 @@ void ClientManager::userCommand(const User::Ptr& p, const ::UserCommand& uc, Str
 	ou.getClient().getHubIdentity().getParams(params, "hub", false);
 	ou.getClient().getMyIdentity().getParams(params, "my", compatibility);
 	ou.getClient().escapeParams(params);
-	ou.getClient().sendUserCmd(Util::formatParams(uc.getCommand(), params));
+	ou.getClient().sendUserCmd(Util::formatParams(uc.getCommand(), params, false));
 }
 
 void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc, const CID& from) throw() {
@@ -403,7 +401,7 @@ Identity ClientManager::getIdentity(const User::Ptr& aUser) {
 	if(i != onlineUsers.end()) {
 		return i->second->getIdentity();
 	}
-	return Identity(aUser, Util::emptyString);
+	return Identity(aUser, Util::emptyString, 0);
 }
 
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
@@ -427,7 +425,7 @@ void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aF
 		string& client = *it;
 		for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
 			Client* c = *j;
-			if(c->isConnected() && c->getIpPort() == client) {
+			if(c->isConnected() && c->getHubUrl() == client) {
 				c->search(aSizeMode, aSize, aFileType, aString, aToken);
 			}
 		}
@@ -452,7 +450,7 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 }
 
-void ClientManager::on(Save, SimpleXML*) throw() {
+void ClientManager::save() {
 	Lock l(cs);
 
 	try {
@@ -483,6 +481,10 @@ void ClientManager::on(Save, SimpleXML*) throw() {
 	} catch(const FileException&) {
 		// ...
 	}
+}
+
+void ClientManager::on(Save, SimpleXML*) throw() {
+	save();
 }
 
 User::Ptr& ClientManager::getMe() {
@@ -566,8 +568,3 @@ void ClientManager::updateCachedIp() {
 	if(clients.size() > 0)
 		cachedIp = (*clients.begin())->getLocalIp();
 }
-
-/**
- * @file
- * $Id: ClientManager.cpp,v 1.2 2004/02/14 13:24:07 trem Exp $
- */

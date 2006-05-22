@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "QueueManager.h"
 #include "SearchManager.h"
 #include "ClientManager.h"
+#include "ShareManager.h"
 
 #include "StringTokenizer.h"
 #include "SimpleXML.h"
@@ -112,8 +113,8 @@ void DirectoryListing::loadFile(const string& name) {
 
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
-	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) { 
-	}
+	ListLoader(DirectoryListing* aList, DirectoryListing::Directory* root, bool aUpdating) : list(aList), cur(root), base("/"), inListing(false), updating(aUpdating) { 
+	};
 
 	virtual ~ListLoader() { }
 
@@ -122,6 +123,7 @@ public:
 
 	const string& getBase() const { return base; }
 private:
+	DirectoryListing* list;
 	DirectoryListing::Directory* cur;
 
 	StringMap params;
@@ -131,7 +133,7 @@ private:
 };
 
 string DirectoryListing::loadXML(const string& xml, bool updating) {
-	ListLoader ll(getRoot(), updating);
+	ListLoader ll(this, getRoot(), updating);
 	SimpleXMLReader(&ll).fromXML(xml);
 	return ll.getBase();
 }
@@ -146,6 +148,10 @@ static const string sSize = "Size";
 static const string sTTH = "TTH";
 
 void ListLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
+	if(list->getAbort()) {
+		throw AbortException();
+	}
+
 	if(inListing) {
 		if(name == sFile) {
 			const string& n = getAttrib(attribs, sName, 0);
@@ -355,7 +361,30 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 	return x;
 }
 
-/**
- * @file
- * $Id: DirectoryListing.cpp,v 1.3 2004/02/14 13:24:31 trem Exp $
- */
+u_int8_t DirectoryListing::Directory::checkDupes() {
+	u_int8_t result;
+	for(Directory::Iter i = directories.begin(); i != directories.end(); ++i) {
+		result = (*i)->checkDupes();
+		if(getDupe() == Directory::NONE)
+			setDupe(result);
+		else if(getDupe() == Directory::DUPE && result != Directory::DUPE)
+			setDupe(Directory::PARTIAL_DUPE);
+	}
+	for(File::Iter i = files.begin(); i != files.end(); ++i) {
+		//don't count 0 byte files since it'll give lots of partial dupes
+		//of no interest
+		if((*i)->getSize() > 0) {
+			(*i)->setDupe((*i)->getTTH() != NULL ? ShareManager::getInstance()->isTTHShared(*(*i)->getTTH()) : false);
+			if(getDupe() == Directory::NONE && (*i)->getDupe())
+				setDupe(Directory::DUPE);
+			else if(getDupe() == Directory::DUPE && !(*i)->getDupe())
+				setDupe(Directory::PARTIAL_DUPE);
+		}
+	}
+	return getDupe();
+}
+
+void DirectoryListing::checkDupes() {
+	root->checkDupes();
+	root->setDupe(false); //newer show the root as a dupe or partial dupe.
+}

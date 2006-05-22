@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,8 +169,10 @@ LRESULT PublicHubsFrame::onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 		// BAH, sorting on bytes will break of course...oh well...later...
 		if(l->iSubItem == COLUMN_USERS || l->iSubItem == COLUMN_MINSLOTS ||l->iSubItem == COLUMN_MAXHUBS || l->iSubItem == COLUMN_MAXUSERS) {
 			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
-		} else if(l->iSubItem == COLUMN_SHARED || l->iSubItem == COLUMN_MINSHARE || l->iSubItem == COLUMN_RELIABILITY) {
-			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
+		} else if(l->iSubItem == COLUMN_RELIABILITY) {
+ 			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
+		} else if (l->iSubItem == COLUMN_SHARED || l->iSubItem == COLUMN_MINSHARE){
+			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_BYTES);
 		} else {
 			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 		}
@@ -221,9 +223,7 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT PublicHubsFrame::onClickedConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	PublicHubListDlg dlg;
-	if(dlg.DoModal(m_hWnd) == IDOK) {
-		updateDropDown();
-	}
+	dlg.DoModal(m_hWnd);
 	return 0;
 }
 
@@ -278,7 +278,6 @@ LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 			SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 		
 		checkButton(false);
-		frame = NULL;
 
 		bHandled = FALSE;
 		return 0;
@@ -494,8 +493,8 @@ void PublicHubsFrame::updateDropDown() {
 }
 
 bool PublicHubsFrame::parseFilter(int& mode, double& size) {
-	string::size_type start = string::npos;
-	string::size_type end = string::npos;
+	string::size_type start = (string::size_type)string::npos;
+	string::size_type end = (string::size_type)string::npos;
 	int64_t multiplier = 1;
 
 	if(Util::strnicmp(filter.c_str(), ">=", 2) == 0) {
@@ -605,8 +604,3 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 
 	return insert;
 }
-
-/**
- * @file
- * $Id: PublicHubsFrm.cpp,v 1.3 2004/01/06 01:52:14 trem Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,32 +28,21 @@ AdcCommand::AdcCommand(Severity sev, Error err, const string& desc, char aType /
 	addParam(Util::toString(sev) + Util::toString(err));
 	addParam(desc);
 }
-AdcCommand::AdcCommand(const string& aLine, bool nmdc /* = false */) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
-	parse(aLine, nmdc);
+AdcCommand::AdcCommand(const string& aLine) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
+	parse(aLine);
 }
 
-void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(ParseException) {
+void AdcCommand::parse(const string& aLine) throw(ParseException) {
 	string::size_type i = 5;
 
-	if(nmdc) {
-		// "$ADCxxx ..."
-		if(aLine.length() < 7)
-			throw ParseException("Too short");
-		type = TYPE_CLIENT;
-		cmd[0] = aLine[4];
-		cmd[1] = aLine[5];
-		cmd[2] = aLine[6];
-		i += 3;
-	} else {
-		// "yxxx ..."
-		if(aLine.length() < 4)
-			throw ParseException("Too short");
-		type = aLine[0];
-		cmd[0] = aLine[1];
-		cmd[1] = aLine[2];
-		cmd[2] = aLine[3];
-	}
-
+	// "yxxx ..."
+	if(aLine.length() < 4)
+		throw ParseException("Too short");
+	type = aLine[0];
+	cmd[0] = aLine[1];
+	cmd[1] = aLine[2];
+	cmd[2] = aLine[3];
+	
 	if(type == TYPE_INFO) {
 		from = HUB_SID;
 	}
@@ -65,7 +54,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 
 	bool toSet = false;
 	bool featureSet = false;
-	bool fromSet = nmdc; // $ADCxxx never have a from CID...
+	bool fromSet = false;
 
 	while(i < len) {
 		switch(buf[i]) {
@@ -79,8 +68,6 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 				cur += '\n';
 			else if(buf[i] == '\\')
 				cur += '\\';
-			else if(buf[i] == ' ' && nmdc)	// $ADCGET escaping, leftover from old specs
-				cur += ' ';
 			else
 				throw ParseException("Unknown escape");
 			break;
@@ -124,39 +111,31 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 }
 
 string AdcCommand::toString(const CID& aCID) const {
-	return getHeaderString(aCID) + getParamString(false);
+	return getHeaderString(aCID) + getParamString();
 }
 
-string AdcCommand::toString(u_int32_t sid /* = 0 */, bool nmdc /* = false */) const {
-	return getHeaderString(sid, nmdc) + getParamString(nmdc);
+string AdcCommand::toString(u_int32_t sid /* = 0 */) const {
+	return getHeaderString(sid) + getParamString();
 }
 
-string AdcCommand::escape(const string& str, bool old) {
+string AdcCommand::escape(const string& str) {
 	string tmp = str;
 	string::size_type i = 0;
 	while( (i = tmp.find_first_of(" \n\\", i)) != string::npos) {
-		if(old) {
-			tmp.insert(i, "\\");
-		} else {
-			switch(tmp[i]) {
-				case ' ': tmp.replace(i, 1, "\\s"); break;
-				case '\n': tmp.replace(i, 1, "\\n"); break;
-				case '\\': tmp.replace(i, 1, "\\\\"); break;
-			}
+		switch(tmp[i]) {
+			case ' ': tmp.replace(i, 1, "\\s"); break;
+			case '\n': tmp.replace(i, 1, "\\n"); break;
+			case '\\': tmp.replace(i, 1, "\\\\"); break;
 		}
 		i+=2;
 	}
 	return tmp;
 }
 
-string AdcCommand::getHeaderString(u_int32_t sid, bool nmdc) const {
+string AdcCommand::getHeaderString(u_int32_t sid) const {
 	string tmp;
-	if(nmdc) {
-		tmp += "$ADC";
-	} else {
-		tmp += getType();
-	}
-
+	tmp += getType();
+	
 	tmp += cmdChar;
 
 	if(type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) {
@@ -187,17 +166,14 @@ string AdcCommand::getHeaderString(const CID& cid) const {
 	return tmp;
 }
 
-string AdcCommand::getParamString(bool nmdc) const {
+string AdcCommand::getParamString() const {
 	string tmp;
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 		tmp += ' ';
-		tmp += escape(*i, nmdc);
+		tmp += escape(*i);
 	}
-	if(nmdc) {
-		tmp += '|';
-	} else {
-		tmp += '\n';
-	}
+	tmp += '\n';
+	
 	return tmp;
 }
 
@@ -222,8 +198,3 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 	}
 	return false;
 }
-
-/**
- * @file
- * $Id: AdcCommand.cpp,v 1.1 2004/10/29 15:53:38 arnetheduck Exp $
- */

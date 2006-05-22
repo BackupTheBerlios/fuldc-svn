@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,6 +138,7 @@ public:
 	typedef X<5> UserAdded;
 	typedef X<6> UserRemoved;
 	typedef X<7> StatusChanged;
+	typedef X<8> PublicHubsUpdated;
 
 	virtual void on(DownloadStarting, const string&) throw() { }
 	virtual void on(DownloadFailed, const string&) throw() { }
@@ -147,6 +148,7 @@ public:
 	virtual void on(UserAdded, const FavoriteUser&) throw() { }
 	virtual void on(UserRemoved, const FavoriteUser&) throw() { }
 	virtual void on(StatusChanged, const User::Ptr&) throw() { }
+	virtual void on(PublicHubsUpdated) throw() { }
 };
 
 class SimpleXML;
@@ -165,6 +167,7 @@ public:
 	};
 	StringList getHubLists();
 	bool setHubList(int /*aHubList*/);
+	void setHubList(const string& hubs);
 	int getSelectedHubList() { return lastServer; }
 	void refresh();
 	HubTypes getHubListType() { return listType; }
@@ -296,8 +299,3 @@ private:
 };
 
 #endif // !defined(FAVORITE_MANAGER_H)
-
-/**
- * @file
- * $Id: FavoriteManager.h,v 1.1 2005/04/12 23:24:12 arnetheduck Exp $
- */

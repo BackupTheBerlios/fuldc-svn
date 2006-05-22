@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 
 	if(file.empty()){
-		SetWindowText(CTSTRING(SETTINGS_LASTLOG));
+		SetWindowText(CTSTRING(HISTORY));
 		ctrlPad.SetFont(WinUtil::font);
 		ctrlPad.SetBackgroundColor(WinUtil::bgColor);
 		ctrlPad.SetTextColor(WinUtil::textColor);
@@ -127,8 +127,3 @@ LRESULT TextFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: TextFrame.cpp,v 1.3 2004/01/08 11:27:05 trem Exp $
- */

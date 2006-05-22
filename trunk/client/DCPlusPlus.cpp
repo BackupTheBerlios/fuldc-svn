@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include "LogManager.h"
 #include "FavoriteManager.h"
 #include "SettingsManager.h"
-#include "FinishedManager.h"
 #include "ADLSearch.h"
 #include "SSLSocket.h"
 #include "HighlightManager.h"
@@ -40,7 +39,7 @@
 
 //ugly, but i have no intention on moving the code to *nix so it works =)
 #include "../windows/PopupManager.h"
-
+#include "../windows/FinishedManager.h"
 
 #include "StringTokenizer.h"
 
@@ -94,7 +93,6 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	WebShortcuts::newInstance();
 	IgnoreManager::newInstance();
 
-	
 	SettingsManager::getInstance()->load();
 
 	if(!SETTING(LANGUAGE_FILE).empty()) {
@@ -151,8 +149,3 @@ void shutdown() {
 	TimerManager::deleteInstance();
 	ResourceManager::deleteInstance();
 }
-
-/**
- * @file
- * $Id: DCPlusPlus.cpp,v 1.5 2004/02/15 01:20:30 trem Exp $
- */

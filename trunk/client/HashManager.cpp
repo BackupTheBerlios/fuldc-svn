@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,12 @@
 #include "SimpleXML.h"
 #include "LogManager.h"
 #include "File.h"
+#include "ZUtils.h"
+#include "SFVReader.h"
 
 #define HASH_FILE_VERSION_STRING "2"
 static const u_int32_t HASH_FILE_VERSION=2;
+const int64_t HashManager::MIN_BLOCK_SIZE = 64*1024;
 
 bool HashManager::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 	Lock l(cs);
@@ -438,7 +441,7 @@ void HashManager::HashStore::createDataFile(const string& name) {
 #define BUF_SIZE (256*1024)
 
 #ifdef _WIN32
-bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size) {
+bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
 	HANDLE h = INVALID_HANDLE_VALUE;
 	DWORD x, y;
 	if(!GetDiskFreeSpace(Text::toT(Util::getFilePath(fname)).c_str(), &y, &x, &y, &y)) {
@@ -503,11 +506,20 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 		}
 
 		tth.update(hbuf, hn);
-		total -= hn;
+		if(xcrc32) (*xcrc32)(hbuf, hn);
+
+		{
+			Lock l(cs);
+			currentSize = max(currentSize - hn, _LL(0));
+		}
 
 		if(size == 0) {
 			ok = true;
 			break;
+		} else if(size < 0) {
+			::CloseHandle(over.hEvent);
+			::CloseHandle(h);
+			throw HashException("File size mismatch");
 		}
 
 		if (!res) { 
@@ -560,7 +572,8 @@ int HashManager::Hasher::run() {
 		{
 			Lock l(cs);
 			if(!w.empty()) {
-				file = fname = w.begin()->first;
+				currentFile = fname = w.begin()->first;
+				currentSize = w.begin()->second;
 				w.erase(w.begin());
 				last = w.empty();
 			} else {
@@ -586,18 +599,24 @@ int HashManager::Hasher::run() {
 			try {
 				File f(fname, File::READ, File::OPEN);
 				int64_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), MIN_BLOCK_SIZE);
-#ifdef _WIN32
 				u_int32_t start = GET_TICK();
-#endif
 				u_int32_t timestamp = f.getLastModified();
 				TigerTree slowTTH(bs);
 				TigerTree* tth = &slowTTH;
+
+				CRC32Filter crc32;
+				SFVReader sfv(fname);
+				CRC32Filter* xcrc32 = 0;
+				if(sfv.hasCRC())
+					xcrc32 = &crc32;
+
 				size_t n = 0;
 #ifdef _WIN32
 				TigerTree fastTTH(bs);
 				tth = &fastTTH;
-				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size)) {
+				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size, xcrc32)) {
 					tth = &slowTTH;
+					crc32 = CRC32Filter();
 #endif
 					u_int32_t lastRead = GET_TICK();
 
@@ -612,8 +631,12 @@ int HashManager::Hasher::run() {
 						}
 						n = f.read(buf, bufSize);
 						tth->update(buf, n);
+						if(xcrc32) (*xcrc32)(buf, n);
 
-						total -= n;
+						{
+							Lock l(cs);
+							currentSize = max(currentSize - n, _LL(0));
+						}
 						sizeLeft -= n;
 					} while (n > 0 && !stop);
 #ifdef _WIN32
@@ -623,21 +646,24 @@ int HashManager::Hasher::run() {
 #endif
 				f.close();
 				tth->finalize();
-#ifdef _WIN32
 				u_int32_t end = GET_TICK();
 				int64_t speed = 0;
 				if(end > start) {
-					speed = size * 1000LL / (end - start);
+					speed = size * _LL(1000) / (end - start);
 				}
-#else
-				int64_t speed = 0;
-#endif				
-				HashManager::getInstance()->hashDone(fname, timestamp, *tth, speed);
+				if(xcrc32 && xcrc32->getValue() != sfv.getCRC()) {
+					LogManager::getInstance()->message(fname + STRING(NO_CRC32_MATCH));
+				} else {
+					HashManager::getInstance()->hashDone(fname, timestamp, *tth, speed);
+				}
 			} catch(const FileException& e) {
 				LogManager::getInstance()->message(STRING(ERROR_HASHING) + fname + ": " + e.getError());
 			}
-
-			total -= sizeLeft;
+		}
+		{
+			Lock l(cs);
+			currentFile.clear();
+			currentSize = 0;
 		}
 		running = false;
 		if(buf != NULL && (last || stop)) {

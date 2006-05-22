@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,14 +41,18 @@ _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppï¿
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
-_T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin. ")
+_T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, steven. ")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 
 _T("Thanks to Snowflake/Summerfling/Goose for his work on the lovely fulDC website. ")
 _T("Thanks to fnordpojk for 0xBADC0DE and to DCPortal.net for hosting the website. ")
 _T("Thanks to fusbar for all his advice. ")
-_T("Thanks to farmer for his advice on default colors. ");
+_T("Thanks to farmer for his advice on default colors. ")
+_T("Thanks to manos for his nice icons. ")
+_T("Thanks to Banten for his lovely icons. ")
+_T("Thanks to Irean for her help with the graphics. ")
+_T("Thanks to xAyiDe for his threaded file list code.");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
 {
@@ -67,7 +71,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2005 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2005 Jacek Sieka\nCodeveloper: Per Lindï¿½n\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 		CEdit ctrl(GetDlgItem(IDC_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);
@@ -144,8 +148,3 @@ private:
 };
 
 #endif // !defined(ABOUT_DLG_H)
-
-/**
- * @file
- * $Id: AboutDlg.h,v 1.3 2003/12/31 18:46:04 trem Exp $
- */

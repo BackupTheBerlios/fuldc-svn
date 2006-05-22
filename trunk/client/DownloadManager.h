@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -301,10 +301,6 @@ private:
 	// UserConnectionListener
 	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
-	virtual void on(Sending, UserConnection*, int64_t) throw();
-	virtual void on(FileLength, UserConnection*, int64_t) throw();
-	virtual void on(MaxedOut, UserConnection*) throw();
-	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
@@ -315,8 +311,3 @@ private:
 };
 
 #endif // !defined(DOWNLOAD_MANAGER_H)
-
-/**
- * @file
- * $Id: DownloadManager.h,v 1.3 2004/02/14 13:24:42 trem Exp $
- */

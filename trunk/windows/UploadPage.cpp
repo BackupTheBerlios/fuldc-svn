@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,6 +127,13 @@ LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
+	return 0;
+}
+
+LRESULT UploadPage::onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLISTVIEW* lv = reinterpret_cast<NMLISTVIEW*>(pnmh);
+	ctrlDirectories.setSort(lv->iSubItem, ExListViewCtrl::SORT_STRING, !ctrlDirectories.isAscending());
+
 	return 0;
 }
 
@@ -275,8 +282,3 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 	::PostMessage( WinUtil::mainWnd, WM_COMMAND, IDC_HASH_PROGRESS, 0);
 }
-
-/**
- * @file
- * $Id: UploadPage.cpp,v 1.5 2004/02/15 01:21:43 trem Exp $
- */

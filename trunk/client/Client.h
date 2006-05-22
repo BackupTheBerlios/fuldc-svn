@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,6 @@ public:
 	typedef X<17> SearchFlood;
 	typedef X<18> NmdcSearch;
 	typedef X<19> AdcSearch;
-	typedef X<20> UserIp;
 
 	virtual void on(Connecting, Client*) throw() { }
 	virtual void on(Connected, Client*) throw() { }
@@ -108,7 +107,7 @@ public:
 	short getPort() const { return port; }
 	const string& getAddress() const { return address; }
 
-	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); }
+	const string& getIp() const { return ip; }
 	string getIpPort() const { return getIp() + ':' + Util::toString(port); }
 	string getLocalIp() const;
 
@@ -193,6 +192,7 @@ private:
 
 	string hubUrl;
 	string address;
+	string ip;
 	u_int16_t port;
 	char separator;
 	bool secure;
@@ -201,12 +201,7 @@ private:
 
 	// BufferedSocketListener
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
-	virtual void on(Connected) throw() { updateActivity(); fire(ClientListener::Connected(), this); }
+	virtual void on(Connected) throw() { updateActivity(); ip = socket->getIp(); fire(ClientListener::Connected(), this); }
 };
 
 #endif // !defined(CLIENT_H)
-
-/**
- * @file
- * $Id: Client.h,v 1.5 2004/02/14 13:24:02 trem Exp $
- */

@@ -23,5 +23,5 @@
 
 /**
  * @file
- * $Id: Exception.cpp,v 1.1 2003/12/15 16:51:40 trem Exp $
+ * $Id: Exception.cpp,v 1.9 2005/04/24 08:13:11 arnetheduck Exp $
  */

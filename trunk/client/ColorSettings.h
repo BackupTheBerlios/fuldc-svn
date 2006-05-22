@@ -26,7 +26,11 @@ class ColorSettings
 {
 public:
 	ColorSettings(): bTimestamps(false), bUsers(false), bMyNick(false), bUsingRegexp(false), 
-		strMatch(Util::emptyStringT), strSoundFile(Util::emptyStringT) {	}
+		strMatch(Util::emptyStringT), strSoundFile(Util::emptyStringT), bWholeWord(false), 
+		bWholeLine(false), bIncludeNick(false), bCaseSensitive(false), bPopup(false), bTab(false),
+		bPlaySound(false), bBold(false), bUnderline(false), bItalic(false), bStrikeout(false), 
+		bLastLog(false), bFlashWindow(false), iMatchType(1), iBgColor(0), iFgColor(0), bHasBgColor(false),
+		bHasFgColor(false) {	}
 	~ColorSettings(){};
 
 	GETSET(bool, bWholeWord, WholeWord);

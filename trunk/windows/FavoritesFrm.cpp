@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
-		
+	
 	// Create listview columns
 	WinUtil::splitTokens(columnIndexes, SETTING(FAVORITESFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(FAVORITESFRAME_WIDTHS), COLUMN_LAST);
@@ -183,15 +183,30 @@ LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	{
 		FavoriteHubEntry* e = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
 		dcassert(e != NULL);
-		FavHubProperties dlg(e);
-		if(dlg.DoModal(m_hWnd) == IDOK)
-		{
-			ctrlHubs.SetItemText(i, COLUMN_NAME, Text::toT(e->getName()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, Text::toT(e->getDescription()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_SERVER, Text::toT(e->getServer()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_NICK, Text::toT(e->getNick(false)).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*').c_str());
-			ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, Text::toT(e->getUserDescription()).c_str());
+		
+		FavoriteHubEntry newEntry = *e;
+		FavHubProperties dlg(&newEntry);
+		while(true) {
+			if(dlg.DoModal(m_hWnd) == IDOK)
+			{
+				if(Util::stricmp(e->getServer(), newEntry.getServer()) == 0 || 
+					FavoriteManager::getInstance()->getFavoriteHubEntry(newEntry.getServer()) == NULL) {
+					*e = newEntry;
+					ctrlHubs.SetItemText(i, COLUMN_NAME, Text::toT(e->getName()).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, Text::toT(e->getDescription()).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_SERVER, Text::toT(e->getServer()).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_NICK, Text::toT(e->getNick(false)).c_str());
+					ctrlHubs.SetItemText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*').c_str());
+					ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, Text::toT(e->getUserDescription()).c_str());
+					break;
+				} else {
+					MessageBox(
+						CTSTRING(FAVORITE_HUB_ALREADY_EXISTS), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_ICONWARNING | MB_OK);
+				}
+
+			} else {
+				break;
+			}
 		}
 	}
 	return 0;
@@ -290,7 +305,6 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		SettingsManager::FAVORITESFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
     checkButton(false);
-	frame = NULL;
 
 	bHandled = FALSE;
 	return 0;
@@ -343,8 +357,3 @@ LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	} 
 	return 0;
 }
-
-/**
- * @file
- * $Id: FavoritesFrm.cpp,v 1.3 2004/01/06 01:52:09 trem Exp $
- */

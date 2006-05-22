@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,7 +107,7 @@ private:
 	CButton ctrlUp;
 	CButton ctrlDown;
 	CMenu hubsMenu;
-
+	
 	ExListViewCtrl ctrlHubs;
 
 	bool nosave;
@@ -132,8 +132,3 @@ private:
 };
 
 #endif // !defined(FAVORITE_HUBS_FRM_H)
-
-/**
- * @file
- * $Id: FavoritesFrm.h,v 1.3 2004/01/07 01:40:29 trem Exp $
- */

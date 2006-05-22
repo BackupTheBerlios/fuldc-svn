@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ public:
 	virtual size_t getUserCount() const { Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
-	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); }
+	virtual string escape(string const& str) const { return AdcCommand::escape(str); }
 	virtual void send(const AdcCommand& cmd);
 
 	string getMySID() { return AdcCommand::fromSID(sid); }
@@ -122,8 +122,3 @@ private:
 };
 
 #endif // !defined(ADC_HUB_H)
-
-/**
- * @file
- * $Id: AdcHub.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
- */

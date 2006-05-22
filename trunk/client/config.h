@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,13 +126,8 @@ typedef unsigned __int64 u_int64_t;
 // Change these values to use different versions...don't know what happens though...=)
 #define WINVER		0x0501
 # define _WIN32_WINNT 0x0501
-# define _WIN32_IE	0x0500
+# define _WIN32_IE	0x0601
 #define _RICHEDIT_VER	0x0300
 #endif
 
 #endif // !defined(CONFIG_H)
-
-/**
- * @file
- * $Id: config.h,v 1.7 2004/02/23 16:01:39 trem Exp $
- */

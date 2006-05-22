@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "Resource.h"
 
 #include "UsersFrame.h"
+#include "HubFrame.h"
 
 #include "../client/StringTokenizer.h"
 #include "../client/ClientManager.h"
@@ -148,7 +149,20 @@ LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 		FavoriteManager::getInstance()->setAutoGrant(ctrlUsers.getItemData(l->iItem)->user, ctrlUsers.GetCheckState(l->iItem) != FALSE);
 	}
 	return 0;
-} 
+}
+
+LRESULT UsersFrame::onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
+		UserInfo *ui = ctrlUsers.getItemData(i);
+		FavoriteManager::FavoriteMap favUsers = FavoriteManager::getInstance()->getFavoriteUsers();
+		const FavoriteUser u = favUsers.find(ui->user->getCID())->second;
+		if(u.getUrl().length() > 0)
+		{
+			HubFrame::openWindow(Text::toT(u.getUrl()));
+		}
+	}
+	return 0;
+}
 
 void UsersFrame::addUser(const FavoriteUser& aUser) {
 	int i = ctrlUsers.insertItem(new UserInfo(aUser), 0);
@@ -205,6 +219,7 @@ void UsersFrame::UserInfo::update(const FavoriteUser& u) {
 	columns[COLUMN_HUB] = user->isOnline() ? WinUtil::getHubNames(u.getUser()).first : Text::toT(u.getUrl());
 	columns[COLUMN_SEEN] = user->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
 	columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
+	columns[COLUMN_CID] = Text::toT(u.getUser()->getCID().toBase32());
 }
 
 LRESULT UsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -215,8 +230,3 @@ LRESULT UsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: UsersFrame.cpp,v 1.3 2004/01/06 01:52:18 trem Exp $
- */
