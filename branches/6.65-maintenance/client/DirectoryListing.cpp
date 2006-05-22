@@ -342,8 +342,3 @@ void DirectoryListing::checkDupes() {
 	root->checkDupes();
 	root->setDupe(false); //newer show the root as a dupe or partial dupe.
 }
-
-/**
- * @file
- * $Id: DirectoryListing.cpp,v 1.3 2004/02/14 13:24:31 trem Exp $
- */

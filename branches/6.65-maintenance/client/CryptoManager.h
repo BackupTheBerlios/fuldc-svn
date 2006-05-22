@@ -78,7 +78,6 @@ public:
 	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; }
 
 	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
-	void encodeHuffman(const string& is, string& os);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 private:
 
@@ -124,8 +123,3 @@ private:
 };
 
 #endif // !defined(CRYPTO_MANAGER_H)
-
-/**
- * @file
- * $Id: CryptoManager.h,v 1.5 2004/02/14 13:24:24 trem Exp $
- */

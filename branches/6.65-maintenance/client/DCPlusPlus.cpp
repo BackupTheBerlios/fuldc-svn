@@ -146,8 +146,3 @@ void shutdown() {
 	TimerManager::deleteInstance();
 	ResourceManager::deleteInstance();
 }
-
-/**
- * @file
- * $Id: DCPlusPlus.cpp,v 1.5 2004/02/15 01:20:30 trem Exp $
- */

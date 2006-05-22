@@ -38,8 +38,3 @@ private:
 };
 
 #endif // !defined(ENCODER_H)
-
-/**
- * @file
- * $Id: Encoder.h,v 1.1 2004/02/14 13:26:52 trem Exp $
- */

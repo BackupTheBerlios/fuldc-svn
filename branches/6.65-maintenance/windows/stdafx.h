@@ -62,9 +62,3 @@ extern CAppModule _Module;
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_STDAFX_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
-
-/**
- * @file
- * $Id: stdafx.h,v 1.5 2004/02/23 16:04:03 trem Exp $
- */
-

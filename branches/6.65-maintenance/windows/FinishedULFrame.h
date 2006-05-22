@@ -59,8 +59,3 @@ private:
 };
 
 #endif // !defined(FINISHED_UL_FRAME_H)
-
-/**
- * @file
- * $Id: FinishedULFrame.h,v 1.4 2004/01/06 01:52:10 trem Exp $
- */

@@ -318,8 +318,3 @@ void ADLSearchManager::matchRecurse(DestDirList &aDestList, DirectoryListing::Di
 	}
 	StepUpDirectory(aDestList);
 }
-
-/**
- * @file
- * $Id: ADLSearch.cpp,v 1.27 2005/04/24 09:45:39 arnetheduck Exp $
- */

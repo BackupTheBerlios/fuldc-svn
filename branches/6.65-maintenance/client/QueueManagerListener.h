@@ -56,8 +56,3 @@ public:
 };
 
 #endif // !defined(QUEUE_MANAGER_LISTENER_H)
-
-/**
- * @file
- * $Id: QueueManagerListener.h,v 1.2 2003/12/30 13:30:13 trem Exp $
- */

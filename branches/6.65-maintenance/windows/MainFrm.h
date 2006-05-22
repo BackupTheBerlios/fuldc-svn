@@ -383,7 +383,6 @@ private:
 	} links;
 
 	HWND createToolbar();
-	void buildMenu();
 	void updateTray(bool add = true);
 
 	void autoConnect(const FavoriteHubEntry::List& fl);
@@ -411,8 +410,3 @@ private:
 };
 
 #endif // !defined(MAIN_FRM_H)
-
-/**
- * @file
- * $Id: MainFrm.h,v 1.11 2004/02/22 01:24:11 trem Exp $
- */

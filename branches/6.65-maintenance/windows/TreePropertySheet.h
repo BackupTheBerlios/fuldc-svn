@@ -93,8 +93,3 @@ private:
 };
 
 #endif // !defined(TREE_PROPERTY_SHEET_H)
-
-/**
- * @file
- * $Id: TreePropertySheet.h,v 1.8 2005/04/24 08:13:03 arnetheduck Exp $
- */

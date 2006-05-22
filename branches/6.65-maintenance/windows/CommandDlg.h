@@ -135,8 +135,3 @@ private:
 };
 
 #endif // !defined(COMMAND_DLG_H)
-
-/**
- * @file
- * $Id: CommandDlg.h,v 1.1 2003/12/15 16:51:57 trem Exp $
- */

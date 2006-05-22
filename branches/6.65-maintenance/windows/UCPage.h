@@ -78,8 +78,3 @@ protected:
 };
 
 #endif // !defined(UC_PAGE_H)
-
-/**
- * @file
- * $Id: UCPage.h,v 1.1 2003/12/15 16:52:08 trem Exp $
- */

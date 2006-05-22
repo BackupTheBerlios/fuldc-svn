@@ -95,8 +95,3 @@ LRESULT AppearancePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCEPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: AppearancePage.cpp,v 1.3 2003/12/30 13:31:46 trem Exp $
- */

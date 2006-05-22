@@ -54,7 +54,7 @@
 #include <fnmatch.h>
 #endif
 
-const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
+const string QueueManager::USER_LIST_NAME = "files.xml";
 
 namespace {
 
@@ -218,22 +218,18 @@ void QueueManager::UserQueue::add(QueueItem* qi, const User::Ptr& aUser) {
 	dcassert(qi->isSource(aUser));
 	dcassert(qi->getCurrent() == NULL);
 
-	QueueItem::List& l = userQueue[qi->getPriority()][aUser];
-	if(qi->isSet(QueueItem::FLAG_EXISTS)) {
-		l.insert(l.begin(), qi);
-	} else {
-		l.push_back(qi);
-	}
+	userQueue[qi->getPriority()][aUser].insert(qi);
+	dcassert(!userQueue[qi->getPriority()].find(aUser)->second.empty());
 }
 
 QueueItem* QueueManager::UserQueue::getNext(const User::Ptr& aUser, QueueItem::Priority minPrio) {
 	int p = QueueItem::LAST - 1;
 
 	do {
-		QueueItem::UserListIter i = userQueue[p].find(aUser);
+		QueueItem::UserSetIter i = userQueue[p].find(aUser);
 		if(i != userQueue[p].end()) {
 			dcassert(!i->second.empty());
-			return i->second.front();
+			return *(i->second.begin());
 		}
 		p--;
 	} while(p >= minPrio);
@@ -301,10 +297,10 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	} else {
 		dcassert(qi->isSource(aUser));
 		dcassert(qi->getCurrent() == NULL);
-		QueueItem::UserListMap& ulm = userQueue[qi->getPriority()];
-		QueueItem::UserListIter j = ulm.find(aUser);
+		QueueItem::UserSetMap& ulm = userQueue[qi->getPriority()];
+		QueueItem::UserSetIter j = ulm.find(aUser);
 		dcassert(j != ulm.end());
-		QueueItem::List& l = j->second;
+		QueueItem::Set& l = j->second;
 		dcassert(find(l.begin(), l.end(), qi) != l.end());
 		l.erase(find(l.begin(), l.end(), qi));
 		
@@ -1422,9 +1418,9 @@ void QueueManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser
 	{
 		Lock l(cs);
 		for(int i = 0; i < QueueItem::LAST; ++i) {
-			QueueItem::UserListIter j = userQueue.getList(i).find(aUser);
+			QueueItem::UserSetIter j = userQueue.getList(i).find(aUser);
 			if(j != userQueue.getList(i).end()) {
-				for(QueueItem::Iter m = j->second.begin(); m != j->second.end(); ++m)
+				for(QueueItem::SetIter m = j->second.begin(); m != j->second.end(); ++m)
 					fire(QueueManagerListener::StatusUpdated(), *m);
 				if(i != QueueItem::PAUSED)
 					hasDown = true;
@@ -1644,7 +1640,3 @@ int64_t QueueManager::getQueueSize() {
 
 	return tmp;
 }
-/**
- * @file
- * $Id: QueueManager.cpp,v 1.11 2004/02/15 16:08:42 trem Exp $
- */

@@ -94,8 +94,3 @@ LRESULT WindowsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_WINDOWSPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: WindowsPage.cpp,v 1.2 2005/03/19 13:38:12 arnetheduck Exp $
- */

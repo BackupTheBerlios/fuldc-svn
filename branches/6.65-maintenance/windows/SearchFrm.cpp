@@ -1269,7 +1269,3 @@ LRESULT SearchFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 
 	return 0;
 }
-/**
- * @file
- * $Id: SearchFrm.cpp,v 1.8 2004/02/14 13:55:25 trem Exp $
- */

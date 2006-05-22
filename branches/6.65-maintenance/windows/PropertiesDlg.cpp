@@ -105,9 +105,3 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	bHandled = FALSE;
 	return TRUE;
 }
-
-/**
- * @file
- * $Id: PropertiesDlg.cpp,v 1.3 2004/02/12 22:43:57 trem Exp $
- */
-

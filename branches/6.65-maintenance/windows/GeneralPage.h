@@ -63,8 +63,3 @@ private:
 };
 
 #endif // !defined(GENERAL_PAGE_H)
-
-/**
- * @file
- * $Id: GeneralPage.h,v 1.1 2003/12/15 16:52:01 trem Exp $
- */

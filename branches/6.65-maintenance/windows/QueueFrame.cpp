@@ -604,12 +604,14 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 					break;
 			}
 			dcassert(j != i.second);
-			delete j->second;
-			directories.erase(j);
-			if(directories.count(ii->getPath()) == 0) {
-				removeDirectory(ii->getPath(), ii->isSet(QueueItem::FLAG_USER_LIST));
-				if(isCurDir(ii->getPath()))
-					curDir = Util::emptyStringT;
+			if(j != i.second) {
+				delete j->second;
+				directories.erase(j);
+				if(directories.count(ii->getPath()) == 0) {
+					removeDirectory(ii->getPath(), ii->isSet(QueueItem::FLAG_USER_LIST));
+					if(isCurDir(ii->getPath()))
+						curDir = Util::emptyStringT;
+				}
 			}
 			
 			delete ii;
@@ -1213,6 +1215,17 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bH
 	return 0;
 }
 
+void QueueFrame::onTab() {
+	if(showTree) {
+		HWND focus = ::GetFocus();
+		if(focus == ctrlDirs.m_hWnd) {
+			ctrlQueue.SetFocus();
+		} else if(focus == ctrlQueue.m_hWnd) {
+			ctrlDirs.SetFocus();
+		}
+	}
+}
+
 void QueueFrame::updateQueue() {
 	ctrlQueue.DeleteAllItems();
 	pair<DirectoryIter, DirectoryIter> i;
@@ -1233,6 +1246,15 @@ void QueueFrame::updateQueue() {
 	ctrlQueue.SetRedraw(TRUE);
 	curDir = getSelectedDir();
 	updateStatus();
+}
+
+void QueueFrame::clearTree(HTREEITEM item) {
+	HTREEITEM next = ctrlDirs.GetChildItem(item);
+	while(next != NULL) {
+		clearTree(next);
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+	delete (tstring*)ctrlDirs.GetItemData(item);
 }
 
 // Put it here to avoid a copy for each recursion...
@@ -1338,7 +1360,3 @@ void QueueFrame::on(QueueManagerListener::SearchAlternates, string aMsg, int nr)
 	
 	ctrlStatus.SetText( 1, txt.c_str() );
 }
-/**
- * @file
- * $Id: QueueFrame.cpp,v 1.8 2004/01/06 01:52:14 trem Exp $
- */

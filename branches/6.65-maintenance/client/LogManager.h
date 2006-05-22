@@ -130,8 +130,3 @@ private:
 #define LOG(area, msg) LogManager::getInstance()->log(area, msg)
 
 #endif // !defined(LOG_MANAGER_H)
-
-/**
- * @file
- * $Id: LogManager.h,v 1.3 2004/02/14 13:25:00 trem Exp $
- */

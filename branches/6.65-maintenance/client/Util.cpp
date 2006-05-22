@@ -1071,7 +1071,3 @@ string Util::trim(string aString, string aChars) {
 	
 	return aString;
 }
-/**
- * @file
- * $Id: Util.cpp,v 1.4 2004/02/14 13:26:28 trem Exp $
- */

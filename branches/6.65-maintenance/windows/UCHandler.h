@@ -112,8 +112,3 @@ private:
 };
 
 #endif // !defined(UC_HANDLER_H)
-
-/**
- * @file
- * $Id: UCHandler.h,v 1.11 2005/04/24 08:13:04 arnetheduck Exp $
- */

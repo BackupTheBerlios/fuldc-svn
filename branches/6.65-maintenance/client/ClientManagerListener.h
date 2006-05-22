@@ -42,8 +42,3 @@ public:
 };
 
 #endif // !defined(CLIENT_MANAGER_LISTENER_H)
-
-/**
- * @file
- * $Id: ClientManagerListener.h,v 1.1 2003/12/15 16:51:37 trem Exp $
- */

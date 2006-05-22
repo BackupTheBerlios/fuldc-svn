@@ -44,8 +44,3 @@ int TimerManager::run() {
 
 	return 0;
 }
-
-/**
- * @file
- * $Id: TimerManager.cpp,v 1.3 2004/02/14 13:26:06 trem Exp $
- */

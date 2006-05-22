@@ -96,8 +96,3 @@ private:
 };
 
 #endif // !defined(TEXT_FRAME_H)
-
-/**
- * @file
- * $Id: TextFrame.h,v 1.3 2004/01/08 11:27:05 trem Exp $
- */

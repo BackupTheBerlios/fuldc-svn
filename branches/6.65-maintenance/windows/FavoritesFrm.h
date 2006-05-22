@@ -132,8 +132,3 @@ private:
 };
 
 #endif // !defined(FAVORITE_HUBS_FRM_H)
-
-/**
- * @file
- * $Id: FavoritesFrm.h,v 1.3 2004/01/07 01:40:29 trem Exp $
- */

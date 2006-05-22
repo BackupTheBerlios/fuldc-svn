@@ -79,8 +79,3 @@ private:
 
 
 #endif // !defined(RESOURCE_MANAGER_H)
-
-/**
- * @file
- * $Id: ResourceManager.h,v 1.1 2003/12/15 16:51:43 trem Exp $
- */

@@ -292,8 +292,3 @@ private:
 };
 
 #endif // !defined(SIMPLE_XML_H)
-
-/**
- * @file
- * $Id: SimpleXML.h,v 1.4 2004/02/14 13:25:47 trem Exp $
- */

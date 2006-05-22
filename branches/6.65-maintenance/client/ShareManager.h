@@ -61,7 +61,7 @@ public:
 	bool getTTH(const string& aFile, TTHValue& tth) throw();
 	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
 	int refresh(const string& aDir);
-	void setDirty() { shareXmlDirty = xmlDirty = true; };
+	void setDirty() { shareXmlDirty = xmlDirty = true; }
 
 	string getPhysicalPath(TTHValue& tth);
 
@@ -79,11 +79,8 @@ public:
 
 	size_t getSharedFiles() throw();
 
-	string getShareSizeString() { return Util::toString(getShareSize()); };
-	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
-	
-	int64_t getListLen() { return 0; };
-	string getListLenString() { return Util::toString(getListLen()); };
+	string getShareSizeString() { return Util::toString(getShareSize()); }
+	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); }
 	
 	SearchManager::TypeModes getType(const string& fileName);
 
@@ -351,8 +348,3 @@ private:
 };
 
 #endif // !defined(SHARE_MANAGER_H)
-
-/**
- * @file
- * $Id: ShareManager.h,v 1.6 2004/02/21 10:47:46 trem Exp $
- */

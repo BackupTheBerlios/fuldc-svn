@@ -281,8 +281,3 @@ private:
 };
 
 #endif // !defined(FAVORITE_MANAGER_H)
-
-/**
- * @file
- * $Id: FavoriteManager.h,v 1.3 2003/12/30 13:30:12 trem Exp $
- */

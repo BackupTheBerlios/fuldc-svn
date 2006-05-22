@@ -187,8 +187,3 @@ private:
 };
 
 #endif // !defined(BUFFERED_SOCKET_H)
-
-/**
- * @file
- * $Id: BufferedSocket.h,v 1.3 2004/02/14 13:23:58 trem Exp $
- */

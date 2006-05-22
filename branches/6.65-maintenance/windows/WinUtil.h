@@ -216,8 +216,3 @@ private:
 };
 
 #endif // !defined(WIN_UTIL_H)
-
-/**
- * @file
- * $Id: WinUtil.h,v 1.13 2004/02/15 16:58:49 trem Exp $
- */

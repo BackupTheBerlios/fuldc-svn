@@ -644,7 +644,3 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 	listType = TYPE_BZIP2; 
 }
 
-/**
- * @file
- * $Id: FavoriteManager.cpp,v 1.6 2004/02/14 13:24:57 trem Exp $
- */

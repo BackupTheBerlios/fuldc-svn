@@ -282,8 +282,3 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 	::PostMessage( WinUtil::mainWnd, WM_COMMAND, IDC_HASH_PROGRESS, 0);
 }
-
-/**
- * @file
- * $Id: UploadPage.cpp,v 1.5 2004/02/15 01:21:43 trem Exp $
- */

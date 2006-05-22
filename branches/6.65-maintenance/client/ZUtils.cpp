@@ -125,8 +125,3 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 	insize = insize - zs.avail_in;
 	return err == Z_OK;
 }
-
-/**
- * @file
- * $Id: ZUtils.cpp,v 1.1 2004/02/14 13:27:24 trem Exp $
- */

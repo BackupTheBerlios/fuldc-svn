@@ -165,8 +165,3 @@ private:
 };
 
 #endif // !defined(HASH_PROGRESS_DLG_H)
-
-/**
- * @file
- * $Id: HashProgressDlg.h,v 1.1 2004/09/06 12:33:26 arnetheduck Exp $
- */

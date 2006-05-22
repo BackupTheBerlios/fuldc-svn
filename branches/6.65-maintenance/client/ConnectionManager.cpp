@@ -607,8 +607,3 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 		}
 	}
 }
-
-/**
- * @file
- * $Id: ConnectionManager.cpp,v 1.2 2004/02/14 13:24:11 trem Exp $
- */

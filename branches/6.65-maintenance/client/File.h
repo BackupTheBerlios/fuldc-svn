@@ -440,8 +440,3 @@ private:
 };
 
 #endif // !defined(FILE_H)
-
-/**
- * @file
- * $Id: File.h,v 1.4 2004/02/14 13:24:48 trem Exp $
- */

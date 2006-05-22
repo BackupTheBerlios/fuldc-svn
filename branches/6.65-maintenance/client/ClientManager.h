@@ -148,8 +148,3 @@ private:
 };
 
 #endif // !defined(CLIENT_MANAGER_H)
-
-/**
- * @file
- * $Id: ClientManager.h,v 1.2 2003/12/25 06:58:22 trem Exp $
- */

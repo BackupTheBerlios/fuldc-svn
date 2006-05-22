@@ -84,8 +84,3 @@ public:
 };
 
 #endif // !defined(LINE_DLG_H)
-
-/**
- * @file
- * $Id: LineDlg.h,v 1.1 2003/12/15 16:52:02 trem Exp $
- */

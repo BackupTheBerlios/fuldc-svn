@@ -178,8 +178,3 @@ int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lPa
 	return i;
 	
 }
-
-/**
- * @file
- * $Id: ExListViewCtrl.cpp,v 1.1 2003/12/15 16:51:58 trem Exp $
- */

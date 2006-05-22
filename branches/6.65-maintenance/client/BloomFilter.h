@@ -91,8 +91,3 @@ private:
 };
 
 #endif // !defined(BLOOM_FILTER_H)
-
-/**
- * @file
- * $Id: BloomFilter.h,v 1.1 2004/02/14 13:26:44 trem Exp $
- */

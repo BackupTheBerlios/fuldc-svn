@@ -51,8 +51,3 @@ public:
 };
 
 #endif // !defined(SINGLE_INSTANCE_H)
-
-/**
- * @file
- * $Id: SingleInstance.h,v 1.1 2003/12/15 16:52:06 trem Exp $
- */

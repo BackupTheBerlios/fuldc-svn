@@ -122,8 +122,3 @@ protected:
 };
 
 #endif // !defined(SPEAKER_H)
-
-/**
- * @file
- * $Id: Speaker.h,v 1.1 2003/12/15 16:51:46 trem Exp $
- */

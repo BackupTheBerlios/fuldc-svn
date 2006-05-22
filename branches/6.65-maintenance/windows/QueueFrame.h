@@ -145,16 +145,7 @@ public:
 		return 0;
 	}
 
-	void onTab() {
-		if(showTree) {
-			HWND focus = ::GetFocus();
-			if(focus == ctrlDirs.m_hWnd) {
-				ctrlQueue.SetFocus();
-			} else if(focus == ctrlQueue.m_hWnd) {
-				ctrlDirs.SetFocus();
-			}
-		}
-	}
+	void onTab();
 
 	LRESULT onShowTree(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
@@ -415,14 +406,7 @@ private:
 
 	void moveNode(HTREEITEM item, HTREEITEM parent);
 
-	void clearTree(HTREEITEM item) {
-		HTREEITEM next = ctrlDirs.GetChildItem(item);
-		while(next != NULL) {
-			clearTree(next);
-			next = ctrlDirs.GetNextSiblingItem(next);
-		}
-		delete (tstring*)ctrlDirs.GetItemData(item);
-	}
+	void clearTree(HTREEITEM item);
 
 	QueueItemInfo::SourceInfo* getSourceInfo(const CMenu& menu, WORD wID) {
 		TCHAR buf[50];
@@ -487,8 +471,3 @@ private:
 };
 
 #endif // !defined(QUEUE_FRAME_H)
-
-/**
- * @file
- * $Id: QueueFrame.h,v 1.9 2004/02/14 13:55:21 trem Exp $
- */

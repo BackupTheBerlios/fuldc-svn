@@ -758,7 +758,3 @@ LRESULT TransferView::onPmAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 	return 0;	
 }
-/**
- * @file
- * $Id: TransferView.cpp,v 1.8 2004/02/21 10:46:10 trem Exp $
- */

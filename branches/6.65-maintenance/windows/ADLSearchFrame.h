@@ -141,8 +141,3 @@ private:
 };
 
 #endif // !defined(ADL_SEARCH_FRAME_H)
-
-/**
- * @file
- * $Id: ADLSearchFrame.h,v 1.3 2004/01/07 01:40:29 trem Exp $
- */

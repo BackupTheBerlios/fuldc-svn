@@ -309,8 +309,3 @@ private:
 };
 
 #endif // !defined(HASH_MANAGER_H)
-
-/**
- * @file
- * $Id: HashManager.h,v 1.2 2004/02/15 01:20:30 trem Exp $
- */

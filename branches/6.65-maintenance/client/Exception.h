@@ -54,8 +54,3 @@ public:\
 #endif
 
 #endif // !defined(EXCEPTION_H)
-
-/**
- * @file
- * $Id: Exception.h,v 1.1 2003/12/15 16:51:40 trem Exp $
- */

@@ -139,8 +139,3 @@ string Client::getLocalIp() const {
 		return Util::getLocalIp();
 	return lip;
 }
-
-/**
- * @file
- * $Id: Client.cpp,v 1.5 2003/12/31 18:44:30 trem Exp $
- */

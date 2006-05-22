@@ -87,8 +87,3 @@ private:
 };
 
 #endif // !defined(HTTP_CONNECTION_H)
-
-/**
- * @file
- * $Id: HttpConnection.h,v 1.2 2003/12/25 06:58:23 trem Exp $
- */

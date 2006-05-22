@@ -182,8 +182,3 @@ private:
 };
 
 #endif // !defined(LIST_VIEW_ARROWS_H)
-
-/**
- * @file
- * $Id: ListViewArrows.h,v 1.5 2005/04/24 08:13:03 arnetheduck Exp $
- */

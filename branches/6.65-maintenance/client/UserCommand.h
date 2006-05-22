@@ -75,8 +75,3 @@ public:
 };
 
 #endif // !defined(USER_COMMAND_H)
-
-/**
- * @file
- * $Id: UserCommand.h,v 1.1 2003/12/15 16:51:49 trem Exp $
- */

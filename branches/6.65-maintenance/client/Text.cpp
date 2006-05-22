@@ -289,8 +289,3 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 	}
 	return tmp;
 }
-
-/**
- * @file
- * $Id: Text.cpp,v 1.1 2004/09/10 10:04:01 arnetheduck Exp $
- */

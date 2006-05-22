@@ -35,8 +35,3 @@ public:
 };
 
 #endif // !defined(SEARCH_MANAGER_LISTENER_H)
-
-/**
- * @file
- * $Id: SearchManagerListener.h,v 1.1 2003/12/15 16:51:44 trem Exp $
- */

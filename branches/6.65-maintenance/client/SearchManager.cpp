@@ -277,8 +277,3 @@ string SearchManager::clean(const string& aSearchString) {
 
 	return tmp;
 }
-
-/**
- * @file
- * $Id: SearchManager.cpp,v 1.3 2004/02/14 13:25:21 trem Exp $
- */

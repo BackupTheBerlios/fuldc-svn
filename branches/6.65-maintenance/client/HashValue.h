@@ -58,8 +58,3 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 };
 
 #endif // !defined(HASH_VALUE_H)
-
-/**
- * @file
- * $Id: HashValue.h,v 1.11 2005/04/24 08:13:37 arnetheduck Exp $
- */

@@ -42,8 +42,3 @@ public:
 };
 
 #endif // !defined(FAVORITE_USER_H)
-
-/**
- * @file
- * $Id: FavoriteUser.h,v 1.3 2004/02/14 13:24:45 trem Exp $
- */

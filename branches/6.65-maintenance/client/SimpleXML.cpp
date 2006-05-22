@@ -330,8 +330,3 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 	current = &root;
 	resetCurrentChild();
 }
-
-/**
- * @file
- * $Id: SimpleXML.cpp,v 1.4 2004/02/14 13:25:43 trem Exp $
- */

@@ -116,8 +116,3 @@ private:
 };
 
 #endif // !defined(STATS_FRAME_H)
-
-/**
- * @file
- * $Id: StatsFrame.h,v 1.2 2004/01/06 01:52:16 trem Exp $
- */

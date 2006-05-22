@@ -50,8 +50,3 @@ protected:
 };
 
 #endif // !defined(PROPERTIES_DLG_H)
-
-/**
- * @file
- * $Id: PropertiesDlg.h,v 1.3 2004/02/12 22:43:57 trem Exp $
- */

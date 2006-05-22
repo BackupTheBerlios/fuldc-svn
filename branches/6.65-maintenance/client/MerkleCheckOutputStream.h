@@ -113,8 +113,3 @@ private:
 };
 
 #endif // !defined(MERKLE_CHECK_OUTPUT_STREAM_H)
-
-/**
- * @file
- * $Id: MerkleCheckOutputStream.h,v 1.1 2005/01/13 15:08:00 arnetheduck Exp $
- */

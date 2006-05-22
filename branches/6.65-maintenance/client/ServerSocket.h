@@ -58,8 +58,3 @@ private:
 };
 
 #endif // !defined(SERVER_SOCKET_H)
-
-/**
- * @file
- * $Id: ServerSocket.h,v 1.2 2003/12/25 06:58:24 trem Exp $
- */

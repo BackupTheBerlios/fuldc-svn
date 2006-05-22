@@ -20,8 +20,3 @@
 #include "DCPlusPlus.h"
 
 #include "LogManager.h"
-
-/**
- * @file
- * $Id: LogManager.cpp,v 1.2 2004/02/14 13:24:59 trem Exp $
- */

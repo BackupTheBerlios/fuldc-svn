@@ -124,8 +124,3 @@ private:
 };
 
 #endif // !defined(TEXT_H)
-
-/**
- * @file
- * $Id: Text.h,v 1.1 2004/09/10 10:04:01 arnetheduck Exp $
- */

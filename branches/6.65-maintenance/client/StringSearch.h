@@ -115,8 +115,3 @@ private:
 };
 
 #endif // !defined(STRING_SEARCH_H)
-
-/**
- * @file
- * $Id: StringSearch.h,v 1.1 2003/12/15 16:51:47 trem Exp $
- */

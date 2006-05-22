@@ -58,8 +58,3 @@ private:
 };
 
 #endif // !defined(TIGER_HASH_H)
-
-/**
- * @file
- * $Id: TigerHash.h,v 1.1 2004/02/14 13:27:20 trem Exp $
- */

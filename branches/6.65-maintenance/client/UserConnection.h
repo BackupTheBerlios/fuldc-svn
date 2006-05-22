@@ -233,7 +233,7 @@ public:
 	void error(const string& aError) { send("$Error " + aError + '|'); }
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
 	void maxedOut() { send("$MaxedOut|"); }
-	void fileNotAvail() { send("$Error " + FILE_NOT_AVAILABLE + "|"); }
+	void fileNotAvail(const std::string& msg = FILE_NOT_AVAILABLE) { send("$Error " + msg + "|"); }
 	void notSupported() { send("$Error " + COMMAND_NOT_SUPPORTED + "|"); }
 
 	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_GET).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
@@ -338,8 +338,3 @@ private:
 };
 
 #endif // !defined(USER_CONNECTION_H)
-
-/**
- * @file
- * $Id: UserConnection.h,v 1.4 2004/02/25 00:27:26 trem Exp $
- */

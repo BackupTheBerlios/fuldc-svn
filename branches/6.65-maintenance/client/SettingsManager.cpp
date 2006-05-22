@@ -511,8 +511,3 @@ void SettingsManager::save(string const& aFileName) {
 		// ...
 	}
 }
-
-/**
- * @file
- * $Id: SettingsManager.cpp,v 1.13 2004/02/23 16:02:19 trem Exp $
- */

@@ -51,8 +51,3 @@ protected:
 };
 
 #endif // !defined(FAV_HUB_PROPERTIES_H)
-
-/**
- * @file
- * $Id: FavHubProperties.h,v 1.1 2003/12/15 16:51:59 trem Exp $
- */

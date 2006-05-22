@@ -74,7 +74,7 @@ public:
 		string::size_type pos = aNick.find("[");
 		if( pos != string::npos ) {
 			string::size_type rpos = aNick.rfind("]");
-			if( rpos == aNick.length() -1 && rpos > 0 ) // this user has a stupid fucking nick bah ugly hate it
+			if( rpos == aNick.length() -1 && rpos > 0 ) //ugly nick =)
 				rpos = aNick.rfind("]", rpos-1);
 			if(rpos != string::npos) {
 				shortNick = aNick.substr(rpos+1);
@@ -157,8 +157,3 @@ private:
 };
 
 #endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
-
-/**
- * @file
- * $Id: User.h,v 1.5 2004/02/14 13:26:18 trem Exp $
- */

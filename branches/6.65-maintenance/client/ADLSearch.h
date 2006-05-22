@@ -328,8 +328,3 @@ private:
 };
 
 #endif // !defined(ADL_SEARCH_H)
-
-/**
- * @file
- * $Id: ADLSearch.h,v 1.2 2003/12/30 13:31:43 trem Exp $
- */

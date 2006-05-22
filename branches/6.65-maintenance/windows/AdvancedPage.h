@@ -57,8 +57,3 @@ protected:
 };
 
 #endif // !defined(ADVANCED_PAGE_H)
-
-/**
- * @file
- * $Id: AdvancedPage.h,v 1.1 2003/12/15 16:51:56 trem Exp $
- */

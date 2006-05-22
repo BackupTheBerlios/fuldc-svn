@@ -652,10 +652,3 @@ void PrivateFrame::readLog() {
 	} catch(FileException & /*e*/){
 	}
 }
-
-/**
- * @file
- * $Id: PrivateFrame.cpp,v 1.14 2004/02/21 15:15:02 trem Exp $
- */
-
-

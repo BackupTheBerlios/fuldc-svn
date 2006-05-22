@@ -310,8 +310,3 @@ private:
 };
 
 #endif // !defined(DOWNLOAD_MANAGER_H)
-
-/**
- * @file
- * $Id: DownloadManager.h,v 1.3 2004/02/14 13:24:42 trem Exp $
- */

@@ -78,8 +78,3 @@ protected:
 };
 
 #endif // !defined(UPLOAD_PAGE_H)
-
-/**
- * @file
- * $Id: UploadPage.h,v 1.2 2003/12/30 13:31:47 trem Exp $
- */

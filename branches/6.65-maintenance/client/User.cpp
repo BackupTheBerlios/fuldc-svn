@@ -200,9 +200,3 @@ void User::setUserDescription(const string& aDescription) {
 StringMap& User::clientEscapeParams(StringMap& sm) const {
 	return client->escapeParams(sm);
 }
-
-/**
- * @file
- * $Id: User.cpp,v 1.4 2004/02/14 13:26:15 trem Exp $
- */
-

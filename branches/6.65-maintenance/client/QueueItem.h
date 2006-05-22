@@ -33,9 +33,18 @@ class Download;
 class QueueItem : public Flags, public FastAlloc<QueueItem> {
 public:
 	typedef QueueItem* Ptr;
+
+	class LessIgnoreCaseQueueItem {
+	public:
+		bool operator() (const QueueItem::Ptr& t1, const QueueItem::Ptr& t2) const { return Util::stricmp(t1->getTarget(), t2->getTarget()) < 0; }
+	};
+
 	// Strange, the vc7 optimizer won't take a deque here...
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+
+	typedef set<Ptr, LessIgnoreCaseQueueItem> Set;
+	typedef Set::iterator SetIter;
 	typedef map<string*, Ptr, noCaseStringLess> StringMap;
 	//	typedef HASH_MAP<string, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
 	typedef StringMap::iterator StringIter;
@@ -43,6 +52,8 @@ public:
 	typedef UserMap::iterator UserIter;
 	typedef HASH_MAP_X(User::Ptr, List, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserListMap;
 	typedef UserListMap::iterator UserListIter;
+	typedef HASH_MAP_X(User::Ptr, Set, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserSetMap;
+	typedef UserSetMap::iterator UserSetIter;
 
 	enum Status {
 		/** The queue item is waiting to be downloaded and can be found in userQueue */
@@ -271,8 +282,3 @@ private:
 };
 
 #endif // !defined(QUEUE_ITEM_H)
-
-/**
- * @file
- * $Id: QueueItem.h,v 1.22 2005/04/24 08:13:11 arnetheduck Exp $
- */

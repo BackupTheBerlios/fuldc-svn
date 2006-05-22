@@ -190,8 +190,3 @@ LRESULT CommandDlg::onHelpCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: CommandDlg.cpp,v 1.17 2005/04/24 08:13:03 arnetheduck Exp $
- */

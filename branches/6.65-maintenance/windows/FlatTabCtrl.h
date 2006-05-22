@@ -952,8 +952,3 @@ private:
 };
 
 #endif // !defined(FLAT_TAB_CTRL_H)
-
-/**
- * @file
- * $Id: FlatTabCtrl.h,v 1.14 2004/02/23 16:03:02 trem Exp $
- */

@@ -207,7 +207,7 @@ private:
 		QueueItem* getRunning(const User::Ptr& aUser);
 		void setRunning(QueueItem* qi, const User::Ptr& aUser);
 		void setWaiting(QueueItem* qi);
-		QueueItem::UserListMap& getList(int p) { return userQueue[p]; }
+		QueueItem::UserSetMap& getList(int p) { return userQueue[p]; }
 		void remove(QueueItem* qi);
 		void remove(QueueItem* qi, const User::Ptr& aUser);
 
@@ -217,7 +217,7 @@ private:
 		}
 	private:
 		/** QueueItems by priority and user (this is where the download order is determined) */
-		QueueItem::UserListMap userQueue[QueueItem::LAST];
+		QueueItem::UserSetMap userQueue[QueueItem::LAST];
 		/** Currently running downloads, a QueueItem is always either here or in the userQueue */
 		QueueItem::UserMap running;
 	};
@@ -274,8 +274,3 @@ private:
 };
 
 #endif // !defined(QUEUE_MANAGER_H)
-
-/**
- * @file
- * $Id: QueueManager.h,v 1.6 2004/02/14 13:25:13 trem Exp $
- */

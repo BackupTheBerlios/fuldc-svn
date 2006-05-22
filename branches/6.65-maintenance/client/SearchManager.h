@@ -194,8 +194,3 @@ private:
 };
 
 #endif // !defined(SEARCH_MANAGER_H)
-
-/**
- * @file
- * $Id: SearchManager.h,v 1.41 2004/09/06 12:32:42 arnetheduck Exp $
- */

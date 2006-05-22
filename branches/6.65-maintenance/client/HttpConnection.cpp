@@ -158,8 +158,3 @@ void HttpConnection::on(BufferedSocketListener::ModeChange) throw() {
 void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLen) throw() {
 	fire(HttpConnectionListener::Data(), this, aBuf, aLen);
 }
-
-/**
- * @file
- * $Id: HttpConnection.cpp,v 1.1 2003/12/15 16:51:41 trem Exp $
- */

@@ -59,8 +59,3 @@ private:
 };
 
 #endif // !defined(ADLS_PROPERTIES_H)
-
-/**
- * @file
- * $Id: ADLSProperties.h,v 1.1 2003/12/15 16:51:55 trem Exp $
- */

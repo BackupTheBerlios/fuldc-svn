@@ -225,8 +225,3 @@ private:
 };
 
 #endif // !defined(PRIVATE_FRAME_H)
-
-/**
- * @file
- * $Id: PrivateFrame.h,v 1.10 2004/02/21 15:44:10 trem Exp $
- */

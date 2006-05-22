@@ -161,8 +161,3 @@ LRESULT LogPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_LOGPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: LogPage.cpp,v 1.1 2004/12/29 19:52:36 arnetheduck Exp $
- */

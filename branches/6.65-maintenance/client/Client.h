@@ -206,8 +206,3 @@ private:
 };
 
 #endif // !defined(CLIENT_H)
-
-/**
- * @file
- * $Id: Client.h,v 1.5 2004/02/14 13:24:02 trem Exp $
- */

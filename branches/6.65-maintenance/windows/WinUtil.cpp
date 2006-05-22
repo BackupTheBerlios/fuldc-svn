@@ -1479,8 +1479,3 @@ bool WinUtil::flashWindow() {
 
 	return false;
 }
-
-/**
- * @file
- * $Id: WinUtil.cpp,v 1.21 2004/02/21 15:43:54 trem Exp $
- */

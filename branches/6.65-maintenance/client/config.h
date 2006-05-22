@@ -131,8 +131,3 @@ typedef unsigned __int64 u_int64_t;
 #endif
 
 #endif // !defined(CONFIG_H)
-
-/**
- * @file
- * $Id: config.h,v 1.7 2004/02/23 16:01:39 trem Exp $
- */

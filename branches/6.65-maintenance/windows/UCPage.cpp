@@ -175,8 +175,3 @@ LRESULT UCPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: UCPage.cpp,v 1.1 2003/12/15 16:52:08 trem Exp $
- */

@@ -1272,7 +1272,3 @@ LRESULT DirectoryListingFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /
 
 	return 0;
 }
-/**
- * @file
- * $Id: DirectoryListingFrm.cpp,v 1.11 2004/02/21 15:14:43 trem Exp $
- */

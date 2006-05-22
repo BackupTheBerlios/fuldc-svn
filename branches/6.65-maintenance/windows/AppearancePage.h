@@ -66,8 +66,3 @@ protected:
 };
 
 #endif // !defined(APPEARANCE_PAGE_H)
-
-/**
- * @file
- * $Id: AppearancePage.h,v 1.2 2003/12/25 06:58:26 trem Exp $
- */

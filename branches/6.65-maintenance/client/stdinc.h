@@ -134,8 +134,3 @@ using namespace stdext;
 #endif // __GLIBCPP__
 
 #endif // !defined(STDINC_H)
-
-/**
- * @file
- * $Id: stdinc.h,v 1.2 2003/12/30 13:31:45 trem Exp $
- */

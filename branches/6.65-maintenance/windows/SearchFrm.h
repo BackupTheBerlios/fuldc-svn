@@ -481,8 +481,3 @@ private:
 };
 
 #endif // !defined(SEARCH_FRM_H)
-
-/**
- * @file
- * $Id: SearchFrm.h,v 1.6 2004/01/06 01:52:15 trem Exp $
- */

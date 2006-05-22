@@ -711,8 +711,3 @@ struct noCaseStringLess {
 };
 
 #endif // !defined(UTIL_H)
-
-/**
- * @file
- * $Id: Util.h,v 1.6 2004/02/14 13:26:32 trem Exp $
- */

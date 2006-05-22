@@ -125,8 +125,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			aSource->fileNotAvail();
 			return false;
 		}
-	} catch(const ShareException&) {
-		aSource->fileNotAvail();
+	} catch(const ShareException& e) {
+		aSource->fileNotAvail(e.getError());
 		return false;
 	}
 
@@ -366,7 +366,7 @@ void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() { 
-	conn->listLen(ShareManager::getInstance()->getListLenString()); 
+	conn->listLen("42"); 
 }
 
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
@@ -428,7 +428,7 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 			Upload* u = *i;
 			if(u->getUser() == aUser) {
 				// Oops...adios...
-				u->getUserConnection()->disconnect();
+				u->getUserConnection()->disconnect(true);
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
@@ -442,8 +442,3 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 		clearUserFiles(aUser);
 	}
 }
-
-/**
- * @file
- * $Id: UploadManager.cpp,v 1.7 2004/02/23 16:00:32 trem Exp $
- */

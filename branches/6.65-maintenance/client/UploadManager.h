@@ -206,8 +206,3 @@ private:
 };
 
 #endif // !defined(UPLOAD_MANAGER_H)
-
-/**
- * @file
- * $Id: UploadManager.h,v 1.4 2004/02/23 16:00:33 trem Exp $
- */

@@ -296,8 +296,3 @@ private:
 };
 
 #endif // !defined(TRANSFER_VIEW_H)
-
-/**
- * @file
- * $Id: TransferView.h,v 1.2 2004/01/01 06:58:32 trem Exp $
- */

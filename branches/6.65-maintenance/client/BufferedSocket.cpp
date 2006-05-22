@@ -470,8 +470,3 @@ void BufferedSocket::shutdown() {
 		delete this;
 	}
 }
-
-/**
- * @file
- * $Id: BufferedSocket.cpp,v 1.4 2004/02/14 13:23:55 trem Exp $
- */

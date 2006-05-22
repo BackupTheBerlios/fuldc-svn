@@ -150,8 +150,3 @@ private:
 };
 
 #endif // !defined(NMDC_HUB_H)
-
-/**
- * @file
- * $Id: NmdcHub.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
- */

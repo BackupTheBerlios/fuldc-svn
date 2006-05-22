@@ -80,8 +80,3 @@ private:
 };
 
 #endif // !defined(_Z_UTILS_H)
-
-/**
- * @file
- * $Id: ZUtils.h,v 1.1 2004/02/14 13:27:27 trem Exp $
- */

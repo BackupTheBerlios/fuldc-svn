@@ -503,8 +503,3 @@ private:
 };
 
 #endif // !defined(HUB_FRAME_H)
-
-/**
- * @file
- * $Id: HubFrame.h,v 1.15 2004/02/21 15:15:28 trem Exp $
- */

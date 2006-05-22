@@ -44,8 +44,3 @@ public:
 };
 
 #endif // !defined(CONNECTION_MANAGER_LISTENER_H)
-
-/**
- * @file
- * $Id: ConnectionManagerListener.h,v 1.6 2005/04/24 08:13:11 arnetheduck Exp $
- */

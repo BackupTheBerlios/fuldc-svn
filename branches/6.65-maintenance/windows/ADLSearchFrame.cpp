@@ -548,8 +548,3 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	// Update 'Active' check box
 	ctrlList.SetCheckState(index, search.isActive);
 }
-
-/**
- * @file
- * $Id: ADLSearchFrame.cpp,v 1.2 2004/01/06 01:52:08 trem Exp $
- */

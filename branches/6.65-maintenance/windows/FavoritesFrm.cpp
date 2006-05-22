@@ -357,8 +357,3 @@ LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	} 
 	return 0;
 }
-
-/**
- * @file
- * $Id: FavoritesFrm.cpp,v 1.3 2004/01/06 01:52:09 trem Exp $
- */

@@ -63,8 +63,3 @@ protected:
 };
 
 #endif // !defined(PROP_PAGE_H)
-
-/**
- * @file
- * $Id: PropPage.h,v 1.1 2003/12/15 16:52:04 trem Exp $
- */

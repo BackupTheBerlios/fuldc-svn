@@ -67,8 +67,3 @@ void ResourceManager::createWide() {
 		Text::utf8ToWide(strings[i], wstrings[i]);
 	}
 }
-
-/**
- * @file
- * $Id: ResourceManager.cpp,v 1.2 2004/02/14 13:25:17 trem Exp $
- */

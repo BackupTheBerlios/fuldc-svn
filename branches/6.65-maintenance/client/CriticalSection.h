@@ -171,8 +171,3 @@ private:
 };
 
 #endif // !defined(CRITICAL_SECTION_H)
-
-/**
- * @file
- * $Id: CriticalSection.h,v 1.4 2004/02/14 13:24:16 trem Exp $
- */

@@ -65,8 +65,3 @@ private:
 };
 
 #endif // !defined(NETWORK_PAGE_H)
-
-/**
- * @file
- * $Id: NetworkPage.h,v 1.5 2005/04/24 08:13:03 arnetheduck Exp $
- */

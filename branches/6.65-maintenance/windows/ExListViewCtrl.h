@@ -177,8 +177,3 @@ public:
 };
 
 #endif // !defined(EX_LIST_VIEW_CTRL_H)
-
-/**
- * @file
- * $Id: ExListViewCtrl.h,v 1.1 2003/12/15 16:51:58 trem Exp $
- */

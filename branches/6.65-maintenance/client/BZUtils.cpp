@@ -99,8 +99,3 @@ bool UnBZFilter::operator()(const void* in, size_t& insize, void* out, size_t& o
 	insize = insize - zs.avail_in;
 	return err == BZ_OK;
 }
-
-/**
- * @file
- * $Id: BZUtils.cpp,v 1.1 2004/02/14 13:26:39 trem Exp $
- */

@@ -58,8 +58,3 @@ private:
 };
 
 #endif // !defined(BIT_OUTPUT_STREAM_H)
-
-/**
- * @file
- * $Id: BitOutputStream.h,v 1.1 2003/12/15 16:51:35 trem Exp $
- */

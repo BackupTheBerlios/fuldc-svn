@@ -91,8 +91,3 @@ private:
 };
 
 #endif // !defined(SYSTEM_FRAME_H)
-
-/**
- * @file
- * $Id: SystemFrame.h,v 1.2 2005/12/09 22:50:39 arnetheduck Exp $
- */

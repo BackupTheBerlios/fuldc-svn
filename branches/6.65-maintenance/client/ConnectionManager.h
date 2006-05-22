@@ -153,8 +153,3 @@ private:
 };
 
 #endif // !defined(CONNECTION_MANAGER_H)
-
-/**
- * @file
- * $Id: ConnectionManager.h,v 1.1 2003/12/15 16:51:38 trem Exp $
- */

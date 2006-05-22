@@ -287,7 +287,8 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		}
 	}
 
-	if(wndMain.CreateEx(NULL, rc, 0, WS_EX_RTLREADING | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) == NULL) {
+	int rtl = ResourceManager::getInstance()->isRTL() ? WS_EX_RTLREADING : 0;
+	if(wndMain.CreateEx(NULL, rc, 0, rtl | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) == NULL) {
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
@@ -380,8 +381,3 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
 	return nRet;
 }
-
-/**
- * @file
- * $Id: main.cpp,v 1.9 2004/02/25 00:30:15 trem Exp $
- */

@@ -426,7 +426,3 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
 }
-/**
- * @file
- * $Id: AdcHub.cpp,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
- */

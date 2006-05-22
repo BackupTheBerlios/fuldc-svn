@@ -124,8 +124,3 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 	}
 	return false;
 }
-
-/**
- * @file
- * $Id: AdcCommand.cpp,v 1.1 2004/10/29 15:53:38 arnetheduck Exp $
- */

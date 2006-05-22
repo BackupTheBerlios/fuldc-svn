@@ -98,8 +98,3 @@ void SFVReader::load(const string& fileName) throw() {
 
 #endif
 }
-
-/**
- * @file
- * $Id: SFVReader.cpp,v 1.2 2003/12/30 13:31:44 trem Exp $
- */

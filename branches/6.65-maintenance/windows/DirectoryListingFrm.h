@@ -483,8 +483,3 @@ private:
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)
-
-/**
- * @file
- * $Id: DirectoryListingFrm.h,v 1.7 2004/02/21 15:14:44 trem Exp $
- */

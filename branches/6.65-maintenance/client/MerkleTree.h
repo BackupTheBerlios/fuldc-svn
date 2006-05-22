@@ -227,8 +227,3 @@ private:
 };
 
 #endif // !defined(MERKLE_TREE_H)
-
-/**
- * @file
- * $Id: MerkleTree.h,v 1.1 2004/02/14 13:27:10 trem Exp $
- */

@@ -41,8 +41,3 @@ void Thread::start() throw(ThreadException) {
 	}
 }
 #endif
-
-/**
- * @file
- * $Id: Thread.cpp,v 1.2 2003/12/30 13:31:44 trem Exp $
- */

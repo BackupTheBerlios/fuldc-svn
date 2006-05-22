@@ -1755,9 +1755,3 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int 
 
 	return insert;
 }
-
-
-/**
- * @file
- * $Id: HubFrame.cpp,v 1.25 2004/02/21 15:15:28 trem Exp $
- */

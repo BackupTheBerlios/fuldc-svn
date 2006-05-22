@@ -145,8 +145,3 @@ private:
 };
 
 #endif // !defined(THREAD_H)
-
-/**
- * @file
- * $Id: Thread.h,v 1.3 2004/02/14 13:26:02 trem Exp $
- */

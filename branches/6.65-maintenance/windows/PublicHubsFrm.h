@@ -169,8 +169,3 @@ private:
 };
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)
-
-/**
- * @file
- * $Id: PublicHubsFrm.h,v 1.3 2004/01/07 01:40:29 trem Exp $
- */

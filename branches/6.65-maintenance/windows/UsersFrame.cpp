@@ -207,8 +207,3 @@ LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	} 
 	return 0;
 }
-
-/**
- * @file
- * $Id: UsersFrame.cpp,v 1.3 2004/01/06 01:52:18 trem Exp $
- */

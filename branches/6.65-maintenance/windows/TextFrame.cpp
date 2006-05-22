@@ -127,8 +127,3 @@ LRESULT TextFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: TextFrame.cpp,v 1.3 2004/01/08 11:27:05 trem Exp $
- */

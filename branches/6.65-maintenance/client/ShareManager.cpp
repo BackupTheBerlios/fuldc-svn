@@ -80,21 +80,11 @@ ShareManager::~ShareManager() {
 		FindClose(hFind);
 	}
 
-	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "MyList*.DcLst").c_str(), &data);
-	if(hFind != INVALID_HANDLE_VALUE) {
-		do {
-			File::deleteFile(Util::getAppPath() + Text::fromT(data.cFileName));			
-		} while(FindNextFile(hFind, &data));
-
-		FindClose(hFind);
-	}
-
 #else
 	DIR* dir = opendir(Util::getAppName().c_str());
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
-			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0 ||
-				fnmatch("MyList*.DcLst", ent->d_name, 0) == 0) {
+			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0) {
 					File::deleteFile(Util::getConfigPath() + ent->d_name);	
 				}
 		}
@@ -110,7 +100,6 @@ ShareManager::~ShareManager() {
 ShareManager::Directory::~Directory() {
 	for(MapIter i = directories.begin(); i != directories.end(); ++i)
 		delete i->second;
-	
 	for(File::Iter i = files.begin(); i != files.end(); ++i) {
 		ShareManager::getInstance()->removeTTH(i->getTTH(), *i);
 	}
@@ -122,7 +111,7 @@ string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
 	if(i != tthIndex.end()) {
 		return i->second->getADCPath();
 	} else {
-		throw ShareException("File Not Available");
+		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 	}
 }
 
@@ -147,13 +136,13 @@ string ShareManager::getPhysicalPath(TTHValue& tth) {
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	RLock<> l(cs);
 	if(aFile == "MyList.DcLst") {
-		throw ShareException("File Not Available");
-	} else if(aFile == "files.xml.bz2") {
+		throw ShareException("NMDC-style lists no longer supported, please upgrade your client");
+	} else if(aFile == "files.xml.bz2" || aFile == "files.xml") {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {
 		if(aFile.length() < 3)
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 
 		string file;
 
@@ -161,14 +150,14 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(aFile.compare(0, 4, "TTH/") == 0) {
 			file = translateTTH(aFile.substr(4));
 		} else if(aFile[0] != '/') {
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		}  else {
 			file = aFile;
 		}
 
 		string::size_type i = file.find('/', 1);
 		if(i == string::npos)
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		
 		string aDir = file.substr(1, i-1);
 		file = file.substr(i+1);
@@ -186,7 +175,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		}
 
 		if( !found )
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 
 		i = 0;
 
@@ -200,13 +189,13 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 
 AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) {
 	if(aFile.compare(0, 4, "TTH/") != 0)
-		throw ShareException("File Not Available");
+		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 
 	RLock<> l(cs);
 	TTHValue val(aFile.substr(4));
 	HashFileIter i = tthIndex.find(&val);
 	if(i == tthIndex.end()) {
-		throw ShareException("File Not Available");
+		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 	}
 
 	Directory::File::Iter f = i->second;
@@ -1692,8 +1681,3 @@ StringList ShareManager::getVirtualDirectories() {
 
 	return result;
 }
-
-/**
- * @file
- * $Id: ShareManager.cpp,v 1.9 2004/02/21 10:47:46 trem Exp $
- */

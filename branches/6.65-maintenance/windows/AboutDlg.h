@@ -147,8 +147,3 @@ private:
 };
 
 #endif // !defined(ABOUT_DLG_H)
-
-/**
- * @file
- * $Id: AboutDlg.h,v 1.3 2003/12/31 18:46:04 trem Exp $
- */
