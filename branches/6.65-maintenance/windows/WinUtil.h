@@ -176,6 +176,8 @@ public:
 
 	static int getDirIconIndex() { return dirIconIndex; }
 	static int getDirMaskedIndex() { return dirMaskedIndex; }
+
+	static double toBytes(TCHAR* aSize);
 	
 	static int getOsMajor();
 	static int getOsMinor();

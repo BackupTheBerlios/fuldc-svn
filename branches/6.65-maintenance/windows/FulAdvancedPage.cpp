@@ -141,3 +141,30 @@ LRESULT FulAdvancedPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULADVANCEDPAGE);
 	return 0;
 }
+
+LRESULT FulAdvancedPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_WEB_SHORTCUTS_ADD, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_WEB_SHORTCUTS_REMOVE, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
+LRESULT FulAdvancedPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+
+	if(item->iItem >= 0) {
+		PostMessage(WM_COMMAND, IDC_WEB_SHORTCUTS_PROPERTIES, 0);
+	} else if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_WEB_SHORTCUTS_ADD, 0);
+	}
+
+	return 0;
+}

@@ -209,20 +209,27 @@ public:
 	}
 
 	static bool ensureDirectory(const string& aFile) throw (FileException) {
-		int result;
+		// Skip the first dir...
+		int result = 0;
 		tstring file;
 		Text::toT(aFile, file);
-		wstring::size_type end = file.find_last_of(L"\\/");
-		if(end == string::npos)
+		wstring::size_type start = file.find_first_of(L"\\/");
+		if(start == string::npos)
 			return false;
+		start++;
+		while( (start = file.find_first_of(L"\\/", start)) != string::npos) {
+			result = CreateDirectory(file.substr(0, start+1).c_str(), NULL);
+			start++;
+		}
+		if(result == 0) {
+			result = GetLastError();
+			if(result == ERROR_ALREADY_EXISTS || result == ERROR_SUCCESS)
+				return false;
+			else if(result == ERROR_PATH_NOT_FOUND) //we can't recover from this gracefully.
+				throw FileException(Util::translateError(result));
+		}
 
-		result = SHCreateDirectory(NULL, file.substr(0, end).c_str());
-		if(result == ERROR_SUCCESS)
-			return true;
-		else if(result == ERROR_ALREADY_EXISTS)
-			return false;
-		else //we can't recover from these gracefully.
-			throw FileException(Util::translateError(result));
+		return true;
 	}
 
 #else // _WIN32
@@ -249,7 +256,7 @@ public:
 		if(mode & TRUNCATE) {
 			m |= O_TRUNC;
 		}
-		h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR);
+		h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		if(h == -1)
 			throw FileException("Could not open file");
 	}	
@@ -393,7 +400,7 @@ public:
 		string acp = Text::utf8ToAcp(aFile);
 		string::size_type start = 0;
 		while( (start = aFile.find_first_of(L'/', start)) != string::npos) {
-			mkdir(aFile.substr(0, start+1).c_str(), 0755);
+			mkdir(aFile.substr(0, start+1).c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 			start++;
 		}
 	}

@@ -180,9 +180,6 @@ public:
 
 	void checkIdle(const User::Ptr& user);
 
-	/** @internal */
-	void abortDownload(const string& aTarget);
-
 	/**
 	 * @remarks This is only used in the tray icons. In MainFrame this is
 	 * calculated instead so there seems to be a little duplication of code.
@@ -273,6 +270,8 @@ private:
 	bool checkSfv(UserConnection* aSource, Download* d, u_int32_t crc);
 	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
 
+	void failDownload(UserConnection* aSource, const string& reason);
+
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 
 		TimerManager::getInstance()->addListener(this);
@@ -293,8 +292,6 @@ private:
 	void checkDownloads(UserConnection* aConn);
 	void handleEndData(UserConnection* aSource);
 	
-	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
-	
 	// UserConnectionListener
 	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
@@ -305,6 +302,7 @@ private:
 
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
 
+	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 };

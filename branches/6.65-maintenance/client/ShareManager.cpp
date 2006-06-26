@@ -1086,8 +1086,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 			if(!newStr.get()) {
 				newStr = auto_ptr<StringSearch::List>(new StringSearch::List(aStrings));
 			}
-			dcassert(find(newStr->begin(), newStr->end(), *k) != newStr->end());
-			newStr->erase(find(newStr->begin(), newStr->end(), *k));
+			newStr->erase(remove(newStr->begin(), newStr->end(), *k), newStr->end());
 		}
 	}
 
@@ -1226,8 +1225,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 			if(!newStr.get()) {
 				newStr = auto_ptr<StringSearch::List>(new StringSearch::List(*cur));
 			}
-			dcassert(find(newStr->begin(), newStr->end(), *k) != newStr->end());
-			newStr->erase(find(newStr->begin(), newStr->end(), *k));
+			newStr->erase(remove(newStr->begin(), newStr->end(), *k), newStr->end());
 		}
 	}
 

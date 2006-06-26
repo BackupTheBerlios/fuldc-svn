@@ -200,20 +200,22 @@ void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 }
 
 // Keyboard shortcuts
-LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
-	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 	switch(kd->wVKey) 
 	{
 	case VK_INSERT:
-		PostMessage(WM_COMMAND, IDC_ADD);
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
 		break;
 	case VK_DELETE:
-		PostMessage(WM_COMMAND, IDC_REMOVE);
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
 		break;
 	case VK_RETURN:
-		PostMessage(WM_COMMAND, IDC_EDIT);
+		PostMessage(WM_COMMAND, IDC_EDIT, 0);
 		break;
+	default:
+		bHandled = FALSE;
 	}
 	return 0;
 }
@@ -468,18 +470,15 @@ LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 }
 
 // Double-click on list control
-LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) 
+LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 
-	// Hit-test
-	LVHITTESTINFO info;
-	info.pt = item->ptAction;
-    int iItem = ctrlList.SubItemHitTest(&info);
-	if(iItem >= 0)
-	{
+	if(item->iItem >= 0) {
 		// Treat as onEdit command
-		onEdit(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_EDIT, 0);
+	} else if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
 	}
 
 	return 0;

@@ -102,7 +102,7 @@ private:
 	friend class Server;
 
 	CriticalSection cs;
-	short port;
+	unsigned short port;
 
 	/** All ConnectionQueueItems */
 	ConnectionQueueItem::List downloads;

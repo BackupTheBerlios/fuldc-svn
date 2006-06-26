@@ -42,6 +42,13 @@
 
 #include "StringTokenizer.h"
 
+#ifdef _STLP_DEBUG
+void __stl_debug_terminate() {
+	int* x = 0;
+	*x = 0;
+}
+#endif
+
 void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	// "Dedicated to the near-memory of Nev. Let's start remembering people while they're still alive."
 	// Nev's great contribution to dc++

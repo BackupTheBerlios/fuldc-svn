@@ -44,9 +44,6 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 	string cur;
 	cur.reserve(128);
 
-	bool toSet = false;
-	bool fromSet = nmdc; // $ADCxxx never have a from CID...
-
 	while(i < len) {
 		switch(buf[i]) {
 		case '\\':

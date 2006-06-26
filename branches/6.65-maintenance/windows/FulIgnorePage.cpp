@@ -102,3 +102,28 @@ LRESULT FulIgnorePage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FULIGNOREPAGE);
 	return 0;
 }
+
+LRESULT FulIgnorePage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
+LRESULT FulIgnorePage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+
+	if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
+	}
+
+	return 0;
+}

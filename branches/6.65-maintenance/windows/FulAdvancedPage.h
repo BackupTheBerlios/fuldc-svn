@@ -53,12 +53,16 @@ public:
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_LIST, LVN_ITEMCHANGED, onSelChangeShortcuts)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_LIST, LVN_ITEMCHANGING, onSelChangeShortcuts)
 		COMMAND_HANDLER(IDC_WEB_SHORTCUTS_LIST, LVN_ITEMACTIVATE, onSelChangeShortcuts)
+		NOTIFY_HANDLER(IDC_WEB_SHORTCUTS_LIST, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_WEB_SHORTCUTS_LIST, NM_DBLCLK, onDoubleClick)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 	LRESULT onClickedShortcuts(WORD /* wNotifyCode */, WORD wID, HWND /* hWndCtl */, BOOL& /* bHandled */);
 	LRESULT onSelChangeShortcuts(WORD /* wNotifyCode */, WORD /* wID */, HWND /* hWndCtl */, BOOL& /* bHandled */);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 	

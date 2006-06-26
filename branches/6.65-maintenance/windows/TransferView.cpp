@@ -434,6 +434,35 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	return 0;
 }
 
+LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+
+	if(i != -1) {
+		ItemInfo *ii = ctrlTransfers.getItemData(i);
+
+		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
+
+		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
+		QueueItem::StringIter qi = queue.find(&tmp);
+
+		//create a copy of the tth to avoid holding the filequeue lock while calling
+		//into searchframe, searchmanager and all of that
+		TTHValue *val = NULL;
+		if(qi != queue.end() && qi->second->getTTH()) {
+			val = new TTHValue(*qi->second->getTTH());
+		}
+
+		QueueManager::getInstance()->unlockQueue();
+
+		if(val) {
+			WinUtil::searchHash(val);
+			delete val;
+		} 
+	}
+
+	return 0;
+}
+
 TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
 	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0) 
 { 
@@ -706,35 +735,6 @@ LRESULT TransferView::onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo *ii = ctrlTransfers.getItemData(i);
 		QueueManager::getInstance()->remove(Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE)));
-	}
-
-	return 0;
-}
-
-LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-
-	if(i != -1) {
-		ItemInfo *ii = ctrlTransfers.getItemData(i);
-
-		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
-
-		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
-		QueueItem::StringIter qi = queue.find(&tmp);
-
-		//create a copy of the tth to avoid holding the filequeue lock while calling
-		//into searchframe, searchmanager and all of that
-		TTHValue *val = NULL;
-		if(qi != queue.end() && qi->second->getTTH()) {
-			val = new TTHValue(*qi->second->getTTH());
-		}
-
-		QueueManager::getInstance()->unlockQueue();
-
-		if(val) {
-			WinUtil::searchHash(val);
-			delete val;
-		} 
 	}
 
 	return 0;

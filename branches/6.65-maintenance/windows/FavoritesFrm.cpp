@@ -41,7 +41,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
-		
+	
 	// Create listview columns
 	WinUtil::splitTokens(columnIndexes, SETTING(FAVORITESFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(FAVORITESFRAME_WIDTHS), COLUMN_LAST);
@@ -154,16 +154,32 @@ LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 }
 
 LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	if(!checkNick())
-		return 0;
-	
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 
-	if(item->iItem != -1) {
-		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
-		HubFrame::openWindow(Text::toT(entry->getServer()));
+	if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_NEWFAV, 0);
+	} else {
+		PostMessage(WM_COMMAND, IDC_CONNECT, 0);
 	}
 
+	return 0;
+}
+
+LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_NEWFAV, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	case VK_RETURN:
+		PostMessage(WM_COMMAND, IDC_CONNECT, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
 	return 0;
 }
 
@@ -347,13 +363,4 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	rc.OffsetRect(bspace + bwidth +2, 0);
 	ctrlConnect.MoveWindow(rc);
 
-}
-
-LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
-
-	if(kd->wVKey == VK_DELETE) {
-		PostMessage(WM_COMMAND, IDC_REMOVE);
-	} 
-	return 0;
 }

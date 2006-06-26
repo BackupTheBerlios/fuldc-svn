@@ -153,7 +153,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	for(int j=0; j<COLUMN_LAST; j++) {
 		ctrlFilterSel.AddString(CTSTRING_I(columnNames[j]));
 	}
-	ctrlFilterSel.SetCurSel(0);
+	ctrlFilterSel.AddString(CTSTRING(ANY));
+	ctrlFilterSel.SetCurSel(COLUMN_LAST);
 	
 
 	WinUtil::SetIcon(m_hWnd, _T("hub.ico"));
@@ -1347,7 +1348,7 @@ void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
 void HubFrame::on(HubUpdated, Client*) throw() { 
-	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getNameWithTopic(), true, false) + " (" + client->getHubUrl() + ")");
+	speak(SET_WINDOW_TITLE, NmdcHub::validateMessage(client->getNameWithTopic(), true, false) + " (" + client->getHubUrl() + ")");
 }
 void HubFrame::on(Message, Client*, const string& line) throw() { 
 	if(SETTING(FILTER_MESSAGES)) {
@@ -1485,31 +1486,31 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
-bool HubFrame::parseFilter(int& mode, int64_t& size) {
+bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 	tstring::size_type start = tstring::npos;
 	tstring::size_type end = tstring::npos;
 	int64_t multiplier = 1;
 	
-	if(Util::strnicmp(filter.c_str(), _T(">="), 2) == 0) {
-		mode = 1;
+	if(filter.compare(0, 2, _T(">=")) == 0) {
+		mode = GREATER_EQUAL;
 		start = 2;
-	} else if(Util::strnicmp(filter.c_str(), _T("<="), 2) == 0) {
-		mode = 2;
+	} else if(filter.compare(0, 2, _T("<=")) == 0) {
+		mode = LESS_EQUAL;
 		start = 2;
-	} else if(Util::strnicmp(filter.c_str(), _T("=="), 2) == 0) {
-		mode = 0;
+	} else if(filter.compare(0, 2, _T("==")) == 0) {
+		mode = EQUAL;
 		start = 2;
-	} else if(Util::strnicmp(filter.c_str(), _T("!="), 2) == 0) {
-		mode = 5;
+	} else if(filter.compare(0, 2, _T("!=")) == 0) {
+		mode = NOT_EQUAL;
 		start = 2;
 	} else if(filter[0] == _T('<')) {
-		mode = 4;
+		mode = LESS;
 		start = 1;
 	} else if(filter[0] == _T('>')) {
-		mode = 3;
+		mode = GREATER;
 		start = 1;
 	} else if(filter[0] == _T('=')) {
-		mode = 1;
+		mode = EQUAL;
 		start = 1;
 	}
 
@@ -1550,10 +1551,8 @@ bool HubFrame::parseFilter(int& mode, int64_t& size) {
 }
 
 void HubFrame::updateUserList(UserInfo* ui) {
-	Lock l(updateCS);
-
 	int64_t size = -1;
-	int mode = -1;
+	FilterModes mode = NONE;
 
 	int sel = ctrlFilterSel.GetCurSel();
 
@@ -1581,7 +1580,7 @@ void HubFrame::updateUserList(UserInfo* ui) {
 	} else {
 		ctrlUsers.SetRedraw(FALSE);
 		ctrlUsers.DeleteAllItems();
-
+		
 		if(filter.empty()) {
 			for(UserIter i = usermap.begin(); i != usermap.end(); ++i){
 				if(i->second != NULL)
@@ -1596,7 +1595,6 @@ void HubFrame::updateUserList(UserInfo* ui) {
 				}
 			}
 		}
-
 		ctrlUsers.SetRedraw(TRUE);
 	}
 }
@@ -1707,13 +1705,13 @@ void HubFrame::handleTab(bool reverse) {
 		} else if(focus == ctrlMessage.m_hWnd) {
 			ctrlUsers.SetFocus();
 		} else if(focus == ctrlUsers.m_hWnd) {
-			ctrlMessage.SetFocus();
+			ctrlClient.SetFocus();
 		} else if(focus == ctrlClient.m_hWnd) {
 			ctrlFilterSel.SetFocus();
 		}
 	} else {
 		if(focus == ctrlClient.m_hWnd) {
-			ctrlMessage.SetFocus();
+			ctrlUsers.SetFocus();
 		} else if(focus == ctrlUsers.m_hWnd) {
 			ctrlMessage.SetFocus();
 		} else if(focus == ctrlMessage.m_hWnd) {
@@ -1726,14 +1724,7 @@ void HubFrame::handleTab(bool reverse) {
 	}
 }
 
-bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int mode, int64_t size) {
-	//mode
-	//0 - ==
-	//1 - >=
-	//2 - <=
-	//3 - >
-	//4 - <
-	//5 - !=
+bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, FilterModes mode, int64_t size) {
 
 	if(filter.empty())
 		return true;
@@ -1749,9 +1740,19 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, int 
 			case 5: insert = (size != ui.user->getBytesShared()); break;
 		}
 	} else {
-		if(Util::findSubString(ui.getText(sel), filter) != string::npos)
-			insert = true;
+		if(sel >= COLUMN_LAST) {
+			for(int i = COLUMN_FIRST; i < COLUMN_LAST; ++i) {
+				if(Util::findSubString(ui.getText(i), filter) != string::npos) {
+					insert = true;
+					break;
+				}
+			}
+		} else {
+			if(Util::findSubString(ui.getText(sel), filter) != string::npos)
+				insert = true;
+		}
 	}
 
 	return insert;
 }
+

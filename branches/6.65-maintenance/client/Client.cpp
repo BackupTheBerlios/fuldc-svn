@@ -35,14 +35,24 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 {
 	string file;
 	Util::decodeUrl(hubURL, address, port, file);
+
+	TimerManager::getInstance()->addListener(this);
 }
 
 Client::~Client() throw() {
 	dcassert(!socket);
+	TimerManager::getInstance()->removeListener(this);
 	updateCounts(true);
 }
 
+void Client::reconnect() {
+	disconnect(true);
+	setAutoReconnect(true);
+	resetActivtiy();
+}
+
 void Client::shutdown() {
+
 	if(socket) {
 		BufferedSocket::putSocket(socket);
 		socket = 0;
@@ -66,6 +76,7 @@ void Client::connect() {
 	if(socket)
 		BufferedSocket::putSocket(socket);
 
+	setAutoReconnect(true);
 	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings(true);
 	setRegistered(false);
@@ -87,12 +98,7 @@ void Client::connect() {
 void Client::disconnect(bool graceLess) {
 	if(!socket)
 		return;
-	socket->removeListener(this);
 	socket->disconnect(graceLess);
-}
-
-void Client::updateActivity() {
-	lastActivity = GET_TICK();
 }
 
 void Client::updateCounts(bool aRemove) {
@@ -138,4 +144,7 @@ string Client::getLocalIp() const {
 	if(lip.empty())
 		return Util::getLocalIp();
 	return lip;
+}
+
+void Client::on(Second, u_int32_t) throw() {
 }

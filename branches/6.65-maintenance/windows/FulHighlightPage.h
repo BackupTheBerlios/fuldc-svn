@@ -49,6 +49,8 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 		COMMAND_ID_HANDLER(IDC_MOVEDOWN, onMove)
 		COMMAND_ID_HANDLER(IDC_PRESET, onPreset)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
+		NOTIFY_HANDLER(IDC_ITEMS, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_ITEMS, NM_DBLCLK, onDoubleClick)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -60,6 +62,8 @@ class FulHighlightPage: public CPropertyPage<IDD_HIGHLIGHTPAGE>, public PropPage
 	LRESULT onMove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPreset(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 

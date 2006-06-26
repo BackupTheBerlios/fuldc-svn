@@ -43,12 +43,12 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), server(0), sh
 }
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
-	short lastPort = (short)SETTING(TCP_PORT);
+	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
 	
 	if(lastPort == 0)
-		lastPort = (short)Util::rand(1025, 32000);
+		lastPort = (unsigned short)Util::rand(1025, 32000);
 
-	short firstPort = lastPort;
+	unsigned short firstPort = lastPort;
 
 	disconnect();
 
@@ -105,10 +105,10 @@ void ConnectionManager::putCQI(ConnectionQueueItem* cqi) {
 	fire(ConnectionManagerListener::Removed(), cqi);
 	if(cqi->getDownload()) {
 		dcassert(find(downloads.begin(), downloads.end(), cqi) != downloads.end());
-		downloads.erase(find(downloads.begin(), downloads.end(), cqi));
+		downloads.erase(remove(downloads.begin(), downloads.end(), cqi), downloads.end());
 	} else {
 		dcassert(find(uploads.begin(), uploads.end(), cqi) != uploads.end());
-		uploads.erase(find(uploads.begin(), uploads.end(), cqi));
+		uploads.erase(remove(uploads.begin(), uploads.end(), cqi), uploads.end());
 	}
 	delete cqi;
 }

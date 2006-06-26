@@ -186,6 +186,7 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, const tstring& msg) {
 		p = new PrivateFrame(aUser);
 		frames[aUser] = p;
 		p->CreateEx(WinUtil::mdiClient);
+		p->readLog();
 	} else {
 		p = i->second;
 		if(::IsIconic(p->m_hWnd))

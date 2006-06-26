@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.689" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.692" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -111,6 +111,7 @@
 		<String Name="ErrorCreatingRegistryKeyDchub">Error creating dchub registry key</String>
 		<String Name="ErrorCreatingRegistryKeyMagnet">Error creating magnet registry key</String>
 		<String Name="ErrorHashing">Error hashing </String>
+		<String Name="ErrorSavingHash">Error saving hash data: </String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
@@ -129,6 +130,7 @@
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
 		<String Name="FileHasNoTth">This file has no TTH</String>
+		<String Name="FileIsAlreadyQueued">This file is already queued</String>
 		<String Name="FileListDiff">Subtract list</String>
 		<String Name="FileListRefreshFailed">File list refresh failed: </String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
@@ -213,6 +215,10 @@
 		<String Name="MenuArrange">Arrange icons</String>
 		<String Name="MenuCascade">Cascade</String>
 		<String Name="MenuChangelog">Change Log</String>
+		<String Name="MenuCloseAllDirList">Close all file list windows</String>
+		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
+		<String Name="MenuCloseAllPm">Close all PM windows</String>
+		<String Name="MenuCloseAllSearchframe">Close all search windows</String>
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
@@ -379,6 +385,7 @@
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>
 		<String Name="SettingsDirect">Direct connection</String>
 		<String Name="SettingsDirectories">Directories</String>
+		<String Name="SettingsDontDlAlreadyQueued">Don't download files already in the queue</String>
 		<String Name="SettingsDontDlAlreadyShared">Don't download files already in share</String>
 		<String Name="SettingsDownloadDirectory">Default download directory</String>
 		<String Name="SettingsDownloadLimits">Limits</String>
@@ -683,9 +690,6 @@
 		<String Name="Removed">Removed</String>
 		<String Name="DirectoryNotFound">Directory not shared</String>
 		<String Name="MenuFulpage">fulDC Homepage</String>
-		<String Name="MenuCloseAllPm">Close all PM windows</String>
-		<String Name="MenuCloseAllDirList">Close all file list windows</String>
-		<String Name="MenuCloseAllSearchframe">Close all search windows</String>
 		<String Name="CustomSound">Play custom sound on PM's</String>
 		<String Name="Muted">Muted</String>
 		<String Name="Unmuted">Unmuted</String>
@@ -757,7 +761,6 @@
 		<String Name="ReaddSourceToQueue">Re-add user to queue</String>
 		<String Name="MuteOnAway">Mute sounds when away mode is enabled</String>
 		<String Name="DropFakeNickConnectionLog">Detected a user trying to connect using a fake nick, nick used=%[nick] ip=%[ip] in hub %[hub]</String>
-		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
 		<String Name="UserNotAvailable">User not available, could be because he is offline</String>
 		<String Name="UploadFailed">Failed to upload %[file] to %[user] because: %[error]</String>
 		<String Name="NotifyUpdates">Notify me about new versions</String>

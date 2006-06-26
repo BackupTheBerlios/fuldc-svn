@@ -203,6 +203,17 @@ private:
 		COLUMN_EMAIL, 
 		COLUMN_LAST
 	};
+
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
+	};
+
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
@@ -435,10 +446,10 @@ private:
 	bool updateUser(const User::Ptr& u);
 	void removeUser(const User::Ptr& u);
 	void updateUserList(UserInfo* ui = NULL);
-	bool parseFilter(int& mode, int64_t& size);
+	bool parseFilter(FilterModes& mode, int64_t& size);
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
+	
 	void addAsFavorite();
-	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);
-
 	void clearUserList() {
 		{
 			Lock l(updateCS);

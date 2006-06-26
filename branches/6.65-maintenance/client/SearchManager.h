@@ -149,7 +149,7 @@ public:
 	}
 	static string clean(const string& aSearchString);
 	
-	short getPort()	{ return port; }
+	unsigned short getPort()	{ return port; }
 
 	void listen() throw(Exception);
 	void disconnect() throw();

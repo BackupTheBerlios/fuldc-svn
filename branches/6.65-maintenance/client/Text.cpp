@@ -148,6 +148,7 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	if (n < 1) {
 		return tmp;
 	}
+	src = str.c_str();
 	tmp.resize(n);
 	n = mbsrtowcs(&tmp[0], &src, n, NULL);
 	if (n < 1) {
@@ -203,6 +204,7 @@ string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
 	if(n < 1) {
 		return tmp;
 	}
+	src = str.c_str();
 	tmp.resize(n);
 	n = wcsrtombs(&tmp[0], &src, n, NULL);
 	if(n < 1) {

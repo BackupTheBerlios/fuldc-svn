@@ -33,7 +33,7 @@
 
 class ClientManager;
 
-class NmdcHub : public Client, private TimerManagerListener, private Flags
+class NmdcHub : public Client, private Flags
 {
 public:
 	using Client::send;
@@ -44,11 +44,10 @@ public:
 
 	virtual void connect();
 	virtual void connect(const User::Ptr aUser);
-	virtual void disconnect(bool graceless) throw();
-
+	
 #define checkstate() if(state != STATE_CONNECTED) return
 
-	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
+	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getNick() + "> " + validateMessage(aMessage, false) + "|" ) ); }
 	virtual void privateMessage(const User* aUser, const string& aMessage) { privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage); }
 	virtual void sendUserCmd(const string& aUserCmd) throw() {
 		send(toNmdc(aUserCmd));
@@ -66,7 +65,7 @@ public:
 	virtual User::NickMap& lockUserList() { cs.enter(); return users; };
 	virtual void unlockUserList() { cs.leave(); };
 
-	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
+	virtual string escape(string const& str) const { return validateMessage(str, false); };
 
 	void myInfo(bool alwaysSend);
 	
@@ -84,7 +83,7 @@ public:
 	}
 	void privateMessage(const string& aNick, const string& aMessage) {
 		checkstate(); 
-		send("$To: " + toNmdc(aNick) + " From: " + toNmdc(getNick()) + " $" + toNmdc(Util::validateMessage(aMessage, false)) + "|");
+		send("$To: " + toNmdc(aNick) + " From: " + toNmdc(getNick()) + " $" + toNmdc(validateMessage(aMessage, false)) + "|");
 	}
 	void supports(const StringList& feat) { 
 		string x;
@@ -93,6 +92,8 @@ public:
 		}
 		send("$Supports " + x + '|');
 	}
+
+	static string validateMessage(string tmp, bool reverse, bool checkNewLines = true);
 
 	GETSET(int, supportFlags, SupportFlags);
 private:
@@ -117,7 +118,6 @@ private:
 
 	User::NickMap users;
 
-	bool reconnect;
 	u_int32_t lastUpdate;
 	string lastMyInfoA, lastMyInfoB;
 
@@ -142,7 +142,7 @@ private:
 	virtual string checkNick(const string& aNick);
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(Second, u_int32_t aTick) throw();
 
 	virtual void on(Line, const string& l) throw() { onLine(l); }
 	virtual void on(Failed, const string&) throw();

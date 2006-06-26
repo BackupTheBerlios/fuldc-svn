@@ -198,7 +198,6 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 
 		ctrlList.SetRedraw(FALSE);
 		clearList();
-		
 		frames.erase(m_hWnd);
 
 		ctrlList.saveHeaderOrder(SettingsManager::DIRECTORYLISTINGFRAME_ORDER, 

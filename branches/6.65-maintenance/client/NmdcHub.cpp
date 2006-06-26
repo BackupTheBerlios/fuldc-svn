@@ -33,18 +33,15 @@
 #include "StringTokenizer.h"
 
 NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|', false), supportFlags(0), state(STATE_CONNECT),
-	reconnect(true), lastUpdate(0)
+	lastUpdate(0)
 {
-	TimerManager::getInstance()->addListener(this);
 }
 
 NmdcHub::~NmdcHub() throw() {
-	TimerManager::getInstance()->removeListener(this);
 	clearUsers();
 }
 
 void NmdcHub::connect() {
-	reconnect = true;
 	supportFlags = 0;
 	lastMyInfoA.clear();
  	lastMyInfoB.clear();
@@ -105,10 +102,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		// Check if we're being banned...
 		if(state != STATE_CONNECTED) {
 			if(Util::findSubString(aLine, "banned") != string::npos) {
-				reconnect = false;
+				setAutoReconnect(false);
 			}
 		}
-		fire(ClientListener::Message(), this, Util::validateMessage(fromNmdc(aLine), true));
+		fire(ClientListener::Message(), this, validateMessage(fromNmdc(aLine), true));
 		return;
 	}
 
@@ -236,7 +233,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		j = param.find('$', i);
 		if(j == string::npos)
 			return;
-		string tmpDesc = Util::validateMessage(fromNmdc(param.substr(i, j-i)), true);
+		string tmpDesc = validateMessage(fromNmdc(param.substr(i, j-i)), true);
 		// Look for a tag...
 		if(tmpDesc.size() > 0 && tmpDesc[tmpDesc.size()-1] == '>') {
 			x = tmpDesc.rfind('<');
@@ -260,7 +257,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		j = param.find('$', i);
 		if(j == string::npos)
 			return;
-		u->setEmail(Util::validateMessage(fromNmdc(param.substr(i, j-i)), true));
+		u->setEmail(validateMessage(fromNmdc(param.substr(i, j-i)), true));
 		i = j + 1;
 		j = param.find('$', i);
 		if(j == string::npos)
@@ -390,7 +387,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			string name = fromNmdc(param.substr(i, j-i));
 			i = j+1;
 			string command = fromNmdc(param.substr(i, param.length() - i));
-			fire(ClientListener::UserCommand(), this, type, ctx, Util::validateMessage(name, true, false), Util::validateMessage(command, true, false));
+			fire(ClientListener::UserCommand(), this, type, ctx, validateMessage(name, true, false), validateMessage(command, true, false));
 		}
 	} else if(cmd == "$Lock") {
 		if(state != STATE_LOCK) {
@@ -561,7 +558,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			if(j != string::npos) {
 				string from = fromNmdc(param.substr(i, j - 1 - i));
 				if(from.size() > 0 && param.size() > (j + 1)) {
-					fire(ClientListener::PrivateMessage(), this, ClientManager::getInstance()->getUser(from, this, false), Util::validateMessage(fromNmdc(param.substr(j + 1)), true));
+					fire(ClientListener::PrivateMessage(), this, ClientManager::getInstance()->getUser(from, this, false), validateMessage(fromNmdc(param.substr(j + 1)), true));
 				}
 			}
 		}
@@ -618,10 +615,10 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	string myInfoA = 
-		"$MyINFO $ALL " + toNmdc(checkNick(getNick())) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
+		"$MyINFO $ALL " + toNmdc(checkNick(getNick())) + " " + toNmdc(validateMessage(getDescription(), false)) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
-		">$ $" + toNmdc(Util::validateMessage(SETTING(UPLOAD_SPEED), false)) + "\x01$" + 
-		toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$';
+		">$ $" + toNmdc(validateMessage(SETTING(UPLOAD_SPEED), false)) + "\x01$" + 
+		toNmdc(validateMessage(SETTING(EMAIL), false)) + '$';
 	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
  	
  	if(lastMyInfoA != myInfoA || alwaysSend || (lastMyInfoB != myInfoB && lastUpdate + 15*60*1000 < GET_TICK()) ){
@@ -632,20 +629,12 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	}
 }
 
-void NmdcHub::disconnect(bool graceless) throw() {	
-	Client::disconnect(graceless);
-	state = STATE_CONNECT;
-	clearUsers();
-
-	fire(ClientListener::Failed(), this, Util::emptyString); 
-}
-
 void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {
 	checkstate(); 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-	string tmp = Util::validateMessage(toNmdc((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : aString), false);
+	string tmp = validateMessage(toNmdc((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : aString), false);
 	string::size_type i;
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
@@ -663,20 +652,16 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 }
 
 // TimerManagerListener
-void NmdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
-	if(socket && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Nothing's happened for ~120 seconds, check if we're connected, if not, try to connect...
-		updateActivity();
+void NmdcHub::on(Second, u_int32_t aTick) throw() {
+	if(state == STATE_CONNECTED && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
 		// Try to send something for the fun of it...
-		if(isConnected()) {
-			dcdebug("Testing writing...\n");
-			send("|", 1);
-		} else {
-			// Try to reconnect...
-			if(reconnect && !getAddress().empty())
-				connect();
-		}
+		dcdebug("Testing writing...\n");
+		send("|", 1);
+	} else if(getAutoReconnect() && state == STATE_CONNECT && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+		// Try to reconnect...
+		connect();
 	}
+
 	{
 		Lock l(cs);
 		
@@ -688,14 +673,79 @@ void NmdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 			flooders.pop_front();
 		}
 	}
+
+	Client::on(Second(), aTick);
 }
 
 // BufferedSocketListener
 void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	clearUsers();
 
+	socket->removeListener(this);
+
 	if(state == STATE_CONNECTED)
 		state = STATE_CONNECT;
 
 	fire(ClientListener::Failed(), this, aLine); 
+}
+
+string NmdcHub::validateMessage(string tmp, bool reverse, bool checkNewLines) {
+	string::size_type i = 0;
+
+	if(reverse) {
+		while( (i = tmp.find("&#36;", i)) != string::npos) {
+			tmp.replace(i, 5, "$");
+			i++;
+		}
+		i = 0;
+		while( (i = tmp.find("&#124;", i)) != string::npos) {
+			tmp.replace(i, 6, "|");
+			i++;
+		}
+		i = 0;
+		while( (i = tmp.find("&amp;", i)) != string::npos) {
+			tmp.replace(i, 5, "&");
+			i++;
+		}
+		if(checkNewLines) {
+			// Check all '<' and '[' after newlines...
+			i = 0;
+			while( (i = tmp.find('\n', i)) != string::npos) {
+				if(i + 1 < tmp.length()) {
+					if(tmp[i+1] == '[' || tmp[i+1] == '<') {
+						tmp.insert(i+1, "- ");
+						i += 2;
+					}
+				}
+				i++;
+			}
+		}
+	} else {
+		i = 0;
+		while( (i = tmp.find("&amp;", i)) != string::npos) {
+			tmp.replace(i, 1, "&amp;");
+			i += 4;
+		}
+		i = 0;
+		while( (i = tmp.find("&#36;", i)) != string::npos) {
+			tmp.replace(i, 1, "&amp;");
+			i += 4;
+		}
+		i = 0;
+		while( (i = tmp.find("&#124;", i)) != string::npos) {
+			tmp.replace(i, 1, "&amp;");
+			i += 4;
+		}
+		i = 0;
+		while( (i = tmp.find('$', i)) != string::npos) {
+			tmp.replace(i, 1, "&#36;");
+			i += 4;
+		}
+		i = 0;
+		while( (i = tmp.find('|', i)) != string::npos) {
+			tmp.replace(i, 1, "&#124;");
+			i += 5;
+		}
+	}
+	return tmp;
 }

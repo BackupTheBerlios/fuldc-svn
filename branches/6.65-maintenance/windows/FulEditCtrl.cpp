@@ -392,9 +392,9 @@ int CFulEditCtrl::FullTextMatch(ColorSettings* cs, CHARFORMAT2 &cf, const tstrin
 					return tstring::npos;
 				break;
 			case 3: // Equals
-				if( !( (index == 0 || line[index-1] == _T(' ') || line[index-1] == _T('\t')) && 
+				if( !( (index == 0 || line[index-1] == _T(' ') || line[index-1] == _T('\t') || line[index-1] == _T('\r')) && 
 					(line[index+length] == _T(' ') || line[index+length] == _T('\r') || 
-					line[index+length] == _T('\t')) ) )
+					line[index+length] == _T('\t') || index+length == line.size()) ) )
 					return tstring::npos;
 				break;
 		}

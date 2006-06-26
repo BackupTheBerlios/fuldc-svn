@@ -276,3 +276,30 @@ void FulHighlightPage::addPreset(int preset) {
 	ctrlStrings.insert( ctrlStrings.GetItemCount(), highlights.back().getMatch());
 	ctrlStrings.SelectItem(ctrlStrings.GetItemCount()-1);
 }
+
+LRESULT FulHighlightPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
+LRESULT FulHighlightPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+
+	if(item->iItem >= 0) {
+		PostMessage(WM_COMMAND, IDC_UPDATE, 0);
+	} else if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
+	}
+
+	return 0;
+}

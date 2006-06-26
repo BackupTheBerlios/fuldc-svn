@@ -97,16 +97,20 @@ void HashManager::HashStore::addFile(const string& aFileName, u_int32_t aTimeSta
 	dirty = true;
 }
 
-void HashManager::HashStore::addTree(const TigerTree& tt) {
+void HashManager::HashStore::addTree(const TigerTree& tt) throw() {
 	if(treeIndex.find(tt.getRoot()) == treeIndex.end()) {
-		File f(getDataFile(), File::READ|File::WRITE, File::OPEN);
-		int64_t index = saveTree(f, tt);
-		treeIndex.insert(make_pair(tt.getRoot(), TreeInfo(tt.getFileSize(), index, tt.getBlockSize())));
-		dirty = true;
+		try {
+			File f(getDataFile(), File::READ|File::WRITE, File::OPEN);
+			int64_t index = saveTree(f, tt);
+			treeIndex.insert(make_pair(tt.getRoot(), TreeInfo(tt.getFileSize(), index, tt.getBlockSize())));
+			dirty = true;
+		} catch(const FileException& e) {
+			LogManager::getInstance()->message(STRING(ERROR_SAVING_HASH) + e.getError());
+		}
 	}
 }
 
-int64_t HashManager::HashStore::saveTree(File& f, const TigerTree& tt) {
+int64_t HashManager::HashStore::saveTree(File& f, const TigerTree& tt) throw(FileException) {
 	if(tt.getLeaves().size() == 1)
 		return SMALL_TREE;
 
@@ -310,8 +314,8 @@ void HashManager::HashStore::save() {
 			File::renameFile(getIndexFile() + ".tmp", getIndexFile());
 
 			dirty = false;
-		} catch(const FileException&) {
-			// Too bad...
+		} catch(const FileException& e) {
+			LogManager::getInstance()->message(STRING(ERROR_SAVING_HASH) + e.getError());
 		}
 	}
 }
@@ -632,6 +636,9 @@ int HashManager::Hasher::run() {
 							if(lastRead + minTime > now) {
 								Thread::sleep(minTime - (now - lastRead));
 							}
+							lastRead = lastRead + minTime;
+						} else {
+							lastRead = GET_TICK();
 						}
 						n = f.read(buf, bufSize);
 						tth->update(buf, n);
@@ -639,7 +646,7 @@ int HashManager::Hasher::run() {
 
 						{
 							Lock l(cs);
-							currentSize = max(currentSize - n, _LL(0));
+							currentSize = max(static_cast<u_int64_t>(currentSize - n), static_cast<u_int64_t>(0));
 						}
 						sizeLeft -= n;
 					} while (n > 0 && !stop);

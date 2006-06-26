@@ -26,6 +26,7 @@
 #include "User.h"
 #include "BufferedSocket.h"
 #include "SettingsManager.h"
+#include "TimerManager.h"
 
 class Client;
 class AdcCommand;
@@ -77,7 +78,7 @@ public:
 };
 
 /** Yes, this should probably be called a Hub */
-class Client : public Speaker<ClientListener>, public BufferedSocketListener {
+class Client : public Speaker<ClientListener>, public BufferedSocketListener, protected TimerManagerListener {
 public:
 	typedef Client* Ptr;
 	typedef list<Ptr> List;
@@ -133,6 +134,8 @@ public:
 		return sm;
 	}
 
+	void reconnect();
+
 	void shutdown();
 
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
@@ -151,6 +154,7 @@ public:
 	GETSET(u_int32_t, reconnDelay, ReconnDelay);
 	GETSET(u_int32_t, lastActivity, LastActivity);
 	GETSET(bool, registered, Registered);
+	GETSET(bool, autoReconnect, AutoReconnect);
 
 protected:
 	friend class ClientManager;
@@ -171,12 +175,16 @@ protected:
 	Counts lastCounts;
 
 	void updateCounts(bool aRemove);
-	void updateActivity();
+	void updateActivity() { lastActivity = GET_TICK(); }
+	void resetActivtiy() { lastActivity = 0; }
 
 	/** Reload details from favmanager or settings */
 	void reloadSettings(bool updateNick);
 
 	virtual string checkNick(const string& nick) = 0;
+
+	// TimerManagerListener
+	virtual void on(Second, u_int32_t aTick) throw();
 
 private:
 
@@ -203,6 +211,8 @@ private:
 	// BufferedSocketListener
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw() { updateActivity(); ip = socket->getIp(); fire(ClientListener::Connected(), this); }
+
+
 };
 
 #endif // !defined(CLIENT_H)

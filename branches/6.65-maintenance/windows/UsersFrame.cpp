@@ -146,7 +146,34 @@ LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 		FavoriteManager::getInstance()->save();
 	}
 	return 0;
-} 
+}
+
+LRESULT UsersFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+
+	if(item->iItem != -1) {
+		PostMessage(WM_COMMAND, IDC_GETLIST, 0);
+	} else {
+		bHandled = FALSE;
+	}
+
+	return 0;
+}
+
+LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	case VK_RETURN:
+		PostMessage(WM_COMMAND, IDC_EDIT, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
 
 void UsersFrame::addUser(const User::Ptr& aUser) {
 	int i = ctrlUsers.insertItem(new UserInfo(aUser), 0);
@@ -197,13 +224,4 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		bHandled = FALSE;
 		return 0;
 	}
-}
-
-LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLVKEYDOWN* kd = reinterpret_cast<NMLVKEYDOWN*>(pnmh);
-
-	if(kd->wVKey == VK_DELETE) {
-		PostMessage(WM_COMMAND, IDC_REMOVE);
-	} 
-	return 0;
 }

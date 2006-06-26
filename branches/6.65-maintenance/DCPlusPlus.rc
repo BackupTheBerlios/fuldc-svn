@@ -52,6 +52,16 @@ END
 // Dialog
 //
 
+IDD_FULIGNOREPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PATTERNS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,7,260,186
+    PUSHBUTTON      "New",IDC_ADD,159,202,50,14
+    PUSHBUTTON      "Remove",IDC_REMOVE,217,202,50,14
+END
+
 IDD_HIGHLIGHTDIALOG DIALOGEX 0, 0, 421, 233
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Highlight Preferences"
@@ -614,6 +624,37 @@ BEGIN
     CONTROL         "",IDC_OTHER_QUEUE_OPTIONS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,9,7,255,205
 END
 
+IDD_FULADVANCEDPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION " "
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_FUL_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,260,97
+    GROUPBOX        "Web Shortcuts",IDC_SB_WEB_SHORTCUTS,7,109,260,109
+    CONTROL         "",IDC_WEB_SHORTCUTS_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,15,122,186,88
+    PUSHBUTTON      "Add",IDC_WEB_SHORTCUTS_ADD,210,122,50,14
+    PUSHBUTTON      "Remove",IDC_WEB_SHORTCUTS_REMOVE,210,160,50,14
+    PUSHBUTTON      "Properties",IDC_WEB_SHORTCUTS_PROPERTIES,210,141,50,14
+END
+
+IDD_FULAPPEARANCEPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_CHATBUFFERSIZE,15,26,90,14,ES_AUTOHSCROLL
+    GROUPBOX        "Mainchat buffer size",IDC_SB_CHATBUFFERSIZE,7,7,115,43
+    LTEXT           "Max size ~2.1 billion (2^31)",IDC_ST_CHATBUFFERSIZE,15,15,92,8
+    GROUPBOX        "Dupe Color",IDC_DUPES,7,55,259,53
+    PUSHBUTTON      "Select Color",IDC_DUPE_COLOR,15,89,90,14
+    GROUPBOX        "Missing TTH Color",IDC_NOTTH_BOX,7,112,259,53
+    PUSHBUTTON      "Select Color",IDC_NOTTH,15,146,90,14
+    LTEXT           "Background color used in file lists and search window to show which files that's already shared",IDC_DUPE_DESCRIPTION,15,67,244,20
+    LTEXT           "Background color used in search window to show which files are missing a TTH",IDC_NOTTH_DESCRIPTION,15,123,244,20
+    GROUPBOX        "History",IDC_HISTORY,7,169,259,40
+    PUSHBUTTON      "Clear search history",IDC_SEARCH_HISTORY,15,184,90,14
+    PUSHBUTTON      "Clear filter history",IDC_FILTER_HISTORY,123,184,90,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -903,6 +944,33 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END
+
+IDD_FULADVANCEDPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 267
+        VERTGUIDE, 268
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+        HORZGUIDE, 218
+    END
+
+    IDD_FULAPPEARANCEPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 266
+        VERTGUIDE, 15
+        VERTGUIDE, 21
+        VERTGUIDE, 105
+        VERTGUIDE, 123
+        VERTGUIDE, 149
+        VERTGUIDE, 157
+        VERTGUIDE, 252
+        VERTGUIDE, 259
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+        HORZGUIDE, 50
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -913,8 +981,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,8,9
- PRODUCTVERSION 0,6,8,9
+ FILEVERSION 0,6,9,2
+ PRODUCTVERSION 0,6,9,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -931,12 +999,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 6, 8, 9"
+            VALUE "FileVersion", "0, 6, 9, 2"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2006 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 6, 8, 9"
+            VALUE "ProductVersion", "0, 6, 9, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -1027,6 +1095,15 @@ BEGIN
     VK_F3,          IDC_FIND,               VIRTKEY, NOINVERT
 END
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\dcplusplus.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1036,130 +1113,4 @@ END
 1                       RT_MANIFEST             "res\\DCPlusPlus.Manifest"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Swedish resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
-#ifdef _WIN32
-LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
-#pragma code_page(1252)
-#endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_FULADVANCEDPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION " "
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    CONTROL         "",IDC_FUL_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,260,97
-    GROUPBOX        "Web Shortcuts",IDC_SB_WEB_SHORTCUTS,7,109,260,109
-    CONTROL         "",IDC_WEB_SHORTCUTS_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,15,122,186,88
-    PUSHBUTTON      "Add",IDC_WEB_SHORTCUTS_ADD,210,122,50,14
-    PUSHBUTTON      "Remove",IDC_WEB_SHORTCUTS_REMOVE,210,160,50,14
-    PUSHBUTTON      "Properties",IDC_WEB_SHORTCUTS_PROPERTIES,210,141,50,14
-END
-
-IDD_FULAPPEARANCEPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    EDITTEXT        IDC_CHATBUFFERSIZE,15,26,90,14,ES_AUTOHSCROLL
-    GROUPBOX        "Mainchat buffer size",IDC_SB_CHATBUFFERSIZE,7,7,115,43
-    LTEXT           "Max size ~2.1 billion (2^31)",IDC_ST_CHATBUFFERSIZE,15,15,92,8
-    GROUPBOX        "Dupe Color",IDC_DUPES,7,55,259,53
-    PUSHBUTTON      "Select Color",IDC_DUPE_COLOR,15,89,90,14
-    GROUPBOX        "Missing TTH Color",IDC_NOTTH_BOX,7,112,259,53
-    PUSHBUTTON      "Select Color",IDC_NOTTH,15,146,90,14
-    LTEXT           "Background color used in file lists and search window to show which files that's already shared",IDC_DUPE_DESCRIPTION,15,67,244,20
-    LTEXT           "Background color used in search window to show which files are missing a TTH",IDC_NOTTH_DESCRIPTION,15,123,244,20
-    GROUPBOX        "History",IDC_HISTORY,7,169,259,40
-    PUSHBUTTON      "Clear search history",IDC_SEARCH_HISTORY,15,184,90,14
-    PUSHBUTTON      "Clear filter history",IDC_FILTER_HISTORY,123,184,90,14
-END
-
-IDD_FULIGNOREPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    CONTROL         "",IDC_PATTERNS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,7,260,186
-    PUSHBUTTON      "New",IDC_ADD,159,202,50,14
-    PUSHBUTTON      "Remove",IDC_REMOVE,217,202,50,14
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDD_FULADVANCEDPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 267
-        VERTGUIDE, 268
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 218
-        HORZGUIDE, 218
-    END
-
-    IDD_FULAPPEARANCEPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 266
-        VERTGUIDE, 15
-        VERTGUIDE, 21
-        VERTGUIDE, 105
-        VERTGUIDE, 123
-        VERTGUIDE, 149
-        VERTGUIDE, 157
-        VERTGUIDE, 252
-        VERTGUIDE, 259
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 218
-        HORZGUIDE, 50
-    END
-
-    IDD_FULIGNOREPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 267
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 216
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\dcplusplus.ico"
-#endif    // Swedish resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
 
