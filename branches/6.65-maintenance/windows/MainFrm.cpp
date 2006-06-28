@@ -671,7 +671,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 
 			xml.resetCurrentChild();
 			if(xml.findChild("MajorVersion")) {
-				float major, minor;
+				double major, minor;
 				major = Util::toDouble(xml.getChildData());
 				xml.resetCurrentChild();
 				if(xml.findChild("MinorVersion")) {
@@ -1151,7 +1151,7 @@ LRESULT MainFrame::onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
+void MainFrame::on(TimerManagerListener::Second, time_t aTick) throw() {
 	int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 	int64_t updiff = Socket::getTotalUp() - lastUp;
 	int64_t downdiff = Socket::getTotalDown() - lastDown;

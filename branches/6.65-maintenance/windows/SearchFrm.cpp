@@ -338,7 +338,7 @@ void SearchFrame::onEnter() {
 		ctrlSearch.SetWindowText(_T(""));
 		ctrlFilter.SetWindowText(_T(""));
 	} else {
-		lastSearch = TimerManager::getInstance()->getTick();
+		lastSearch = GET_TICK();
 	}
 	
 	// Add new searches to the last-search dropdown list
@@ -577,7 +577,7 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 // target files.
 
 LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int pos = wID - IDC_DOWNLOADTO - 1; //remember the extra one
+	u_int32_t pos = wID - IDC_DOWNLOADTO - 1; //remember the extra one
 	
 	StringPairList favorites = FavoriteManager::getInstance()->getFavoriteDirs();
 
@@ -648,7 +648,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 // target files.
 
 LRESULT SearchFrame::onDownloadWholeTo(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int pos = wID - IDC_DOWNLOAD_WHOLE_TO - 1;
+	u_int32_t pos = wID - IDC_DOWNLOAD_WHOLE_TO - 1;
 	StringPairList favorites = FavoriteManager::getInstance()->getFavoriteDirs();
 
 	//favorites

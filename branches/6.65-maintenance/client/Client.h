@@ -151,8 +151,8 @@ public:
 
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
-	GETSET(u_int32_t, reconnDelay, ReconnDelay);
-	GETSET(u_int32_t, lastActivity, LastActivity);
+	GETSET(time_t, reconnDelay, ReconnDelay);
+	GETSET(time_t, lastActivity, LastActivity);
 	GETSET(bool, registered, Registered);
 	GETSET(bool, autoReconnect, AutoReconnect);
 
@@ -184,7 +184,7 @@ protected:
 	virtual string checkNick(const string& nick) = 0;
 
 	// TimerManagerListener
-	virtual void on(Second, u_int32_t aTick) throw();
+	virtual void on(Second, time_t aTick) throw();
 
 private:
 

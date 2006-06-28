@@ -481,7 +481,7 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw();
+	virtual void on(TimerManagerListener::Second, time_t /*aTick*/) throw();
 
 	// ClientListener
 	virtual void on(Connecting, Client*) throw();

@@ -304,7 +304,7 @@ private:
 
 	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, time_t aTick) throw();
 };
 
 #endif // !defined(DOWNLOAD_MANAGER_H)

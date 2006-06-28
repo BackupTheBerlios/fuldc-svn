@@ -71,7 +71,7 @@ void PopupManager::Show(const tstring& aMsg, HWND owner) {
 	popups.push_back(p);
 }
 
-void PopupManager::on(TimerManagerListener::Second /*type*/, u_int32_t /*tick*/ ) {
+void PopupManager::on(TimerManagerListener::Second /*type*/, time_t /*tick*/ ) {
 	if(!BOOLSETTING(REMOVE_POPUPS))
 		return;
 

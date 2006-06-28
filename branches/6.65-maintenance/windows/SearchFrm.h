@@ -434,7 +434,7 @@ private:
 
 	CriticalSection cs;
 
-	DWORD lastSearch;
+	time_t lastSearch;
 	bool closed;
 
 	static int columnIndexes[];
@@ -463,7 +463,7 @@ private:
 	virtual void on(ClientUpdated, Client* c) throw() { speak(HUB_CHANGED, c); }
 	virtual void on(ClientDisconnected, Client* c) throw() { speak(HUB_REMOVED, c); }
 
-	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw(){
+	virtual void on(TimerManagerListener::Second, time_t /*aTick*/) throw(){
 		PostMessage(WM_SPEAKER, STATS);
 	}
 	

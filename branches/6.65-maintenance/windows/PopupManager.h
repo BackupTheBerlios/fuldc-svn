@@ -123,7 +123,7 @@ private:
 	u_int32_t id;
     	
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t tick) throw();
+	virtual void on(TimerManagerListener::Second, time_t tick) throw();
 
 	//QueueManagerListener
 	virtual void on(QueueManagerListener::ReleaseDone, string msg) throw();

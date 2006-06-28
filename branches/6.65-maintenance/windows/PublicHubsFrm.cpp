@@ -392,7 +392,7 @@ void PublicHubsFrame::updateList() {
 
 	bool doSizeCompare = parseFilter(mode, size);
 	
-	for(HubEntry::List::const_iterator i = hubs.begin(); i != hubs.end(); ++i) {
+	for(HubEntryList::const_iterator i = hubs.begin(); i != hubs.end(); ++i) {
 		if(matchFilter(*i, sel, doSizeCompare, mode, size)) {
 
 			TStringList l;

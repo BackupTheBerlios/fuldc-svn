@@ -130,8 +130,8 @@ public:
 	}
 
 	GETSET(UserConnection*, userConnection, UserConnection);
-	GETSET(u_int32_t, start, Start);
-	GETSET(u_int32_t, lastTick, LastTick);
+	GETSET(time_t, start, Start);
+	GETSET(time_t, lastTick, LastTick);
 	GETSET(int64_t, runningAverage, RunningAverage);
 private:
 	Transfer(const Transfer&);
@@ -280,7 +280,7 @@ public:
 	GETSET(string, token, Token);
 	//GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
-	GETSET(u_int32_t, lastActivity, LastActivity);
+	GETSET(time_t, lastActivity, LastActivity);
 private:
 	BufferedSocket* socket;
 	User::Ptr user;

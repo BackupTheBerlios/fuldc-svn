@@ -153,7 +153,7 @@ private:
 	CComboBox ctrlFilterSel;
 	ExListViewCtrl ctrlHubs;
 
-	HubEntry::List hubs;
+	HubEntryList hubs;
 	string filter;
 
 	bool closed;

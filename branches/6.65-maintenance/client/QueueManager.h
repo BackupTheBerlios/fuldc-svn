@@ -116,7 +116,7 @@ public:
 	void loadQueue() throw();
 	void saveQueue() throw();
 	
-	GETSET(u_int32_t, lastSave, LastSave);
+	GETSET(time_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
 
 	void addNotification(const string& aNotify){
@@ -163,7 +163,7 @@ private:
 
 	void updateTotalSize(const string & path, const u_int64_t& size, bool add = true);
 	
-	u_int32_t lastSearchAlternates;
+	time_t lastSearchAlternates;
 	
 	/** All queue items by target */
 	class FileQueue {
@@ -176,7 +176,7 @@ private:
 		void add(QueueItem* qi);
 		QueueItem* add(const string& aTarget, int64_t aSize, 
 			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
-			u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException);
+			time_t aAdded, const TTHValue* root) throw(QueueException, FileException);
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& ql, const TTHValue& tth);
@@ -241,7 +241,7 @@ private:
 	/** The queue needs to be saved */
 	bool dirty;
 	/** Next search */
-	u_int32_t nextSearch;
+	time_t nextSearch;
 	
 	static const string USER_LIST_NAME;
 
@@ -263,8 +263,8 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, time_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();
 	
 	// SearchManagerListener
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();

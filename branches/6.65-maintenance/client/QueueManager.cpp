@@ -83,7 +83,7 @@ const string& QueueItem::getTempTarget() {
 
 QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, 
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget,
-						  int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException) 
+						  int64_t aDownloadedBytes, time_t aAdded, const TTHValue* root) throw(QueueException, FileException) 
 {
 	if(p == QueueItem::NORMAL)
 		p = (aSize <= 64*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
@@ -362,7 +362,7 @@ QueueManager::~QueueManager() throw() {
 	}
 }
 
-void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
+void QueueManager::on(TimerManagerListener::Minute, time_t aTick) throw() {
 	string fn;
 	string searchString;
 	bool online = false;
@@ -1296,7 +1296,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				return;
 			}
 			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority, 3));
-			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded, 4));
+			time_t added = (time_t)Util::toInt(getAttrib(attribs, sAdded, 4));
 			const string& tthRoot = getAttrib(attribs, sTTH, 5);
 			string tempTarget = getAttrib(attribs, sTempTarget, 5);
 			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded, 5));
@@ -1423,11 +1423,11 @@ void QueueManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
-	if(dirty && ((lastSave + 10000) < aTick)) {
+void QueueManager::on(TimerManagerListener::Second, time_t aTick) throw() {
+	if(dirty && ((lastSave + 10) < aTick)) {
 		saveQueue();
 	}
-	if( (lastSearchAlternates + 20000) < aTick ){
+	if( (lastSearchAlternates + 20) < aTick ){
 		onTimerSearch();
 	}
 }
@@ -1569,7 +1569,7 @@ void QueueManager::onTimerSearch() {
 			lastSearchAlternates = GET_TICK();
 			searchString = qi->getTargetFileName();
 		} 
-	}catch( std::exception ) {}
+	}catch( Exception ) {}
     
 	delete qi;
 

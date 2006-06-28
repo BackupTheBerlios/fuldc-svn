@@ -144,7 +144,7 @@ private:
 		int aFileType, const string& aString) throw();
 	
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();
 };
 
 #endif // !defined(CLIENT_MANAGER_H)

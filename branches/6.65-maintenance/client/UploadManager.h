@@ -152,7 +152,7 @@ public:
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
-	GETSET(u_int32_t, lastGrant, LastGrant);
+	GETSET(time_t, lastGrant, LastGrant);
 private:
 	Upload::List uploads;
 	CriticalSection cs;
@@ -161,7 +161,7 @@ private:
 	typedef SlotSet::iterator SlotIter;
 	SlotSet reservedSlots;
 
-	typedef pair<User::Ptr, u_int32_t> WaitingUser;
+	typedef pair<User::Ptr, time_t> WaitingUser;
 	typedef deque<WaitingUser> UserDeque;
 
 	struct UserMatch {
@@ -183,15 +183,15 @@ private:
 	UploadManager() throw();
 	virtual ~UploadManager() throw();
 
-	void removeConnection(UserConnection::Ptr aConn, bool ntd);
+	void removeConnection(UserConnection::Ptr aConn);
 	void removeUpload(Upload* aUpload);
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
 	
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, time_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();
 
 	// UserConnectionListener
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();

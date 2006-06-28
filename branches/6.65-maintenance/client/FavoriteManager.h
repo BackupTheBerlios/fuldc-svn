@@ -35,9 +35,6 @@
 
 class HubEntry {
 public:
-	typedef vector<HubEntry> List;
-	typedef List::iterator Iter;
-	
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
 	name(aName), server(aServer), description(aDescription), country(Util::emptyString), 
 	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { }
@@ -71,6 +68,9 @@ public:
 	GETSET(int, maxHubs, MaxHubs)
 	GETSET(int, maxUsers, MaxUsers);
 };
+
+typedef vector<HubEntry> HubEntryList;
+typedef HubEntryList::iterator HubEntryListIter;
 
 class FavoriteHubEntry {
 public:
@@ -168,7 +168,7 @@ public:
 	int getSelectedHubList() { return lastServer; }
 	void refresh();
 	HubTypes getHubListType() { return listType; }
-	HubEntry::List getPublicHubs() {
+	HubEntryList getPublicHubs() {
 		Lock l(cs);
 		return publicListMatrix[publicListServer];
 	}
@@ -203,8 +203,8 @@ public:
 	void removeUserCommand(const string& srv);
 	void removeHubUserCommands(int ctx, const string& hub);
 
-	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; }
-	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
+	UserCommandList getUserCommands() { Lock l(cs); return userCommands; }
+	UserCommandList getUserCommands(int ctx, const string& hub, bool op);
 
 	void load();
 	void save();
@@ -212,7 +212,7 @@ public:
 private:
 	FavoriteHubEntry::List favoriteHubs;
 	StringPairList favoriteDirs;
-	UserCommand::List userCommands;
+	UserCommandList userCommands;
 	int lastId;
 
 	User::List users;
@@ -220,7 +220,7 @@ private:
 	mutable CriticalSection cs;
 
 	// Public Hubs
-	typedef map<string, HubEntry::List> PubListMap;
+	typedef map<string, HubEntryList> PubListMap;
 	PubListMap publicListMatrix;
 	string publicListServer;
 	bool running;

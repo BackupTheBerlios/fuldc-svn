@@ -266,7 +266,7 @@ void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, 
 		removeUpload(u);
 	}
 
-	removeConnection(aSource, false);
+	removeConnection(aSource);
 }
 
 void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSource) throw() {
@@ -339,7 +339,7 @@ const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const User::Ptr
 	return waitingFiles.find(u)->second;
 }
 
-void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
+void UploadManager::removeConnection(UserConnection::Ptr aConn) {
 	dcassert(aConn->getUpload() == NULL);
 	aConn->removeListener(this);
 	if(aConn->isSet(UserConnection::FLAG_HASSLOT)) {
@@ -352,7 +352,7 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
 	}
 }
 
-void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
+void UploadManager::on(TimerManagerListener::Minute, time_t /* aTick */) throw() {
 	Lock l(cs);
 
 	UserDeque::iterator i = stable_partition(waitingUsers.begin(), waitingUsers.end(), WaitingUserFresh());
@@ -406,7 +406,7 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 }
 
 // TimerManagerListener
-void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
+void UploadManager::on(TimerManagerListener::Second, time_t) throw() {
 	Lock l(cs);
 	Upload::List ticks;
 	

@@ -57,7 +57,7 @@ public:
 		if(!userCommands.empty()) {
 			menu.AppendMenu(MF_SEPARATOR);
 			CMenuHandle cur = menu.m_hMenu;
-			for(UserCommand::Iter ui = userCommands.begin(); ui != userCommands.end(); ++ui) {
+			for(UserCommandListIter ui = userCommands.begin(); ui != userCommands.end(); ++ui) {
 				UserCommand& uc = *ui;
 				if(uc.getType() == UserCommand::TYPE_SEPARATOR) {
 					// Avoid double separators...
@@ -107,7 +107,7 @@ public:
 		}
 	}
 private:
-	UserCommand::List userCommands;
+	UserCommandList userCommands;
 	int menuPos;
 };
 

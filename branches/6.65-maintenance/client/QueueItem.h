@@ -131,7 +131,7 @@ public:
 	};
 
 	QueueItem(const string& aTarget, int64_t aSize, 
-		Priority aPriority, int aFlag, int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* tth) : 
+		Priority aPriority, int aFlag, int64_t aDownloadedBytes, time_t aAdded, const TTHValue* tth) : 
 	Flags(aFlag), target(aTarget), 
 		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING), 
 		priority(aPriority), current(NULL), currentDownload(NULL), added(aAdded),
@@ -222,7 +222,7 @@ public:
 	GETSET(Priority, priority, Priority);
 	GETSET(Source*, current, Current);
 	GETSET(Download*, currentDownload, CurrentDownload);
-	GETSET(u_int32_t, added, Added);
+	GETSET(time_t, added, Added);
 	GETSET(TTHValue*, tthRoot, TTH);
 private:
 	QueueItem& operator=(const QueueItem&);

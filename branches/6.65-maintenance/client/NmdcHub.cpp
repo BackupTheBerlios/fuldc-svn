@@ -86,6 +86,7 @@ void NmdcHub::refreshUserList(bool unknownOnly /* = false */) {
 }
 
 void NmdcHub::clearUsers() {
+	Lock l(cs);
 	for(User::NickIter i = users.begin(); i != users.end(); ++i) {
 		ClientManager::getInstance()->putUserOffline(i->second);		
 	}
@@ -147,7 +148,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		
 		{
 			Lock l(cs);
-			u_int32_t tick = GET_TICK();
+			time_t tick = GET_TICK();
 
 			seekers.push_back(make_pair(seeker, tick));
 
@@ -652,7 +653,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 }
 
 // TimerManagerListener
-void NmdcHub::on(Second, u_int32_t aTick) throw() {
+void NmdcHub::on(Second, time_t aTick) throw() {
 	if(state == STATE_CONNECTED && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
 		// Try to send something for the fun of it...
 		dcdebug("Testing writing...\n");

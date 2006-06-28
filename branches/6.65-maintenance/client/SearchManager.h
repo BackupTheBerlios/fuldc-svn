@@ -172,7 +172,7 @@ private:
 	Socket* socket;
 	short port;
 	bool stop;
-	u_int32_t lastSearch;
+	time_t lastSearch;
 	friend class Singleton<SearchManager>;
 
 	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  }

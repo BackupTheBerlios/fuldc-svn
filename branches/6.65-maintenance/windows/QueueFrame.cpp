@@ -557,7 +557,7 @@ void QueueFrame::on(QueueManagerListener::Moved, QueueItem* aQI, string aSource)
 				break;
 		}
 		if(j != i.second) {
-			tmp = j->second;
+			tmp = new QueueItemInfo(*j->second);
 		}
 	}
 	

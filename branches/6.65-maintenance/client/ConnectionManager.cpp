@@ -133,7 +133,7 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 	userConnections.erase(remove(userConnections.begin(), userConnections.end(), aConn), userConnections.end());
 }
 
-void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
+void ConnectionManager::on(TimerManagerListener::Second, time_t aTick) throw() {
 	User::List passiveUsers;
 	ConnectionQueueItem::List removed;
 	User::List idlers;
@@ -216,7 +216,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	}
 }
 
-void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {	
+void ConnectionManager::on(TimerManagerListener::Minute, time_t aTick) throw() {	
 	Lock l(cs);
 
 	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
@@ -254,7 +254,7 @@ int ConnectionManager::Server::run() throw() {
  * It's always the other fellow that starts sending if he made the connection.
  */
 void ConnectionManager::accept(const Socket& sock) throw() {
-	u_int32_t now = GET_TICK();
+	time_t now = GET_TICK();
 
 	if(now > floodCounter) {
 		floodCounter = now + FLOOD_ADD;

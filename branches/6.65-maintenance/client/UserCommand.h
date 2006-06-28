@@ -27,9 +27,6 @@
 
 class UserCommand : public Flags {
 public:
-	typedef vector<UserCommand> List;
-	typedef List::iterator Iter;
-
 	enum {
 		TYPE_SEPARATOR,
 		TYPE_RAW,
@@ -73,5 +70,7 @@ public:
 	GETSET(string, command, Command);
 	GETSET(string, hub, Hub);
 };
+typedef vector<UserCommand> UserCommandList;
+typedef UserCommandList::iterator UserCommandListIter;
 
 #endif // !defined(USER_COMMAND_H)

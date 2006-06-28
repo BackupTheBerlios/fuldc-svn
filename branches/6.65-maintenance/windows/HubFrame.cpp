@@ -1274,7 +1274,7 @@ void HubFrame::setClosing() {
 	closing = true;
 }
 
-void HubFrame::on(TimerManagerListener::Second, DWORD /*aTick*/) throw() {
+void HubFrame::on(TimerManagerListener::Second, time_t /*aTick*/) throw() {
 	updateStatusBar();
 	if(updateUsers) {
 		updateUsers = false;

@@ -676,7 +676,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		if(pos != tstring::npos) {
 			tstring time = param.substr(0, pos);
 			tstring msg = param.substr(pos+1);
-			u_int32_t seconds = 0;
+			time_t seconds = 0;
 
 			TStringList tmp = StringTokenizer<tstring>(time, _T(":")).getTokens();
 			if(tmp.size() == 1) {
@@ -693,7 +693,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			}
 			if(seconds > 0) {
 				seconds = GET_TICK() + seconds*1000; //convert to ticks
-				PostMessage(mainWnd, WM_SPEAKER, MainFrame::START_TIMER, (LPARAM) new pair<u_int32_t, tstring>(seconds, msg));
+				PostMessage(mainWnd, WM_SPEAKER, MainFrame::START_TIMER, (LPARAM) new pair<time_t, tstring>(seconds, msg));
 				status = TSTRING(TIMER_STARTED);
 			}
 		} else {
@@ -1096,7 +1096,6 @@ void WinUtil::SearchSite(WebShortcut* ws, tstring strSearchString) {
 
 void WinUtil::search(tstring searchTerm, int searchMode, bool tth) {
 	if(!searchTerm.empty()) {
-		//skapa listan över icke tillåtna karaktärer
 		TCHAR chars[33] = {_T('<'), _T('>'), _T(','), _T(';'), _T('.'), _T(':'), _T('-'), _T('_'), _T('!'),
 						_T('\"'), _T('@'), _T('#'), _T('£'), _T('$'), _T('%'), _T('&'), _T('/'), _T('{'),
 						_T('('), _T('['), _T(')'), _T(']'), _T('='), _T('}'), _T('?'), _T('+'), _T('´'),
@@ -1104,9 +1103,8 @@ void WinUtil::search(tstring searchTerm, int searchMode, bool tth) {
 		
 		size_t length = searchTerm.length()-1;
 		try{
-			//gå igenom hela listan och leta efter tecknen
+			//check for bad chars in the list and remove any matches.
 			for(int i = 0; i < 31; ++i) {
-				//om vi hittar ett tecken, ta bort det och börja om från början
 				if(searchTerm[0] == chars[i]) {
 					searchTerm.erase((tstring::size_type)0, (tstring::size_type)1);
 					i = 0;
@@ -1118,7 +1116,7 @@ void WinUtil::search(tstring searchTerm, int searchMode, bool tth) {
 					--length;
 				}
 			}
-		}catch(exception) {
+		}catch(Exception) {
 			return;
 		}
 		if(!searchTerm.empty()) {

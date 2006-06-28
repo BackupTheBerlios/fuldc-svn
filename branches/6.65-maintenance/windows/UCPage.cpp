@@ -56,8 +56,8 @@ LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlCommands.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	// Do specialized reading here
-	UserCommand::List lst = FavoriteManager::getInstance()->getUserCommands();
-	for(UserCommand::Iter i = lst.begin(); i != lst.end(); ++i) {
+	UserCommandList lst = FavoriteManager::getInstance()->getUserCommands();
+	for(UserCommandListIter i = lst.begin(); i != lst.end(); ++i) {
 		UserCommand& uc = *i;
 		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) {
 			addEntry(uc, ctrlCommands.GetItemCount());

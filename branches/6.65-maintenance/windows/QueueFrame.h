@@ -292,13 +292,17 @@ private:
 
 			return *this;
 		}
+
+		QueueItemInfo(const QueueItemInfo& rhs) {
+			*this = rhs;
+		}
 		
 		GETSET(tstring, target, Target);
 		GETSET(tstring, path, Path);
 		GETSET(int, online, Online);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
-		GETSET(u_int32_t, added, Added);
+		GETSET(time_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
 		GETSET(QueueItem::Status, status, Status);
 		GETSET(TTHValue*, tth, TTH);
@@ -308,8 +312,6 @@ private:
 
 		Display* display;
 
-		QueueItemInfo(const QueueItemInfo&);
-				
 		SourceList sources;
 		SourceList badSources;
 

@@ -89,7 +89,7 @@ int64_t Download::getTotalSecondsLeft() {
 	return (avg > 0) ? ((size - pos) / avg) : 0;
 }
 
-void DownloadManager::on(TimerManagerListener::Second, u_int32_t /*aTick*/) throw() {
+void DownloadManager::on(TimerManagerListener::Second, time_t /*aTick*/) throw() {
 	Lock l(cs);
 
 	averageSpeedMap.clear();

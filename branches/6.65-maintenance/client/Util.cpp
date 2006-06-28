@@ -725,18 +725,16 @@ string Util::formatTime(const string &msg, const time_t t) {
 
 wstring Util::formatTime(const wstring& msg, const time_t t){
 	if(!msg.empty()) {
-		size_t bufsize = msg.size() + 64;
 		struct tm* loc = localtime(&t);
 
 		if(!loc) {
 			return Util::emptyStringW;
 		}
 
-		AutoArray<wchar_t> buf(new wchar_t[bufsize]);
+		wchar_t buf[256];
 
-		while(!wcsftime(buf, bufsize-1, msg.c_str(), loc)) {
-			bufsize += 64;
-			buf = new wchar_t[bufsize];
+		if(!wcsftime(buf, 255, msg.c_str(), loc)) {
+			return Util::emptyStringW;
 		}
 
 		return wstring(buf);

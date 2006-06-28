@@ -52,7 +52,7 @@ public:
 	const User::Ptr& getUser() const { return user; }
 	
 	GETSET(State, state, State);
-	GETSET(u_int32_t, lastAttempt, LastAttempt);
+	GETSET(time_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
 	ConnectionQueueItem(const ConnectionQueueItem&);
@@ -115,7 +115,7 @@ private:
 
 	StringList features;
 
-	u_int32_t floodCounter;
+	time_t floodCounter;
 
 	Server* server;
 
@@ -147,8 +147,8 @@ private:
 	virtual void on(Supports, UserConnection*, const StringList&) throw();
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();	
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();	
+	virtual void on(TimerManagerListener::Second, time_t aTick) throw();	
+	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();	
 
 };
 

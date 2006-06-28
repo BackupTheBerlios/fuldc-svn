@@ -281,7 +281,7 @@ void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub /*= false*/) {
 	fire(ClientManagerListener::UserUpdated(), aUser);
 }
 
-void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
+void ClientManager::on(TimerManagerListener::Minute, time_t /* aTick */) throw() {
 	Lock l(cs);
 
 	// Collect some garbage...

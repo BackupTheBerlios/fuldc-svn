@@ -1072,19 +1072,19 @@ SearchManager::TypeModes ShareManager::getType(const string& aFileName) {
  * has been matched in the directory name. This new stringlist should also be used in all descendants,
  * but not the parents...
  */
-void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw() {
+void ShareManager::Directory::search(SearchResult::List& aResults, StringSearchList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw() {
 	// Skip everything if there's nothing to find here (doh! =)
 	if(!hasType(aFileType))
 		return;
 
-	StringSearch::List* cur = &aStrings;
-	auto_ptr<StringSearch::List> newStr;
+	StringSearchList* cur = &aStrings;
+	auto_ptr<StringSearchList> newStr;
 
 	// Find any matches in the directory name
-	for(StringSearch::Iter k = aStrings.begin(); k != aStrings.end(); ++k) {
+	for(StringSearchListIter k = aStrings.begin(); k != aStrings.end(); ++k) {
 		if(k->match(name)) {
 			if(!newStr.get()) {
-				newStr = auto_ptr<StringSearch::List>(new StringSearch::List(aStrings));
+				newStr = auto_ptr<StringSearchList>(new StringSearchList(aStrings));
 			}
 			newStr->erase(remove(newStr->begin(), newStr->end(), *k), newStr->end());
 		}
@@ -1112,7 +1112,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 			} else if(aSearchType == SearchManager::SIZE_ATMOST && aSize < i->getSize()) {
 				continue;
 			}	
-			StringSearch::Iter j = cur->begin();
+			StringSearchListIter j = cur->begin();
 			for(; j != cur->end() && j->match(i->getName()); ++j) 
 				;	// Empty
 			
@@ -1164,7 +1164,7 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 	if(!bloom.match(sl))
 		return;
 
-	StringSearch::List ssl;
+	StringSearchList ssl;
 	for(StringList::iterator i = sl.begin(); i != sl.end(); ++i) {
 		if(!i->empty()) {
 			ssl.push_back(StringSearch(*i));
@@ -1214,16 +1214,16 @@ ShareManager::AdcSearch::AdcSearch(const StringList& params) : include(&includeX
 }
 
 void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw() {
-	StringSearch::List* cur = aStrings.include;
-	StringSearch::List* old = aStrings.include;
+	StringSearchList* cur = aStrings.include;
+	StringSearchList* old = aStrings.include;
 
-	auto_ptr<StringSearch::List> newStr;
+	auto_ptr<StringSearchList> newStr;
 
 	// Find any matches in the directory name
-	for(StringSearch::Iter k = cur->begin(); k != cur->end(); ++k) {
+	for(StringSearchListIter k = cur->begin(); k != cur->end(); ++k) {
 		if(k->match(name) && !aStrings.isExcluded(name)) {
 			if(!newStr.get()) {
-				newStr = auto_ptr<StringSearch::List>(new StringSearch::List(*cur));
+				newStr = auto_ptr<StringSearchList>(new StringSearchList(*cur));
 			}
 			newStr->erase(remove(newStr->begin(), newStr->end(), *k), newStr->end());
 		}
@@ -1254,7 +1254,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 			if(aStrings.isExcluded(i->getName()))
 				continue;
 
-			StringSearch::Iter j = cur->begin();
+			StringSearchListIter j = cur->begin();
 			for(; j != cur->end() && j->match(i->getName()); ++j) 
 				;	// Empty
 
@@ -1298,7 +1298,7 @@ void ShareManager::search(SearchResult::List& results, const StringList& params,
 		return;
 	}
 
-	for(StringSearch::Iter i = srch.includeX.begin(); i != srch.includeX.end(); ++i) {
+	for(StringSearchListIter i = srch.includeX.begin(); i != srch.includeX.end(); ++i) {
 		if(!bloom.match(i->getPattern()))
 			return;
 	}
@@ -1370,7 +1370,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const T
 	}
 }
 
-void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
+void ShareManager::on(TimerManagerListener::Minute, time_t tick) throw() {
 	bool r;
 	if(BOOLSETTING(AUTO_UPDATE_LIST)) {
 		r = true;

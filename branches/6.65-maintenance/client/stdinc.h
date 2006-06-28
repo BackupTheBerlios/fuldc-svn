@@ -52,7 +52,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <memory.h>
+#include <memory>
 #include <sys/types.h>
 #include <time.h>
 #include <locale.h>
