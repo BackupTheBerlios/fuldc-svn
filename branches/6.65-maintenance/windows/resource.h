@@ -619,6 +619,8 @@
 #define IDC_FILTER_DROPDOWN             1372
 #define IDC_SETTINGS_MEBIBITS           1373
 #define IDC_CLEAR                       1374
+#define IDC_PAUSED                      1375
+#define IDC_RESUMED                     1376
 #define IDC_DOWNLOAD_FAVORITE_DIRS      2000
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 2200
 #define IDC_BROWSELIST                  3000

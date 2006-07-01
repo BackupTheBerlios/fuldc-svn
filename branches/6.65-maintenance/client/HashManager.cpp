@@ -80,7 +80,7 @@ void HashManager::hashDone(const string& aFileName, time_t aTimeStamp, const Tig
 	}
 }
 
-void HashManager::HashStore::addFile(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, bool aUsed) {
+void HashManager::HashStore::addFile(const string& aFileName, time_t aTimeStamp, const TigerTree& tth, bool aUsed) {
 	addTree(tth);
 
 	string fname = Text::toLower(Util::getFileName(aFileName));
@@ -567,7 +567,7 @@ int HashManager::Hasher::run() {
 		s.wait();
 		if(stop)
 			break;
-		if(paused) 
+		if(paused)
 			p.wait();
 		if(rebuild) {
 			HashManager::getInstance()->doRebuild();

@@ -43,8 +43,12 @@ public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> TTHDone;
+	typedef X<1> Paused;
+	typedef X<2> Resumed;
 
 	virtual void on(TTHDone, const string& /* fileName */, const TTHValue& /* root */) throw() = 0;
+	virtual void on(Paused) { }
+	virtual void on(Resumed) { }
 };
 
 class HashLoader;
@@ -117,10 +121,12 @@ public:
 
 	void pause() {
 		hasher.pause();
+		fire(HashManagerListener::Paused());
 	}
 
 	void resume() {
 		hasher.resume();
+		fire(HashManagerListener::Resumed());
 	}
 
 	bool isPaused() const { return hasher.isPaused(); }
@@ -218,7 +224,7 @@ private:
 	class HashStore {
 	public:
 		HashStore();
-		void addFile(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, bool aUsed);
+		void addFile(const string& aFileName, time_t aTimeStamp, const TigerTree& tth, bool aUsed);
 
 		void load();
 		void save();

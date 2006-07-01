@@ -25,7 +25,7 @@
 
 #include "../client/HashManager.h"
 
-class HashProgressDlg : public CDialogImpl<HashProgressDlg>
+class HashProgressDlg : public CDialogImpl<HashProgressDlg>, private HashManagerListener
 {
 public:
 	enum { IDD = IDD_HASH_PROGRESS };
@@ -44,6 +44,8 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDC_CLEAR, onClear)
 		COMMAND_ID_HANDLER(IDC_PAUSE, onPause)
+		COMMAND_ID_HANDLER(IDC_PAUSED, onPaused)
+		COMMAND_ID_HANDLER(IDC_RESUMED, onResumed)
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -145,14 +147,20 @@ public:
 	LRESULT onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(HashManager::getInstance()->isPaused()) {
 			HashManager::getInstance()->resume();
-			SetDlgItemText(IDC_PAUSE, CTSTRING(PAUSE));
 		} else {
 			HashManager::getInstance()->pause();
-			SetDlgItemText(IDC_PAUSE, CTSTRING(RESUME));
 		}
 		return 0;
 	}
 
+	LRESULT onPaused(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		SetDlgItemText(IDC_PAUSE, CTSTRING(PAUSE));
+		return 0;
+	}
+	LRESULT onResumed(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		SetDlgItemText(IDC_PAUSE, CTSTRING(RESUME));
+		return 0;
+	}
 private:
 	
 	
@@ -161,6 +169,10 @@ private:
 	size_t startFiles;
 	time_t startTime;
 	CProgressBarCtrl progress;
+
+	virtual void on(TTHDone, const string& /* fileName */, const TTHValue& /* root */) throw() { };
+	virtual void on(Paused) { PostMessage(WM_COMMAND, IDC_PAUSED); }
+	virtual void on(Resumed) { PostMessage(WM_COMMAND, IDC_RESUMED); }
 	
 };
 

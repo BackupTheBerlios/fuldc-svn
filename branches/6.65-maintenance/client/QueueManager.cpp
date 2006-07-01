@@ -291,7 +291,7 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 		QueueItem::UserSetMap& ulm = userQueue[qi->getPriority()];
 		QueueItem::UserSetIter j = ulm.find(aUser);
 		dcassert(j != ulm.end());
-		QueueItem::Set l = j->second;
+		QueueItem::Set& l = j->second;
 		dcassert(find(l.begin(), l.end(), qi) != l.end());
 		l.erase(find(l.begin(), l.end(), qi));
 		
@@ -831,6 +831,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw(
 		//otherwise it'll be downloaded to a temp-file before it
 		//gets discarded.
 		remove(q->getTarget());
+		q = NULL;
 	}
 
 	if(q == NULL)
@@ -1424,10 +1425,10 @@ void QueueManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser
 }
 
 void QueueManager::on(TimerManagerListener::Second, time_t aTick) throw() {
-	if(dirty && ((lastSave + 10) < aTick)) {
+	if(dirty && ((lastSave + 10000) < aTick)) {
 		saveQueue();
 	}
-	if( (lastSearchAlternates + 20) < aTick ){
+	if( (lastSearchAlternates + 20000) < aTick ){
 		onTimerSearch();
 	}
 }

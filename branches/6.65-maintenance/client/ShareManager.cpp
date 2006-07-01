@@ -699,7 +699,10 @@ int ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bo
 }
 
 int ShareManager::run() {
-	HashManager::getInstance()->pause();
+	//cache the paused state of hashmanager, if it's paused when we start, don't resume it when we're finished.
+	bool pause = HashManager::getInstance()->isPaused();
+	if(!pause)
+		HashManager::getInstance()->pause();
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
 	{
 		if( refreshDir && !refreshDirs ){
@@ -800,7 +803,8 @@ int ShareManager::run() {
 	Thread::safeDec(refreshing);
 
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
-	HashManager::getInstance()->resume();
+	if(!pause)
+		HashManager::getInstance()->resume();
 	if(update) {
 		ClientManager::getInstance()->infoUpdated();
 	}
