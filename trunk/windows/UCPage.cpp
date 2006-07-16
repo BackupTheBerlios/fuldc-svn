@@ -56,8 +56,8 @@ LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlCommands.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	// Do specialized reading here
-	UserCommand::List lst = FavoriteManager::getInstance()->getUserCommands();
-	for(UserCommand::Iter i = lst.begin(); i != lst.end(); ++i) {
+	UserCommandList lst = FavoriteManager::getInstance()->getUserCommands();
+	for(UserCommandListIter i = lst.begin(); i != lst.end(); ++i) {
 		UserCommand& uc = *i;
 		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) {
 			addEntry(uc, ctrlCommands.GetItemCount());
@@ -148,6 +148,33 @@ LRESULT UCPage::onMoveDown(WORD , WORD , HWND , BOOL& ) {
 		ctrlCommands.EnsureVisible(i+1, FALSE);
 		ctrlCommands.SetRedraw(TRUE);
 	}
+	return 0;
+}
+
+LRESULT UCPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_ADD_MENU, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE_MENU, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
+LRESULT UCPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+
+	if(item->iItem >= 0) {
+		PostMessage(WM_COMMAND, IDC_CHANGE_MENU, 0);
+	} else if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_ADD_MENU, 0);
+	}
+
 	return 0;
 }
 

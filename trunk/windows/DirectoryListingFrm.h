@@ -72,7 +72,7 @@ public:
 	static void closeAll();
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame> baseClass;
-typedef UCHandler<DirectoryListingFrame> ucBase;
+	typedef UCHandler<DirectoryListingFrame> ucBase;
 
 	enum {
 		COLUMN_FILENAME,
@@ -213,7 +213,6 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 
 		ctrlList.SetRedraw(FALSE);
 		clearList();
-		
 		frames.erase(m_hWnd);
 
 		ctrlList.saveHeaderOrder(SettingsManager::DIRECTORYLISTINGFRAME_ORDER, 

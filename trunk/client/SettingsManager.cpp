@@ -45,19 +45,20 @@ const string SettingsManager::settingTags[] =
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
-	"SslPrivateKeyFile", "SslCertificateFile", "SslTrustedCertificatesPath",
+	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath",
 
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
 	"QueueFrameVisible", "DirectoryListingFrameVisible","FinishedVisible", "FinishedULVisible",
+	"HighPrioFiles", 
 	"SENTRY", 
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
-	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
+	"AutoSearch", "TimeStamps", "ConfirmExit", "PopupHubPms", "PopupBotPms", "IgnoreHubPms", "IgnoreBotPms",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
+	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows",
@@ -66,16 +67,22 @@ const string SettingsManager::settingTags[] =
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
-	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
+	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "MaxFilelistSize", 
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize", "MaxFilelistSize", 
+	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
+	"AutoDropSpeed", "AutoDropInterval", "AutoDropElapsed", "AutoDropInactivity", "AutoDropMinSources", "AutoDropFilesize", 
+	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoUpdateList",
-	"UseSsl", "AutoSearchLimit", 
+	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches", 
+	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
+	"TLSPort",
+
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs",
 	"PopupTimeout", "PopupAway", "PopupMinimized", "PopupPm", "PopupNewPm", "PopupHubStatus", 
@@ -132,6 +139,7 @@ SettingsManager::SettingsManager()
 	setDefault(SLOTS, 1);
 	setDefault(TCP_PORT, 0);
 	setDefault(UDP_PORT, 0);
+	setDefault(TLS_PORT, 0);
 	setDefault(INCOMING_CONNECTIONS, INCOMING_DIRECT);
 	setDefault(OUTGOING_CONNECTIONS, OUTGOING_DIRECT);
 	setDefault(ROLLBACK, 4096);
@@ -143,8 +151,10 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH, true);
 	setDefault(TIME_STAMPS, true);
 	setDefault(CONFIRM_EXIT, true);
-	setDefault(IGNORE_OFFLINE, false);
-	setDefault(POPUP_OFFLINE, false);
+	setDefault(POPUP_HUB_PMS, true);
+	setDefault(POPUP_BOT_PMS, true);
+	setDefault(IGNORE_HUB_PMS, false);
+	setDefault(IGNORE_BOT_PMS, false);
 	setDefault(LIST_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
 	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.xml.bz2;http://dc.selwerd.nl/hublist.xml.bz2");
@@ -240,7 +250,9 @@ SettingsManager::SettingsManager()
 	setDefault(ONLY_DL_TTH_FILES, false);
 	setDefault(OPEN_WAITING_USERS, false);
 	setDefault(OPEN_SYSTEM_LOG, true);
-	setDefault(SSL_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR);
+	setDefault(TLS_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR);
+	setDefault(TLS_PRIVATE_KEY_FILE, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.key");
+	setDefault(TLS_CERTIFICATE_FILE, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.crt");
 	setDefault(BOLD_FINISHED_DOWNLOADS, true);
 	setDefault(BOLD_FINISHED_UPLOADS, true);
 	setDefault(BOLD_QUEUE, true);
@@ -250,8 +262,16 @@ SettingsManager::SettingsManager()
 	setDefault(BOLD_WAITING_USERS, true);
 	setDefault(BOLD_SYSTEM_LOG, true);
 	setDefault(AUTO_UPDATE_LIST, true);
-	setDefault(USE_SSL, false);
+	setDefault(USE_TLS, true);
 	setDefault(AUTO_SEARCH_LIMIT, 5);
+	setDefault(ALT_SORT_ORDER, false);
+	setDefault(AUTO_KICK_NO_FAVS, false);
+	setDefault(PROMPT_PASSWORD, false);
+	setDefault(SPY_FRAME_IGNORE_TTH_SEARCHES, false);
+	setDefault(DONT_DL_ALREADY_QUEUED, false);
+	setDefault(MAX_COMMAND_LENGTH, 16*1024*1024);
+	setDefault(ALLOW_UNTRUSTED_HUBS, true);
+	setDefault(ALLOW_UNTRUSTED_CLIENTS, true);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
@@ -439,6 +459,8 @@ void SettingsManager::load(string const& aFileName)
 
 		xml.resetCurrentChild();
 
+		File::ensureDirectory(SETTING(TLS_TRUSTED_CERTIFICATES_PATH));
+		
 		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();

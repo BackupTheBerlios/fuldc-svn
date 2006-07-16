@@ -29,6 +29,7 @@
 #include "SimpleXML.h"
 #include "UserCommand.h"
 #include "ResourceManager.h"
+#include "LogManager.h"
 
 #include "AdcHub.h"
 
@@ -58,18 +59,7 @@ void ClientManager::putClient(Client* aClient) {
 	
 	{
 		Lock l(cs);
-
-		// Either I'm stupid or the msvc7 optimizer is doing something _very_ strange here...
-		// STL-port -D_STL_DEBUG complains that .begin() and .end() don't have the same owner (!)
-		//		dcassert(find(clients.begin(), clients.end(), aClient) != clients.end());
-		//		clients.erase(find(clients.begin(), clients.end(), aClient));
-		
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if(*i == aClient) {
-				clients.erase(i);
-				break;
-			}
-		}
+		clients.erase(remove(clients.begin(), clients.end(), aClient), clients.end());
 	}
 	delete aClient;
 }
@@ -101,21 +91,21 @@ StringList ClientManager::getHubNames(const CID& cid) {
 
 StringList ClientManager::getNicks(const CID& cid) {
 	Lock l(cs);
-	StringList lst;
+	StringSet nicks;
 	OnlinePair op = onlineUsers.equal_range(cid);
 	for(OnlineIter i = op.first; i != op.second; ++i) {
-		lst.push_back(i->second->getIdentity().getNick());
+		nicks.insert(i->second->getIdentity().getNick());
 	}
-	if(lst.empty()) {
+	if(nicks.empty()) {
 		// Offline perhaps?
 		UserIter i = users.find(cid);
 		if(i != users.end() && !i->second->getFirstNick().empty()) {
-			lst.push_back(i->second->getFirstNick());
+			nicks.insert(i->second->getFirstNick());
 		} else {
-			lst.push_back('{' + cid.toBase32() + '}');
+			nicks.insert('{' + cid.toBase32() + '}');
 		}
 	}
-	return lst;
+	return StringList(nicks.begin(), nicks.end());
 }
 
 string ClientManager::getConnection(const CID& cid) {
@@ -235,7 +225,7 @@ bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
 	pair<OnlineIter, OnlineIter> p = onlineUsers.equal_range(user->getCID());
 	for(OnlineIter i = p.first; i != p.second; ++i) {
 		if(i->second->getClient().getHubUrl() == aHubUrl) {
-			return i->second->getClient().getMyIdentity().isOp();
+			return i->second->getIdentity().isOp();
 		}
 	}
 	return false;
@@ -309,12 +299,18 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(cid);
 	if(i != onlineUsers.end()) {
-		OnlineUser* u = i->second;
-		if(cmd.getType() == AdcCommand::TYPE_UDP && !u->getIdentity().isUdpActive()) {
+		OnlineUser& u = *i->second;
+		if(cmd.getType() == AdcCommand::TYPE_UDP && !u.getIdentity().isUdpActive()) {
 			cmd.setType(AdcCommand::TYPE_DIRECT);
+			cmd.setTo(u.getIdentity().getSID());
+			u.getClient().send(cmd);
+		} else {
+			try {
+				s.writeTo(u.getIdentity().getIp(), static_cast<short>(Util::toInt(u.getIdentity().getUdpPort())), cmd.toString(getMe()->getCID()));
+			} catch(const SocketException&) {
+				dcdebug("Socket exception sending ADC UDP command\n");
+			}
 		}
-		cmd.setTo(u->getIdentity().getSID());
-		u->getClient().send(cmd);
 	}
 }
 
@@ -366,7 +362,15 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 				u_int16_t port = 0;
 				Util::decodeUrl(aSeeker, ip, port, file);
 				ip = Socket::resolve(ip);
-				if(port == 0) port = 412;
+				
+				// Temporary fix to avoid spamming hublist.org and dcpp.net
+				if(ip == "70.85.55.252" || ip == "207.44.220.108") {
+					LogManager::getInstance()->message("Someone is trying to use your client to spam " + ip + ", please urge hub owner to fix this");
+					return;
+				}
+				
+				if(port == 0) 
+					port = 412;
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
 					s.writeTo(ip, port, sr->toSR(*aClient));
@@ -394,14 +398,6 @@ void ClientManager::userCommand(const User::Ptr& p, const ::UserCommand& uc, Str
 
 void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc, const CID& from) throw() {
 	SearchManager::getInstance()->respond(adc, from);
-}
-
-Identity ClientManager::getIdentity(const User::Ptr& aUser) {
-	OnlineIter i = onlineUsers.find(aUser->getCID());
-	if(i != onlineUsers.end()) {
-		return i->second->getIdentity();
-	}
-	return Identity(aUser, Util::emptyString, 0);
 }
 
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
@@ -491,7 +487,7 @@ User::Ptr& ClientManager::getMe() {
 	if(!me) {
 		Lock l(cs);
 		if(!me) {
-			me = new User(getMyCID());
+			me = getUser(getMyCID());
 			me->setFirstNick(SETTING(NICK));
 		}
 	}
@@ -506,7 +502,7 @@ const CID& ClientManager::getMyPID() {
 
 CID ClientManager::getMyCID() {
 	TigerHash tiger;
-	tiger.update(getMyPID().getData(), CID::SIZE);
+	tiger.update(getMyPID().data(), CID::SIZE);
 	return CID(tiger.finalize());
 }
 

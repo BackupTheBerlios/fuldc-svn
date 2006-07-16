@@ -806,7 +806,7 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
 			dcassert(newId < (int)WinUtil::lastDirs.size());
-			dl->download(dir, Text::fromT(WinUtil::lastDirs[newId]), (GetKeyState(VK_SHIFT) & 0x8000) > 0);
+			dl->download(dir, Text::fromT(WinUtil::lastDirs[newId]), WinUtil::isShift());
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(STATUS_TEXT, Text::toT(e.getError()).c_str());
 		}
@@ -1104,6 +1104,11 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 	}
 }
 
+void DirectoryListingFrame::closeAll(){
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		i->second->PostMessage(WM_CLOSE, 0, 0);
+}
+
 LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring searchTerm;
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
@@ -1111,11 +1116,6 @@ LRESULT DirectoryListingFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	
 	WinUtil::search(searchTerm, 0);
 	return 0;
-}
-
-void DirectoryListingFrame::closeAll(){
-	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
-		i->second->PostMessage(WM_CLOSE, 0, 0);
 }
 
 LRESULT DirectoryListingFrame::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {

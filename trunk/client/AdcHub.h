@@ -30,13 +30,13 @@
 
 class ClientManager;
 
-class AdcHub : public Client, public CommandHandler<AdcHub>, private TimerManagerListener {
+class AdcHub : public Client, public CommandHandler<AdcHub> {
 public:
 	using Client::send;
+	using Client::connect;
 
 	virtual void connect(const OnlineUser& user);
 	void connect(const OnlineUser& user, string const& token, bool secure);
-	virtual void disconnect(bool graceless);
 	
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& user, const string& aMessage);
@@ -91,7 +91,7 @@ private:
 	virtual string checkNick(const string& nick);
 	
 	OnlineUser& getUser(const u_int32_t aSID, const CID& aCID);
-	OnlineUser* findUser(const u_int32_t sid);
+	OnlineUser* findUser(const u_int32_t sid) const;
 	void putUser(const u_int32_t sid);
 
 	void clearUsers();
@@ -107,6 +107,7 @@ private:
 	void handle(AdcCommand::STA, AdcCommand& c) throw();
 	void handle(AdcCommand::SCH, AdcCommand& c) throw();
 	void handle(AdcCommand::CMD, AdcCommand& c) throw();
+	void handle(AdcCommand::RES, AdcCommand& c) throw();
 
 	template<typename T> void handle(T, AdcCommand&) { 
 		//Speaker<AdcHubListener>::fire(t, this, c);
@@ -118,7 +119,8 @@ private:
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string& aLine) throw();
 	virtual void on(Failed, const string& aLine) throw();
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+
+	virtual void on(Second, u_int32_t aTick) throw();
 };
 
 #endif // !defined(ADC_HUB_H)

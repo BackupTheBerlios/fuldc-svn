@@ -205,7 +205,7 @@ private:
 			return tmp;			
 		}
 
-		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
+		void search(SearchResult::List& aResults, StringSearchList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
 		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw();
 
 		void toXml(SimpleXML* xml, bool recurse);
@@ -236,7 +236,7 @@ private:
 		AdcSearch(const StringList& params);
 
 		bool isExcluded(const string& str) {
-			for(StringSearch::Iter i = exclude.begin(); i != exclude.end(); ++i) {
+			for(StringSearchListIter i = exclude.begin(); i != exclude.end(); ++i) {
 				if(i->match(str))
 					return true;
 			}
@@ -253,9 +253,9 @@ private:
 			return false;
 		}
 
-		StringSearch::List* include;
-		StringSearch::List includeX;
-		StringSearch::List exclude;
+		StringSearchList* include;
+		StringSearchList includeX;
+		StringSearchList exclude;
 		StringList ext;
 
 		int64_t gt;

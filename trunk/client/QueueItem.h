@@ -233,7 +233,7 @@ private:
 		return s;
 	}
 
-	void removeSource(const User::Ptr& aUser, int reason) {
+	void removeUserFromFile(const User::Ptr& aUser, int reason) {
 		Source::Iter i = getSource(aUser, sources);
 		dcassert(i != sources.end());
 		(*i)->setFlag(reason);

@@ -255,6 +255,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\yassl\taocrypt\src\md4.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\yassl\taocrypt\src\md5.cpp"
 				>
 			</File>
@@ -287,6 +291,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\yassl\src\template_instnt.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\yassl\taocrypt\src\template_instnt.cpp"
 				>
 				<FileConfiguration
@@ -307,10 +315,6 @@
 						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\yassl\src\template_instnt.cpp"
-				>
 			</File>
 			<File
 				RelativePath=".\yassl\taocrypt\src\tftables.cpp"
@@ -394,6 +398,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\yassl\include\openssl\engine.h"
+				>
+			</File>
+			<File
 				RelativePath=".\yassl\taocrypt\include\error.hpp"
 				>
 			</File>
@@ -438,6 +446,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\yassl\include\openssl\md4.h"
+				>
+			</File>
+			<File
+				RelativePath=".\yassl\taocrypt\include\md4.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\yassl\taocrypt\include\md5.hpp"
 				>
 			</File>
@@ -451,6 +467,10 @@
 			</File>
 			<File
 				RelativePath=".\yassl\taocrypt\include\modes.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\yassl\include\openssl\pkcs12.h"
 				>
 			</File>
 			<File
@@ -495,6 +515,14 @@
 			</File>
 			<File
 				RelativePath=".\yassl\taocrypt\include\types.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\yassl\include\openssl\x509.h"
+				>
+			</File>
+			<File
+				RelativePath=".\yassl\include\openssl\x509v3.h"
 				>
 			</File>
 			<File

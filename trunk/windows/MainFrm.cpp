@@ -53,6 +53,8 @@
 #include "../client/ShareManager.h"
 #include "../client/version.h"
 
+#include <memory>
+
 MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
 closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL),
@@ -253,7 +255,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
 	if(!BOOLSETTING(SHOW_TRANSFERVIEW)) PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
 
-	if(!(GetAsyncKeyState(VK_SHIFT) & 0x8000))
+	if(!WinUtil::isShift())
 		PostMessage(WM_SPEAKER, AUTO_CONNECT);
 
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
@@ -627,8 +629,8 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	PropertiesDlg dlg(m_hWnd, SettingsManager::getInstance());
 
-	short lastPort = (short)SETTING(TCP_PORT);
-	short lastUDP = (short)SETTING(UDP_PORT);
+	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
+	unsigned short lastUDP = (unsigned short)SETTING(UDP_PORT);
 	int lastConn = SETTING(INCOMING_CONNECTIONS);
 
 	if(dlg.DoModal(m_hWnd) == IDOK)
@@ -847,7 +849,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(true);
 		}
-		if(BOOLSETTING(MINIMIZE_TRAY)) {
+		if(BOOLSETTING(MINIMIZE_TRAY) != WinUtil::isShift()) {
 			updateTray(true);
 			ShowWindow(SW_HIDE);
 			PopupManager::getInstance()->Minimized(true);
@@ -871,7 +873,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 
 LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(c != NULL) {
-		//c->removeListener(this);
+		c->removeListener(this);
 		delete c;
 		c = NULL;
 	}
@@ -901,7 +903,7 @@ LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	
 	if(c != NULL) {
-		//c->removeListener(this);
+		c->removeListener(this);
 		delete c;
 		c = NULL;
 	}

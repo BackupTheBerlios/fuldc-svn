@@ -38,10 +38,9 @@ public:
 		PASSIVE_BIT,
 		NMDC_BIT,
 		BOT_BIT,
-		HUB_BIT,
 		TTH_GET_BIT,
 		SAVE_NICK_BIT,
-		SSL_BIT
+		TLS_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -51,10 +50,9 @@ public:
 		PASSIVE = 1<<PASSIVE_BIT,
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
-		HUB = 1<<HUB_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
 		SAVE_NICK = 1<<SAVE_NICK_BIT,	//< Save cid->nick association
-		SSL = 1<<SSL_BIT				//< Client supports SSL
+		TLS = 1<<TLS_BIT				//< Client supports SSL
 	};
 
 	typedef Pointer<User> Ptr;
@@ -98,9 +96,9 @@ public:
 	};
 
 	Identity() : sid(0) { }
-	Identity(const User::Ptr& ptr, const string& aHubUrl, u_int32_t aSID) : user(ptr), hubUrl(aHubUrl), sid(aSID) { }
-	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), sid(rhs.sid), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; sid = rhs.sid; info = rhs.info; return *this; }
+	Identity(const User::Ptr& ptr, u_int32_t aSID) : user(ptr), sid(aSID) { }
+	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
@@ -114,6 +112,9 @@ public:
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
 	
 	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
+	void setHub(bool hub) { set("HU", hub ? "1" : Util::emptyString); }
+	void setBot(bool bot) { set("BO", bot ? "1" : Util::emptyString); }
+	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
 
 	string getTag() const { 
 		if(!get("TA").empty())
@@ -124,12 +125,15 @@ public:
 			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 	}
 
-	const bool supports(const string& name) const;
-	const bool isHub() const { return !get("HU").empty(); }
-	const bool isOp() const { return !get("OP").empty(); }
-	const bool isHidden() const { return !get("HI").empty(); }
-	const bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
-	const bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
+	bool supports(const string& name) const;
+	bool isHub() const { return !get("HU").empty(); }
+	bool isOp() const { return !get("OP").empty(); }
+	bool isRegistered() const { return !get("RG").empty(); }
+	bool isHidden() const { return !get("HI").empty(); }
+	bool isBot() const { return !get("BO").empty(); }
+	bool isAway() const { return !get("AW").empty(); }
+	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
+	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 
 	const string& get(const char* name) const {
 		InfMap::const_iterator i = info.find(*(short*)name);
@@ -150,12 +154,10 @@ public:
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
-	GETSET(string, hubUrl, HubUrl);
 	GETSET(u_int32_t, sid, SID);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
-
 	InfMap info;
 };
 
@@ -169,15 +171,15 @@ public:
 
 	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
 
-	operator User::Ptr&() { return user; }
-	operator const User::Ptr&() const { return user; }
+	operator User::Ptr&() { return getUser(); }
+	operator const User::Ptr&() const { return getUser(); }
 
-	User::Ptr& getUser() { return user; }
+	User::Ptr& getUser() { return getIdentity().getUser(); }
+	const User::Ptr& getUser() const { return getIdentity().getUser(); }
 	Identity& getIdentity() { return identity; }
 	Client& getClient() { return *client; }
 	const Client& getClient() const { return *client; }
 
-	GETSET(User::Ptr, user, User);
 	GETSET(Identity, identity, Identity);
 private:
 	friend class NmdcHub;

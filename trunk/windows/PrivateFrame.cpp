@@ -154,6 +154,7 @@ void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
 		p = new PrivateFrame(replyTo);
 		frames[replyTo] = p;
 		p->CreateEx(WinUtil::mdiClient);
+		p->readLog();
 	} else {
 		p = i->second;
 		if(::IsIconic(p->m_hWnd))
@@ -184,13 +185,14 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 
 	switch(wParam) {
 		case VK_RETURN:
-			if( (GetKeyState(VK_CONTROL) & 0x8000) || 
-				(GetKeyState(VK_MENU) & 0x8000) ) {
-					bHandled = FALSE;
-				} else {
+			if( WinUtil::isShift() || WinUtil::isCtrl() ||  WinUtil::isAlt() ) {
+				bHandled = FALSE;
+			} else {
+				if(uMsg == WM_KEYDOWN) {
 					onEnter();
 				}
-				break;
+			}
+			break;
 		case VK_UP:
 			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				//scroll up in chat command history
@@ -599,22 +601,10 @@ LRESULT PrivateFrame::onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
-LRESULT PrivateFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	QueueManager::getInstance()->removeSources(replyTo, QueueItem::Source::FLAG_REMOVED);
+LRESULT PrivateFrame::onremoveUserFromFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	QueueManager::getInstance()->removeUserFromQueue(replyTo, QueueItem::Source::FLAG_REMOVED);
 
 	return 0;
-}
-
-void PrivateFrame::closeAll(){
-	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
-		i->second->PostMessage(WM_CLOSE, 0, 0);
-}
-
-void PrivateFrame::closeAllOffline() {
-	for(FrameIter i = frames.begin(); i != frames.end(); ++i) {
-		if(i->second->offline)
-			i->second->PostMessage(WM_CLOSE, 0, 0);
-	}
 }
 
 void PrivateFrame::readLog() {
@@ -667,5 +657,17 @@ void PrivateFrame::readLog() {
 			f.close();
 		}
 	} catch(const FileException&){
+	}
+}
+
+void PrivateFrame::closeAll(){
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		i->second->PostMessage(WM_CLOSE, 0, 0);
+}
+
+void PrivateFrame::closeAllOffline() {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i) {
+		if(!i->first->isOnline())
+			i->second->PostMessage(WM_CLOSE, 0, 0);
 	}
 }

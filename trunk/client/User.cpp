@@ -22,8 +22,9 @@
 #include "User.h"
 #include "Client.h"
 #include "StringTokenizer.h"
+#include "FavoriteUser.h"
 
-OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : user(ptr), identity(ptr, client_.getHubUrl(), sid_), client(&client_) { 
+OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : identity(ptr, sid_), client(&client_) { 
 
 }
 
@@ -55,12 +56,17 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 	}
 }
 
-const bool Identity::supports(const string& name) const {
-	string su = get("SU");
+bool Identity::supports(const string& name) const {
+	const string& su = get("SU");
 	StringTokenizer<string> st(su, ',');
 	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
 		if(*i == name)
 			return true;
 	}
 	return false;
+}
+
+void FavoriteUser::update(const OnlineUser& info) { 
+	setNick(info.getIdentity().getNick()); 
+	setUrl(info.getClient().getHubUrl()); 
 }

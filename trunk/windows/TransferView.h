@@ -113,7 +113,7 @@ public:
 	}
 
 private:
-
+	/** Parameter map for user commands */
 	class ItemInfo;
 public:
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
@@ -138,6 +138,7 @@ private:
 		COLUMN_PATH,
 		COLUMN_IP,
 		COLUMN_RATIO,
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 

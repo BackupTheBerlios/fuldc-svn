@@ -29,7 +29,7 @@
 #include "Util.h"
 #include "UserCommand.h"
 #include "FavoriteManager.h"
-#include "SSLSocket.h"
+#include "CryptoManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
@@ -47,15 +47,10 @@ AdcHub::~AdcHub() throw() {
 }
 
 OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
-	OnlineUser* u = NULL;
-	{
-		Lock l(cs);
-
-		SIDIter i = users.find(aSID);
-		if(i != users.end())
-			return *i->second;
+	OnlineUser* u = findUser(aSID);
+	if(u) {
+		return *u;
 	}
-
 
 	User::Ptr p = ClientManager::getInstance()->getUser(aCID);
 
@@ -69,9 +64,9 @@ OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
 	return *u;
 }
 
-OnlineUser* AdcHub::findUser(const u_int32_t aSID) {
+OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
 	Lock l(cs);
-	SIDIter i = users.find(aSID);
+	SIDMap::const_iterator i = users.find(aSID);
 	return i == users.end() ? NULL : i->second;
 }
 
@@ -124,25 +119,32 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getIdentity().set(i->c_str(), i->substr(2));
 	}
 
+	if(u->getIdentity().isBot()) {
+		u->getUser()->setFlag(User::BOT);
+	} else {
+		u->getUser()->unsetFlag(User::BOT);
+	}
+
 	if(u->getUser()->getFirstNick().empty()) {
 		u->getUser()->setFirstNick(u->getIdentity().getNick());
 	}
 
 	if(u->getIdentity().supports(ADCS_FEATURE)) {
-		u->getUser()->setFlag(User::SSL);
+		u->getUser()->setFlag(User::TLS);
+	}
+
+	if(u->getUser() == getMyIdentity().getUser()) {
+		state = STATE_NORMAL;
+		setMyIdentity(u->getIdentity());
+		updateCounts(false);
 	}
 
 	if(u->getIdentity().isHub()) {
 		setHubIdentity(u->getIdentity());
 		fire(ClientListener::HubUpdated(), this);
+	} else {
+		fire(ClientListener::UserUpdated(), this, *u);
 	}
-
-	if(u->getUser() == ClientManager::getInstance()->getMe()) {
-		state = STATE_NORMAL;
-		setMyIdentity(u->getIdentity());
-		updateCounts(false);
-	}
-	fire(ClientListener::UserUpdated(), this, *u);
 }
 
 void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
@@ -216,13 +218,26 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 	if(c.getParameters().size() < 3)
 		return;
 
+	const string& protocol = c.getParam(0);
+	const string& port = c.getParam(1);
+
+	string token;
+	bool hasToken = c.getParam("TO", 2, token);
+
 	bool secure;
-	if(c.getParam(0) == CLIENT_PROTOCOL) {
+	if(protocol == CLIENT_PROTOCOL) {
 		secure = false;
-	} else if(c.getParam(0) == SECURE_CLIENT_PROTOCOL) {
+	} else if(protocol == SECURE_CLIENT_PROTOCOL && CryptoManager::getInstance()->TLSOk()) {
 		secure = true;
 	} else {
-		send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown", AdcCommand::TYPE_DIRECT).setTo(c.getFrom()));
+		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
+		cmd.setTo(c.getFrom());
+		cmd.addParam("PR", protocol);
+
+		if(hasToken)
+			cmd.addParam("TO", token);
+
+		send(cmd);
 		return;
 	}
 
@@ -231,22 +246,40 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 		return;
 	}
 
-	string token;
-	c.getParam("TO", 2, token);
-	ConnectionManager::getInstance()->adcConnect(*u, (short)Util::toInt(c.getParameters()[1]), token, secure);
+	ConnectionManager::getInstance()->adcConnect(*u, (short)Util::toInt(port), token, secure);
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
+	if(c.getParameters().empty()) {
+		return;
+	}
 	if(!ClientManager::getInstance()->isActive())
 		return;
 	OnlineUser* u = findUser(c.getFrom());
 	if(!u || u->getUser() == ClientManager::getInstance()->getMe())
 		return;
-	if(c.getParameters().empty() || (c.getParameters()[0] != CLIENT_PROTOCOL && c.getParameters()[0] != SECURE_CLIENT_PROTOCOL))
-		return;
+
+	const string& protocol = c.getParam(0);
 	string token;
-	c.getParam("TO", 1, token);
-    connect(*u, token, c.getParameters()[0] == SECURE_CLIENT_PROTOCOL);
+	bool hasToken = c.getParam("TO", 1, token);
+
+	bool secure;
+	if(protocol == CLIENT_PROTOCOL) {
+		secure = false;
+	} else if(protocol == SECURE_CLIENT_PROTOCOL && CryptoManager::getInstance()->TLSOk()) {
+		secure = true;
+	} else {
+		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
+		cmd.setTo(c.getFrom());
+		cmd.addParam("PR", protocol);
+		
+		if(hasToken)
+			cmd.addParam("TO", token);
+
+		send(cmd);
+		return;
+	}
+    connect(*u, token, secure);
 }
 
 void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
@@ -310,23 +343,38 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	if(!u)
 		return;
 
-	// @todo Check for invalid protocol and unset SSL if necessary
+	int severity = Util::toInt(c.getParam(0).substr(0, 1));
+	int code = Util::toInt(c.getParam(0).substr(1));
+
+	if(code == AdcCommand::ERROR_BAD_PASSWORD) {
+		setPassword(Util::emptyString);
+	}
+	// @todo Check for invalid protocol and unset TLS if necessary
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
 
 void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
-	SIDMap::const_iterator i = users.find(c.getFrom());
-	if(i == users.end()) {
+	OnlineUser* ou = findUser(c.getFrom());
+	if(!ou) {
 		dcdebug("Invalid user in AdcHub::onSCH\n");
 		return;
 	}
 
-	fire(ClientListener::AdcSearch(), this, c, i->second->getUser()->getCID());
+	fire(ClientListener::AdcSearch(), this, c, ou->getUser()->getCID());
+}
+
+void AdcHub::handle(AdcCommand::RES, AdcCommand& c) throw() {
+	OnlineUser* ou = findUser(c.getFrom());
+	if(!ou) {
+		dcdebug("Invalid user in AdcHub::onRES\n");
+		return;
+	}
+	SearchManager::getInstance()->onRES(c, ou->getUser());
 }
 
 void AdcHub::connect(const OnlineUser& user) {
 	u_int32_t r = Util::rand();
-	connect(user, Util::toString(r), BOOLSETTING(USE_SSL) && user.getUser()->isSet(User::SSL));
+	connect(user, Util::toString(r), CryptoManager::getInstance()->TLSOk() && user.getUser()->isSet(User::TLS));
 }
 
 void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
@@ -341,12 +389,6 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	} else {
 		send(AdcCommand(AdcCommand::CMD_RCM, user.getIdentity().getSID()).addParam(proto));
 	}
-}
-
-void AdcHub::disconnect(bool graceless) {
-	Client::disconnect(graceless);
-	state = STATE_PROTOCOL;
-	clearUsers();
 }
 
 void AdcHub::hubMessage(const string& aMessage) {
@@ -404,8 +446,8 @@ void AdcHub::password(const string& pwd) {
 		AutoArray<u_int8_t> buf(saltBytes);
 		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
-		string cid = getMyIdentity().getUser()->getCID().toBase32();
-		th.update(cid.c_str(), cid.length());
+		CID cid = getMyIdentity().getUser()->getCID();
+		th.update(cid.data(), CID::SIZE);
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
@@ -442,8 +484,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 
 	ADDPARAM("ID", ClientManager::getInstance()->getMyCID().toBase32());
 	ADDPARAM("PD", ClientManager::getInstance()->getMyPID().toBase32());
-	ADDPARAM("NI", getMyIdentity().getNick());
-	ADDPARAM("DE", getMyIdentity().getDescription());
+	ADDPARAM("NI", getCurrentNick());
+	ADDPARAM("DE", getCurrentDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
 	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
 	ADDPARAM("SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
@@ -452,9 +494,22 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
+	ADDPARAM("US", Util::toString((long)(Util::toDouble(SETTING(UPLOAD_SPEED))*1024*1024)));
+
+	if(SETTING(MAX_DOWNLOAD_SPEED) > 0) {
+		ADDPARAM("DS", Util::toString((SETTING(MAX_DOWNLOAD_SPEED)*1024*8)));
+	} else {
+		ADDPARAM("DS", Util::emptyString);
+	}
+
+	if(Util::getAway()){
+		ADDPARAM("AW", '1');
+	} else {
+		ADDPARAM("AW", Util::emptyString);
+	}
 
 	string su;
-	if(SSLSocketFactory::getInstance()->hasCerts()) {
+	if(CryptoManager::getInstance()->TLSOk()) {
 		su += ADCS_FEATURE + ",";
 	} 
 	
@@ -495,9 +550,10 @@ int64_t AdcHub::getAvailable() const {
 
 string AdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
-	string::size_type i = 0;
-	while( (i = tmp.find_first_of(" ", i)) != string::npos) {
-		tmp[i++]='_';
+	for(size_t i = 0; i < aNick.size(); ++i) {
+		if(tmp[i] <= 32) {
+			tmp[i] = '_';
+		}
 	}
 	return tmp;
 }
@@ -520,19 +576,9 @@ void AdcHub::on(Line, const string& aLine) throw() {
 
 void AdcHub::on(Failed, const string& aLine) throw() { 
 	clearUsers();
+	socket->removeListener(this);
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
-}
-
-void AdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
-	if(socket && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Nothing's happened for ~120 seconds, check if we're connected, if not, try to connect...
-		if(!isConnected()) {
-			// Try to reconnect...
-			if(reconnect && !getAddress().empty())
-				Client::connect();
-		}
-	}
 }
 
 void AdcHub::send(const AdcCommand& cmd) {
@@ -542,4 +588,11 @@ void AdcHub::send(const AdcCommand& cmd) {
 	if(cmd.getType() == AdcCommand::TYPE_UDP)
 		sendUDP(cmd);
 	send(cmd.toString(sid));
+}
+
+void AdcHub::on(Second, u_int32_t aTick) throw() {
+	if(getAutoReconnect() && state == STATE_PROTOCOL && (getReconnecting() || ((getLastActivity() + getReconnDelay() * 1000) < aTick)) ) {
+		// Try to reconnect...
+		connect();
+	}
 }

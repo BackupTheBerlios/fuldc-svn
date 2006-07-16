@@ -32,7 +32,6 @@
 #include "FavoriteManager.h"
 #include "SettingsManager.h"
 #include "ADLSearch.h"
-#include "SSLSocket.h"
 #include "HighlightManager.h"
 #include "WebShortcuts.h"
 #include "IgnoreManager.h"
@@ -42,6 +41,12 @@
 #include "../windows/FinishedManager.h"
 
 #include "StringTokenizer.h"
+#ifdef _STLP_DEBUG
+void __stl_debug_terminate() {
+	int* x = 0;
+	*x = 0;
+}
+#endif
 
 void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	// "Dedicated to the near-memory of Nev. Let's start remembering people while they're still alive."
@@ -88,7 +93,6 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
-	SSLSocketFactory::newInstance();
 	PopupManager::newInstance();
 	WebShortcuts::newInstance();
 	IgnoreManager::newInstance();
@@ -100,7 +104,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	}
 
 	FavoriteManager::getInstance()->load();
-	SSLSocketFactory::getInstance()->loadCertificates();
+	CryptoManager::getInstance()->loadCertificates();
 
 	if(f != NULL)
 		(*f)(p, tku[index], TSTRING(HASH_DATABASE));
@@ -130,7 +134,6 @@ void shutdown() {
 	IgnoreManager::deleteInstance();
 	WebShortcuts::deleteInstance();
 	PopupManager::deleteInstance();
-	SSLSocketFactory::deleteInstance();
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
 	HighlightManager::deleteInstance();

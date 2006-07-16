@@ -29,6 +29,7 @@
 #include "Singleton.h"
 #include "FastAlloc.h"
 #include "version.h"
+#include "SSLSocket.h"
 
 STANDARD_EXCEPTION(CryptoException);
 
@@ -79,12 +80,20 @@ public:
 
 	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
+
+	SSLSocket* getClientSocket(bool allowUntrusted) throw(SocketException);
+	SSLSocket* getServerSocket(bool allowUntrusted) throw(SocketException);
+
+	void loadCertificates() throw();
+	void generateCertificate() throw(CryptoException);
+
+	bool TLSOk() const throw();
 private:
 
 	friend class Singleton<CryptoManager>;
 	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { }
-	virtual ~CryptoManager() { }
+	CryptoManager();
+	virtual ~CryptoManager();
 
 	class Leaf : public FastAlloc<Leaf> {
 	public:
@@ -108,6 +117,14 @@ private:
 		}
 	};
 	
+	SSL_CTX* clientContext;
+	SSL_CTX* clientVerContext;
+	SSL_CTX* serverContext;
+	SSL_CTX* serverVerContext;
+
+	DH* dh;
+	bool certsLoaded;
+
 	const string lock;
 	const string pk;
 

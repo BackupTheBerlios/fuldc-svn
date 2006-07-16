@@ -82,7 +82,7 @@ public:
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
 	/** Queue a partial file list download */
-	void addPfs(const User::Ptr& aUser, const string& aDir) throw();
+	void addPfs(const User::Ptr& aUser, const string& aDir) throw(QueueException);
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 
@@ -98,8 +98,8 @@ public:
 	void move(const string& aSource, const string& aTarget) throw();
 
 	void remove(const string& aTarget) throw();
-	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true) throw();
-	void removeSources(User::Ptr aUser, int reason) throw();
+	void removeUserFromFile(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true) throw();
+	void removeUserFromQueue(User::Ptr aUser, int reason) throw();
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	

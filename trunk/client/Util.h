@@ -288,15 +288,14 @@ public:
 
 	static void decodeUrl(const string& aUrl, string& aServer, u_int16_t& aPort, string& aFile);
 	static string validateFileName(string aFile);
-	static wstring validateFileName(wstring aFile);
+	static wstring validateFileName(wstring tmp);
 	static string cleanPathChars(string aNick);
 	
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));
 	}
 	
-	static double toBytes(TCHAR* aSize);
-
+	static string formatMessage(const string& nick, const string& message);
 	static string toDOS(const string& tmp);
 
 	static wstring getShortTimeString(time_t t = time(NULL) );
@@ -566,7 +565,7 @@ public:
 	 * @return First position found or string::npos
 	 */
 	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) throw();
-	static wstring::size_type findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type pos = 0) throw();
+	static wstring::size_type findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type start = 0) throw();
 
 	/* Utf-8 versions of strnicmp and stricmp, unicode char code order (!) */
 	static int stricmp(const char* a, const char* b);
@@ -589,8 +588,6 @@ public:
 	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); }
 	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); }
 	
-	static string validateMessage(string tmp, bool reverse, bool checkNewLines = true);
-
 	static string getOsVersion();
 
 	static string getIpCountry (string IP);

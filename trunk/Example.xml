@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.689" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.694" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -40,12 +40,16 @@
 		<String Name="Browse">Browse...</String>
 		<String Name="BrowseAccel">&amp;Browse...</String>
 		<String Name="BrowseFileList">Browse file list</String>
+		<String Name="CertificateNotTrusted">Certificate not trusted, unable to connect</String>
+		<String Name="CertificateGenerationFailed">TLS disabled, failed to generate certificate: </String>
 		<String Name="ChooseFolder">Choose folder</String>
+		<String Name="Cid">CID</String>
 		<String Name="Close">Close</String>
 		<String Name="CloseConnection">Close connection</String>
 		<String Name="ClosingConnection">Closing connection...</String>
 		<String Name="Compressed">Compressed</String>
 		<String Name="CompressionError">Error during compression</String>
+		<String Name="CommandTooLong">Maximum command length exceeded</String>
 		<String Name="Configure">&amp;Configure</String>
 		<String Name="Connect">&amp;Connect</String>
 		<String Name="ConnectFavuserHub">Connect to hub</String>
@@ -111,8 +115,11 @@
 		<String Name="ErrorCreatingRegistryKeyDchub">Error creating dchub registry key</String>
 		<String Name="ErrorCreatingRegistryKeyMagnet">Error creating magnet registry key</String>
 		<String Name="ErrorHashing">Error hashing </String>
+		<String Name="ErrorSavingHash">Error saving hash data: </String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
+		<String Name="FailedToLoadCertificate">Failed to load certificate file</String>
+		<String Name="FailedToLoadPrivateKey">Failed to load private key</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
 		<String Name="FavJoinShowingOn">Join/part of favorite users showing on</String>
 		<String Name="FavoriteDirName">Favorite name</String>
@@ -129,6 +136,7 @@
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
 		<String Name="FileHasNoTth">This file has no TTH</String>
+		<String Name="FileIsAlreadyQueued">This file is already queued</String>
 		<String Name="FileListDiff">Subtract list</String>
 		<String Name="FileListRefreshFailed">File list refresh failed: </String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
@@ -213,6 +221,10 @@
 		<String Name="MenuArrange">Arrange icons</String>
 		<String Name="MenuCascade">Cascade</String>
 		<String Name="MenuChangelog">Change Log</String>
+		<String Name="MenuCloseAllDirList">Close all file list windows</String>
+		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
+		<String Name="MenuCloseAllPm">Close all PM windows</String>
+		<String Name="MenuCloseAllSearchframe">Close all search windows</String>
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
@@ -267,14 +279,15 @@
 		<String Name="Nick">Nick</String>
 		<String Name="NickTaken">Your nick was already taken, please change to something else!</String>
 		<String Name="NickUnknown"> (Nick unknown)</String>
+		<String Name="NoCertificateFileSet">TLS disabled, no certificate file set</String>
 		<String Name="NoCrc32Match"> not shared; calculated CRC32 does not match the one found in SFV file.</String>
-		<String Name="NoStr">No</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
 		<String Name="NoDownloadsFromSelf">You're trying to download from yourself!</String>
 		<String Name="NoDownloadsFromPassive">Can't download from passive users when you're passive</String>
 		<String Name="NoErrors">No errors</String>
 		<String Name="NoMatches">No matches</String>
 		<String Name="NoSlotsAvailable">No slots available</String>
+		<String Name="NoStr">No</String>
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
 		<String Name="Normal">Normal</String>
@@ -282,6 +295,7 @@
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
+		<String Name="OnlyTlsAllowed">Only TLS connections allowed</String>
 		<String Name="OnlyTth">Only results with TTH root</String>
 		<String Name="OnlyWhereOp">Only where I'm op</String>
 		<String Name="Open">Open</String>
@@ -351,12 +365,15 @@
 		<String Name="SettingsAdvanced3">DC++\Advanced\Experts only</String>
 		<String Name="SettingsAdvancedResume">Advanced resume using TTH</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
+		<String Name="SettingsAllowUntrustedClients">Allow TLS connections to clients without trusted certificate</String>
+		<String Name="SettingsAllowUntrustedHubs">Allow TLS connections to hubs without trusted certificate</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">DC++\Appearance</String>
 		<String Name="SettingsAppearance2">DC++\Appearance\Colors and sounds</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub</String>
+		<String Name="SettingsAutoKickNoFavs">Don't automatically disconnect favorite users who leave the hub</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share</String>
@@ -380,13 +397,14 @@
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>
 		<String Name="SettingsDirect">Direct connection</String>
 		<String Name="SettingsDirectories">Directories</String>
+		<String Name="SettingsDontDlAlreadyQueued">Don't download files already in the queue</String>
 		<String Name="SettingsDontDlAlreadyShared">Don't download files already in share</String>
 		<String Name="SettingsDownloadDirectory">Default download directory</String>
 		<String Name="SettingsDownloadLimits">Limits</String>
 		<String Name="SettingsDownloads">DC++\Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
-		<String Name="SettingsExampleText">Donate â‚¬â‚¬â‚¬:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
+		<String Name="SettingsExampleText">Donate Â€Â€Â€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsExternalIp">External / WAN IP</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFavoriteDirsPage">DC++\Downloads\Favorites</String>
@@ -400,7 +418,8 @@
 		<String Name="SettingsGeneral">DC++</String>
 		<String Name="SettingsGetUserCountry">Guess user country from IP</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
-		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
+		<String Name="SettingsIgnoreHubPms">Ignore private messages from the hub</String>
+		<String Name="SettingsIgnoreBotPms">Ignore private messages from bots</String>
 		<String Name="SettingsIncoming">Incoming connection settings (see Help/FAQ if unsure)</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
@@ -421,11 +440,13 @@
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNetwork">DC++\Connection settings</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
+		<String Name="SettingsOnlyDlTthFiles">Only download files that have a TTH</String>
 		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
 		<String Name="SettingsOpenUserCmdHelp">Always open help file with this dialog</String>
 		<String Name="SettingsOptions">Options</String>
+		<String Name="SettingsOtherQueueOptions">Other queue options</String>
 		<String Name="SettingsOutgoing">Outgoing connection settings</String>
 		<String Name="SettingsOverride">Don't allow hub/UPnP to override</String>
 		<String Name="SettingsPersonalInformation">Personal Information</String>
@@ -434,9 +455,11 @@
 		<String Name="SettingsPmHistory">PM history</String>
 		<String Name="SettingsPopunderFilelist">Open new file list windows in the background</String>
 		<String Name="SettingsPopunderPm">Open new private message windows in the background</String>
-		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
+		<String Name="SettingsPopupBotPms">Open private messages from the hub in their own window</String>
+		<String Name="SettingsPopupHubPms">Open private messages from bots in their own window</String>
 		<String Name="SettingsPopupPms">Open private messages in their own window</String>
 		<String Name="SettingsPorts">Ports</String>
+		<String Name="SettingsPromptPassword">Popup box to input password for hubs</String>
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
@@ -464,7 +487,8 @@
 		<String Name="SettingsSounds">Sounds</String>
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
-		<String Name="SettingsTcpPort">TCP Port</String>
+		<String Name="SettingsTcpPort">TCP</String>
+		<String Name="SettingsTlsPort">TLS</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
 		<String Name="SettingsPrioHighest">Highest prio max size</String>
 		<String Name="SettingsPrioHigh">High prio max size</String>
@@ -474,7 +498,7 @@
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
-		<String Name="SettingsUdpPort">UDP Port</String>
+		<String Name="SettingsUdpPort">UDP</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
 		<String Name="SettingsUploadLineSpeed">Line speed (upload)</String>
 		<String Name="SettingsUploads">DC++\Sharing</String>
@@ -487,7 +511,8 @@
 		<String Name="SettingsWindows">DC++\Appearance\Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
-		<String Name="SettingsUseSsl">Use SSL when remote client supports it</String>
+		<String Name="SettingsAltSortOrder">Sort all downloads first</String>
+		<String Name="SettingsUseTls">Use TLS when remote client supports it</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>
 		<String Name="SharedFiles">Shared Files</String>
@@ -684,9 +709,6 @@
 		<String Name="Removed">Removed</String>
 		<String Name="DirectoryNotFound">Directory not shared</String>
 		<String Name="MenuFulpage">fulDC Homepage</String>
-		<String Name="MenuCloseAllPm">Close all PM windows</String>
-		<String Name="MenuCloseAllDirList">Close all file list windows</String>
-		<String Name="MenuCloseAllSearchframe">Close all search windows</String>
 		<String Name="CustomSound">Play custom sound on PM's</String>
 		<String Name="Muted">Muted</String>
 		<String Name="Unmuted">Unmuted</String>
@@ -758,7 +780,6 @@
 		<String Name="ReaddSourceToQueue">Re-add user to queue</String>
 		<String Name="MuteOnAway">Mute sounds when away mode is enabled</String>
 		<String Name="DropFakeNickConnectionLog">Detected a user trying to connect using a fake nick, nick used=%[nick] ip=%[ip] in hub %[hub]</String>
-		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
 		<String Name="UserNotAvailable">User not available, could be because he is offline</String>
 		<String Name="UploadFailed">Failed to upload %[file] to %[user] because: %[error]</String>
 		<String Name="NotifyUpdates">Notify me about new versions</String>

@@ -133,8 +133,8 @@ private:
 	friend class Server;
 
 	CriticalSection cs;
-	short port;
-	short securePort;
+	unsigned short port;
+	unsigned short securePort;
 
 	/** All ConnectionQueueItems */
 	ConnectionQueueItem::List downloads;

@@ -73,7 +73,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SHOWLOG, onViewLog)
 		COMMAND_ID_HANDLER(IDC_IGNORE, onIgnore)
 		COMMAND_ID_HANDLER(IDC_UNIGNORE, onUnIgnore)
-		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveSource)
+		COMMAND_ID_HANDLER(IDC_REMOVEALL, onremoveUserFromFile)
 		COMMAND_ID_HANDLER(IDC_FIND, ctrlClient.onFind)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
@@ -96,7 +96,7 @@ public:
 	LRESULT onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onUnIgnore(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onremoveUserFromFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void addLine(const tstring& aLine, bool bold = true);
 	void addStatus(const tstring& aLine);

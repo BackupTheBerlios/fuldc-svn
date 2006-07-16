@@ -34,12 +34,14 @@
 #include "SearchFrm.h"
 #include "MainFrm.h"
 
+#include <memory>
+
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_TOTALTIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
-int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75 };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::TOTAL_TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
-ResourceManager::IP_BARE, ResourceManager::RATIO};
+ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
 
 TransferView::~TransferView() {
 	arrows.Destroy();
@@ -225,7 +227,7 @@ LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 }
 
 void TransferView::ItemInfo::removeAll() {
-	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+	QueueManager::getInstance()->removeUserFromQueue(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
@@ -439,11 +441,41 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	return 0;
 }
 
+LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+
+	if(i != -1) {
+		ItemInfo *ii = ctrlTransfers.getItemData(i);
+
+		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
+
+		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
+		QueueItem::StringIter qi = queue.find(&tmp);
+
+		//create a copy of the tth to avoid holding the filequeue lock while calling
+		//into searchframe, searchmanager and all of that
+		TTHValue *val = NULL;
+		if(qi != queue.end() && qi->second->getTTH()) {
+			val = new TTHValue(*qi->second->getTTH());
+		}
+
+		QueueManager::getInstance()->unlockQueue();
+
+		if(val) {
+			WinUtil::searchHash(val);
+			delete val;
+		} 
+	}
+
+	return 0;
+}
+
 TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
 	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0) 
 { 
 	columns[COLUMN_USER] = WinUtil::getNicks(u);
 	columns[COLUMN_HUB] = WinUtil::getHubNames(u).first;
+	columns[COLUMN_CID] = Text::toT(u->getCID().toBase32());
 }
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
@@ -579,7 +611,11 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		tstring statusString;
 
 		if(d->getUserConnection()->isSecure()) {
-			statusString += _T("[S]");
+			if(d->getUserConnection()->isTrusted()) {
+				statusString += _T("[S]");
+			} else {
+				statusString += _T("[U]");
+			}
 		}
 		if(d->isSet(Download::FLAG_TTH_CHECK)) {
 			statusString += _T("[T]");
@@ -720,35 +756,6 @@ LRESULT TransferView::onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo *ii = ctrlTransfers.getItemData(i);
 		QueueManager::getInstance()->remove(Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE)));
-	}
-
-	return 0;
-}
-
-LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-
-	if(i != -1) {
-		ItemInfo *ii = ctrlTransfers.getItemData(i);
-
-		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
-
-		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
-		QueueItem::StringIter qi = queue.find(&tmp);
-
-		//create a copy of the tth to avoid holding the filequeue lock while calling
-		//into searchframe, searchmanager and all of that
-		TTHValue *val = NULL;
-		if(qi != queue.end() && qi->second->getTTH()) {
-			val = new TTHValue(*qi->second->getTTH());
-		}
-
-		QueueManager::getInstance()->unlockQueue();
-
-		if(val) {
-			WinUtil::searchHash(val);
-			delete val;
-		} 
 	}
 
 	return 0;

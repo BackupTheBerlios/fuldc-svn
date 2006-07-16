@@ -958,38 +958,38 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 	return 0;
 }
 
-LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT QueueFrame::onremoveUserFromFile(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 		if(wID == IDC_REMOVE_SOURCE) {
 			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
-				QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+				QueueManager::getInstance()->removeUserFromFile(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
 			QueueItemInfo::SourceInfo* si = getSourceInfo(removeMenu, wID);
 			if(si) {
-				QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+				QueueManager::getInstance()->removeUserFromFile(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		}
 	}
 	return 0;
 }
 
-LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT QueueFrame::onremoveUserFromQueue(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 
 		if(wID == IDC_REMOVE_SOURCES) {
 			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
-				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
+				QueueManager::getInstance()->removeUserFromQueue(si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
 			QueueItemInfo::SourceInfo* si = getSourceInfo(removeQueueMenu, wID);
 			if(si) {
-				QueueManager::getInstance()->removeSources(si->getUser(), QueueItem::Source::FLAG_REMOVED);
+				QueueManager::getInstance()->removeUserFromQueue(si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		}
 	}	

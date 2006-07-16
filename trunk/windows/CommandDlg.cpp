@@ -19,10 +19,11 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
-#include "../client/ResourceManager.h"
 
+#include "../client/ResourceManager.h"
 #include "../client/UserCommand.h"
 
+#include "WinUtil.h"
 #include "CommandDlg.h"
 
 LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -84,7 +85,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 			dcassert(i != string::npos);
 			tstring to = command.substr(5, i-5);
 			string::size_type cmd_pos = command.find(_T('>'), 5) + 2;
-			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(cmd_pos, command.length()-cmd_pos-1)), true, false));
+			tstring cmd = command.substr(cmd_pos, command.length()-cmd_pos-1);
 			ctrlPM.SetCheck(BST_CHECKED);
 			ctrlNick.SetWindowText(to.c_str());
 			ctrlCommand.SetWindowText(cmd.c_str());
@@ -94,7 +95,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		{
 			// Looks like a chat thing...
 			string::size_type cmd_pos = command.find(_T('>')) + 2;
-			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(cmd_pos, command.length()-cmd_pos-1)), true, false));
+			tstring cmd = command.substr(cmd_pos, command.length()-cmd_pos-1);
 			ctrlChat.SetCheck(BST_CHECKED);
 			ctrlCommand.SetWindowText(cmd.c_str());
 		} else {
@@ -193,4 +194,56 @@ LRESULT CommandDlg::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 LRESULT CommandDlg::onHelpCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 	return 0;
+}
+
+void CommandDlg::updateType() {
+	if(ctrlSeparator.GetCheck() == BST_CHECKED) {
+		type = 0;
+	} else if(ctrlRaw.GetCheck() == BST_CHECKED) {
+		type = 1;
+	} else if(ctrlChat.GetCheck() == BST_CHECKED) {
+		type = 2;
+	} else if(ctrlPM.GetCheck() == BST_CHECKED) {
+		type = 3;
+	}
+}
+
+void CommandDlg::updateCommand() {
+	static const size_t BUF_LEN = 1024;
+	TCHAR buf[BUF_LEN];
+	if(type == 0) {
+		command.clear();
+	} else if(type == 1) {
+		ctrlCommand.GetWindowText(buf, BUF_LEN-1);
+		command = buf;
+	} else if(type == 2) {
+		ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
+		command = _T("<%[myNI]> ") + tstring(buf) + _T("|");
+	} else if(type == 3) {
+		ctrlNick.GetWindowText(buf, BUF_LEN - 1);
+		tstring to(buf);
+		ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
+		command = _T("$To: ") + to + _T(" From: %[myNI] $<%[myNI]> ") + tstring(buf) + _T("|");
+	}
+}
+
+void CommandDlg::updateControls() {
+	switch(type) {
+		case 0:
+			ctrlName.EnableWindow(FALSE);
+			ctrlCommand.EnableWindow(FALSE);
+			ctrlNick.EnableWindow(FALSE);
+			break;
+		case 1:
+		case 2:
+			ctrlName.EnableWindow(TRUE);
+			ctrlCommand.EnableWindow(TRUE);
+			ctrlNick.EnableWindow(FALSE);
+			break;
+		case 3:
+			ctrlName.EnableWindow(TRUE);
+			ctrlCommand.EnableWindow(TRUE);
+			ctrlNick.EnableWindow(TRUE);
+			break;
+	}
 }

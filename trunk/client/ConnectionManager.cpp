@@ -38,12 +38,12 @@ ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0)
 }
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
-	short lastPort = (short)SETTING(TCP_PORT);
+	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
 	
 	if(lastPort == 0)
-		lastPort = (short)Util::rand(1025, 32000);
+		lastPort = (unsigned short)Util::rand(1025, 32000);
 
-	short firstPort = lastPort;
+	unsigned short firstPort = lastPort;
 
 	disconnect();
 
@@ -61,7 +61,10 @@ void ConnectionManager::listen() throw(Exception){
 		}
 	}
 
-	lastPort++;
+	if(!CryptoManager::getInstance()->TLSOk()) {
+		return;
+	}
+	lastPort = (unsigned short)SETTING(TLS_PORT);
 	firstPort = lastPort;
 
 	while(true) {
@@ -117,10 +120,10 @@ void ConnectionManager::putCQI(ConnectionQueueItem* cqi) {
 	fire(ConnectionManagerListener::Removed(), cqi);
 	if(cqi->getDownload()) {
 		dcassert(find(downloads.begin(), downloads.end(), cqi) != downloads.end());
-		downloads.erase(find(downloads.begin(), downloads.end(), cqi));
+		downloads.erase(remove(downloads.begin(), downloads.end(), cqi), downloads.end());
 	} else {
 		dcassert(find(uploads.begin(), uploads.end(), cqi) != uploads.end());
-		uploads.erase(find(uploads.begin(), uploads.end(), cqi));
+		uploads.erase(remove(uploads.begin(), uploads.end(), cqi), uploads.end());
 	}
 	delete cqi;
 }
@@ -224,7 +227,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	}
 
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
-		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);
+		QueueManager::getInstance()->removeUserFromQueue(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
 }
 
@@ -290,6 +293,10 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	uc->setLastActivity(GET_TICK());
 	try { 
 		uc->accept(sock);
+		if(uc->isSecure() && !uc->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
+			putConnection(uc);
+			LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
+		}
 	} catch(const Exception&) {
 		putConnection(uc);
 		delete uc;
@@ -357,6 +364,12 @@ void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) 
 }
 
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
+	if(aSource->isSecure() && !aSource->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
+		putConnection(aSource);
+		LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
+		return;
+	}
+
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	StringList defFeatures = adcFeatures;
 	if(BOOLSETTING(COMPRESS_TRANSFERS)) {

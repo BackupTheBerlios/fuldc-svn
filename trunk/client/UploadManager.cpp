@@ -227,7 +227,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 void UploadManager::removeUpload(Upload* aUpload) {
 	Lock l(cs);
 	dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
-	uploads.erase(find(uploads.begin(), uploads.end(), aUpload));
+	uploads.erase(remove(uploads.begin(), uploads.end(), aUpload), uploads.end());
 	aUpload->setUserConnection(NULL);
 	delete aUpload;
 }
@@ -362,6 +362,28 @@ void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 
 	waitingUsers.erase(i, waitingUsers.end());
+
+	if( BOOLSETTING(AUTO_KICK) ) {
+		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+			Upload* u = *i;
+			if(u->getUser()->isOnline()) {
+				u->unsetFlag(Upload::FLAG_PENDING_KICK);
+				continue;
+			}
+
+			if(u->isSet(Upload::FLAG_PENDING_KICK)) {
+				u->getUserConnection()->disconnect(true);
+				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + Util::toString(ClientManager::getInstance()->getNicks(u->getUser()->getCID())));
+			}
+
+			if(BOOLSETTING(AUTO_KICK_NO_FAVS) && FavoriteManager::getInstance()->isFavoriteUser(u->getUser())) {
+				continue;
+			}
+
+			u->setFlag(Upload::FLAG_PENDING_KICK);
+		}
+	}
+
 }
 
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
@@ -442,25 +464,6 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 }
 
 void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
-
-	/// @todo Don't kick when /me disconnects
-	if( BOOLSETTING(AUTO_KICK) ) {
-
-		Lock l(cs);
-		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
-			Upload* u = *i;
-			if(u->getUser() == aUser) {
-				// Oops...adios...
-				u->getUserConnection()->disconnect(true);
-				// But let's grant him/her a free slot just in case...
-				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
-					reserveSlot(aUser);
-				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + Util::toString(ClientManager::getInstance()->getNicks(aUser->getCID())));
-			}
-		}
-	}
-
-	//Remove references to them.
 	if(!aUser->isOnline()) {
 		clearUserFiles(aUser);
 	}

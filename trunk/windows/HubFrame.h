@@ -71,7 +71,7 @@ public:
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		MESSAGE_HANDLER(WM_MENUCOMMAND, ctrlClient.onMenuCommand)
 		MESSAGE_HANDLER(RESOLVE_IP, onResolvedIP)
-		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
+		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, onFileReconnect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
@@ -116,6 +116,7 @@ public:
 	LRESULT onCopyUserList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(tstring aLine, bool bold = true);
@@ -149,10 +150,8 @@ public:
 		return 0;
 	}
 
-	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		client->disconnect(false);
-		clearUserList();
-		client->connect();
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
+		updateStatusBar();
 		return 0;
 	}
 
@@ -169,8 +168,7 @@ private:
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
-
-	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, ADD_CHAT_LINE,
+	enum Speakers { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, 
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
 	};
@@ -188,21 +186,54 @@ private:
 		COLUMN_IP,
 		COLUMN_CONNECTION, 
 		COLUMN_EMAIL, 
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 
-	struct UpdateInfo {
-		UpdateInfo() { }
-		UpdateInfo(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) {	}
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
+	};
+
+	struct Task {
+		Task(Speakers speaker_) : speaker(speaker_) { }
+		virtual ~Task() { }
+		Speakers speaker;
+	};
+
+	struct UserTask : public Task {
+		UserTask(Speakers speaker_, const OnlineUser& ou) : Task(speaker_), user(ou.getUser()), identity(ou.getIdentity()) { }
 
 		User::Ptr user;
 		Identity identity;
 	};
 
+	struct StringTask : public Task {
+		StringTask(Speakers speaker_, const tstring& msg_) : Task(speaker_), msg(msg_) { }
+		tstring msg;
+	};
+
+	struct PMTask : public StringTask {
+		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m), 
+			from(from_.getUser()), to(to_.getUser()), replyTo(replyTo_.getUser()), hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) { }
+
+		User::Ptr from;
+		User::Ptr to;
+		User::Ptr replyTo;
+
+		bool hub;
+		bool bot;
+	};
+
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const UpdateInfo& u, bool aStripIsp) : UserInfoBase(u.user), stripIsp(aStripIsp) { 
+		UserInfo(const UserTask& u) : UserInfoBase(u.user) { 
 			update(u.identity, -1); 
 		}
 
@@ -234,19 +265,13 @@ private:
 
 		bool update(const Identity& identity, int sortCol);
 
+		const string& getNick() const { return identity.getNick(); }
+		bool isHidden() const { return identity.isHidden(); }
+		
 		tstring columns[COLUMN_LAST];
 		GETSET(Identity, identity, Identity);
-		bool stripIsp;
 	};
 
-	class PMInfo {
-	public:
-		PMInfo(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const string& m) : from(from_), to(to_), replyTo(replyTo_), msg(Text::toT(m)) { }
-		User::Ptr from;
-		User::Ptr to;
-		User::Ptr replyTo;
-		tstring msg;
-	};
 
 	HubFrame(const tstring& aServer) : 
 	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
@@ -259,14 +284,12 @@ private:
 	{
 		FavoriteHubEntry* fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(aServer));
 		if(fhe != NULL) {
-			stripIsp     = fhe->getStripIsp();
 			showJoins    = fhe->getShowJoins();
-			showUserList = fhe->getShowUserlist();
+			showUsers = fhe->getShowUserList();
 			logMainChat	 = fhe->getLogMainChat();
 		} else {
-			stripIsp     = BOOLSETTING(STRIP_ISP);
 			showJoins    = BOOLSETTING(SHOW_JOINS);
-			showUserList = BOOLSETTING(GET_USER_INFO);
+			showUsers = BOOLSETTING(GET_USER_INFO);
 			logMainChat  = BOOLSETTING(LOG_MAIN_CHAT);
 		}
 		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
@@ -275,6 +298,7 @@ private:
 
 		resolveBuffer = NULL;
 		
+		/* @todo
 		tabList.push_back(_T("/away"));
 		tabList.push_back(_T("/back"));
         tabList.push_back(_T("/clear"));
@@ -310,22 +334,27 @@ private:
 		tabList.push_back(_T("/unshare"));
 		tabList.push_back(_T("/uptime"));
 		tabList.push_back(_T("/userlist"));
+		*/
 	}
 
 	virtual ~HubFrame() {
+		ClientManager::getInstance()->putClient(client);
+
 		dcassert(frames.find(server) != frames.end());
 		dcassert(frames[server] == this);
 		frames.erase(server);
 
-		ClientManager::getInstance()->putClient(client);
-
-		if(resolveBuffer)
-			delete[] resolveBuffer;
+		clearTaskList();
 	}
 
 	typedef HASH_MAP<tstring, HubFrame*> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
+
+	typedef vector<Task*> TaskList;
+	typedef TaskList::iterator TaskIter;
+	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
+	typedef UserMap::iterator UserMapIter;
 
 	tstring redirect;
 	bool timeStamps;
@@ -335,8 +364,7 @@ private:
 
 	bool waitingForPW;
 	bool extraSort;
-	bool stripIsp;
-	bool showUserList;
+	bool showUsers;
 
 	TStringList prevCommands;
 	tstring currentCommand;
@@ -348,21 +376,20 @@ private:
 		void operator()(UserInfo *ui) {
 			available += ui->getIdentity().getBytesShared();
 		}
+		void operator()(UserMap::const_reference ui) {
+			available += ui.second->getIdentity().getBytesShared();
+		}
 	};
 
-	size_t getUserCount() const {
-		size_t sel = ctrlUsers.GetSelectedCount();
-		return sel > 1 ? sel : client->getUserCount();
-	}
+	string getUsersTextForStatusBar() const;
 
 	int64_t getAvailable() {
 		if (ctrlUsers.GetSelectedCount() > 1) {
 			return ctrlUsers.forEachSelectedT(CountAvailable()).available;
 		} else
-			return client->getAvailable();
+			return for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
 	}
 
-	TStringList tabList;
 	const tstring& getNick(const User::Ptr& u);
 
 	Client* client;
@@ -380,12 +407,6 @@ private:
 	CMenu copyMenu;
 
 	tstring searchTerm;
-	tstring filter;
-	typedef pair<tstring, User::Ptr> NickTabPair;
-	typedef multiset<NickTabPair , SortFirst<tstring, User::Ptr, LessIgnoreCase<tstring> > > NickTabList;
-	typedef NickTabList::iterator NickTabIter;
-	NickTabList nickTabList;
-	tstring curNick;
 	
 	CButton ctrlShowUsers;
 	CFulEditCtrl ctrlClient;
@@ -396,6 +417,8 @@ private:
 	CtrlUsers ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
 
+	tstring filter;
+
 	bool closed;
 	static bool closing;
 	bool logMainChat;
@@ -403,16 +426,13 @@ private:
 	TStringMap tabParams;
 	bool tabMenuShown;
 
-	typedef vector<pair<UpdateInfo, Speakers> > UpdateList;
-	typedef UpdateList::iterator UpdateIter;
-	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
-	typedef UserMap::iterator UserMapIter;
-
 	UserMap userMap;
-	UpdateList updateList;
-	CriticalSection updateCS;
+	TaskList taskList;
+	CriticalSection taskCS;
 	bool updateUsers;
 	bool resort;
+
+	StringMap ucLineParams;
 
 	enum { MAX_CLIENT_LINES = 5 };
 	TStringList lastLinesList;
@@ -425,25 +445,27 @@ private:
 	char *resolveBuffer;
 	bool isIP;
 	
-	bool updateUser(const UpdateInfo& u);
+	bool updateUser(const UserTask& u);
 	void removeUser(const User::Ptr& aUser);
 
 	void updateUserList(UserInfo* ui = NULL);
-	bool parseFilter(int& mode, int64_t& size);
+	bool parseFilter(FilterModes& mode, int64_t& size);
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 	UserInfo* findUser(const tstring& nick);
 
 	void addAsFavorite();
 	void removeFavoriteHub();
-	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);
 
 	void clearUserList();
+	void clearTaskList();
 
 	int getImage(const Identity& u);
 
-	void updateStatusBar() {
-		if(m_hWnd)
-			PostMessage(WM_SPEAKER, STATS);
-	}
+	void updateStatusBar() { if(m_hWnd) speak(STATS); }
+
+	void openLinksInTopic();
+	bool resolve(const wstring& aDns);
+
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw();
@@ -451,7 +473,6 @@ private:
 	// ClientListener
 	virtual void on(Connecting, Client*) throw();
 	virtual void on(Connected, Client*) throw();
-	virtual void on(BadPassword, Client*) throw();
 	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
 	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
 	virtual void on(UserRemoved, Client*, const OnlineUser&) throw();
@@ -465,22 +486,10 @@ private:
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
-	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); }
-	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); }
-	void speak(Speakers s, const OnlineUser& u) { 
-		Lock l(updateCS);
-		updateList.push_back(make_pair(UpdateInfo(u), s));
-		updateUsers = true;
-	}
-	void speak(Speakers s, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(from, to, replyTo, line)); }
-
-	void openLinksInTopic();
-	bool resolve(const wstring& aDns);
+	void speak(Speakers s) { Lock l(taskCS); taskList.push_back(new Task(s)); PostMessage(WM_SPEAKER); }
+	void speak(Speakers s, const string& msg) { Lock l(taskCS); taskList.push_back(new StringTask(s, Text::toT(msg))); PostMessage(WM_SPEAKER); }
+	void speak(Speakers s, const OnlineUser& u) { Lock l(taskCS); taskList.push_back(new UserTask(s, u)); updateUsers = true; }
+	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { Lock l(taskCS); taskList.push_back(new PMTask(from, to, replyTo, Text::toT(line))); }
 };
 
 #endif // !defined(HUB_FRAME_H)
-
-/**
- * @file
- * $Id: HubFrame.h,v 1.15 2004/02/21 15:15:28 trem Exp $
- */

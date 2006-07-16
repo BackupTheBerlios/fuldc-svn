@@ -42,7 +42,7 @@ UserCommand FavoriteManager::addUserCommand(int type, int ctx, int flags, const 
 
 bool FavoriteManager::getUserCommand(int cid, UserCommand& uc) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == cid) {
 			uc = *i;
 			return true;
@@ -54,7 +54,7 @@ bool FavoriteManager::getUserCommand(int cid, UserCommand& uc) {
 bool FavoriteManager::moveUserCommand(int cid, int pos) {
 	dcassert(pos == -1 || pos == 1);
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == cid) {
 			swap(*i, *(i + pos));
 			return true;
@@ -66,7 +66,7 @@ bool FavoriteManager::moveUserCommand(int cid, int pos) {
 void FavoriteManager::updateUserCommand(const UserCommand& uc) {
 	bool nosave = true;
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == uc.getId()) {
 			*i = uc;
 			nosave = uc.isSet(UserCommand::FLAG_NOSAVE);
@@ -79,7 +79,7 @@ void FavoriteManager::updateUserCommand(const UserCommand& uc) {
 
 int FavoriteManager::findUserCommand(const string& aName) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getName() == aName) {
 			return i->getId();
 		}
@@ -90,7 +90,7 @@ int FavoriteManager::findUserCommand(const string& aName) {
 void FavoriteManager::removeUserCommand(int cid) {
 	bool nosave = true;
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == cid) {
 			nosave = i->isSet(UserCommand::FLAG_NOSAVE);
 			userCommands.erase(i);
@@ -102,7 +102,7 @@ void FavoriteManager::removeUserCommand(int cid) {
 }
 void FavoriteManager::removeUserCommand(const string& srv) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ) {
 		if((i->getHub() == srv) && i->isSet(UserCommand::FLAG_NOSAVE)) {
 			i = userCommands.erase(i);
 		} else {
@@ -113,7 +113,7 @@ void FavoriteManager::removeUserCommand(const string& srv) {
 
 void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ) {
 		if(i->getHub() == hub && i->isSet(UserCommand::FLAG_NOSAVE) && i->getCtx() & ctx) {
 			i = userCommands.erase(i);
 		} else {
@@ -280,7 +280,7 @@ void FavoriteManager::onHttpFinished() throw() {
 
 class XmlListLoader : public SimpleXMLReader::CallBack {
 public:
-	XmlListLoader(HubEntry::List& lst) : publicHubs(lst) { }
+	XmlListLoader(HubEntryList& lst) : publicHubs(lst) { }
 	virtual ~XmlListLoader() { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool) {
 		if(name == "Hub") {
@@ -303,7 +303,7 @@ public:
 
 	}
 private:
-	HubEntry::List& publicHubs;
+	HubEntryList& publicHubs;
 };
 
 void FavoriteManager::loadXmlList(const string& xml) {
@@ -340,7 +340,7 @@ void FavoriteManager::save() {
 			xml.addChildAttrib("UserDescription",	(*i)->getUserDescription());
 			xml.addChildAttrib("StripIsp",			(*i)->getStripIsp());
 			xml.addChildAttrib("ShowJoins",			(*i)->getShowJoins());
-			xml.addChildAttrib("ShowUserlist",		(*i)->getShowUserlist());
+			xml.addChildAttrib("showUserList",		(*i)->getShowUserList());
 			xml.addChildAttrib("LogMainchat",		(*i)->getLogMainChat());
 			xml.addChildAttrib("Bottom",			Util::toString((*i)->getBottom()));
 			xml.addChildAttrib("Top",				Util::toString((*i)->getTop()));
@@ -366,7 +366,7 @@ void FavoriteManager::save() {
 		xml.stepOut();
 		xml.addTag("UserCommands");
 		xml.stepIn();
-		for(UserCommand::Iter k = userCommands.begin(); k != userCommands.end(); ++k) {
+		for(UserCommandListIter k = userCommands.begin(); k != userCommands.end(); ++k) {
 			if(!k->isSet(UserCommand::FLAG_NOSAVE)) {
 				xml.addTag("UserCommand");
 				xml.addChildAttrib("Type", k->getType());
@@ -452,7 +452,7 @@ void FavoriteManager::load(SimpleXML* aXml) {
 			e->setUserDescription(	aXml->getChildAttrib("UserDescription"));
 			e->setStripIsp(			aXml->getBoolChildAttrib("StripIsp"));
 			e->setShowJoins(		aXml->getBoolChildAttrib("ShowJoins"));
-			e->setShowUserlist(		aXml->getBoolChildAttrib("ShowUserlist", BOOLSETTING(GET_USER_INFO)));
+			e->setShowUserList(		aXml->getBoolChildAttrib("ShowUserList", BOOLSETTING(GET_USER_INFO)));
 			e->setLogMainChat(		aXml->getBoolChildAttrib("LogMainchat", BOOLSETTING(LOG_MAIN_CHAT)));
 			e->setBottom((u_int16_t)aXml->getIntChildAttrib("Bottom") );
 			e->setTop((u_int16_t)	aXml->getIntChildAttrib("Top"));
@@ -632,7 +632,7 @@ void FavoriteManager::refresh() {
 	}
 }
 
-UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hubs) {
+UserCommandList FavoriteManager::getUserCommands(int ctx, const StringList& hubs) {
 	vector<bool> isOp(hubs.size());
 
 	for(size_t i = 0; i < hubs.size(); ++i) {
@@ -642,8 +642,8 @@ UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hu
 	}
 
 	Lock l(cs);
-	UserCommand::List lst;
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	UserCommandList lst;
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
 		if(!(uc.getCtx() & ctx)) {
 			continue;

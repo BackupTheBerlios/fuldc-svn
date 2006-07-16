@@ -357,12 +357,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onPaint(UINT msg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		if(!ownerDraw) {
-			bHandled = FALSE;
-			return 1;
-		}
-
+	LRESULT onPaint(UINT msg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		CRect updateRect;
 		CRect crc;
 		GetClientRect(&crc);
@@ -372,8 +367,8 @@ public:
 			dc.SetBkColor(WinUtil::bgColor);
 			CMemDC memDC(&dc, &crc);
 
-			//yay it seems like the default paint method actually
-			//uses the HDC it's passed, saves me a lot of work =)
+			//it seems like the default paint method actually
+			//uses the HDC it's passed, saves a lot of work =)
 			LRESULT ret = DefWindowProc(msg, (WPARAM)memDC.m_hDC, NULL);
 			
 			//make sure to paint before CPaintDC goes out of scope and destroys our hdc

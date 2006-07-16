@@ -215,7 +215,7 @@
 #define IDC_KICK                        1023
 #define IDC_REDIRECT                    1024
 #define IDC_AUTOFOLLOW                  1024
-#define IDC_REMOVESOURCE                1025
+#define IDC_removeUserFromFile                1025
 #define IDC_EDIT                        1026
 #define IDC_NOTEPAD                     1027
 #define IDC_SEARCH_ALTERNATES           1029
@@ -623,6 +623,16 @@
 #define IDC_PRIVATE_ID                  1376
 #define IDC_AUTO_SEARCH_LIMIT           1377
 #define IDC_SETTINGS_UPLOAD_LINE_SPEED  1378
+#define IDC_BROWSE_PRIVATE_KEY          1379
+#define IDC_BROWSE_CERTIFICATE          1380
+#define IDC_BROWSE_TRUSTED_PATH         1381
+#define IDC_GENERATE_CERTS              1382
+#define IDC_TLS_CERTIFICATE_FILE        1383
+#define IDC_TLS_PRIVATE_KEY_FILE        1384
+#define IDC_TLS_TRUSTED_CERTIFICATES_PATH 1385
+#define IDC_TLS_OPTIONS                 1386
+#define IDC_SETTINGS_PORT_TLS           1387
+#define IDC_PORT_TLS                    1388
 #define IDC_DOWNLOAD_FAVORITE_DIRS      2000
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 2200
 #define IDC_BROWSELIST                  3000

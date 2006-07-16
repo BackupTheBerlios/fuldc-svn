@@ -923,9 +923,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 		}
 		break;
 	case VK_RETURN:
-		if( (GetKeyState(VK_SHIFT) & 0x8000) || 
-			(GetKeyState(VK_CONTROL) & 0x8000) || 
-			(GetKeyState(VK_MENU) & 0x8000) ) {
+		if( WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt() ) {
 			bHandled = FALSE;
 		} else {
 			if(uMsg == WM_KEYDOWN) {

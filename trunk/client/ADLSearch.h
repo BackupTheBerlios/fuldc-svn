@@ -225,7 +225,7 @@ public:
 private:
 
 	// Substring searches
-	StringSearch::List stringSearchList;
+	StringSearchList stringSearchList;
 
 	//decide if regexps should be used
 	bool bUseRegexp;
@@ -239,7 +239,7 @@ private:
 				return false;
 		} else {
 			// Match all substrings
-			for(StringSearch::Iter i = stringSearchList.begin(); i != stringSearchList.end(); ++i) {
+			for(StringSearchListIter i = stringSearchList.begin(); i != stringSearchList.end(); ++i) {
 				if(!i->match(s)) {
 					return false;
 				}

@@ -32,6 +32,7 @@
 #include "Util.h"
 #include "FastAlloc.h"
 #include "Text.h"
+#include "Streams.h"
 
 STANDARD_EXCEPTION(HashException);
 class File;
@@ -48,6 +49,7 @@ public:
 };
 
 class HashLoader;
+class FileException;
 
 class HashManager : public Singleton<HashManager>, public Speaker<HashManagerListener>,
 	private TimerManagerListener 
@@ -194,7 +196,7 @@ private:
 
 		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
-		void addTree(const TigerTree& tt);
+		void addTree(const TigerTree& tt) throw();
 		const TTHValue* getTTH(const string& aFileName);
 		bool getTree(const TTHValue& root, TigerTree& tth);
 		bool isDirty() { return dirty; }
@@ -244,7 +246,7 @@ private:
 		void createDataFile(const string& name);
 
 		bool loadTree(File& dataFile, const TreeInfo& ti, const TTHValue& root, TigerTree& tt);
-		int64_t saveTree(File& dataFile, const TigerTree& tt);
+		int64_t saveTree(File& dataFile, const TigerTree& tt) throw(FileException);
 
 		string getIndexFile() { return Util::getConfigPath() + "HashIndex.xml"; }
 		string getDataFile() { return Util::getConfigPath() + "HashData.dat"; }
