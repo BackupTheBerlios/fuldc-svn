@@ -34,16 +34,15 @@ BufferedSocket::BufferedSocket(char aSeparator) throw() :
 separator(aSeparator), mode(MODE_LINE), 
 dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false), filterIn(NULL)
 {
-	sockets++;
-	sock = new Socket;
+	Thread::safeInc(sockets);
 }
 
-size_t BufferedSocket::sockets = 0;
+volatile long BufferedSocket::sockets = 0;
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
 	delete filterIn;
-	sockets--;
+	Thread::safeDec(sockets);
 }
 
 void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
@@ -72,60 +71,57 @@ void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
 }
 
 void BufferedSocket::accept(const Socket& srv) throw(SocketException, ThreadException) {
-	
-	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
-	if(!sock)
+	dcassert(!sock);
+	try {
+		dcdebug("BufferedSocket::accept() %p\n", (void*)this);
 		sock = new Socket;
 
-	sock->accept(srv);
-	if(SETTING(SOCKET_IN_BUFFER) > 0)
-		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-    if(SETTING(SOCKET_OUT_BUFFER) > 0)
-		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
-	sock->setBlocking(false);
+		sock->accept(srv);
+		if(SETTING(SOCKET_IN_BUFFER) > 0)
+			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+		if(SETTING(SOCKET_OUT_BUFFER) > 0)
+			sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+		sock->setBlocking(false);
 
-	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
+		inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
 
-	// This lock prevents the shutdown task from being added and executed before we're done initializing the socket
-	Lock l(cs);
-	try {
+		// This lock prevents the shutdown task from being added and executed before we're done initializing the socket
+		Lock l(cs);
 		start();
+		addTask(ACCEPTED, 0);
 	} catch(...) {
 		delete sock;
 		sock = 0;
 		throw;
 	}
 
-	addTask(ACCEPTED, 0);
 }
 
 void BufferedSocket::connect(const string& aAddress, short aPort, bool proxy) throw(SocketException, ThreadException) {
+	dcassert(!sock);
 
-	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
-	if(!sock)
+	try {
+		dcdebug("BufferedSocket::connect() %p\n", (void*)this);
 		sock = new Socket;
 
-	sock->create();
-	if(SETTING(SOCKET_IN_BUFFER) >= 1024)
-		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
-		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
-	sock->setBlocking(false);
+		sock->create();
+		if(SETTING(SOCKET_IN_BUFFER) >= 1024)
+			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+		if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
+			sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+		sock->setBlocking(false);
 
-	sock->bind(0, SETTING(BIND_ADDRESS));
+		inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
 
-	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
-
-	Lock l(cs);
-	try {
+		Lock l(cs);
 		start();
+		addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 	} catch(...) {
 		delete sock;
 		sock = 0;
 		throw;
 	}
 
-	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 }
 
 #define CONNECT_TIMEOUT 30000
@@ -254,6 +250,10 @@ void BufferedSocket::threadRead() throw(SocketException) {
 				}
 				break;
 		}
+	}
+
+	if(mode == MODE_LINE && line.size() > static_cast<size_t>(SETTING(MAX_COMMAND_LENGTH))) {
+		throw SocketException(STRING(COMMAND_TOO_LONG));
 	}
 }
 

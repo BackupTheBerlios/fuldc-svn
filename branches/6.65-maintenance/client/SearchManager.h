@@ -170,7 +170,7 @@ public:
 private:
 	
 	Socket* socket;
-	short port;
+	unsigned short port;
 	bool stop;
 	time_t lastSearch;
 	friend class Singleton<SearchManager>;

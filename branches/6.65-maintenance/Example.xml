@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.691" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.694" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -46,6 +46,7 @@
 		<String Name="ClosingConnection">Closing connection...</String>
 		<String Name="Compressed">Compressed</String>
 		<String Name="CompressionError">Error during compression</String>
+		<String Name="CommandTooLong">Maximum command length exceeded</String>
 		<String Name="Configure">&amp;Configure</String>
 		<String Name="Connect">&amp;Connect</String>
 		<String Name="ConnectFavuserHub">Connect to hub</String>
@@ -274,13 +275,13 @@
 		<String Name="NickTaken">Your nick was already taken, please change to something else!</String>
 		<String Name="NickUnknown"> (Nick unknown)</String>
 		<String Name="NoCrc32Match"> not shared; calculated CRC32 does not match the one found in SFV file.</String>
-		<String Name="NoStr">No</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
 		<String Name="NoDownloadsFromSelf">You're trying to download from yourself!</String>
 		<String Name="NoDownloadsFromPassive">Can't download from passive users when you're passive</String>
 		<String Name="NoErrors">No errors</String>
 		<String Name="NoMatches">No matches</String>
 		<String Name="NoSlotsAvailable">No slots available</String>
+		<String Name="NoStr">No</String>
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
 		<String Name="Normal">Normal</String>
@@ -480,7 +481,7 @@
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
-		<String Name="SettingsUdpPort">UDP Port</String>
+		<String Name="SettingsUdpPort">UDP</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
 		<String Name="SettingsUploadSpeed">Max upload speed</String>
 		<String Name="SettingsUploads">DC++\Sharing</String>

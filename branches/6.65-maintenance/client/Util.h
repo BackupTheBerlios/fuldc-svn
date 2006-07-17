@@ -295,6 +295,7 @@ public:
 		return formatBytes(toInt64(aString));
 	}
 	
+	static string formatMessage(const string& nick, const string& message);
 	static string toDOS(const string& tmp);
 
 	static wstring getShortTimeString(time_t t = time(NULL) );

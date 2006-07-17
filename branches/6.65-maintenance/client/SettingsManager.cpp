@@ -74,6 +74,8 @@ const string SettingsManager::settingTags[] =
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
+	"AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches", 
+	"DontDlAlreadyQueued", "MaxCommandLength",
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs",
@@ -248,7 +250,13 @@ SettingsManager::SettingsManager()
 	setDefault(BOLD_SEARCH, true);
 	setDefault(BOLD_WAITING_USERS, true);
 	setDefault(BOLD_SYSTEM_LOG, true);
-	
+	setDefault(AUTO_SEARCH_LIMIT, 5);
+	setDefault(ALT_SORT_ORDER, false);
+	setDefault(AUTO_KICK_NO_FAVS, false);
+	setDefault(PROMPT_PASSWORD, false);
+	setDefault(SPY_FRAME_IGNORE_TTH_SEARCHES, false);
+	setDefault(DONT_DL_ALREADY_QUEUED, false);
+	setDefault(MAX_COMMAND_LENGTH, 16*1024*1024);
 
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);

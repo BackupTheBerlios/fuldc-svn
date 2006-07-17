@@ -166,7 +166,7 @@ BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	return TRUE;
 }
 
-static DWORD checkCommonControls() {
+static void checkCommonControls() {
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
 
 	HINSTANCE hinstDll;
@@ -202,8 +202,6 @@ static DWORD checkCommonControls() {
 	if(dwVersion < PACKVERSION(5,80)) {
 		MessageBox(NULL, _T("Your version of windows common controls is too old for fulDC to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T("User Interface Warning"), MB_OK);
 	}
-
-	return dwVersion;
 }
 
 void callBack(void* x, const tstring& a, const tstring& b) {
@@ -224,7 +222,7 @@ public:
 
 static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-	DWORD version = checkCommonControls();
+	checkCommonControls();
 
 	CMessageLoop theLoop;
 	CFindDialogMessageFilter findDialogFilter;
@@ -257,8 +255,6 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.RedrawWindow();
 
 	startup(callBack, (void*)splash.m_hWnd);
-
-	WinUtil::comCtlVersion = version;
 
 	splash.DestroyWindow();
 	dummy.DestroyWindow();

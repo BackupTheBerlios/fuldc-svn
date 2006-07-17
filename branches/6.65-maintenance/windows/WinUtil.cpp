@@ -324,6 +324,11 @@ void WinUtil::init(HWND hWnd) {
 		urlDcADCRegistered = true;
 	} 
 
+	DWORD dwMajor = 0, dwMinor = 0;
+	if(SUCCEEDED(ATL::AtlGetCommCtrlVersion(&dwMajor, &dwMinor))) {
+		comCtlVersion = MAKELONG(dwMinor, dwMajor);
+	}
+
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
 
 	HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);

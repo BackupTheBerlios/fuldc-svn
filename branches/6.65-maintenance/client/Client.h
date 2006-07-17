@@ -135,7 +135,6 @@ public:
 	}
 
 	void reconnect();
-
 	void shutdown();
 
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
@@ -155,7 +154,10 @@ public:
 	GETSET(time_t, lastActivity, LastActivity);
 	GETSET(bool, registered, Registered);
 	GETSET(bool, autoReconnect, AutoReconnect);
+	GETSET(bool, reconnecting, Reconnecting);
 
+	GETSET(string, currentNick, CurrentNick);
+	GETSET(string, currentDescription, CurrentDescription);
 protected:
 	friend class ClientManager;
 	Client(const string& hubURL, char separator, bool secure_);
@@ -176,7 +178,6 @@ protected:
 
 	void updateCounts(bool aRemove);
 	void updateActivity() { lastActivity = GET_TICK(); }
-	void resetActivtiy() { lastActivity = 0; }
 
 	/** Reload details from favmanager or settings */
 	void reloadSettings(bool updateNick);
@@ -205,12 +206,11 @@ private:
 	u_int16_t port;
 	char separator;
 	bool secure;
-
 	CountType countType;
 
 	// BufferedSocketListener
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
-	virtual void on(Connected) throw() { updateActivity(); ip = socket->getIp(); fire(ClientListener::Connected(), this); }
+	virtual void on(Connected) throw();
 
 
 };

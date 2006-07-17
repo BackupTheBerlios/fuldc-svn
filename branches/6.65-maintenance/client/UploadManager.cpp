@@ -31,6 +31,7 @@
 #include "ResourceManager.h"
 #include "HashManager.h"
 #include "AdcCommand.h"
+#include "FavoriteManager.h"
 
 #include <functional>
 static const string UPLOAD_AREA = "Uploads";
@@ -363,6 +364,28 @@ void UploadManager::on(TimerManagerListener::Minute, time_t /* aTick */) throw()
 	}
 
 	waitingUsers.erase(i, waitingUsers.end());
+
+	if( BOOLSETTING(AUTO_KICK) ) {
+		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+			Upload* u = *i;
+			if(u->getUser()->isOnline()) {
+				u->unsetFlag(Upload::FLAG_PENDING_KICK);
+				continue;
+			}
+
+			if(u->isSet(Upload::FLAG_PENDING_KICK)) {
+				u->getUserConnection()->disconnect(true);
+				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + u->getUser()->getNick());
+			}
+
+			if(BOOLSETTING(AUTO_KICK_NO_FAVS) && (u->getUser()->isFavoriteUser())) {
+				continue;
+			}
+
+			u->setFlag(Upload::FLAG_PENDING_KICK);
+		}
+	}
+
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() { 
@@ -419,25 +442,6 @@ void UploadManager::on(TimerManagerListener::Second, time_t) throw() {
 }
 
 void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-	if( (!aUser->isOnline()) && 
-		(aUser->isSet(User::QUIT_HUB)) && 
-		(BOOLSETTING(AUTO_KICK)) ){
-
-		Lock l(cs);
-		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
-			Upload* u = *i;
-			if(u->getUser() == aUser) {
-				// Oops...adios...
-				u->getUserConnection()->disconnect(true);
-				// But let's grant him/her a free slot just in case...
-				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
-					reserveSlot(aUser);
-				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFullNick());
-			}
-		}
-	}
-
-	//Remove references to them.
 	if(!aUser->isOnline()) {
 		clearUserFiles(aUser);
 	}

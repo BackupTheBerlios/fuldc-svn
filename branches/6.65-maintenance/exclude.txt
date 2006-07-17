@@ -20,3 +20,4 @@ vc7
 App
 Temp
 *.user
+GeoIPCountryWhois.csv

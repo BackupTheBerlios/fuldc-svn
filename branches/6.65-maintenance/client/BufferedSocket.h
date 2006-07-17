@@ -99,8 +99,8 @@ public:
 	void setLineMode(size_t aRollback) { setMode (MODE_LINE, aRollback);}
 	void setMode(Modes mode, size_t aRollback = 0);
 	Modes getMode() const { return mode; }
-	const string& getIp() { return sock ? sock->getIp() : Util::emptyString; }
-	bool isConnected() { return sock && sock->isConnected(); }
+	const string& getIp() const { return sock ? sock->getIp() : Util::emptyString; }
+	bool isConnected() const { return sock && sock->isConnected(); }
 	
 	void write(const string& aData) throw() { write(aData.data(), aData.length()); }
 	void write(const char* aBuf, size_t aLen) throw();
@@ -171,7 +171,7 @@ private:
 	void threadDisconnect();
 	
 	void fail(const string& aError);	
-	static size_t sockets;
+	static volatile long sockets;
 
 	bool checkEvents();
 	void checkSocket();

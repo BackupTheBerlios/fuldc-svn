@@ -37,7 +37,8 @@ public:
 		FLAG_USER_LIST = 0x01,
 		FLAG_TTH_LEAVES = 0x02,
 		FLAG_ZUPLOAD = 0x04,
-		FLAG_PARTIAL_LIST = 0x08
+		FLAG_PARTIAL_LIST = 0x08,
+		FLAG_PENDING_KICK = 0x10
 	};
 
 	typedef Upload* Ptr;
@@ -50,7 +51,7 @@ public:
 		delete tth;
 	}
 	
-	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
+	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); }
 	
 	GETSET(string, fileName, FileName);
 	GETSET(string, localFileName, LocalFileName);
@@ -190,8 +191,8 @@ private:
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
 	
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, time_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();
+	virtual void on(Second, time_t aTick) throw();
+	virtual void on(Minute, time_t aTick) throw();
 
 	// UserConnectionListener
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();

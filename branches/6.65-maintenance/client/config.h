@@ -27,10 +27,6 @@
 #include "autoconf.h"
 #endif
 
-// Changing this number will change the maximum number of simultaneous users
-// we can handle (when using select)...
-#define FD_SETSIZE 4096
-
 // Remove this line if hashes are not available in your stl
 #define HAVE_HASH 1
 
@@ -49,9 +45,8 @@
 //# define _STLP_USE_PTR_SPECIALIZATIONS 1
 # define _STLP_USE_TEMPLATE_EXPRESSION 1
 # define _STLP_NO_ANACHRONISMS 1
-//# define _STLP_NO_CUSTOM_IO 1
+# define _STLP_NO_CUSTOM_IO 1
 # define _STLP_NO_IOSTREAMS 1
-//#define _STLP_USE_BOOST_SUPPORT 1
 # ifndef _DEBUG
 #  define _STLP_DONT_USE_EXCEPTIONS 1
 # endif
@@ -125,8 +120,8 @@ typedef unsigned __int64 u_int64_t;
 
 #ifdef _WIN32
 // Change these values to use different versions...don't know what happens though...=)
-#define WINVER		0x0501
-# define _WIN32_WINNT 0x0501
+#define WINVER		0x0600
+# define _WIN32_WINNT 0x0600
 # define _WIN32_IE	0x0601
 #define _RICHEDIT_VER	0x0300
 #endif

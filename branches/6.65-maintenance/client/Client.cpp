@@ -25,11 +25,12 @@
 
 #include "FavoriteManager.h"
 #include "TimerManager.h"
+#include "ResourceManager.h"
 
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
-	reconnDelay(120), lastActivity(0), registered(false), socket(NULL), 
+	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), reconnecting(false), socket(0), 
 	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
@@ -48,7 +49,7 @@ Client::~Client() throw() {
 void Client::reconnect() {
 	disconnect(true);
 	setAutoReconnect(true);
-	resetActivtiy();
+	setReconnecting(true);
 }
 
 void Client::shutdown() {
@@ -77,6 +78,7 @@ void Client::connect() {
 		BufferedSocket::putSocket(socket);
 
 	setAutoReconnect(true);
+	setReconnecting(false);
 	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings(true);
 	setRegistered(false);
@@ -88,11 +90,17 @@ void Client::connect() {
 	} catch(const Exception& e) {
 		if(socket) {
 			BufferedSocket::putSocket(socket);
-			socket = NULL;
+			socket = 0;
 		}
 		fire(ClientListener::Failed(), this, e.getError());
 	}
 	updateActivity();
+}
+
+void Client::on(Connected) throw() {
+	updateActivity(); 
+	ip = socket->getIp(); 
+	fire(ClientListener::Connected(), this);
 }
 
 void Client::disconnect(bool graceLess) {

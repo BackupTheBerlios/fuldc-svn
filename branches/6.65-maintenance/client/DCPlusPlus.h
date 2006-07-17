@@ -92,6 +92,9 @@ typedef pair<string, int> StringIntPair;
 typedef HASH_MAP<string, int> StringIntMap;
 typedef StringIntMap::iterator StringIntIter;
 
+typedef HASH_SET<string> StringSet;
+typedef StringSet::iterator StringSetIter;
+
 typedef vector<wstring> WStringList;
 typedef WStringList::iterator WStringIter;
 typedef WStringList::const_iterator WStringIterC;
@@ -102,9 +105,6 @@ typedef WStringPairList::iterator WStringPairIter;
 
 typedef HASH_MAP<wstring, wstring> WStringMap;
 typedef WStringMap::iterator WStringMapIter;
-
-typedef set<string> StringSet;
-typedef StringSet::iterator StringSetIter;
 
 #ifdef UNICODE
 

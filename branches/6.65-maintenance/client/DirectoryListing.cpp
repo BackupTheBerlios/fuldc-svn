@@ -229,7 +229,7 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget, bool hig
 
 void DirectoryListing::download(const string& aDir, const string& aTarget, bool highPrio) {
 	dcassert(aDir.size() > 2);
-	dcassert(aDir[aDir.size() - 1] == PATH_SEPARATOR);
+	dcassert(aDir[aDir.size() - 1] == '\\'); // This should not be PATH_SEPARATOR
 	Directory* d = find(aDir, getRoot());
 	if(d != NULL)
 		download(d, aTarget, highPrio);
@@ -316,16 +316,21 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 }
 
 u_int8_t DirectoryListing::Directory::checkDupes() {
-	u_int8_t result;
+	u_int8_t result = Directory::NONE;
+	bool first = true;
 	for(Directory::Iter i = directories.begin(); i != directories.end(); ++i) {
 		result = (*i)->checkDupes();
-		if(getDupe() == Directory::NONE)
+		if(getDupe() == Directory::NONE && first)
 			setDupe(result);
+		else if(getDupe() == Directory::NONE && !first)
+			setDupe(Directory::PARTIAL_DUPE);
 		else if(getDupe() == Directory::DUPE && result != Directory::DUPE)
 			setDupe(Directory::PARTIAL_DUPE);
+		
+		first = false;
 	}
 
-	bool firstFile = true;
+	first = true;
 	for(File::Iter i = files.begin(); i != files.end(); ++i) {
 		//don't count 0 byte files since it'll give lots of partial dupes
 		//of no interest
@@ -333,22 +338,22 @@ u_int8_t DirectoryListing::Directory::checkDupes() {
 			(*i)->setDupe((*i)->getTTH() != NULL ? ShareManager::getInstance()->isTTHShared(*(*i)->getTTH()) : false);
 			
 			//if it's the first file in the dir and no sub-folders exist mark it as a dupe.
-			if(getDupe() == Directory::NONE && (*i)->getDupe() && directories.empty() && firstFile)
+			if(getDupe() == Directory::NONE && (*i)->getDupe() && directories.empty() && first)
 				setDupe(Directory::DUPE);
 
 			//if it's the first file in the dir and we do have sub-folders but no dupes, mark as partial.
-			else if(getDupe() == Directory::NONE && (*i)->getDupe() && !directories.empty() && firstFile)
+			else if(getDupe() == Directory::NONE && (*i)->getDupe() && !directories.empty() && first)
 				setDupe(Directory::PARTIAL_DUPE);
 			
 			//if it's not the first file in the dir and we still don't have a dupe, mark it as partial.
-			else if(getDupe() == Directory::NONE && (*i)->getDupe() && !firstFile)
+			else if(getDupe() == Directory::NONE && (*i)->getDupe() && !first)
 				setDupe(Directory::PARTIAL_DUPE);
 			
 			//if it's a dupe and we find a non-dupe, mark as partial.
 			else if(getDupe() == Directory::DUPE && !(*i)->getDupe())
 				setDupe(Directory::PARTIAL_DUPE);
 
-			firstFile = false;
+			first = false;
 		}
 	}
 	return getDupe();

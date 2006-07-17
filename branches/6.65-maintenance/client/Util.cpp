@@ -242,6 +242,19 @@ string Util::validateFileName(string tmp) {
 		i += 2;
 	}
 
+	// Dots at the end of path names aren't popular
+	i = 0;
+	while( ((i = tmp.find(".\\", i)) != string::npos) ) {
+		tmp[i] = '_';
+		i += 1;
+	}
+	i = 0;
+	while( ((i = tmp.find("./", i)) != string::npos) ) {
+		tmp[i] = '_';
+		i += 1;
+	}
+
+
 	return tmp;
 }
 
@@ -926,6 +939,22 @@ string Util::toDOS(const string& tmp) {
 		}
 	}
 	return tmp2;
+}
+
+string Util::formatMessage(const string& nick, const string& message) {
+	string tmp = '<' + nick + "> " + message;
+	// Check all '<' and '[' after newlines as they're probably pasts...
+	size_t i = 0;
+	while( (i = tmp.find('\n', i)) != string::npos) {
+		if(i + 1 < tmp.length()) {
+			if(tmp[i+1] == '[' || tmp[i+1] == '<') {
+				tmp.insert(i+1, "- ");
+				i += 2;
+			}
+		}
+		i++;
+	}
+	return toDOS(tmp);
 }
 
 wstring Util::getShortTimeString(time_t t) {
