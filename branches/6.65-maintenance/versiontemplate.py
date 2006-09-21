@@ -1,6 +1,7 @@
 from xml.dom import minidom
 import os
 import sys
+import xml
 
 #make sure relative paths work from the vc7.1 dir too
 os.chdir(sys.argv[0][0: sys.argv[0].rfind("\\")])
@@ -50,19 +51,22 @@ class SVNReport:
 
 
 if __name__ == "__main__":
-	s = SVNReport()
-	s.walkrevision(".")
-	versiontemplate = open(TEMPLATE,'r').read()
-	print "Getting SVN Information:"
-	for key,value in s.data.iteritems():
-		versiontemplate = versiontemplate.replace("$%s" % key, value)
-	print "Revision %s, checked in by %s" % (s.data.get("revision",0),s.data.get("last-author","Unknown"))
-	print "Checking if update of version.h is needed"
-	if not os.path.exists(TARGET):
-		open(TARGET,'w').write(versiontemplate)
-		print "Updates version.h from template file"
-	elif open(TARGET,'r').read() != versiontemplate:
-		print "Updates version.h from template file"
-		open(TARGET,'w').write(versiontemplate)
-	else:
-		print "No changes required in version.h."
+	try:
+		s = SVNReport()
+		s.walkrevision(".")
+		versiontemplate = open(TEMPLATE,'r').read()
+		print "Getting SVN Information:"
+		for key,value in s.data.iteritems():
+			versiontemplate = versiontemplate.replace("$%s" % key, value)
+		print "Revision %s, checked in by %s" % (s.data.get("revision",0),s.data.get("last-author","Unknown"))
+		print "Checking if update of version.h is needed"
+		if not os.path.exists(TARGET):
+			open(TARGET,'w').write(versiontemplate)
+			print "Updates version.h from template file"
+		elif open(TARGET,'r').read() != versiontemplate:
+			print "Updates version.h from template file"
+			open(TARGET,'w').write(versiontemplate)
+		else:
+			print "No changes required in version.h."
+	except xml.parsers.expat.ExpatError:
+		pass

@@ -27,7 +27,7 @@
 
 class CriticalSection  
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 public:
 	void enter() throw() {
 		EnterCriticalSection(&cs);
@@ -80,7 +80,7 @@ private:
  */
 class FastCriticalSection {
 public:
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	FastCriticalSection() : state(0) { }
 
 	void enter() {

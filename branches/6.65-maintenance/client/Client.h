@@ -34,6 +34,7 @@ class AdcCommand;
 class ClientListener  
 {
 public:
+	virtual ~ClientListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;

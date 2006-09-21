@@ -28,7 +28,7 @@ wchar_t Text::lower[65536];
 
 void Text::initialize() {
 	for(size_t i = 0; i < 65536; ++i) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		lower[i] = (wchar_t)CharLowerW((LPWSTR)i);
 #else
 		lower[i] = (char)towlower(i);
@@ -128,7 +128,7 @@ string& Text::acpToUtf8(const string& str, string& tmp) throw() {
 wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	if(str.empty())
 		return tmp;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	int n = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), (int)str.length(), NULL, 0);
 	if(n == 0) {
 		return tmp;
@@ -160,7 +160,7 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 }
 
 string& Text::wideToUtf8(const wstring& str, string& tgt) throw() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	int size = 0;
 	tgt.resize( str.length() * 2 );
 
@@ -185,7 +185,7 @@ string& Text::wideToUtf8(const wstring& str, string& tgt) throw() {
 string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
 	if(str.empty())
 		return tmp;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	int n = WideCharToMultiByte(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0, NULL, NULL);
 	if(n == 0) {
 		return tmp;
@@ -233,7 +233,7 @@ string& Text::utf8ToAcp(const string& str, string& tmp) throw() {
 }
 
 wstring& Text::utf8ToWide(const string& str, wstring& tgt) throw() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	int size = 0;
 	tgt.resize( str.length()+1 );
 	while( ( size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), &tgt[0], (int)tgt.length()) ) == 0 ){

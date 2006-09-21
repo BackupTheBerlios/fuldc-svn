@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
@@ -48,6 +48,7 @@
 
 #else
 #include <unistd.h>
+#include <stdint.h>
 #endif
 
 #include <stdio.h>
@@ -101,36 +102,8 @@
 #endif // HAVE_HASH
 
 
-#ifdef HAVE_STLPORT
 using namespace _STL;
 #include <hash_map>
 #include <hash_set>
-
-#elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
-#include <ext/hash_map>
-#include <ext/hash_set>
-#include <ext/functional>
-using namespace std;
-using namespace __gnu_cxx;
-
-// GNU C++ library doesn't have hash(std::string) or hash(long long int)
-namespace __gnu_cxx {
-	template<> struct hash<std::string> {
-		size_t operator()(const std::string& x) const
-			{ return hash<const char*>()(x.c_str()); }
-	};
-	template<> struct hash<long long int> {
-		size_t operator()(long long int x) const { return x; }
-	};
-}
-#else // __GLIBCPP__
-
-#include <hash_map>
-#include <hash_set>
-
-using namespace std;
-using namespace stdext;
-
-#endif // __GLIBCPP__
 
 #endif // !defined(STDINC_H)

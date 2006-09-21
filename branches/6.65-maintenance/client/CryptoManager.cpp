@@ -25,7 +25,7 @@
 #include "BitOutputStream.h"
 #include "ResourceManager.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #include "../bzip2/bzlib.h"
 #else
 #include <bzlib.h>

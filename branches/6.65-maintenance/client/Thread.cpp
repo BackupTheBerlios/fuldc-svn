@@ -24,11 +24,11 @@
 
 #include "ResourceManager.h"
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 pthread_mutex_t Thread::mtx = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 void Thread::start() throw(ThreadException) {
 	join();
 	if( (threadHandle = reinterpret_cast<HANDLE>(_beginthreadex(NULL, 0, &starter, this, 0, reinterpret_cast<unsigned int*>(&threadId)))) == NULL) {

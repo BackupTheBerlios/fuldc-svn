@@ -26,7 +26,7 @@
 #include "Util.h"
 #include "Exception.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 // Berkely constants converted to the windows equivs...
 #	define EADDRNOTAVAIL           WSAEADDRNOTAVAIL
 
@@ -144,7 +144,7 @@ public:
 	static int64_t getTotalDown() { return stats.totalDown; }
 	static int64_t getTotalUp() { return stats.totalUp; }
 	
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	void setBlocking(bool block) throw() {
 		u_long b = block ? 0 : 1;
 		ioctlsocket(sock, FIONBIO, &b);
@@ -203,7 +203,7 @@ private:
 
 	void socksAuth(time_t timeout) throw(SocketException);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	static int getLastError() {  return ::WSAGetLastError(); }
 	static int checksocket(socket_t ret) { 
 		if(ret == (socket_t) SOCKET_ERROR) { 
@@ -233,7 +233,7 @@ private:
 	static int check(int ret, bool blockOk = false) { 
 		if(ret == -1) {
 			int error = getLastError();
-			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS || error == EINPROGRESS) ) {
+			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS || error == EINPROGRESS || error == EAGAIN) ) {
 				return -1;
 			} else {
 				throw SocketException(error); 

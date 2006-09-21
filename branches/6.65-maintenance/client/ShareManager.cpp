@@ -34,7 +34,7 @@
 #include "BZUtils.h"
 #include "Wildcards.h"
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -66,7 +66,7 @@ ShareManager::~ShareManager() {
 	delete xFile;
 	xFile = NULL;
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	WIN32_FIND_DATA data;
 	HANDLE hFind;
 
@@ -446,7 +446,7 @@ void ShareManager::Directory::addType(u_int32_t type) throw() {
 }
 
 class FileFindIter {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 public:
 	/** End iterator constructor */
 	FileFindIter() : handle(INVALID_HANDLE_VALUE) { }
@@ -587,7 +587,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	Directory::File::Iter lastFileIter = dir->files.begin();
 
 	FileFindIter end;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		for(FileFindIter i(aName + "*"); i != end; ++i) {
 #else
 	//the fileiter just searches directorys for now, not sure if more 

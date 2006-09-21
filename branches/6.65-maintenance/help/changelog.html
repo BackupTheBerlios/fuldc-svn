@@ -13,6 +13,62 @@
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
 
+<h2>0.694 <span style="color: gray;">(2006-07-10)</span></h2>
+<ul>
+  <li>Fixed crash in certificates page</li>
+  <li>[bug 1005] Fixed linux compile issue (thanks tpo)</li>
+  <li>[bug 1004] Fixed browse file list on self</li>
+  <li>Both .crt and .pem files are read as trusted certificates</li>
+</ul>
+
+<h2>0.693 <span style="color: gray;">(2006-07-09)</span></h2>
+<ul>
+  <li>Fixed crash bug</li>
+  <li>Added language code to example language xml</li>
+</ul>
+
+<h2>0.692 <span style="color: gray;">(2006-07-09)</span></h2>
+<ul>
+  <li>[bug 927] Fixed OP detection bug really (thanks pothead)</li>
+  <li>[bug 938] Added a few more ADC info fields (thanks ullner)</li>
+  <li>[bug 939] Fixed hub info update (thanks ullner)</li>
+  <li>[bug 940] Fixed a 64-bit compile error (thanks steven sheehy)</li>
+  <li>[bug 942] Fixed atomic operations on unices (thanks tobias nygren)</li>
+  <li>[bug 943] Fixed unix utsname compile issue (thanks tobias nygren)</li>
+  <li>[bug 944] Fixed unix string conversion bug (thanks tobias nygren)</li>
+  <li>[bug 945] Fixed unix mutex initialiser (thanks tobias nygren)</li>
+  <li>[bug 946] Tiger hash supports big endian and 64-bit architectures (thanks tobias nygren)</li>
+  <li>[bug 941] Updated usercount display (thanks pothead)</li>
+  <li>[bug 951] Fixed issue with high port numbers (thanks tpo)</li>
+  <li>[bug 958] Search spy tth option automagically saved (thanks ullner)</li>
+  <li>[bug 959] Code cleanup (thanks pothead)</li>
+  <li>[bug 966] Max hash speed fixed when fast hashing method is not used (thanks steven sheehy)</li>
+  <li>[bug 967] Fixed path case-sensitivity issue (thanks steven sheehy)</li>
+  <li>Fixed auto-reconnect</li>
+  <li>[bug 936] Fixed duplicate entries in search hubs</li>
+  <li>Fixed some hub title display issues</li>
+  <li>Some spring cleanup</li>
+  <li>[bug 970] Unix file permissions correctly set (thanks steven sheehy)</li>
+  <li>[ADC] Allowed $ and | in nick/description</li>
+  <li>Fixed targetdrive bug for temp target location</li>
+  <li>Fixed a crash bug when hash data cannot be saved</li>
+  <li>Possibly fixed issues with queue items not being updated</li>
+  <li>Added warning when someone tries to spam hublist.org or dcpp.net with your client</li>
+  <li>[bug 968] Fixed unix compile issue (thanks pothead)</li>
+  <li>[bug 975] Fixed silly warning (thanks pothead)</li>
+  <li>[bug 978] Fixed 64-bit compiler issue (thanks steven sheehy)</li>
+  <li>[bug 988] Only unique nicks diplayed in title bar</li>
+  <li>Added protection from hubs/clients sending junk data resulting in high memory usage / crash</li>
+  <li>Updated to yaSSL 1.3.7</li>
+  <li>Added a few TLS options; [U] in transfer status means untrusted TLS (encrypted but certificate not validated)</li>
+  <li>Added certificate generation, OpenSSL must be installed and in PATH for this to work</li>
+  <li>[bug 996] Fixed an issue where directories that are hard to delete were created</li>
+  <li>[bug 1000] Fixed linux compile issue (thanks steven sheehy)</li>
+  <li>[bug 949] Fixed a crash when reading invalid XML files</li>
+  <li>TLS port may now be specified in settings and is only opened if TLS is enabled</li>
+  <li>Added TLS port to /connection</li>
+</ul>
+
 <h2>0.691 <span style="color: gray;">(2006-06-03)</span></h2>
 <ul>
   <li>Links to bugzilla in html changelog</li>
@@ -608,7 +664,7 @@ See the version history of DC++ below.
   <li>Added possibility to log hub status messages (thanks naga)</li>
   <li>Removed full-row-select option (blame garg)</li>
   <li>Added possibility to drag-drop tabs (thanks trem)</li>
-  <li>Added toggles for transferview showing (thanks trem)</li>
+  <li>Added toggles for TransfersFrame showing (thanks trem)</li>
   <li>HTTPS added as chat click link (thanks naga)</li>
   <li>Autoconnect postponed if no nick has been set (thanks sed)</li>
   <li>Various unix compile fixes (thanks christer palm)</li>

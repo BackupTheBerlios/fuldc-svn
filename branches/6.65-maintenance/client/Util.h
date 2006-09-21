@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -173,7 +173,7 @@ public:
 	static string getAppPath() { return appPath; }
 
 	static string getAppName() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		TCHAR buf[MAX_PATH+1];
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
 		return Text::wideToUtf8(wstring(buf, x));
@@ -191,7 +191,7 @@ public:
 
 	/** Path of temporary storage */
 	static string getTempPath() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		TCHAR buf[MAX_PATH + 1];
 		DWORD x = GetTempPath(MAX_PATH, buf);
 		return Text::wideToUtf8(wstring(buf, x));
@@ -216,7 +216,7 @@ public:
 	}
 
 	static string translateError(int aError) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		LPVOID lpMsgBuf;
 		DWORD chars = FormatMessage( 
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -400,7 +400,7 @@ public:
 	}
 
 	static int64_t toInt64(const string& aString) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		return _atoi64(aString.c_str());
 #else
 		return atoll(aString.c_str());

@@ -30,7 +30,7 @@ inline void CDECL debugTrace(const char* format, ...)
 	va_list args;
 	va_start(args, format);
 	
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	char buf[512];
 	
 	_vsnprintf(buf, sizeof(buf), format, args);
@@ -41,8 +41,12 @@ inline void CDECL debugTrace(const char* format, ...)
 	va_end(args);
 }
 
+#if defined(_WIN32) || defined(_WIN64)
+#define snprintf _snprintf
+#endif
+
 #define dcdebug debugTrace
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #define dcassert(exp) \
 do { if (!(exp)) { \
 	dcdebug("Assertion hit in %s(%d): " #exp "\n", __FILE__, __LINE__); \
@@ -56,7 +60,7 @@ _CrtDbgBreak(); } } while(false)
 #endif
 #define dcdrun(exp) exp
 #else //_DEBUG
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #define dcasserta(exp) __assume(exp)
 #else
 #define dcasserta(exp)

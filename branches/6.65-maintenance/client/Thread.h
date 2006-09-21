@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <pthread.h>
 #include <sched.h>
 #include <sys/resource.h>
@@ -35,7 +35,7 @@ STANDARD_EXCEPTION(ThreadException);
 class Thread  
 {
 public:
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	enum Priority {
 		IDLE = THREAD_PRIORITY_IDLE,
 		LOW = THREAD_PRIORITY_BELOW_NORMAL,
@@ -114,7 +114,7 @@ private:
 	Thread(const Thread&);
 	Thread& operator=(const Thread&);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	HANDLE threadHandle;
 	DWORD threadId;
 	static unsigned int  WINAPI starter(void* p) {

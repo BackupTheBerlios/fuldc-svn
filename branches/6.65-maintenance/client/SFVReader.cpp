@@ -23,7 +23,7 @@
 
 #include "StringTokenizer.h"
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/types.h>
 #include <dirent.h>
 #include <fnmatch.h>
@@ -51,7 +51,7 @@ bool SFVReader::tryFile(const string& sfvFile, const string& fileName) throw(Fil
 }
 
 void SFVReader::load(const string& fileName) throw() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	string path = Util::getFilePath(fileName);
 	string fname = Util::getFileName(fileName);
 

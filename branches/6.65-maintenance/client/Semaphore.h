@@ -23,14 +23,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include "CriticalSection.h"
 #include <sys/time.h>
 #endif
 
 class Semaphore  
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 public:
 	Semaphore() throw() {
 		h = CreateSemaphore(NULL, 0, MAXLONG, NULL);

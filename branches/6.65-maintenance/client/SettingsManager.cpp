@@ -65,7 +65,7 @@ const string SettingsManager::settingTags[] =
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
-	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
+	"ShowToolbar", "ShowTransfersFrame", "PopunderPm", "PopunderFilelist",
 	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "MaxFilelistSize", 
@@ -208,7 +208,7 @@ SettingsManager::SettingsManager()
 	setDefault(GET_USER_COUNTRY, true);
 	setDefault(FAV_SHOW_JOINS, false);
 	setDefault(LOG_STATUS_MESSAGES, false);
-	setDefault(SHOW_TRANSFERVIEW, true);
+	setDefault(SHOW_TransfersFrame, true);
 	setDefault(SHOW_STATUSBAR, true);
 	setDefault(SHOW_TOOLBAR, true);
 	setDefault(POPUNDER_PM, false);
@@ -317,7 +317,7 @@ SettingsManager::SettingsManager()
 	setDefault(NOTIFY_BETA_UPDATES, false);
 	setDefault(SPY_IGNORE_TTH, true);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_SIZE_Y, CW_USEDEFAULT);

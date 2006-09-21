@@ -21,7 +21,7 @@
 
 #include "TigerHash.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #if defined(_M_X64)
 #define TIGER_ARCH64
 #endif

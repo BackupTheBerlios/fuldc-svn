@@ -53,7 +53,7 @@ void ClientManager::putClient(Client* aClient) {
 	
 	{
 		Lock l(cs);
-		clients.erase(remove(clients.begin(), clients.end(), aClient), clients.end());
+		clients.remove(aClient);
 	}
 	delete aClient;
 }

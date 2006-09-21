@@ -593,7 +593,7 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 	}
 }
 
-HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	if(TRUE == fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND)) {
 		fileMenu.RemoveMenu(fileMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 	}
@@ -753,7 +753,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 	return FALSE; 
 }
 
-HRESULT DirectoryListingFrame::onXButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /* lParam */, BOOL& /* bHandled */) {
+LRESULT DirectoryListingFrame::onXButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /* lParam */, BOOL& /* bHandled */) {
 	if(GET_XBUTTON_WPARAM(wParam) & XBUTTON1) {
 		back();
 		return TRUE;

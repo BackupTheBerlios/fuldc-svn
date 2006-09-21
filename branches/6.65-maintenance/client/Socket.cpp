@@ -52,7 +52,7 @@ string SocketException::errorToString(int aError) throw() {
 	if(msg.empty())
 	{
 		char tmp[64];
-		sprintf(tmp, CSTRING(UNKNOWN_ERROR), aError);
+		snprintf(tmp, sizeof(tmp), CSTRING(UNKNOWN_ERROR), aError);
 		msg = tmp;
 	}
 	return msg;
@@ -84,7 +84,7 @@ void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
 	socklen_t sz = sizeof(sock_addr);
 
 	sock = check(::accept(listeningSocket.sock, (sockaddr*)&sock_addr, &sz));
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	// Make sure we disable any inherited windows message things for this socket.
 	::WSAAsyncSelect(sock, NULL, 0, 0);
 #endif
@@ -443,9 +443,13 @@ int Socket::wait(time_t millis, int waitFor) throw(SocketException) {
 
 		FD_SET(sock, &wfd);
 		FD_SET(sock, &efd);
-		check(select((int)(sock+1), NULL, &wfd, &efd, &tv));
+		check(select((int)(sock+1), 0, &wfd, &efd, &tv));
 
-		if(FD_ISSET(sock, &wfd) || FD_ISSET(sock, &efd)) {
+		if(FD_ISSET(sock, &wfd)) {
+			return WAIT_CONNECT;
+		}
+
+		if(FD_ISSET(sock, &efd)) {
 			int y = 0;
 			socklen_t z = sizeof(y);
 			check(getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&y, &z));
@@ -567,7 +571,7 @@ void Socket::shutdown() throw() {
 
 void Socket::close() throw() {
 	if(sock != INVALID_SOCKET) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		::closesocket(sock);
 #else
 		::close(sock);

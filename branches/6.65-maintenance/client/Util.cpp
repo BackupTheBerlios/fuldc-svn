@@ -29,7 +29,7 @@
 #include "LogManager.h"
 #include "version.h"
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -78,7 +78,7 @@ void Util::initialize() {
 
 	sgenrand((unsigned long)time(NULL));
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	TCHAR buf[MAX_PATH+1];
 	GetModuleFileName(NULL, buf, MAX_PATH);
 	appPath = Text::fromT(buf);
@@ -127,7 +127,7 @@ void Util::initialize() {
 }
 
 string Util::getConfigPath() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		return getAppPath();
 #else
 		char* home = getenv("HOME");
@@ -144,7 +144,7 @@ string Util::getConfigPath() {
 }
 
 string Util::getDataPath() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	return getAppPath();
 #else
 	// This probably ought to be /usr/share/*...
@@ -161,7 +161,7 @@ string Util::getDataPath() {
 #endif // _WIN32
 }
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 static const char badChars[] = { 
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 	17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
@@ -827,7 +827,7 @@ u_int32_t Util::rand() {
 }
 
 string Util::getOsVersion() {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	string os;
 
 	OSVERSIONINFOEX ver;

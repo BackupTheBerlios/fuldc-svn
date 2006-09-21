@@ -241,10 +241,14 @@ ConnectionManager::Server::Server(short port, const string& ip /* = "0.0.0.0" */
 static const u_int32_t POLL_TIMEOUT = 250;
 
 int ConnectionManager::Server::run() throw() {
-	while(!die) {
-		if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
-			ConnectionManager::getInstance()->accept(sock);
+	try {
+		while(!die) {
+			if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
+				ConnectionManager::getInstance()->accept(sock);
+			}
 		}
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(STRING(LISTENER_FAILED) + e.getError());
 	}
 	return 0;
 }

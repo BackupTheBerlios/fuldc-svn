@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by f:\Programmering\C++\fuldc\branches\6.65-maintenance\DCPlusPlus.rc
+// Used by d:\Programmering\C++\fuldc\branches\6.65-maintenance\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_SLOTSPIN                    101
@@ -621,6 +621,8 @@
 #define IDC_CLEAR                       1374
 #define IDC_PAUSED                      1375
 #define IDC_RESUMED                     1376
+#define IDR_TRANSFERS                   1377
+#define IDC_CATEGORIES                  1378
 #define IDC_DOWNLOAD_FAVORITE_DIRS      2000
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 2200
 #define IDC_BROWSELIST                  3000
@@ -669,7 +671,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        314
-#define _APS_NEXT_COMMAND_VALUE         32824
+#define _APS_NEXT_COMMAND_VALUE         32826
 #define _APS_NEXT_CONTROL_VALUE         1335
 #define _APS_NEXT_SYMED_VALUE           137
 #endif

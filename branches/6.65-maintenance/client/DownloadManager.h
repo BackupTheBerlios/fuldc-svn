@@ -66,7 +66,7 @@ public:
 
 	/**
 	 * @remarks This function is only used from DownloadManager but its
-	 * functionality could be useful in TransferView.
+	 * functionality could be useful in TransfersFrame.
 	 *
 	 * @return Target filename without path.
 	 */
@@ -115,7 +115,7 @@ private:
  * Use this listener interface to get progress information for downloads.
  *
  * @remarks All methods are sending a pointer to a Download but the receiver
- * (TransferView) is not using any of the methods in Download, only methods
+ * (TransfersFrame) is not using any of the methods in Download, only methods
  * from its super class, Transfer. The listener functions should send Transfer
  * objects instead.
  *

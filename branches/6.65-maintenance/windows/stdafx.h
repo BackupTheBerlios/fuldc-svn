@@ -22,7 +22,7 @@
 
 #include "../client/stdinc.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
@@ -36,6 +36,7 @@
 #define _ATL_NO_PERF_SUPPORT
 #define _ATL_NO_SERVICE
 #define _ATL_NO_DOCHOSTUIHANDLER
+#define _ATL_DISABLE_DEPRECATED
 
 #include <winsock2.h>
 

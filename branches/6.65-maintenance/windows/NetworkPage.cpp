@@ -111,8 +111,8 @@ LRESULT NetworkPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 {
 	PropPage::translate((HWND)(*this), texts);
 	
-	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 ) //WinXP & WinSvr2003
-		|| WinUtil::getOsMajor() >= 6 ) //Longhorn
+	if(!((WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 ) //WinXP & WinSvr2003
+		|| WinUtil::getOsMajor() >= 6 )) //Longhorn
 	{
 		::EnableWindow(GetDlgItem(IDC_FIREWALL_UPNP), FALSE);
 	}
@@ -154,11 +154,11 @@ void NetworkPage::fixControls() {
 	BOOL upnp = IsDlgButtonChecked(IDC_FIREWALL_UPNP) == BST_CHECKED;
 	BOOL nat = IsDlgButtonChecked(IDC_FIREWALL_NAT) == BST_CHECKED;
 
-	::EnableWindow(GetDlgItem(IDC_EXTERNAL_IP), direct || upnp || nat);
-	::EnableWindow(GetDlgItem(IDC_OVERRIDE), direct || upnp || nat);
+	::EnableWindow(GetDlgItem(IDC_EXTERNAL_IP), upnp || nat);
+	::EnableWindow(GetDlgItem(IDC_OVERRIDE), upnp || nat);
 
-	::EnableWindow(GetDlgItem(IDC_PORT_TCP), direct || upnp || nat);
-	::EnableWindow(GetDlgItem(IDC_PORT_UDP), direct || upnp || nat);
+	::EnableWindow(GetDlgItem(IDC_PORT_TCP), nat);
+	::EnableWindow(GetDlgItem(IDC_PORT_UDP), nat);
 
 	BOOL socks = IsDlgButtonChecked(IDC_SOCKS5);
 	::EnableWindow(GetDlgItem(IDC_SOCKS_SERVER), socks);

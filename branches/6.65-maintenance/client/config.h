@@ -23,6 +23,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if defined(_WIN64)
+#define _M_X64 1
+#define _STLP_LITTLE_ENDIAN 1
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include "autoconf.h"
 #endif
@@ -90,7 +95,7 @@ typedef unsigned __int64 u_int64_t;
 #define I64_FMT "%lld"
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 
 # define PATH_SEPARATOR '\\'
 # define PATH_SEPARATOR_STR "\\"
@@ -118,7 +123,7 @@ typedef unsigned __int64 u_int64_t;
 
 #define BZ_NO_STDIO
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 // Change these values to use different versions...don't know what happens though...=)
 #define WINVER		0x0600
 # define _WIN32_WINNT 0x0600

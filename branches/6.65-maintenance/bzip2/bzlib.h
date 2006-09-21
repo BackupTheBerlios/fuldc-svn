@@ -115,7 +115,7 @@ typedef
 #include <stdio.h>
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #   include <windows.h>
 #   ifdef small
       /* windows.h define small to char */

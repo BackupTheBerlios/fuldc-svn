@@ -98,13 +98,14 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	return 0;
 }
 
-LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 
 	TimerManager::getInstance()->addListener(this);
 	QueueManager::getInstance()->addListener(this);
 	LogManager::getInstance()->addListener(this);
 
 	WinUtil::init(m_hWnd);
+	m_hMenu = WinUtil::mainMenu;
 
 	trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
 
@@ -113,83 +114,20 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// Set window name
 	SetWindowText(_T(APPNAME) _T(" ") _T(VERSIONSTRING) _T(" ") _T(FULDC) _T(" ") _T(FULVERSIONSTRING));
 
-	// Load images
+	// load command bar images
+	images.CreateFromImage(WinUtil::getIconPath(_T("toolbar.bmp")).c_str(), 16, 34, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+
+	CreateMDIClient();
+	WinUtil::mdiClient = m_hWndMDIClient;
+
 	// create command bar window
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
-
-	m_hMenu = WinUtil::mainMenu;
-
-	// attach menu
+	m_CmdBar.SetMDIClient(m_hWndClient);
 	m_CmdBar.AttachMenu(m_hMenu);
-	// load command bar images
-	images.CreateFromImage(WinUtil::getIconPath(_T("toolbar.bmp")).c_str(), 16, 33, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	m_CmdBar.m_hImageList = images;
-	if(images.GetImageCount() > 22) {
-		//File
-		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
-		m_CmdBar.m_arrCommand.Add(IDC_OPEN_OWN_LIST);
-		m_CmdBar.m_arrCommand.Add(IDC_REFRESH_FILE_LIST);
-		m_CmdBar.m_arrCommand.Add(IDC_OPEN_DOWNLOADS);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_QUICK_CONNECT);
-		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-
-		//View
-		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
-		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
-		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
-		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
-		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);
-		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
-		m_CmdBar.m_arrCommand.Add(IDC_HASH_PROGRESS);
-		
-		//Window
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_ARRANGE);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
-		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_DISCONNECTED);
-		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_PM);
-		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_OFFLINE_PM);
-		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_DIR_LIST);
-		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_SEARCH_FRAME);
-	} else if(images.GetImageCount() == 22) {
-		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
-		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
-		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
-		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
-		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
-		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
-		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
-		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
-		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);	
-		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
-		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
-	}
-
-	// remove old menu
 	SetMenu(NULL);
+
+	m_CmdBar.m_hImageList = images;
+	arrangeIcons();
 
 	HWND hWndToolBar = createToolbar();
 
@@ -210,23 +148,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlLastLines.AddTool(&ti);
 	ctrlLastLines.SetDelayTime(TTDT_AUTOPOP, 30000);
 
-	CreateMDIClient();
-	m_CmdBar.SetMDIClient(m_hWndMDIClient);
-	WinUtil::mdiClient = m_hWndMDIClient;
-
 	ctrlTab.Create(m_hWnd, rcDefault);
 	WinUtil::tabCtrl = &ctrlTab;
-
-	transferView.Create(m_hWnd);
-
-	SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
-	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-	m_nProportionalPos = 8000;
 
 	UIAddToolBar(hWndToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
-	UISetCheck(ID_VIEW_TRANSFER_VIEW, 1);
 
 	// register object for message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -251,8 +178,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
 	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
-	if(!BOOLSETTING(SHOW_TRANSFERVIEW)) PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
-
+	
 	if(!WinUtil::isShift())
 		PostMessage(WM_SPEAKER, AUTO_CONNECT);
 
@@ -271,8 +197,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	WinUtil::SetIcon(m_hWnd, _T("DCPlusPlus.ico"), true);
 
-	// We want to pass this one on to the splitter...hope it get's there...
-	bHandled = FALSE;
 	return 0;
 }
 
@@ -356,15 +280,15 @@ void MainFrame::stopUPnP() {
 }
 
 HWND MainFrame::createToolbar() {
-	largeImages.CreateFromImage(WinUtil::getIconPath(_T("toolbar20.bmp")).c_str(), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
-	largeImagesHot.CreateFromImage(WinUtil::getIconPath(_T("toolbar20-highlight.bmp")).c_str(), 0, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImages.CreateFromImage(WinUtil::getIconPath(_T("toolbar20.bmp")).c_str(), 0, 18, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	largeImagesHot.CreateFromImage(WinUtil::getIconPath(_T("toolbar20-highlight.bmp")).c_str(), 0, 18, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
 	
 	ctrlToolBar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrlToolBar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 	ctrlToolBar.SetImageList(largeImages);
 	ctrlToolBar.SetHotImageList(largeImagesHot);
 
-	const int numButtons = 24;
+	const int numButtons = 25;
 
 
 	TBBUTTON tb[numButtons];
@@ -408,6 +332,12 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_TRANSFERS;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | TBSTYLE_CHECK;
 
 	n++;
 	tb[n].iBitmap = bitmap++;
@@ -618,6 +548,7 @@ LRESULT MainFrame::onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		case IDC_FINISHED_UL: FinishedULFrame::openWindow(); break;
 		case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
 		case IDC_SYSTEM_LOG: SystemFrame::openWindow(); break;
+		case IDC_TRANSFERS: TransfersFrame::openWindow(); break;
 		default: dcassert(0); break;
 	}
 	return 0;
@@ -935,7 +866,6 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
 
 			ShowWindow(SW_HIDE);
-			transferView.prepareClose();
 
 			SearchManager::getInstance()->disconnect();
 			ConnectionManager::getInstance()->disconnect();
@@ -987,6 +917,11 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
+
+	if(m_hWndClient != NULL)
+		::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
+		rect.right - rect.left, rect.bottom - rect.top - ctrlTab.getHeight(),
+		SWP_NOZORDER | SWP_NOACTIVATE);
 	
 	if(ctrlStatus.IsWindow() && ctrlLastLines.IsWindow()) {
 		CRect sr;
@@ -1003,10 +938,6 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	rc.top = rc.bottom - ctrlTab.getHeight();
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
-	
-	CRect rc2 = rect;
-	rc2.bottom = rc.top;
-	SetSplitterRect(rc2);
 }
 
 static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
@@ -1097,22 +1028,6 @@ LRESULT MainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
 	UpdateLayout();
 	SettingsManager::getInstance()->set(SettingsManager::SHOW_STATUSBAR, bVisible);
-	return 0;
-}
-
-LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	BOOL bVisible = !transferView.IsWindowVisible();
-	if(!bVisible) {	
-		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_TOP);
-	} else { 
-		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_NONE);
-	}
-	UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
-	UpdateLayout();
-	SettingsManager::getInstance()->set(SettingsManager::SHOW_TRANSFERVIEW, bVisible);
 	return 0;
 }
 
@@ -1295,4 +1210,72 @@ LRESULT MainFrame::onAppCommand(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	}
 
 	return ret;
+}
+
+void MainFrame::arrangeIcons() {
+	if(images.GetImageCount() > 23) {
+		//File
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_OWN_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_REFRESH_FILE_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_DOWNLOADS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_QUICK_CONNECT);
+		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+
+		//View
+		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
+		m_CmdBar.m_arrCommand.Add(IDC_TRANSFERS);
+		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
+		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
+		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+		m_CmdBar.m_arrCommand.Add(IDC_HASH_PROGRESS);
+
+		//Window
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_ARRANGE);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_DISCONNECTED);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_PM);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_OFFLINE_PM);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_DIR_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_CLOSE_ALL_SEARCH_FRAME);
+	} else if(images.GetImageCount() == 23) {
+		m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
+		m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
+		m_CmdBar.m_arrCommand.Add(IDC_TRANSFERS);
+		m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
+		m_CmdBar.m_arrCommand.Add(IDC_WAITING_USERS);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
+		m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+		m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
+		m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
+		m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
+		m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+		m_CmdBar.m_arrCommand.Add(IDC_SYSTEM_LOG);	
+		m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
+		m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
+	}
 }

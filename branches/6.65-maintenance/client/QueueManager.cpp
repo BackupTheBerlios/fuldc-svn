@@ -42,7 +42,7 @@
 #undef ff
 #endif
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/types.h>
 #include <dirent.h>
 #include <fnmatch.h>
@@ -66,7 +66,7 @@ namespace {
 const string& QueueItem::getTempTarget() {
 	if(!isSet(QueueItem::FLAG_USER_LIST) && tempTarget.empty()) {
 		if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(getTarget()) == -1)) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 			::StringMap sm;
 			if(target.length() >= 3 && target[1] == ':' && target[2] == '\\')
 				sm["targetdrive"] = target.substr(0, 3);
@@ -325,7 +325,7 @@ QueueManager::~QueueManager() throw() {
 	if(!BOOLSETTING(KEEP_LISTS)) {
 		string path = Util::getListPath();
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		WIN32_FIND_DATA data;
 		HANDLE hFind;
 	
@@ -579,7 +579,7 @@ int QueueManager::readdUser(User::Ptr& aUser) throw() {
 }
 
 string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	if(aTarget.length() > MAX_PATH) {
 		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
 	}

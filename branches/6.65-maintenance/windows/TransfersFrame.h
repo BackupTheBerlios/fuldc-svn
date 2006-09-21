@@ -30,33 +30,39 @@
 
 #include "UCHandler.h"
 #include "TypedListViewCtrl.h"
+#include "ExListViewCtrl.h"
 #include "WinUtil.h"
+#include "FlatTabCtrl.h"
 
-class TransferView : public CWindowImpl<TransferView>, private DownloadManagerListener, 
+class TransfersFrame : public MDITabChildWindowImpl<TransfersFrame>, 
+	public CSplitterImpl<TransfersFrame, true>,
+	public StaticFrame<TransfersFrame, ResourceManager::TRANSFERS, IDC_TRANSFERS>,
+	private DownloadManagerListener, 
 	private UploadManagerListener, private ConnectionManagerListener, 
-	public UserInfoBaseHandler<TransferView>, public UCHandler<TransferView>
+	public UserInfoBaseHandler<TransfersFrame>, public UCHandler<TransfersFrame>
 {
 public:
-	DECLARE_WND_CLASS(_T("TransferView"))
+	DECLARE_FRAME_WND_CLASS_EX(_T("TransfersFrame"), IDR_TRANSFERS, 0, COLOR_3DFACE);
 
-	TransferView() { };
-	virtual ~TransferView(void);
+	TransfersFrame() : category(0) { };
+	virtual ~TransfersFrame(void);
 
-	typedef UserInfoBaseHandler<TransferView> uibBase;
-	typedef UCHandler<TransferView> ucBase;
+	typedef MDITabChildWindowImpl<TransfersFrame> baseClass;
+	typedef CSplitterImpl<TransfersFrame, true> splitBase;
+	typedef UserInfoBaseHandler<TransfersFrame> uibBase;
+	typedef UCHandler<TransfersFrame> ucBase;
 
-	BEGIN_MSG_MAP(TransferView)
+	BEGIN_MSG_MAP(TransfersFrame)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_GETDISPINFO, ctrlTransfers.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, ctrlTransfers.onColumnClick)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
 		NOTIFY_HANDLER(IDC_TRANSFERS, NM_DBLCLK, onDoubleClickTransfers)
+		NOTIFY_HANDLER(IDC_CATEGORIES, LVN_ITEMCHANGED, onItemChanged)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SIZE, onSize)
-		MESSAGE_HANDLER(WM_NOTIFYFORMAT, onNotifyFormat)
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_PM_UP, onPmAll)
@@ -68,12 +74,14 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_COPY, IDC_COPY + COLUMN_LAST+2, onCopy)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
+		CHAIN_MSG_MAP(baseClass)
+		CHAIN_MSG_MAP(splitBase)
 	END_MSG_MAP()
 
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onPmAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
@@ -82,9 +90,9 @@ public:
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	
 	void runUserCommand(UserCommand& uc);
-
-	void prepareClose();
 
 	LRESULT onKeyDownTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
@@ -99,18 +107,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlTransfers.forEach(&ItemInfo::deleteSelf);
-		return 0;
-	}
-
-	LRESULT onNotifyFormat(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-#ifdef _UNICODE
-		return NFR_UNICODE;
-#else
-		return NFR_ANSI;
-#endif		
-	}
+	void UpdateLayout(BOOL bResizeBars = TRUE);
 
 private:
 
@@ -123,6 +120,12 @@ private:
 		REMOVE_ITEM,
 		UPDATE_ITEM,
 		UPDATE_ITEMS,
+	};
+
+	enum {
+		ALL,
+		DOWNLOADS,
+		UPLOADS
 	};
 
 	enum {
@@ -200,6 +203,7 @@ private:
 			switch(col) {
 				case COLUMN_STATUS: return 0;
 				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
+				case COLUMN_TOTALTIMELEFT: return compare(a->totalTimeLeft, b->totalTimeLeft);
 				case COLUMN_SPEED: return compare(a->speed, b->speed);
 				case COLUMN_SIZE: return compare(a->size, b->size);
 				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
@@ -267,6 +271,8 @@ private:
 	CriticalSection cs;
 
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS> ctrlTransfers;
+	ExListViewCtrl ctrlCategories;
+
 	static int columnIndexes[];
 	static int columnSizes[];
 
@@ -277,6 +283,14 @@ private:
 	CMenu userMenu;
 
 	CImageList arrows;
+	CImageList categories;
+
+	int category;
+
+	typedef vector<ItemInfo*> Transfers;
+	typedef Transfers::iterator TransferIter;
+
+	Transfers transfers;
 
 	virtual void on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw();
 	virtual void on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw();

@@ -28,7 +28,7 @@
 #include "Speaker.h"
 #include "Singleton.h"
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/time.h>
 #endif
 
@@ -57,7 +57,7 @@ public:
 		return (time_t)time(NULL);
 	}
 	static time_t getTick() { 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		FILETIME ft;
 		GetSystemTimeAsFileTime(&ft);
 		//convert to millisecond resolution, don't care about nanoseconds but don't want
@@ -75,7 +75,7 @@ private:
 
 	friend class Singleton<TimerManager>;
 	TimerManager() { 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 		gettimeofday(&tv, NULL);
 #endif
 	}
@@ -86,7 +86,7 @@ private:
 
 	virtual int run();
 	
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 	static timeval tv;
 #endif
 };

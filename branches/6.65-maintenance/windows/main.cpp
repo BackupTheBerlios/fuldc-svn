@@ -117,8 +117,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
     f.write(LIT("\r\n"));
 
+#if !defined(_WIN64)
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
-
+#endif
 	f.write(LIT("\r\n"));
 
 	f.close();
@@ -154,7 +155,7 @@ static void sendCmdLine(HWND hOther, LPTSTR lpstrCmdLine)
 BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	DWORD result;
 	LRESULT ok = ::SendMessageTimeout(hWnd, WMU_WHERE_ARE_YOU, 0, 0,
-		SMTO_BLOCK | SMTO_ABORTIFHUNG, 5000, &result);
+		SMTO_BLOCK | SMTO_ABORTIFHUNG, 5000, (PDWORD_PTR)&result);
 	if(ok == 0)
 		return TRUE;
 	if(result == WMU_WHERE_ARE_YOU) {

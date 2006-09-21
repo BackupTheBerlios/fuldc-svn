@@ -27,29 +27,51 @@
 #include "../client/IgnoreManager.h"
 
 #include "WinUtil.h"
-#include "TransferView.h"
+#include "TransfersFrame.h"
 #include "LineDlg.h"
 #include "memdc.h"
 #include "SearchFrm.h"
 #include "MainFrm.h"
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_TOTALTIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
-int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75 };
+int TransfersFrame::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_TOTALTIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
+int TransfersFrame::columnSizes[] = { 150, 100, 250, 75, 75, 75, 175, 100, 200, 50, 75 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::TOTAL_TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
 ResourceManager::IP_BARE, ResourceManager::RATIO};
 
-TransferView::~TransferView() {
+TransfersFrame::~TransfersFrame() {
 	arrows.Destroy();
 }
 
-LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT TransfersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 
 	arrows.CreateFromImage(WinUtil::getIconPath(_T("arrows.bmp")).c_str(), 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+	categories.CreateFromImage(WinUtil::getIconPath(_T("transfers.bmp")).c_str(), 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED | LR_LOADFROMFILE);
+
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+
+	ctrlCategories.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_SINGLESEL | 
+		LVS_NOCOLUMNHEADER, WS_EX_CLIENTEDGE, IDC_CATEGORIES);
+	ctrlCategories.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+
+	SetSplitterPanes(ctrlCategories.m_hWnd, ctrlTransfers.m_hWnd, true);
+	m_nProportionalPos = 850;
+	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+	
+	ctrlCategories.SetImageList(categories, LVSIL_SMALL);
+
+	CRect rc;
+	ctrlCategories.GetViewRect(&rc);
+	ctrlCategories.InsertColumn(0, _T("dummy"), LVCFMT_LEFT, rc.Width());
+	ctrlCategories.insert(0, TSTRING(ALL), 0);
+	ctrlCategories.insert(1, TSTRING(DOWNLOADS), 1);
+	ctrlCategories.insert(2, TSTRING(UPLOADS), 2);
+	ctrlCategories.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
+	
 
 	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
@@ -113,10 +135,14 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
-	return 0;
+
+	WinUtil::SetIcon(m_hWnd, _T("transfers.ico"));
+
+	bHandled = FALSE;
+	return 1;
 }
 
-void TransferView::prepareClose() {
+LRESULT TransfersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	ctrlTransfers.saveHeaderOrder(SettingsManager::MAINFRAME_ORDER, SettingsManager::MAINFRAME_WIDTHS,
 		SettingsManager::MAINFRAME_VISIBLE);
 	
@@ -124,17 +150,58 @@ void TransferView::prepareClose() {
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
 
-}
+	ctrlTransfers.forEach(&ItemInfo::deleteSelf);
 
-LRESULT TransferView::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	RECT rc;
-	GetClientRect(&rc);
-	ctrlTransfers.MoveWindow(&rc);
-
+	bHandled = FALSE;
 	return 0;
 }
 
-LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+void TransfersFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
+	RECT rect;
+	GetClientRect(&rect);
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+
+	/*if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)/2;
+		w[2] = w[0] + (tmp-16);
+
+		ctrlStatus.SetParts(3, w);
+	}*/
+
+	CRect rc = rect;
+	//ctrlTransfers.MoveWindow(rc);
+	SetSplitterRect(rc);
+}
+
+LRESULT TransfersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLISTVIEW* nm = reinterpret_cast<NMLISTVIEW*>(pnmh);
+
+	if(nm->uNewState & LVIS_SELECTED) {
+		category = nm->iItem;
+
+		ctrlTransfers.SetRedraw(FALSE);
+		ctrlTransfers.DeleteAllItems();
+
+		for(TransferIter i = transfers.begin(); i != transfers.end(); ++i) {
+			ItemInfo* ii = *i;
+			if((ii->download && category != UPLOADS) || (!ii->download && category != DOWNLOADS)) {
+				ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
+			}
+		}
+
+		ctrlTransfers.SetRedraw(TRUE);
+	}
+	return 0;
+}
+
+LRESULT TransfersFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	if (reinterpret_cast<HWND>(wParam) == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		
@@ -191,7 +258,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	return FALSE; 
 }
 
-void TransferView::runUserCommand(UserCommand& uc) {
+void TransfersFrame::runUserCommand(UserCommand& uc) {
 	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
@@ -214,7 +281,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 };
 
 
-LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT TransfersFrame::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CTSTRING(CONNECTING_FORCED));
@@ -223,7 +290,7 @@ LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
-LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT TransfersFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
 	if(!BOOLSETTING(SHOW_PROGRESS_BARS)) {
 		bHandled = FALSE;
 		return 0;
@@ -373,7 +440,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 	}
 }
 
-LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+LRESULT TransfersFrame::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	if (item->iItem != -1 ) {
 		ctrlTransfers.getItemData(item->iItem)->pm();
@@ -381,12 +448,14 @@ LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 	return 0;
 }
 
-LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT TransfersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == ADD_ITEM) {
 		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
 		ItemInfo* ii = new ItemInfo(ui->user, ui->download);
 		ii->update(*ui);
-		ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
+		transfers.push_back(ii);
+		if((ii->download && category != UPLOADS) || (!ii->download && category != DOWNLOADS))
+			ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
 	} else if(wParam == REMOVE_ITEM) {
 		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
 		int ic = ctrlTransfers.GetItemCount(); 
@@ -394,17 +463,28 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			ItemInfo* ii = ctrlTransfers.getItemData(i);
 			if(*ui == *ii) {
 				ctrlTransfers.DeleteItem(i);
-				delete ii;
+				break;
+			}
+		}
+		for(TransferIter i = transfers.begin(); i != transfers.end(); ++i) {
+			if(*ui == (*(*i))) {
+				delete *i;
+				transfers.erase(i);
 				break;
 			}
 		}
 	} else if(wParam == UPDATE_ITEM) {
 		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
+		for(TransferIter i = transfers.begin(); i != transfers.end(); ++i) {
+			ItemInfo* ii = *i;
+			if(*ui == *ii) {
+				ii->update(*ui);
+			}
+		}
 		int ic = ctrlTransfers.GetItemCount(); 
 		for(int i = 0; i < ic; ++i) {
 			ItemInfo* ii = ctrlTransfers.getItemData(i);
 			if(ii->download == ui->download && ii->user == ui->user) {
-				ii->update(*ui);
 				ctrlTransfers.updateItem(i);
 				break;
 			}
@@ -412,14 +492,23 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	} else if(wParam == UPDATE_ITEMS) {
 		auto_ptr<vector<UpdateInfo*> > v(reinterpret_cast<vector<UpdateInfo*>* >(lParam));
 		ctrlTransfers.SetRedraw(FALSE);
-		int ic = ctrlTransfers.GetItemCount(); 
-		for(int i = 0; i < ic; ++i) {
-			ItemInfo* ii = ctrlTransfers.getItemData(i);
-			for(vector<UpdateInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
-				UpdateInfo* ui = *j;
+		int ic = ctrlTransfers.GetItemCount();
+		for(vector<UpdateInfo*>::iterator i = v->begin(); i != v->end(); ++i) {
+			UpdateInfo* ui = *i;
+
+			for(TransferIter j = transfers.begin(); j != transfers.end(); ++j) {
+				ItemInfo* ii = *j;	
 				if(*ui == *ii) {
 					ii->update(*ui);
+					break;
+				}
+			}
+			
+			for(int i = 0; i < ic; ++i) {
+				ItemInfo* ii = ctrlTransfers.getItemData(i);
+				if(*ui == *ii) {
 					ctrlTransfers.updateItem(i);
+					break;
 				}
 			}
 		}
@@ -434,7 +523,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	return 0;
 }
 
-LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT TransfersFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
 
 	if(i != -1) {
@@ -463,14 +552,14 @@ LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
+TransfersFrame::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
 	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0) 
 { 
 	columns[COLUMN_USER] = Text::toT(u->getNick());
 	columns[COLUMN_HUB] = Text::toT(u->getClientName());
 };
 
-void TransferView::ItemInfo::update(const UpdateInfo& ui) {
+void TransfersFrame::ItemInfo::update(const UpdateInfo& ui) {
 	
 	if(ui.updateMask & UpdateInfo::MASK_FILE_LIST) {
 		filelist = ui.filelist;
@@ -530,7 +619,7 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 	}
 }
 
-void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) {
+void TransfersFrame::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
@@ -539,7 +628,7 @@ void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCq
 	speak(ADD_ITEM, ui);
 }
 
-void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) {
+void TransfersFrame::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
 	ui->setStatusString((aCqi->getState() == ConnectionQueueItem::CONNECTING) ? TSTRING(CONNECTING) : TSTRING(WAITING_TO_RETRY));
@@ -547,17 +636,17 @@ void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueI
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) {
+void TransfersFrame::on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) {
 	speak(REMOVE_ITEM, new UpdateInfo(aCqi->getUser(), aCqi->getDownload()));
 }
 
-void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) {
+void TransfersFrame::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 	ui->setStatusString(Text::toT(aReason));
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
+void TransfersFrame::on(DownloadManagerListener::Starting, Download* aDownload) {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true);
 	ui->setFileList(aDownload->isSet(Download::FLAG_USER_LIST));
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
@@ -581,7 +670,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
+void TransfersFrame::on(DownloadManagerListener::Tick, const Download::List& dl) {
 	vector<UpdateInfo*>* v = new vector<UpdateInfo*>();
 	v->reserve(dl.size());
 
@@ -620,7 +709,7 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 	speak(UPDATE_ITEMS, v);
 }
 
-void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) {
+void TransfersFrame::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true, true);
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setPos(0);
@@ -634,7 +723,7 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
+void TransfersFrame::on(UploadManagerListener::Starting, Upload* aUpload) {
 	UpdateInfo* ui = new UpdateInfo(aUpload->getUserConnection()->getUser(), false);
 
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
@@ -658,7 +747,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
+void TransfersFrame::on(UploadManagerListener::Tick, const Upload::List& ul) {
 	vector<UpdateInfo*>* v = new vector<UpdateInfo*>();
 	v->reserve(ul.size());
 
@@ -694,7 +783,7 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 	speak(UPDATE_ITEMS, v);
 }
 
-void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
+void TransfersFrame::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 	UpdateInfo* ui = new UpdateInfo(aTransfer->getUserConnection()->getUser(), !isUpload);
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
@@ -704,11 +793,11 @@ void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::ItemInfo::disconnect() {
+void TransfersFrame::ItemInfo::disconnect() {
 	ConnectionManager::getInstance()->disconnect(user, download);
 }
 
-LRESULT TransferView::onOpen(WORD , WORD wID, HWND , BOOL& ) {
+LRESULT TransfersFrame::onOpen(WORD , WORD wID, HWND , BOOL& ) {
 	ItemInfo *ii = ctrlTransfers.getItemData(ctrlTransfers.GetNextItem(-1, LVNI_SELECTED));
 
 	tstring path;
@@ -724,13 +813,13 @@ LRESULT TransferView::onOpen(WORD , WORD wID, HWND , BOOL& ) {
 	return 0;
 }
 
-LRESULT TransferView::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+LRESULT TransfersFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	ctrlTransfers.copy(copyMenu, wID - IDC_COPY);
 
 	return 0;
 }
 
-LRESULT TransferView::onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT TransfersFrame::onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo *ii = ctrlTransfers.getItemData(i);
@@ -740,7 +829,7 @@ LRESULT TransferView::onRemoveFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
-LRESULT TransferView::onPmAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+LRESULT TransfersFrame::onPmAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
 	bool download = wID == IDC_PM_DOWN;
 
 	LineDlg dlg;

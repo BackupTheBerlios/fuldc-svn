@@ -161,7 +161,7 @@ private:
 		}
 
 		virtual int run();
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 		bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32);
 #endif
 		void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {

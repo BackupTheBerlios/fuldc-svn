@@ -29,13 +29,13 @@
 #include "Text.h"
 #include "Streams.h"
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #include "../zlib/zlib.h"
 #else
 #include <zlib.h>
@@ -49,7 +49,7 @@ public:
 		TRUNCATE = 0x04
 	};
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	enum {
 		READ = GENERIC_READ,
 		WRITE = GENERIC_WRITE,
@@ -436,7 +436,7 @@ public:
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); }
 
 protected:
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	HANDLE h;
 #else
 	int h;

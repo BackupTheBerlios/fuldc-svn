@@ -199,6 +199,7 @@ string ResourceManager::strings[] = {
 "Hub (last seen on if offline)", 
 "Time last seen", 
 "left", 
+"Listening socket failed (you need to restart DC++): ", 
 "Loading DC++, please wait...", 
 "Lookup TTH at Bitzi.com", 
 "Low", 
@@ -799,6 +800,8 @@ string ResourceManager::strings[] = {
 "Clear Queue", 
 "Pause", 
 "Resume", 
+"Transfers", 
+"Transfers\tCtrl+T", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -998,6 +1001,7 @@ string ResourceManager::names[] = {
 "LastHub", 
 "LastSeen", 
 "Left", 
+"ListenerFailed", 
 "Loading", 
 "LookupAtBitzi", 
 "Low", 
@@ -1598,4 +1602,6 @@ string ResourceManager::names[] = {
 "ClearQueue", 
 "Pause", 
 "Resume", 
+"Transfers", 
+"MenuTransfers", 
 };

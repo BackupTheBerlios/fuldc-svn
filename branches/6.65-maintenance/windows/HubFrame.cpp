@@ -506,7 +506,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 			updateList.clear();
 		}
-		if(ctrlUsers.getSortColumn() != COLUMN_NICK)
+		if(resort && ctrlUsers.getSortColumn() != COLUMN_NICK)
 			ctrlUsers.resort();
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {

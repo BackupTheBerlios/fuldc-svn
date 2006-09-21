@@ -444,7 +444,7 @@ void HashManager::HashStore::createDataFile(const string& name) {
 
 #define BUF_SIZE (256*1024)
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
 	HANDLE h = INVALID_HANDLE_VALUE;
 	DWORD x, y;
@@ -594,7 +594,7 @@ int HashManager::Hasher::run() {
 			//re-initalize currentSize here to avoid size differences if the file's changed
 			//since it's been added to the hash queue
 			int64_t sizeLeft = currentSize = size;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 			if(buf == NULL) {
 				virtualBuf = true;
 				buf = (u_int8_t*)VirtualAlloc(NULL, 2*BUF_SIZE, MEM_COMMIT, PAGE_READWRITE);
@@ -619,7 +619,7 @@ int HashManager::Hasher::run() {
 					xcrc32 = &crc32;
 
 				size_t n = 0;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 				TigerTree fastTTH(bs);
 				tth = &fastTTH;
 				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size, xcrc32)) {
@@ -650,7 +650,7 @@ int HashManager::Hasher::run() {
 						}
 						sizeLeft -= n;
 					} while (n > 0 && !stop);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 				} else {
 					sizeLeft = 0;
 				}
@@ -679,7 +679,7 @@ int HashManager::Hasher::run() {
 		running = false;
 		if(buf != NULL && (last || stop)) {
 			if(virtualBuf) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 				VirtualFree(buf, 0, MEM_RELEASE);
 #endif
 			} else {
