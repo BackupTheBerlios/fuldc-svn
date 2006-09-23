@@ -87,9 +87,24 @@ typedef UCHandler<DirectoryListingFrame> ucBase;
 		FINISHED,
 		ABORTED
 	};
-	
+
+	enum {
+		STATUS_TEXT,
+		STATUS_SPEED,
+		STATUS_TOTAL_FILES,
+		STATUS_TOTAL_SIZE,
+		STATUS_SELECTED_FILES,
+		STATUS_SELECTED_SIZE,
+		STATUS_FILE_LIST_DIFF,
+		STATUS_MATCH_QUEUE,
+		STATUS_FIND,
+		STATUS_NEXT,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+
 	DirectoryListingFrame(const User::Ptr& aUser);
-	virtual ~DirectoryListingFrame() { 
+	virtual ~DirectoryListingFrame() {
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
 	
@@ -304,7 +319,7 @@ private:
 			FILE,
 			DIRECTORY
 		} type;
-		
+
 		union {
 			DirectoryListing::File* file;
 			DirectoryListing::Directory* dir;
@@ -318,8 +333,7 @@ private:
 
 			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(f->getSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
-			if(f->getTTH() != NULL)
-				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
+			columns[COLUMN_TTH] = Text::toT(f->getTTH().toBase32());
 		};
 		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) { 
 			columns[COLUMN_FILENAME] = Text::toT(d->getName());
@@ -331,7 +345,7 @@ private:
 			dcassert(col >= 0 && col < COLUMN_LAST);
 			return columns[col];
 		}
-		
+
 		struct TotalSize {
 			TotalSize() : total(0) { }
 			void operator()(ItemInfo* a) { total += a->type == DIRECTORY ? a->dir->getTotalSize() : a->file->getSize(); }
@@ -383,7 +397,7 @@ private:
 	private:
 		tstring columns[COLUMN_LAST];
 	};
-	
+
 	CMenu targetMenu;
 	CMenu targetDirMenu;
 	CMenu fileMenu;
@@ -395,15 +409,15 @@ private:
 	CContainedWindow listContainer;
 
 	StringList targets;
-	
+
 	deque<string> history;
 	size_t historyIndex;
-	
+
 	CTreeViewCtrl ctrlTree;
 	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;
 	CStatusBarCtrl ctrlStatus;
 	HTREEITEM treeRoot;
-	
+
 	CButton ctrlFind, ctrlFindNext;
 	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
@@ -421,13 +435,15 @@ private:
 	bool mylist;
 	bool loading;
 
-	int statusSizes[9];
+	int statusSizes[10];
 	
 	DirectoryListing* dl;
 
+	StringMap ucLineParams;
+
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
-	
+
 	static UserMap lists;
 
 	static int columnIndexes[COLUMN_LAST];

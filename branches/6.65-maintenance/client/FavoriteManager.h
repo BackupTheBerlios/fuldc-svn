@@ -35,21 +35,22 @@
 
 class HubEntry {
 public:
-	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
-	name(aName), server(aServer), description(aDescription), country(Util::emptyString), 
+
+	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() :
+	name(aName), server(aServer), description(aDescription), country(Util::emptyString),
 	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { }
 
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers, const string& aCountry,
 		const string& aShared, const string& aMinShare, const string& aMinSlots, const string& aMaxHubs, const string& aMaxUsers,
-		const string& aReliability, const string& aRating) : name(aName), server(aServer), description(aDescription), country(aCountry), 
+		const string& aReliability, const string& aRating) : name(aName), server(aServer), description(aDescription), country(aCountry),
 		rating(aRating), reliability((float)(Util::toFloat(aReliability) / 100.0)), shared(Util::toInt64(aShared)), minShare(Util::toInt64(aMinShare)),
-		users(Util::toInt(aUsers)), minSlots(Util::toInt(aMinSlots)), maxHubs(Util::toInt(aMaxHubs)), maxUsers(Util::toInt(aMaxUsers)) 
+		users(Util::toInt(aUsers)), minSlots(Util::toInt(aMinSlots)), maxHubs(Util::toInt(aMaxHubs)), maxUsers(Util::toInt(aMaxUsers))
 	{
 
 	}
 
 	HubEntry() throw() { }
-	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country), 
+	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country),
 		rating(rhs.rating), reliability(rhs.reliability), shared(rhs.shared), minShare(rhs.minShare), users(rhs.users), minSlots(rhs.minSlots),
 		maxHubs(rhs.maxHubs), maxUsers(rhs.maxUsers) { }
 
@@ -127,7 +128,7 @@ private:
 class FavoriteManagerListener {
 public:
 	virtual ~FavoriteManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> DownloadStarting;
 	typedef X<1> DownloadFailed;
@@ -176,7 +177,7 @@ public:
 
 // Favorite Users
 	User::List& getFavoriteUsers() { return users; }
-	
+
 	void addFavoriteUser(User::Ptr& aUser);
 	void removeFavoriteUser(User::Ptr& aUser);
 
@@ -197,6 +198,7 @@ public:
 // User Commands
 	UserCommand addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub);
 	bool getUserCommand(int cid, UserCommand& uc);
+	int findUserCommand(const string& aName);
 	bool moveUserCommand(int cid, int pos);
 	void updateUserCommand(const UserCommand& uc);
 	void removeUserCommand(int cid);
@@ -204,11 +206,11 @@ public:
 	void removeHubUserCommands(int ctx, const string& hub);
 
 	UserCommandList getUserCommands() { Lock l(cs); return userCommands; }
-	UserCommandList getUserCommands(int ctx, const string& hub, bool op);
+	UserCommandList getUserCommands(int ctx, const StringList& hub);
 
 	void load();
 	void save();
-	
+
 private:
 	FavoriteHubEntry::List favoriteHubs;
 	StringPairList favoriteDirs;
@@ -228,12 +230,12 @@ private:
 	int lastServer;
 	HubTypes listType;
 	string downloadBuf;
-	
+
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
 	friend class Singleton<FavoriteManager>;
-	
+
 	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
 	}
@@ -245,10 +247,10 @@ private:
 			delete c;
 			c = NULL;
 		}
-		
+
 		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction());
 	}
-	
+
 	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
 			if(Util::stricmp((*i)->getServer(), aServer) == 0) {
@@ -271,12 +273,12 @@ private:
 	void onHttpFinished() throw();
 
 	// SettingsManagerListener
-	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw() {
 		load(xml);
 	}
 
-	void load(SimpleXML* aXml);
-	
+	void load(SimpleXML& aXml);
+
 	string getConfigFile() { return Util::getConfigPath() + "Favorites.xml"; }
 };
 

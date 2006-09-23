@@ -83,14 +83,14 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	string param;
 
 	string::size_type x;
-	
+
 	if( (x = aLine.find(' ')) == string::npos) {
 		cmd = aLine;
 	} else {
 		cmd = aLine.substr(0, x);
 		param = aLine.substr(x+1);
 	}
-	
+
 	if(cmd == "$MyNick") {
 		if(!param.empty())
 			fire(UserConnectionListener::MyNick(), this, Text::acpToUtf8(param));
@@ -100,8 +100,8 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 			fire(UserConnectionListener::Direction(), this, param.substr(0, x), param.substr(x+1));
 		}
 	} else if(cmd == "$Error") {
-		if(Util::stricmp(param.c_str(), FILE_NOT_AVAILABLE) == 0 || 
-			param.rfind(/*path/file*/" no more exists") != string::npos) { 
+		if(Util::stricmp(param.c_str(), FILE_NOT_AVAILABLE) == 0 ||
+			param.rfind(/*path/file*/" no more exists") != string::npos) {
 			fire(UserConnectionListener::FileNotAvailable(), this);
 		} else {
 			fire(UserConnectionListener::Failed(), this, param);
@@ -168,7 +168,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	}
 }
 
-void UserConnection::connect(const string& aServer, short aPort) throw(SocketException, ThreadException) { 
+void UserConnection::connect(const string& aServer, short aPort) throw(SocketException, ThreadException) {
 	dcassert(!socket);
 
 	socket = BufferedSocket::getSocket(0);

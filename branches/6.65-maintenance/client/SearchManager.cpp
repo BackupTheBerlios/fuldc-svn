@@ -26,14 +26,14 @@
 #include "ShareManager.h"
 #include "ResourceManager.h"
 
-SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH) :
+SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue& aTTH) :
 	file(aFile), hubName(aClient->getName()), hubURL(aClient->getIpPort()), user(aClient->getMe()), 
 	size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
-	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), ref(1) { }
+	tth(aTTH), ref(1) { }
 
-SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH) :
+SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, const TTHValue& aTTH) :
 	file(aFile), size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
-	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), ref(1) { }
+	tth(aTTH), ref(1) { }
 
 string SearchResult::toSR(const Client& c) const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
@@ -56,11 +56,7 @@ string SearchResult::toSR(const Client& c) const {
 	tmp.append(1, '/');
 	tmp.append(Util::toString(slots));
 	tmp.append(1, '\x05');
-	if(getTTH() == NULL) {
-		tmp.append(Text::utf8ToAcp(c.getNameWithTopic()));
-	} else {
-		tmp.append("TTH:" + getTTH()->toBase32());
-	}
+	tmp.append("TTH:" + getTTH().toBase32());
 	tmp.append(" (", 2);
 	tmp.append(c.getIpPort());
 	tmp.append(")|", 2);
@@ -72,9 +68,7 @@ AdcCommand SearchResult::toRES(char type) const {
 	cmd.addParam("SI", Util::toString(size));
 	cmd.addParam("SL", Util::toString(freeSlots));
 	cmd.addParam("FN", Util::toAdcFile(file));
-	if(getTTH() != NULL) {
-		cmd.addParam("TR", getTTH()->toBase32());
-	}
+	cmd.addParam("TR", getTTH().toBase32());
 	return cmd;
 }
 
@@ -92,9 +86,9 @@ void SearchManager::search(StringList& who, const string& aName, int64_t aSize /
 	}
 }
 
-string SearchResult::getFileName() const { 
-	if(getType() == TYPE_FILE) 
-		return Util::getFileName(getFile()); 
+string SearchResult::getFileName() const {
+	if(getType() == TYPE_FILE)
+		return Util::getFileName(getFile());
 
 	if(getFile().size() < 2)
 		return getFile();
@@ -106,36 +100,13 @@ string SearchResult::getFileName() const {
 	return getFile().substr(i + 1);
 }
 
-void SearchManager::listen() throw(Exception) {
-	unsigned short lastPort = (unsigned short)SETTING(UDP_PORT);
-
-	if(lastPort == 0)
-		lastPort = (unsigned short)Util::rand(1025, 32000);
-
-	unsigned short firstPort = lastPort;
+void SearchManager::listen() throw(SocketException) {
 
 	disconnect();
 
-	while(true) {
-		try {
-			if(socket != NULL) {
-				disconnect();
-			} else {
-				socket = new Socket();
-			}
-
-			socket->create(Socket::TYPE_UDP);
-			socket->bind(lastPort);
-			port = lastPort;
-			break;
-		} catch(const Exception&) {
-			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-			if(!SettingsManager::getInstance()->isDefault(SettingsManager::UDP_PORT) || (firstPort == newPort)) {
-				throw Exception("Could not find a suitable free port");
-			}
-			lastPort = newPort;
-		}
-	}
+	socket = new Socket();
+	socket->create(Socket::TYPE_UDP);
+	port = socket->bind(static_cast<short>(SETTING(UDP_PORT)));
 
 	start();
 }
@@ -154,7 +125,7 @@ void SearchManager::disconnect() throw() {
 
 #define BUFSIZE 8192
 int SearchManager::run() {
-	
+
 	AutoArray<u_int8_t> buf(BUFSIZE);
 	int len;
 
@@ -182,7 +153,7 @@ int SearchManager::run() {
 			return 1;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -191,7 +162,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 	if(x.compare(0, 4, "$SR ") == 0) {
 		string::size_type i, j;
 		// Directories: $SR <nick><0x20><directory><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
-		// Files:       $SR <nick><0x20><filename><0x05><filesize><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
+		// Files:		$SR <nick><0x20><filename><0x05><filesize><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
 		i = 4;
 		if( (j = x.find(' ', i)) == string::npos) {
 			return;
@@ -201,13 +172,13 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 
 		// A file has 2 0x05, a directory only one
 		size_t cnt = count(x.begin() + j, x.end(), 0x05);
-		
+
 		SearchResult::Types type = SearchResult::TYPE_FILE;
 		string file;
 		int64_t size = 0;
 
 		if(cnt == 1) {
-			// We have a directory...find the first space beyond the first 0x05 from the back 
+			// We have a directory...find the first space beyond the first 0x05 from the back
 			// (dirs might contain spaces as well...clever protocol, eh?)
 			type = SearchResult::TYPE_DIRECTORY;
 			// Get past the hubname that might contain spaces
@@ -221,7 +192,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			if(j < i + 1) {
 				return;
 			}
-			file = Text::acpToUtf8(x.substr(i, j-i) + '\\');
+			file = Text::acpToUtf8(x.substr(i, j-i)) + '\\';
 		} else if(cnt == 2) {
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
@@ -234,7 +205,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			size = Util::toInt64(x.substr(i, j-i));
 		}
 		i = j + 1;
-		
+
 		if( (j = x.find('/', i)) == string::npos) {
 			return;
 		}
@@ -253,14 +224,25 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		if( (j = x.rfind(')')) == string::npos) {
 			return;
 		}
+
 		string hubIpPort = x.substr(i, j-i);
 		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
 
+		string tth;
+		if(hubName.compare(0, 4, "TTH:") == 0) {
+			tth = hubName.substr(4);
+			hubName = user->getClientName();
+		}
+
+		if(tth.empty() && type == SearchResult::TYPE_FILE) {
+			return;
+		}
+
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, hubIpPort, remoteIp);
+			file, hubName, hubIpPort, remoteIp, TTHValue(tth));
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
-	} 
+	}
 }
 
 string SearchManager::clean(const string& aSearchString) {

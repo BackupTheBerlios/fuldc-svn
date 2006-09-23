@@ -41,7 +41,7 @@ void DirectoryListing::loadFile(const string& name) {
 
 	// For now, we detect type by ending...
 	string ext = Util::getFileExt(name);
-		
+
 	if(Util::stricmp(ext, ".bz2") == 0) {
 		::File ff(name, ::File::READ, ::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
@@ -115,7 +115,10 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			if(s.empty())
 				return;
 			const string& h = getAttrib(attribs, sTTH, 2);
-			DirectoryListing::File* f = h.empty() ? new DirectoryListing::File(cur, n, Util::toInt64(s)) : new DirectoryListing::File(cur, n, Util::toInt64(s), h);
+			if(h.empty()) {
+				return;
+			}
+			DirectoryListing::File* f = new DirectoryListing::File(cur, n, Util::toInt64(s), h);
 			cur->files.push_back(f);
 		} else if(name == sDirectory) {
 			const string& n = getAttrib(attribs, sName, 0);
@@ -125,7 +128,7 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			bool incomp = getAttrib(attribs, sIncomplete, 1) == "1";
 			DirectoryListing::Directory* d = NULL;
 			if(updating) {
-				for(DirectoryListing::Directory::Iter i  = cur->directories.begin(); i != cur->directories.end(); ++i) {
+				for(DirectoryListing::Directory::Iter i = cur->directories.begin(); i != cur->directories.end(); ++i) {
 					if((*i)->getName() == n) {
 						d = *i;
 						if(!d->getComplete())
@@ -238,8 +241,7 @@ void DirectoryListing::download(const string& aDir, const string& aTarget, bool 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view, bool highPrio) {
 	int flags = (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
-	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), 
-		getPath(aFile) + aFile->getName(), flags);
+	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), flags);
 
 	if(highPrio)
 		QueueManager::getInstance()->setPriority(aTarget, QueueItem::HIGHEST);
@@ -261,10 +263,10 @@ DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directo
 }
 
 struct HashContained {
-	HashContained(const HASH_SET<TTHValue, TTHValue::Hash>& l) : tl(l) { }
-	const HASH_SET<TTHValue, TTHValue::Hash>& tl;
+	HashContained(const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) : tl(l) { }
+	const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& tl;
 	bool operator()(const DirectoryListing::File::Ptr i) const {
-		return tl.count(*(i->getTTH())) && (DeleteFunction()(i), true);
+		return tl.count((i->getTTH())) && (DeleteFunction()(i), true);
 	}
 private:
 	HashContained& operator=(HashContained&);
@@ -281,20 +283,20 @@ struct DirectoryEmpty {
 void DirectoryListing::Directory::filterList(DirectoryListing& dirList) {
 		DirectoryListing::Directory* d = dirList.getRoot();
 
-		HASH_SET<TTHValue, TTHValue::Hash> l;
+		HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) l;
 		d->getHashList(l);
 		filterList(l);
 }
 
-void DirectoryListing::Directory::filterList(const HASH_SET<TTHValue, TTHValue::Hash>& l) {
+void DirectoryListing::Directory::filterList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->filterList(l);
 	directories.erase(std::remove_if(directories.begin(),directories.end(),DirectoryEmpty()),directories.end());
 	files.erase(std::remove_if(files.begin(),files.end(),HashContained(l)),files.end());
 }
 
-void DirectoryListing::Directory::getHashList(HASH_SET<TTHValue, TTHValue::Hash>& l) {
+void DirectoryListing::Directory::getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->getHashList(l);
-	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert(*(*i)->getTTH());
+	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert((*i)->getTTH());
 }
 
 int64_t DirectoryListing::Directory::getTotalSize(bool adl) {
@@ -322,7 +324,7 @@ u_int8_t DirectoryListing::Directory::checkDupes() {
 		result = (*i)->checkDupes();
 		if(getDupe() == Directory::NONE && first)
 			setDupe(result);
-		else if(getDupe() == Directory::NONE && !first)
+		else if(result != Directory::NONE && getDupe() == Directory::NONE && !first)
 			setDupe(Directory::PARTIAL_DUPE);
 		else if(getDupe() == Directory::DUPE && result != Directory::DUPE)
 			setDupe(Directory::PARTIAL_DUPE);
@@ -335,7 +337,7 @@ u_int8_t DirectoryListing::Directory::checkDupes() {
 		//don't count 0 byte files since it'll give lots of partial dupes
 		//of no interest
 		if((*i)->getSize() > 0) {
-			(*i)->setDupe((*i)->getTTH() != NULL ? ShareManager::getInstance()->isTTHShared(*(*i)->getTTH()) : false);
+			(*i)->setDupe(ShareManager::getInstance()->isTTHShared((*i)->getTTH()));
 			
 			//if it's the first file in the dir and no sub-folders exist mark it as a dupe.
 			if(getDupe() == Directory::NONE && (*i)->getDupe() && directories.empty() && first)

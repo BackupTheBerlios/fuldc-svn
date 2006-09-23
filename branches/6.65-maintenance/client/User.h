@@ -43,7 +43,8 @@ public:
 		HIDDEN_BIT,
 		HUB_BIT,
 		BOT_BIT,
-		TTH_GET_BIT
+		TTH_GET_BIT,
+		OLD_CLIENT_BIT
 	};
 
 	enum {
@@ -55,7 +56,8 @@ public:
 		HIDDEN = 1<<HIDDEN_BIT,
 		HUB = 1<<HUB_BIT,
 		BOT = 1<<BOT_BIT,
-		TTH_GET = 1<<TTH_GET_BIT
+		TTH_GET = 1<<TTH_GET_BIT,
+		OLD_CLIENT = 1<<OLD_CLIENT_BIT
 	};
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;

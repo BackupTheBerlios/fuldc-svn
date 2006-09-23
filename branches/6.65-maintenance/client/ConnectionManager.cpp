@@ -157,8 +157,8 @@ void ConnectionManager::on(TimerManagerListener::Second, time_t aTick) throw() {
 					// Not online anymore...remove it from the pending...
 					removed.push_back(cqi);
 					continue;
-				} 
-				
+				}
+
 				if(cqi->getUser()->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
 					passiveUsers.push_back(cqi->getUser());
 					removed.push_back(cqi);
@@ -216,7 +216,7 @@ void ConnectionManager::on(TimerManagerListener::Second, time_t aTick) throw() {
 	}
 }
 
-void ConnectionManager::on(TimerManagerListener::Minute, time_t aTick) throw() {	
+void ConnectionManager::on(TimerManagerListener::Minute, time_t aTick) throw() {
 	Lock l(cs);
 
 	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
@@ -236,7 +236,6 @@ ConnectionManager::Server::Server(short port, const string& ip /* = "0.0.0.0" */
 
 	start();
 }
-
 
 static const u_int32_t POLL_TIMEOUT = 250;
 
@@ -280,7 +279,7 @@ void ConnectionManager::accept(const Socket& sock) throw() {
 	uc->setFlag(UserConnection::FLAG_INCOMING);
 	uc->setState(UserConnection::STATE_SUPNICK);
 	uc->setLastActivity(GET_TICK());
-	try { 
+	try {
 		uc->accept(sock);
 	} catch(const Exception&) {
 		putConnection(uc);

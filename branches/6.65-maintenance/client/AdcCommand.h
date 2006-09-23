@@ -166,28 +166,27 @@ public:
 		try {
 			AdcCommand c(aLine, nmdc);
 
-#define CMD(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
+#define C(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
 			switch(c.getCommand()) {
-				CMD(SUP);
-				CMD(STA);
-				CMD(INF);
-				CMD(MSG);
-				CMD(SCH);
-				CMD(RES);
-				CMD(CTM);
-				CMD(RCM);
-				CMD(GPA);
-				CMD(PAS);
-				CMD(QUI);
-				CMD(DSC);
-				CMD(GET);
-				CMD(GFI);
-				CMD(SND);
-				CMD(NTD);
-			default: 
+				C(SUP);
+				C(STA);
+				C(INF);
+				C(MSG);
+				C(SCH);
+				C(RES);
+				C(CTM);
+				C(RCM);
+				C(GPA);
+				C(PAS);
+				C(QUI);
+				C(DSC);
+				C(GET);
+				C(GFI);
+				C(SND);
+			default:
 				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
 				break;
-#undef CMD
+#undef C
 
 			}
 		} catch(const ParseException&) {

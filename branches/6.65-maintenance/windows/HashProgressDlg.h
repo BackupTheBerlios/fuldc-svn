@@ -64,7 +64,7 @@ public:
 		progress.Attach(GetDlgItem(IDC_HASH_PROGRESS));
 		progress.SetRange(0, 10000);
 		updateStats();
-		
+
 		SetTimer(1, 1000);
 		return TRUE;
 	}

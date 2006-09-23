@@ -61,7 +61,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 			else
 				throw ParseException("Unknown escape");
 			break;
-		case ' ': 
+		case ' ':
 			// New parameter...
 			{
 				parameters.push_back(cur);
@@ -112,7 +112,7 @@ bool AdcCommand::getParam(const char* name, size_t start, string& ret) const {
 
 bool AdcCommand::hasFlag(const char* name, size_t start) const {
 	for(string::size_type i = start; i < getParameters().size(); ++i) {
-		if(toCode(name) == toCode(getParameters()[i].c_str()) && 
+		if(toCode(name) == toCode(getParameters()[i].c_str()) &&
 			getParameters()[i][2] == '1' &&
 			getParameters()[i].size() == 3)
 		{

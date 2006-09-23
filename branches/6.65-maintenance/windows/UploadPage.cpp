@@ -56,7 +56,7 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
 	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
-		
+
 	ctrlTotal.Attach(GetDlgItem(IDC_TOTAL));
 
 	PropPage::read((HWND)*this, items);
@@ -73,7 +73,7 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
 		ctrlDirectories.SetCheckState(i, ShareManager::getInstance()->isIncoming(j->second) );
 	}
-	
+
 	ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 
 	CUpDownCtrl updown;
@@ -89,9 +89,9 @@ LRESULT UploadPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	HDROP drop = (HDROP)wParam;
 	TCHAR buf[MAX_PATH];
 	UINT nrFiles;
-	
+
 	nrFiles = DragQueryFile(drop, (UINT)-1, NULL, 0);
-	
+
 	for(UINT i = 0; i < nrFiles; ++i){
 		if(DragQueryFile(drop, i, buf, MAX_PATH)){
 			if(PathIsDirectory(buf))
@@ -170,7 +170,7 @@ LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	if(WinUtil::browseDirectory(target, m_hWnd)) {
 		addDirectory(target);
 	}
-	
+
 	return 0;
 }
 
@@ -194,7 +194,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		ctrlDirectories.DeleteItem(i);
 	}
-	
+
 	return 0;
 }
 

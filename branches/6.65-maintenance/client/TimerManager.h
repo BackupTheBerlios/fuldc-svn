@@ -35,7 +35,7 @@
 class TimerManagerListener {
 public:
 	virtual ~TimerManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Second;
 	typedef X<1> Minute;
@@ -74,7 +74,7 @@ private:
 	Semaphore s;
 
 	friend class Singleton<TimerManager>;
-	TimerManager() { 
+	TimerManager() {
 #if !(defined(_WIN32) || defined(_WIN64))
 		gettimeofday(&tv, NULL);
 #endif
@@ -85,7 +85,7 @@ private:
 	}
 
 	virtual int run();
-	
+
 #if !(defined(_WIN32) || defined(_WIN64))
 	static timeval tv;
 #endif

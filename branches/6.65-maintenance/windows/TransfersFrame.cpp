@@ -216,7 +216,7 @@ LRESULT TransfersFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 			itemI = ctrlTransfers.getItemData(i);
 			bCustomMenu = true;
 
-			prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientUrl()), itemI->user->isClientOp());
+			prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, itemI->user->getClientUrl());
 			//userMenu.AppendMenu(MF_SEPARATOR);
 		}
 
@@ -536,17 +536,14 @@ LRESULT TransfersFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 		//create a copy of the tth to avoid holding the filequeue lock while calling
 		//into searchframe, searchmanager and all of that
-		TTHValue *val = NULL;
-		if(qi != queue.end() && qi->second->getTTH()) {
-			val = new TTHValue(*qi->second->getTTH());
+		TTHValue val;
+		if(qi != queue.end()) {
+			val = qi->second->getTTH();
 		}
 
 		QueueManager::getInstance()->unlockQueue();
 
-		if(val) {
-			WinUtil::searchHash(val);
-			delete val;
-		} 
+		WinUtil::searchHash(&val);
 	}
 
 	return 0;

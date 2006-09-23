@@ -92,6 +92,12 @@ public:
 	static void init(HWND hWnd);
 	static void uninit();
 
+	static string getAppName() {
+		TCHAR buf[MAX_PATH+1];
+		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
+		return Text::fromT(tstring(buf, x));
+	}
+
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 	static tstring encodeFont(LOGFONT const& font);
 	
@@ -152,7 +158,7 @@ public:
 	static void addLastDir(const tstring& dir);
 
 	static tstring getHelpFile() {
-		return Text::toT(Util::getAppPath() + "DCPlusPlus.chm");
+		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	}
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
@@ -178,7 +184,7 @@ public:
 	static int getDirMaskedIndex() { return dirMaskedIndex; }
 
 	static double toBytes(TCHAR* aSize);
-	
+
 	static int getOsMajor();
 	static int getOsMinor();
 
@@ -188,7 +194,7 @@ public:
 	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
 	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
 	static void getContextMenuPos(CFulEditCtrl& aEdit,	POINT& aPt);
-	
+
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
@@ -221,8 +227,8 @@ public:
 	}
 
 private:
-	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
-	
+	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);
+
 };
 
 #endif // !defined(WIN_UTIL_H)

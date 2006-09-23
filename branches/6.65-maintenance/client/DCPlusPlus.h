@@ -23,16 +23,20 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if defined(_WIN32) || defined(_WIN64)
+#define snprintf _snprintf
+#endif
+
 #ifdef _DEBUG
 
 inline void CDECL debugTrace(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	
+
 #if defined(_WIN32) || defined(_WIN64)
 	char buf[512];
-	
+
 	_vsnprintf(buf, sizeof(buf), format, args);
 	OutputDebugStringA(buf);
 #else // _WIN32
@@ -40,10 +44,6 @@ inline void CDECL debugTrace(const char* format, ...)
 #endif // _WIN32
 	va_end(args);
 }
-
-#if defined(_WIN32) || defined(_WIN64)
-#define snprintf _snprintf
-#endif
 
 #define dcdebug debugTrace
 #if defined(_WIN32) || defined(_WIN64)

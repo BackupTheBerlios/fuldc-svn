@@ -38,9 +38,10 @@
 #include "AdcCommand.h"
 
 class SearchManager;
+class SocketException;
 
 class SearchResult : public FastAlloc<SearchResult> {
-public:	
+public:
 
 	enum Types {
 		TYPE_FILE,
@@ -51,22 +52,22 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, const TTHValue* aTTH);
-	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue* aTTH);
+	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, const TTHValue& aTTH);
+	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue& aTTH);
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubURL, const string& aIp) :
+		const string& aHubURL, const string& aIp, TTHValue aTTH) :
 	file(aFile), hubName(aUser->getClientName()), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 
-		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), ref(1) { }
+		tth(aTTH), ref(1) { }
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, 
-		const string& aHubURL, TTHValue* aTTH) :
+		const string& aHubURL, TTHValue& aTTH) :
 	file(aFile), hubName(aUser->getClientName()), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
-		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), ref(1) { }
+		tth(aTTH), ref(1) { }
 
 	string getFileName() const;
 	string toSR(const Client& client) const;
@@ -77,25 +78,25 @@ public:
 
 	const string& getFile() const { return file; }
 	const string& getHubURL() const { return hubURL; }
-	const string& getHubName() const { return hubName.empty() ? user->getClientName() : hubName; }
+	const string& getHubName() const { return hubName; }
 	int64_t getSize() const { return size; }
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
-	TTHValue* getTTH() const { return tth; }
+	TTHValue getTTH() const { return tth; }
 	const string& getIP() const { return IP; }
 
 	void incRef() { Thread::safeInc(ref); }
-	void decRef() { 
-		if(Thread::safeDec(ref) == 0) 
-			delete this; 
+	void decRef() {
+		if(Thread::safeDec(ref) == 0)
+			delete this;
 	}
 
 private:
 	friend class SearchManager;
 
 	SearchResult();
-	~SearchResult() { delete tth; }
+	~SearchResult() { }
 
 	SearchResult(const SearchResult& rhs);
 
@@ -108,13 +109,9 @@ private:
 	int slots;
 	int freeSlots;
 	string IP;
-	TTHValue* tth;
-	
-	volatile long ref;
+	TTHValue tth;
 
-	bool isTTH(const string& str) const {
-		return str.compare(0, 4, "TTH:") == 0;
-	}
+	volatile long ref;
 };
 
 class SearchManager : public Speaker<SearchManagerListener>, public Singleton<SearchManager>, public Thread
@@ -137,26 +134,26 @@ public:
 		TYPE_DIRECTORY,
 		TYPE_TTH
 	};
-	
+
 	void search(const string& aName, int64_t aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken);
 	void search(const string& aName, const string& aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken) {
 		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode, aToken);
 	}
-	
+
 	void search(StringList& who, const string& aName, int64_t aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken);
 	void search(StringList& who, const string& aName, const string& aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken) {
 		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode, aToken);
 	}
 	static string clean(const string& aSearchString);
-	
+
 	unsigned short getPort()	{ return port; }
 
-	void listen() throw(Exception);
+	void listen() throw(SocketException);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
-	
+
 	int32_t timeToSearch() {
 		//return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);
 		return 0;
@@ -168,18 +165,18 @@ public:
 	}
 
 private:
-	
+
 	Socket* socket;
 	unsigned short port;
 	bool stop;
 	time_t lastSearch;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  }
+	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) { }
 
 	virtual int run();
 
-	virtual ~SearchManager() throw() { 
+	virtual ~SearchManager() throw() {
 		if(socket) {
 			stop = true;
 			socket->disconnect();

@@ -87,6 +87,15 @@ public:
 		return false;
 	}
 
+	bool isOp(const string & aUrl) {
+		Lock l(cs);
+		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
+			if(Util::stricmp(aUrl, (*i)->getAddress()) == 0)
+				return (*i)->getOp();
+		}
+		return false;
+	}
+
 	/**
 	 * A user went offline. Must be called whenever a user quits a hub.
 	 * @param quitHub The user went offline because (s)he disconnected from the hub.
@@ -118,7 +127,7 @@ private:
 
 	Client::List clients;
 	mutable CriticalSection cs;
-	
+
 	UserMap users;
 
 	string cachedIp;

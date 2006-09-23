@@ -28,8 +28,10 @@
 #include "SettingsManager.h"
 #include "LogManager.h"
 #include "version.h"
+#include "File.h"
+#include "SimpleXML.h"
 
-#if !(defined(_WIN32) || defined(_WIN64))
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -55,14 +57,16 @@ string Util::awayMsg;
 time_t Util::awayTime;
 
 Util::CountryList Util::countries;
-string Util::appPath;
 const string Util::TEMP_EXT = ".dctmp";
 const string Util::ANTI_FRAG_EXT = ".antifrag";
+string Util::configPath;
+string Util::systemPath;
+string Util::dataPath;
 
 static void sgenrand(unsigned long seed);
 
-extern "C" void bz_internal_error(int errcode) { 
-	dcdebug("bzip2 internal error: %d\n", errcode); 
+extern "C" void bz_internal_error(int errcode) {
+	dcdebug("bzip2 internal error: %d\n", errcode);
 }
 
 #if defined(_WIN32) && _MSC_VER == 1400
@@ -80,21 +84,48 @@ void Util::initialize() {
 
 #if defined(_WIN32) || defined(_WIN64)
 	TCHAR buf[MAX_PATH+1];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	appPath = Text::fromT(buf);
-	appPath.erase(appPath.rfind('\\') + 1);
+	::GetModuleFileName(NULL, buf, MAX_PATH);
+	// System config path is DC++ executable path...
+	systemPath = Util::getFilePath(Text::fromT(buf));
+	configPath = systemPath;
+	dataPath = systemPath;
+
+#else
+	systemPath = "/etc/";
+	char* home = getenv("HOME");
+	configPath = home ? home + string("/.dc++/") : "/tmp/";
+#error dataPath = wherever linux should fetch data
+#endif
+
+	// Load boot settings
+	try {
+		SimpleXML boot;
+		boot.fromXML(File(systemPath + "dcppboot.xml", File::READ, File::OPEN).read());
+		boot.stepIn();
+
+		if(boot.findChild("ConfigPath")) {
+			StringMap params;
+#ifdef _WIN32
+			TCHAR path[MAX_PATH];
+
+			params["APPDATA"] = Text::fromT((::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path), path));
+			params["PERSONAL"] = Text::fromT((::SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path), path));
+			configPath = Util::formatParams(boot.getChildData(), params, false);
+#else
+#error TODO - make env vars available perhaps?
+#endif
+		}
+	} catch(const Exception& ) {
+		// Unable to load boot settings...
+	}
+
+	if(!File::isAbsolute(configPath)) {
+		configPath = systemPath + configPath;
+	}
 
 #if _MSC_VER == 1400
 	_set_invalid_parameter_handler(reinterpret_cast<_invalid_parameter_handler>(invalidParameterHandler));
 #endif
-
-#else // _WIN32
-	char* home = getenv("HOME");
-	if (home) {
-		appPath = Text::fromT(home);
-		appPath += "/.dc++/";
-	}
-#endif // _WIN32
 
 	try {
 		// This product includes GeoIP data created by MaxMind, available from http://maxmind.com/
@@ -126,43 +157,8 @@ void Util::initialize() {
 	}
 }
 
-string Util::getConfigPath() {
-#if defined(_WIN32) || defined(_WIN64)
-		return getAppPath();
-#else
-		char* home = getenv("HOME");
-		if (home) {
-#ifdef __APPLE__
-/// @todo Verify this for apple?
-			return string(home) + "/Library/Application Support/Mac DC++/";
-#else
-			return string(home) + "/.dc++/";
-#endif // __APPLE__
-		}
-		return emptyString;
-#endif // _WIN32
-}
-
-string Util::getDataPath() {
-#if defined(_WIN32) || defined(_WIN64)
-	return getAppPath();
-#else
-	// This probably ought to be /usr/share/*...
-	char* home = getenv("HOME");
-	if (home) {
-#ifdef __APPLE__
-		/// @todo Verify this for apple?
-		return string(home) + "/Library/Application Support/Mac DC++/";
-#else
-		return string(home) + "/.dc++/";
-#endif // __APPLE__
-	}
-	return emptyString;
-#endif // _WIN32
-}
-
-#if defined(_WIN32) || defined(_WIN64)
-static const char badChars[] = { 
+#if defined(_WIN32)
+static const char badChars[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 	17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 	31, '<', '>', '/', '"', '|', '?', '*', 0
@@ -175,7 +171,7 @@ static const wchar_t badCharsW[] = {
 };
 #else
 
-static const char badChars[] = { 
+static const char badChars[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 	17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 	31, '<', '>', '\\', '"', '|', '?', '*', 0
@@ -202,7 +198,7 @@ string Util::validateFileName(string tmp) {
 			i++;
 			continue;
 		}
-		tmp[i] = '_';	
+		tmp[i] = '_';
 		i++;
 	}
 
@@ -319,7 +315,7 @@ wstring Util::validateFileName(wstring tmp) {
 void Util::decodeUrl(const string& url, string& aServer, u_int16_t& aPort, string& aFile) {
 	// First, check for a protocol: xxxx://
 	string::size_type i = 0, j, k;
-	
+
 	aServer = emptyString;
 	aFile = emptyString;
 
@@ -358,23 +354,23 @@ void Util::decodeUrl(const string& url, string& aServer, u_int16_t& aPort, strin
 		aServer = url.substr(i, k-i);
 }
 
-string Util::getAwayMessage() { 
+string Util::getAwayMessage() {
 	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
 }
 string Util::formatBytes(int64_t aBytes) {
 	char buf[64];
 	if(aBytes < 1024) {
-		sprintf(buf, "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
+		snprintf(buf, sizeof(buf), "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
 	} else if(aBytes < 1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0), CSTRING(KiB));
 	} else if(aBytes < 1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MiB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GiB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TiB));
 	} else {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
 	}
 
 	return buf;
@@ -423,7 +419,7 @@ wstring Util::formatExactSize(int64_t aBytes) {
 }
 string Util::getLocalIp() {
 	string tmp;
-	
+
 	char buf[256];
 	gethostname(buf, 255);
 	hostent* he = gethostbyname(buf);
@@ -431,7 +427,7 @@ string Util::getLocalIp() {
 		return Util::emptyString;
 	sockaddr_in dest;
 	int i = 0;
-	
+
 	// We take the first ip as default, but if we can find a better one, use it instead...
 	memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
 	tmp = inet_ntoa(dest.sin_addr);
@@ -453,7 +449,7 @@ bool Util::isPrivateIp(string const& ip) {
 
 	addr.s_addr = inet_addr(ip.c_str());
 
-	if (addr.s_addr  != INADDR_NONE) {
+	if (addr.s_addr != INADDR_NONE) {
 		unsigned long haddr = ntohl(addr.s_addr);
 		return ((haddr & 0xff000000) == 0x0a000000 || // 10.0.0.0/8
 				(haddr & 0xff000000) == 0x7f000000 || // 127.0.0.0/8
@@ -482,7 +478,7 @@ static wchar_t utf8ToLC(ccp& str) {
 				str += 3;
 			} else {
 				if(str[1] == 0 ||
-					!((((unsigned char)str[1]) & ~0x3f) == 0x80)) 
+					!((((unsigned char)str[1]) & ~0x3f) == 0x80))
 				{
 					str++;
 					return 0;
@@ -581,8 +577,8 @@ int Util::stricmp(const char* a, const char* b) {
 		if(ca != cb) {
 			return (int)ca - (int)cb;
 		}
-		a+= na < 0 ? 1 : na;
-		b+= nb < 0 ? 1 : nb;
+		a += abs(na);
+		b += abs(nb);
 	}
 	wchar_t ca = 0, cb = 0;
 	Text::utf8ToWc(a, ca);
@@ -602,8 +598,8 @@ int Util::strnicmp(const char* a, const char* b, size_t n) {
 		if(ca != cb) {
 			return (int)ca - (int)cb;
 		}
-		a+= na < 0 ? 1 : na;
-		b+= nb < 0 ? 1 : nb;
+		a += abs(na);
+		b += abs(nb);
 	}
 	wchar_t ca = 0, cb = 0;
 	Text::utf8ToWc(a, ca);
@@ -627,8 +623,8 @@ string Util::encodeURI(const string& aString, bool reverse) {
 		}
 	} else {
 		const string disallowed = ";/?:@&=+$," // reserved
-			                      "<>#%\" "    // delimiters
-		                          "{}|\\^[]`"; // unwise
+								  "<>#%\" "    // delimiters
+								  "{}|\\^[]`"; // unwise
 		string::size_type idx, loc;
 		for(idx = 0; idx < tmp.length(); ++idx) {
 			if(tmp[idx] == ' ') {
@@ -647,7 +643,7 @@ string Util::encodeURI(const string& aString, bool reverse) {
 /**
  * This function takes a string and a set of parameters and transforms them according to
  * a simple formatting rule, similar to strftime. In the message, every parameter should be
- * represented by %[name]. It will then be replaced by the corresponding item in 
+ * represented by %[name]. It will then be replaced by the corresponding item in
  * the params stringmap. After that, the string is passed through strftime with the current
  * date/time and then finally written to the log file. If the parameter is not present at all,
  * it is removed from the string completely...
@@ -681,7 +677,7 @@ string Util::formatParams(const string& msg, StringMap& params, bool filter) {
 						tmp[m] = '_';
 					}
 				}
-				
+
 				result.replace(j, k-j + 1, tmp);
 				i = j + tmp.size();
 			} else {
@@ -692,7 +688,7 @@ string Util::formatParams(const string& msg, StringMap& params, bool filter) {
 	}
 
 	result = formatTime(result, time(NULL));
-	
+
 	return result;
 }
 
@@ -711,12 +707,12 @@ string fixedftime(const string& format, struct tm* t) {
 		tmp[1] = codes[i];
 		tmp[2] = 0;
 		strftime(buf, 1024-1, tmp, t);
-		sm[tmp] = buf; 
+		sm[tmp] = buf;
 
 		tmp[1] = '#';
 		tmp[2] = codes[i];
 		strftime(buf, 1024-1, tmp, t);
-		sm[tmp] = buf; 		
+		sm[tmp] = buf; 
 	}
 
 	for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
@@ -758,25 +754,25 @@ wstring Util::formatTime(const wstring& msg, const time_t t){
 
 /* Below is a high-speed random number generator with much
    better granularity than the CRT one in msvc...(no, I didn't
-   write it...see copyright) */ 
+   write it...see copyright) */
 /* Copyright (C) 1997 Makoto Matsumoto and Takuji Nishimura.
-   Any feedback is very welcome. For any question, comments,       
-   see http://www.math.keio.ac.jp/matumoto/emt.html or email       
-   matumoto@math.keio.ac.jp */       
-/* Period parameters */  
+   Any feedback is very welcome. For any question, comments,
+   see http://www.math.keio.ac.jp/matumoto/emt.html or email
+   matumoto@math.keio.ac.jp */
+/* Period parameters */
 #define N 624
 #define M 397
 #define MATRIX_A 0x9908b0df   /* constant vector a */
 #define UPPER_MASK 0x80000000 /* most significant w-r bits */
 #define LOWER_MASK 0x7fffffff /* least significant r bits */
 
-/* Tempering parameters */   
+/* Tempering parameters */
 #define TEMPERING_MASK_B 0x9d2c5680
 #define TEMPERING_MASK_C 0xefc60000
-#define TEMPERING_SHIFT_U(y)  (y >> 11)
-#define TEMPERING_SHIFT_S(y)  (y << 7)
-#define TEMPERING_SHIFT_T(y)  (y << 15)
-#define TEMPERING_SHIFT_L(y)  (y >> 18)
+#define TEMPERING_SHIFT_U(y) (y >> 11)
+#define TEMPERING_SHIFT_S(y) (y << 7)
+#define TEMPERING_SHIFT_T(y) (y << 15)
+#define TEMPERING_SHIFT_L(y) (y >> 18)
 
 static unsigned long mt[N]; /* the array for the state vector  */
 static int mti=N+1; /* mti==N+1 means mt[N] is not initialized */
@@ -823,7 +819,7 @@ u_int32_t Util::rand() {
 	y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;
 	y ^= TEMPERING_SHIFT_L(y);
 
-	return y; 
+	return y;
 }
 
 string Util::getOsVersion() {
@@ -863,6 +859,8 @@ string Util::getOsVersion() {
 				os += " Server";
 			else if(ver.wProductType & VER_NT_DOMAIN_CONTROLLER)
 				os += " DC";
+		} else if(ver.dwMajorVersion == 6) {
+			os = "WinVista";
 		}
 
 		if(ver.wServicePackMajor != 0) {
@@ -903,9 +901,9 @@ string Util::getIpCountry (string IP) {
 		string::size_type b = IP.find('.', a+1);
 		string::size_type c = IP.find('.', b+2);
 
-		u_int32_t ipnum = (Util::toUInt32(IP.c_str()) << 24) | 
-			(Util::toUInt32(IP.c_str() + a + 1) << 16) | 
-			(Util::toUInt32(IP.c_str() + b + 1) << 8) | 
+		u_int32_t ipnum = (Util::toUInt32(IP.c_str()) << 24) |
+			(Util::toUInt32(IP.c_str() + a + 1) << 16) |
+			(Util::toUInt32(IP.c_str() + b + 1) << 8) |
 			(Util::toUInt32(IP.c_str() + c + 1) );
 
 		CountryIter i = countries.lower_bound(ipnum);

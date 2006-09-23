@@ -78,7 +78,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	} else {
 		// More difficult, determine type by what it seems to be...
 		if((_tcsncmp(command.c_str(), _T("$To: "), 5) == 0) &&
-			(command.find(_T(" From: %[myNick] $<%[myNick]> ")) != string::npos ||
+			(command.find(_T(" From: %[myNI] $<%[myNI]> ")) != string::npos ||
 			command.find(_T(" From: %[mynick] $<%[mynick]> ")) != string::npos) &&
 			command.find(_T('|')) == command.length() - 1) // if it has | anywhere but the end, it is raw
 		{
@@ -91,7 +91,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 			ctrlNick.SetWindowText(to.c_str());
 			ctrlCommand.SetWindowText(cmd.c_str());
 		} else if(((_tcsncmp(command.c_str(), _T("<%[mynick]> "), 12) == 0) ||
-			(_tcsncmp(command.c_str(), _T("<%[myNick]> "), 10) == 0)) &&
+			(_tcsncmp(command.c_str(), _T("<%[myNI]> "), 10) == 0)) &&
 			command[command.length()-1] == '|')
 		{
 			// Looks like a chat thing...
@@ -121,13 +121,13 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		ctrlSearchMenu.SetCheck(BST_CHECKED);
 	if(ctx & UserCommand::CONTEXT_FILELIST)
 		ctrlFilelistMenu.SetCheck(BST_CHECKED);
-	
+
 	updateControls();
 	updateCommand();
 	ctrlResult.SetWindowText(command.c_str());
 
 	ctrlSeparator.SetFocus();
-	
+
 	CenterWindow(GetParent());
 	return FALSE;
 }
@@ -219,12 +219,12 @@ void CommandDlg::updateCommand() {
 		command = buf;
 	} else if(type == 2) {
 		ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-		command = Text::toT("<%[myNick]> " + NmdcHub::validateMessage(Text::fromT(buf), false) + "|");
+		command = Text::toT("<%[myNI]> " + NmdcHub::validateMessage(Text::fromT(buf), false) + "|");
 	} else if(type == 3) {
 		ctrlNick.GetWindowText(buf, BUF_LEN - 1);
 		tstring to(buf);
 		ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-		command = _T("$To: ") + to + _T(" From: %[myNick] $<%[myNick]> ") + Text::toT(NmdcHub::validateMessage(Text::fromT(buf), false)) + _T("|");
+		command = _T("$To: ") + to + _T(" From: %[myNI] $<%[myNI]> ") + Text::toT(NmdcHub::validateMessage(Text::fromT(buf), false)) + _T("|");
 	}
 }
 

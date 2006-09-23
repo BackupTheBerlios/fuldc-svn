@@ -28,16 +28,16 @@
 /**
  * A class that implements a fast substring search algo suited for matching
  * one pattern against many strings (currently Quick Search, a variant of
- * Boyer-Moore. Code based on "A very fast substring search algorithm" by 
+ * Boyer-Moore. Code based on "A very fast substring search algorithm" by
  * D. Sunday).
  * @todo Perhaps find an algo suitable for matching multiple substrings.
  */
 class StringSearch {
 public:
-	explicit StringSearch(const string& aPattern) throw() : pattern(Text::toLower(aPattern)) { 
+	explicit StringSearch(const string& aPattern) throw() : pattern(Text::toLower(aPattern)) {
 		initDelta1();
 	}
-	StringSearch(const StringSearch& rhs) throw() : pattern(rhs.pattern) { 
+	StringSearch(const StringSearch& rhs) throw() : pattern(rhs.pattern) {
 		memcpy(delta1, rhs.delta1, sizeof(delta1));
 	}
 	const StringSearch& operator=(const StringSearch& rhs) {
@@ -77,8 +77,8 @@ public:
 			size_t i = 0;
 			for(; px[i] && (px[i] == tx[i]); ++i)
 				;		// Empty!
-			
-			if(px[i] == 0) 
+
+			if(px[i] == 0)
 				return true;
 
 			tx += delta1[tx[plen]];
@@ -89,7 +89,7 @@ public:
 
 private:
 	enum { ASIZE = 256 };
-	/** 
+	/**
 	 * Delta1 shift, u_int16_t because we expect all patterns to be shorter than 2^16
 	 * chars.
 	 */

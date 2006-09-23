@@ -35,7 +35,7 @@ UserCommand FavoriteManager::addUserCommand(int type, int ctx, int flags, const 
 	Lock l(cs);
 	userCommands.push_back(UserCommand(lastId++, type, ctx, flags, name, command, hub));
 	UserCommand& uc = userCommands.back();
-	if(!uc.isSet(UserCommand::FLAG_NOSAVE)) 
+	if(!uc.isSet(UserCommand::FLAG_NOSAVE))
 		save();
 	return userCommands.back();
 }
@@ -75,6 +75,16 @@ void FavoriteManager::updateUserCommand(const UserCommand& uc) {
 	}
 	if(!nosave)
 		save();
+}
+
+int FavoriteManager::findUserCommand(const string& aName) {
+	Lock l(cs);
+	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
+		if(i->getName() == aName) {
+			return i->getId();
+		}
+	}
+	return -1;
 }
 
 void FavoriteManager::removeUserCommand(int cid) {
@@ -384,43 +394,25 @@ void FavoriteManager::save() {
 }
 
 void FavoriteManager::load() {
-	
+
 	// Add NMDC standard op commands
-	static const char kickstr[] = 
-		"$To: %[nick] From: %[mynick] $<%[mynick]> You are being kicked because: %[line:Reason]|<%[mynick]> %[mynick] is kicking %[nick] because: %[line:Reason]|$Kick %[nick]|";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
+	static const char kickstr[] =
+		"$To: %[userNI] From: %[myNI] $<%[myNI]> You are being kicked because: %[line:Reason]|<%[myNI]> %[myNI] is kicking %[userNI] because: %[line:Reason]|$Kick %[userNI]|";
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
 		STRING(KICK_USER), kickstr, "op");
 	static const char redirstr[] =
-		"$OpForceMove $Who:%[nick]$Where:%[line:Target Server]$Msg:%[line:Message]|";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
+		"$OpForceMove $Who:%[userNI]$Where:%[line:Target Server]$Msg:%[line:Message]|";
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
 		STRING(REDIRECT_USER), redirstr, "op");
-
-	// Add ADC standard op commands
-	static const char adc_disconnectstr[] =
-		"HDSC %[mycid] %[cid] DI ND Friendly\\ disconnect\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(DISCONNECT_USER), adc_disconnectstr, "adc://op");
-	static const char adc_kickstr[] =
-		"HDSC %[mycid] %[cid] KK KK %[line:Reason]\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(KICK_USER), adc_kickstr, "adc://op");
-	static const char adc_banstr[] =
-		"HDSC %[mycid] %[cid] BN BN %[line:Seconds (-1 = forever)] %[line:Reason]\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(BAN_USER), adc_banstr, "adc://op");
-	static const char adc_redirstr[] =
-		"HDSC %[mycid] %[cid] RD RD %[line:Redirect address] %[line:Reason]\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(REDIRECT_USER), adc_redirstr, "adc://op");
 
 
 	try {
 		SimpleXML xml;
 		xml.fromXML(File(getConfigFile(), File::READ, File::OPEN).read());
-		
+
 		if(xml.findChild("Favorites")) {
 			xml.stepIn();
-			load(&xml);
+			load(xml);
 			xml.stepOut();
 		}
 	} catch(const Exception& e) {
@@ -428,34 +420,34 @@ void FavoriteManager::load() {
 	}
 }
 
-void FavoriteManager::load(SimpleXML* aXml) {
+void FavoriteManager::load(SimpleXML& aXml) {
 	dontSave = true;
 
 	// Old names...load for compatibility.
-	aXml->resetCurrentChild();
-	if(aXml->findChild("Favorites")) {
-		aXml->stepIn();
-		while(aXml->findChild("Favorite")) {
+	aXml.resetCurrentChild();
+	if(aXml.findChild("Favorites")) {
+		aXml.stepIn();
+		while(aXml.findChild("Favorite")) {
 			FavoriteHubEntry* e = new FavoriteHubEntry();
-			e->setName(aXml->getChildAttrib("Name"));
-			e->setConnect(aXml->getBoolChildAttrib("Connect"));
-			e->setDescription(aXml->getChildAttrib("Description"));
-			e->setNick(aXml->getChildAttrib("Nick"));
-			e->setPassword(aXml->getChildAttrib("Password"));
-			e->setServer(aXml->getChildAttrib("Server"));
-			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
+			e->setName(aXml.getChildAttrib("Name"));
+			e->setConnect(aXml.getBoolChildAttrib("Connect"));
+			e->setDescription(aXml.getChildAttrib("Description"));
+			e->setNick(aXml.getChildAttrib("Nick"));
+			e->setPassword(aXml.getChildAttrib("Password"));
+			e->setServer(aXml.getChildAttrib("Server"));
+			e->setUserDescription(aXml.getChildAttrib("UserDescription"));
 			favoriteHubs.push_back(e);
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
-	aXml->resetCurrentChild();
-	if(aXml->findChild("Commands")) {
-		aXml->stepIn();
-		while(aXml->findChild("Command")) {
-			const string& name = aXml->getChildAttrib("Name");
-			const string& command = aXml->getChildAttrib("Command");
-			const string& hub = aXml->getChildAttrib("Hub");
-			const string& nick = aXml->getChildAttrib("Nick");
+	aXml.resetCurrentChild();
+	if(aXml.findChild("Commands")) {
+		aXml.stepIn();
+		while(aXml.findChild("Command")) {
+			const string& name = aXml.getChildAttrib("Name");
+			const string& command = aXml.getChildAttrib("Command");
+			const string& hub = aXml.getChildAttrib("Hub");
+			const string& nick = aXml.getChildAttrib("Nick");
 			if(nick.empty()) {
 				// Old mainchat style command
 				addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, 
@@ -465,85 +457,85 @@ void FavoriteManager::load(SimpleXML* aXml) {
 					0, name, "$To: " + nick + " From: %[mynick] $" + command + "|", hub);
 			}
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
 	// End old names
 
-	aXml->resetCurrentChild();
-	if(aXml->findChild("Hubs")) {
-		aXml->stepIn();
-		while(aXml->findChild("Hub")) {
+	aXml.resetCurrentChild();
+	if(aXml.findChild("Hubs")) {
+		aXml.stepIn();
+		while(aXml.findChild("Hub")) {
 			FavoriteHubEntry* e = new FavoriteHubEntry();
-			e->setName(				aXml->getChildAttrib("Name"));
-			e->setConnect(			aXml->getBoolChildAttrib("Connect"));
-			e->setDescription(		aXml->getChildAttrib("Description"));
-			e->setNick(				aXml->getChildAttrib("Nick"));
-			e->setPassword(			aXml->getChildAttrib("Password"));
-			e->setServer(			aXml->getChildAttrib("Server"));
-			e->setUserDescription(	aXml->getChildAttrib("UserDescription"));
-			e->setStripIsp(			aXml->getBoolChildAttrib("StripIsp"));
-			e->setShowJoins(		aXml->getBoolChildAttrib("ShowJoins"));
-			e->setShowUserlist(		aXml->getBoolChildAttrib("ShowUserlist", BOOLSETTING(GET_USER_INFO)));
-			e->setLogMainChat(		aXml->getBoolChildAttrib("LogMainchat", BOOLSETTING(LOG_MAIN_CHAT)));
-			e->setBottom((u_int16_t)aXml->getIntChildAttrib("Bottom") );
-			e->setTop((u_int16_t)	aXml->getIntChildAttrib("Top"));
-			e->setRight((u_int16_t)	aXml->getIntChildAttrib("Right"));
-			e->setLeft((u_int16_t)	aXml->getIntChildAttrib("Left"));
-			e->setHeaderOrder(		aXml->getChildAttrib("HeaderOrder", SETTING(HUBFRAME_ORDER)));
-			e->setHeaderWidths(		aXml->getChildAttrib("HeaderWidths", SETTING(HUBFRAME_WIDTHS)));
-			e->setHeaderVisible(	aXml->getChildAttrib("HeaderVisible", SETTING(HUBFRAME_VISIBLE)));
+			e->setName(				aXml.getChildAttrib("Name"));
+			e->setConnect(			aXml.getBoolChildAttrib("Connect"));
+			e->setDescription(		aXml.getChildAttrib("Description"));
+			e->setNick(				aXml.getChildAttrib("Nick"));
+			e->setPassword(			aXml.getChildAttrib("Password"));
+			e->setServer(			aXml.getChildAttrib("Server"));
+			e->setUserDescription(	aXml.getChildAttrib("UserDescription"));
+			e->setStripIsp(			aXml.getBoolChildAttrib("StripIsp"));
+			e->setShowJoins(		aXml.getBoolChildAttrib("ShowJoins"));
+			e->setShowUserlist(		aXml.getBoolChildAttrib("ShowUserlist", BOOLSETTING(GET_USER_INFO)));
+			e->setLogMainChat(		aXml.getBoolChildAttrib("LogMainchat", BOOLSETTING(LOG_MAIN_CHAT)));
+			e->setBottom((u_int16_t)aXml.getIntChildAttrib("Bottom") );
+			e->setTop((u_int16_t)	aXml.getIntChildAttrib("Top"));
+			e->setRight((u_int16_t)	aXml.getIntChildAttrib("Right"));
+			e->setLeft((u_int16_t)	aXml.getIntChildAttrib("Left"));
+			e->setHeaderOrder(		aXml.getChildAttrib("HeaderOrder", SETTING(HUBFRAME_ORDER)));
+			e->setHeaderWidths(		aXml.getChildAttrib("HeaderWidths", SETTING(HUBFRAME_WIDTHS)));
+			e->setHeaderVisible(	aXml.getChildAttrib("HeaderVisible", SETTING(HUBFRAME_VISIBLE)));
 			favoriteHubs.push_back(e);
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
-	aXml->resetCurrentChild();
-	if(aXml->findChild("Users")) {
-		aXml->stepIn();
-		while(aXml->findChild("User")) {
-			User::Ptr u = ClientManager::getInstance()->getUser(aXml->getChildAttrib("Nick"), aXml->getChildAttrib("LastHubAddress"));
+	aXml.resetCurrentChild();
+	if(aXml.findChild("Users")) {
+		aXml.stepIn();
+		while(aXml.findChild("User")) {
+			User::Ptr u = ClientManager::getInstance()->getUser(aXml.getChildAttrib("Nick"), aXml.getChildAttrib("LastHubAddress"));
 			if(!u->isOnline()) {
-				u->setLastHubAddress(aXml->getChildAttrib("LastHubAddress"));
-				u->setLastHubName(aXml->getChildAttrib("LastHubName"));
+				u->setLastHubAddress(aXml.getChildAttrib("LastHubAddress"));
+				u->setLastHubName(aXml.getChildAttrib("LastHubName"));
 			}
 			addFavoriteUser(u);
-			u->setFavoriteGrantSlot(aXml->getBoolChildAttrib("GrantSlot"));
-			u->setFavoriteLastSeen((u_int32_t)aXml->getIntChildAttrib("LastSeen"));
-			u->setUserDescription(aXml->getChildAttrib("UserDescription"));
+			u->setFavoriteGrantSlot(aXml.getBoolChildAttrib("GrantSlot"));
+			u->setFavoriteLastSeen((u_int32_t)aXml.getIntChildAttrib("LastSeen"));
+			u->setUserDescription(aXml.getChildAttrib("UserDescription"));
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
-	aXml->resetCurrentChild();
-	if(aXml->findChild("UserCommands")) {
-		aXml->stepIn();
-		while(aXml->findChild("UserCommand")) {
-			addUserCommand(aXml->getIntChildAttrib("Type"), aXml->getIntChildAttrib("Context"),
-				0, aXml->getChildAttrib("Name"), aXml->getChildAttrib("Command"), aXml->getChildAttrib("Hub"));
+	aXml.resetCurrentChild();
+	if(aXml.findChild("UserCommands")) {
+		aXml.stepIn();
+		while(aXml.findChild("UserCommand")) {
+			addUserCommand(aXml.getIntChildAttrib("Type"), aXml.getIntChildAttrib("Context"),
+				0, aXml.getChildAttrib("Name"), aXml.getChildAttrib("Command"), aXml.getChildAttrib("Hub"));
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
 
 	//compatibility with old fuldc favorite dirs, they're stored in dcplusplus.xml
-	aXml->resetCurrentChild();
-	if(aXml->findChild("DownloadPaths")) {
-		aXml->stepIn();
-		while(aXml->findChild("DownloadPath")){
-			string name = aXml->getChildAttrib("Name");
-			string path = aXml->getChildData();
+	aXml.resetCurrentChild();
+	if(aXml.findChild("DownloadPaths")) {
+		aXml.stepIn();
+		while(aXml.findChild("DownloadPath")){
+			string name = aXml.getChildAttrib("Name");
+			string path = aXml.getChildData();
 			addFavoriteDir(path, name);
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	} 
 
 	//Favorite download to dirs
-	aXml->resetCurrentChild();
-	if(aXml->findChild("FavoriteDirs")) {
-		aXml->stepIn();
-		while(aXml->findChild("Directory")) {
-			string virt = aXml->getChildAttrib("Name");
-			string d(aXml->getChildData());
+	aXml.resetCurrentChild();
+	if(aXml.findChild("FavoriteDirs")) {
+		aXml.stepIn();
+		while(aXml.findChild("Directory")) {
+			string virt = aXml.getChildAttrib("Name");
+			string d(aXml.getChildData());
 			FavoriteManager::getInstance()->addFavoriteDir(d, virt);
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
 
 	dontSave = false;
@@ -603,14 +595,41 @@ void FavoriteManager::refresh() {
 	}
 }
 
-UserCommandList FavoriteManager::getUserCommands(int ctx, const string& hub, bool op) {
+UserCommandList FavoriteManager::getUserCommands(int ctx, const StringList& hubs) {
+	vector<bool> isOp(hubs.size());
+
+	for(size_t i = 0; i < hubs.size(); ++i) {
+		isOp[i] = ClientManager::getInstance()->isOp(hubs[i]);
+	}
+
 	Lock l(cs);
 	UserCommandList lst;
 	for(UserCommandListIter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
-		if(uc.getCtx() & ctx) {
-			if( ((uc.getHub().empty() || (op && uc.getHub() == "op"))) || (Util::stricmp(hub, uc.getHub()) == 0) ) {
-				lst.push_back(*i);
+		if(!(uc.getCtx() & ctx)) {
+			continue;
+		}
+
+		for(size_t j = 0; j < hubs.size(); ++j) {
+			const string& hub = hubs[j];
+			bool hubAdc = hub.compare(0, 6, "adc://") == 0;
+			bool commandAdc = uc.getHub().compare(0, 6, "adc://") == 0;
+			if(hubAdc && commandAdc) {
+				if((uc.getHub().length() == 6) ||
+					(uc.getHub() == "adc://op" && isOp[j]) ||
+					(uc.getHub() == hub) )
+				{
+					lst.push_back(*i);
+					break;
+				}
+			} else if(!hubAdc && !commandAdc) {
+				if((uc.getHub().length() == 0) ||
+					(uc.getHub() == "op" && isOp[j]) ||
+					(uc.getHub() == hub) )
+				{
+					lst.push_back(*i);
+					break;
+				}
 			}
 		}
 	}
@@ -618,11 +637,11 @@ UserCommandList FavoriteManager::getUserCommands(int ctx, const string& hub, boo
 }
 
 // HttpConnectionListener
-void FavoriteManager::on(Data, HttpConnection*, const u_int8_t* buf, size_t len) throw() { 
+void FavoriteManager::on(Data, HttpConnection*, const u_int8_t* buf, size_t len) throw() {
 	downloadBuf.append((const char*)buf, len);
 }
 
-void FavoriteManager::on(Failed, HttpConnection*, const string& aLine) throw() { 
+void FavoriteManager::on(Failed, HttpConnection*, const string& aLine) throw() {
 	c->removeListener(this);
 	lastServer++;
 	running = false;
@@ -634,13 +653,13 @@ void FavoriteManager::on(Complete, HttpConnection*, const string& aLine) throw()
 	running = false;
 	fire(FavoriteManagerListener::DownloadFinished(), aLine);
 }
-void FavoriteManager::on(Redirected, HttpConnection*, const string& aLine) throw() { 
+void FavoriteManager::on(Redirected, HttpConnection*, const string& aLine) throw() {
 	fire(FavoriteManagerListener::DownloadStarting(), aLine);
 }
-void FavoriteManager::on(TypeNormal, HttpConnection*) throw() { 
-	listType = TYPE_NORMAL; 
+void FavoriteManager::on(TypeNormal, HttpConnection*) throw() {
+	listType = TYPE_NORMAL;
 }
-void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() { 
-	listType = TYPE_BZIP2; 
+void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
+	listType = TYPE_BZIP2;
 }
 

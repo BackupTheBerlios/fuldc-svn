@@ -68,10 +68,9 @@ void FinishedManager::removeAll(bool upload /* = false */) {
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
 	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
-		string tth = d->getTTH() == NULL ? Util::emptyString : d->getTTH()->toBase32();
 		FinishedItem *item = new FinishedItem(
 			d->getTarget(), d->getUserConnection()->getUser()->getNick(),
-			d->getUserConnection()->getUser()->getLastHubName(), tth,
+			d->getUserConnection()->getUser()->getLastHubName(), d->getTTH().toBase32(),
 			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
 		{
 			Lock l(cs);

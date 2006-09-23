@@ -904,7 +904,7 @@ DWORD CALLBACK EditStreamCallback( DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, L
 
 void CFulEditCtrl::Dump() {
 	try {
-		File f(Util::getAppPath() + "temp.txt", File::WRITE, File::CREATE | File::TRUNCATE);
+		File f(Util::getConfigPath() + "temp.txt", File::WRITE, File::CREATE | File::TRUNCATE);
 		EDITSTREAM es;
 		es.dwCookie = reinterpret_cast<DWORD_PTR>(&f);
 		es.pfnCallback = EditStreamCallback;

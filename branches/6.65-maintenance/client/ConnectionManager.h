@@ -33,12 +33,14 @@
 
 #include "ConnectionManagerListener.h"
 
+class SocketException;
+
 class ConnectionQueueItem {
 public:
 	typedef ConnectionQueueItem* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	
+
 	enum State {
 		CONNECTING,					// Recently sent request to connect
 		WAITING,					// Waiting to send request to connect
@@ -47,29 +49,29 @@ public:
 	};
 
 	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), user(aUser) { }
-	
+
 	User::Ptr& getUser() { return user; }
 	const User::Ptr& getUser() const { return user; }
-	
+
 	GETSET(State, state, State);
 	GETSET(time_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
 	ConnectionQueueItem(const ConnectionQueueItem&);
 	ConnectionQueueItem& operator=(const ConnectionQueueItem&);
-	
+
 	User::Ptr user;
 };
 // Comparing with a user...
 inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; }
 
-class ConnectionManager : public Speaker<ConnectionManagerListener>, 
-	public UserConnectionListener, TimerManagerListener, 
+class ConnectionManager : public Speaker<ConnectionManagerListener>,
+	public UserConnectionListener, TimerManagerListener,
 	public Singleton<ConnectionManager>
 {
 public:
 	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
-	
+
 	void getDownloadConnection(const User::Ptr& aUser);
 
 	void disconnect(const User::Ptr& aUser, int isDownload);
@@ -77,7 +79,7 @@ public:
 	void shutdown();
 
 	/** Find a suitable port to listen on, and start doing it */
-	void listen() throw(Exception);
+	void listen() throw(SocketException);
 	void disconnect() throw() {
 		delete server;
 
@@ -125,7 +127,7 @@ private:
 	ConnectionManager();
 
 	virtual ~ConnectionManager() throw() { shutdown(); }
-	
+
 	UserConnection* getConnection(bool aNmdc) throw();
 	void putConnection(UserConnection* aConn);
 
@@ -147,8 +149,8 @@ private:
 	virtual void on(Supports, UserConnection*, const StringList&) throw();
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, time_t aTick) throw();	
-	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();	
+	virtual void on(TimerManagerListener::Second, time_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();
 
 };
 

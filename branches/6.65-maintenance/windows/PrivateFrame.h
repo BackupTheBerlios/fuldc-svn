@@ -103,9 +103,9 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
 	void readLog();
-	
+
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	
+
 	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
 		return 0;
@@ -120,7 +120,7 @@ public:
 		updateTitle();
 		return 0;
 	}
-	
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -131,13 +131,13 @@ public:
 		}
 		bHandled = FALSE;
 		return FALSE;
-	};
+	}
 
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
 		return 0;
 	}
-	
+
 	void addClientLine(const tstring& aLine) {
 		if(!created) {
 			CreateEx(WinUtil::mdiClient);
@@ -153,20 +153,20 @@ public:
 			addLine(Text::toT(s));
 		}
 	}
-	
+
 	User::Ptr& getUser() { return user; };
 
 	bool muted;
-	
+
 private:
 	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
 		created(false), closed(false), muted(false), doPopups(true), offline(false),
 		ctrlMessageContainer(WC_EDIT, this, PM_MESSAGE_MAP),
 		ctrlClientContainer(WC_EDIT, this, PM_MESSAGE_MAP) {
 	}
-	
+
 	virtual ~PrivateFrame() { }
-	
+
 	bool doPopups;
 	bool created;
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
@@ -185,8 +185,7 @@ private:
 
 	bool closed;
 	bool offline;
-	
-	
+
 
 	//needed to receive WM_CONTEXTMENU
 	CContainedWindow ctrlClientContainer;
@@ -216,7 +215,6 @@ private:
 		}
 	}
 
-	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
 		if(aUser == user)

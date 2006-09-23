@@ -72,17 +72,17 @@ public:
 		bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
 		bool operator<(const iterator& rhs) const { return cur < rhs.cur; }
 
-		int operator-(const iterator& rhs) const { 
+		int operator-(const iterator& rhs) const {
 			return cur - rhs.cur;
 		}
 
 		iterator& operator+=(int n) { cur += n; return *this; }
 		iterator& operator-=(int n) { return (cur += -n); }
-		
+
 		T& operator*() { return *typedList->getItemData(cur); }
 		T* operator->() { return &(*(*this)); }
 		T& operator[](int n) { return *typedList->getItemData(cur + n); }
-		
+
 		iterator operator++(int) {
 			iterator tmp(*this);
 			operator++();
@@ -94,11 +94,11 @@ public:
 		}
 
 	private:
-		iterator(thisClass* aTypedList) : typedList(aTypedList), cur(aTypedList->GetNextItem(-1, LVNI_ALL)), cnt(aTypedList->GetItemCount()) { 
+		iterator(thisClass* aTypedList) : typedList(aTypedList), cur(aTypedList->GetNextItem(-1, LVNI_ALL)), cnt(aTypedList->GetItemCount()) {
 			if(cur == -1)
 				cur = cnt;
 		}
-		iterator(thisClass* aTypedList, int first) : typedList(aTypedList), cur(first), cnt(aTypedList->GetItemCount()) { 
+		iterator(thisClass* aTypedList, int first) : typedList(aTypedList), cur(first), cnt(aTypedList->GetItemCount()) {
 			if(cur == -1)
 				cur = cnt;
 		}
@@ -156,18 +156,18 @@ public:
 		return insertItem(getSortPos(item), item, image);
 	}
 	int insertItem(int i, T* item, int image) {
-		return InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i, 
+		return InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i,
 			LPSTR_TEXTCALLBACK, 0, 0, image, (LPARAM)item);
 	}
 	T* getItemData(int iItem) { return (T*)GetItemData(iItem); }
 	T* getSelectedItem() { return (GetSelectedCount() > 0 ? getItemData(GetNextItem(-1, LVNI_SELECTED)) : NULL); }
 
-	int findItem(T* item) { 
+	int findItem(T* item) {
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
 		return FindItem(&fi, -1);
 	}
 	struct CompFirst {
-		CompFirst() { } 
+		CompFirst() { }
 		bool operator()(T& a, const tstring& b) {
 			return Util::stricmp(a.getText(0), b) < 0;
 		}
@@ -201,7 +201,7 @@ public:
 			pred(getItemData(i));
 		return pred;
 	}
-	
+
 	void updateItem(int i) {
 		int k = GetHeader().GetItemCount();
 		for(int j = 0; j < k; ++j)
@@ -226,7 +226,7 @@ public:
 			mid = (low + high) / 2;
 			b = getItemData(mid);
 			comp = T::compareItems(a, b, sortColumn);
-			
+
 			if(!sortAscending)
 				comp = -comp;
 
@@ -372,10 +372,10 @@ public:
 			dc.SetBkColor(WinUtil::bgColor);
 			CMemDC memDC(&dc, &crc);
 
-			//yay it seems like the default paint method actually
-			//uses the HDC it's passed, saves me a lot of work =)
+			//it seems like the default paint method actually
+			//uses the HDC it's passed, saves a lot of work =)
 			LRESULT ret = DefWindowProc(msg, (WPARAM)memDC.m_hDC, NULL);
-			
+
 			//make sure to paint before CPaintDC goes out of scope and destroys our hdc
 			memDC.Paint();
 

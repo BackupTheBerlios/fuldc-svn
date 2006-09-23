@@ -127,7 +127,7 @@ public:
 	static void openWindow(const tstring& server);
 	static void closeDisconnected();
 	static void setClosing();
-	
+
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
 		return 0;
@@ -137,7 +137,7 @@ public:
 		onEnter();
 		return 0;
 	}
-	
+
 	LRESULT onAddAsFavorite(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		addAsFavorite();
 		return 0;
@@ -181,7 +181,6 @@ private:
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; };
 private:
-
 	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, 
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
@@ -190,17 +189,17 @@ private:
 	enum {
 		IMAGE_USER = 0, IMAGE_OP
 	};
-	
+
 	enum {
-		COLUMN_FIRST, 
-		COLUMN_NICK = COLUMN_FIRST, 
-		COLUMN_SHARED, 
-		COLUMN_DESCRIPTION, 
+		COLUMN_FIRST,
+		COLUMN_NICK = COLUMN_FIRST,
+		COLUMN_SHARED,
+		COLUMN_DESCRIPTION,
 		COLUMN_ISP,
 		COLUMN_TAG,
 		COLUMN_IP,
-		COLUMN_CONNECTION, 
-		COLUMN_EMAIL, 
+		COLUMN_CONNECTION,
+		COLUMN_EMAIL,
 		COLUMN_LAST
 	};
 
@@ -391,7 +390,7 @@ private:
 	CContainedWindow showUsersContainer;
 	CContainedWindow ctrlFilterContainer;
 	CContainedWindow ctrlFilterSelContainer;
-	
+
 	CMenu userMenu;
 	CMenu tabMenu;
 	CMenu mcMenu;
@@ -433,7 +432,7 @@ private:
 	TStringList lastLinesList;
 	tstring lastLines;
 	CToolTipCtrl ctrlLastLines;
-	
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 

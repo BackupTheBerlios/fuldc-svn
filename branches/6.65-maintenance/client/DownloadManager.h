@@ -91,7 +91,7 @@ public:
 	int64_t getTotalSecondsLeft();
 
 	/** @internal */
-	AdcCommand getCommand(bool zlib, bool tthf);
+	AdcCommand getCommand(bool zlib);
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSET(string, source, Source);
@@ -99,7 +99,7 @@ public:
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-	GETSET(TTHValue*, tth, TTH);
+	GETSET(TTHValue, tth, TTH);
 	GETSET(bool, treeValid, TreeValid);
 
 private:
@@ -127,15 +127,15 @@ private:
 class DownloadManagerListener {
 public:
 	virtual ~DownloadManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Complete;
 	typedef X<1> Failed;
 	typedef X<2> Starting;
 	typedef X<3> Tick;
 
-	/** 
-	 * This is the first message sent before a download starts. 
+	/**
+	 * This is the first message sent before a download starts.
 	 * No other messages will be sent before.
 	 */
 	virtual void on(Starting, Download*) throw() { }
@@ -145,13 +145,13 @@ public:
 	 */
 	virtual void on(Tick, const Download::List&) throw() { }
 
-	/** 
-	 * This is the last message sent before a download is deleted. 
+	/**
+	 * This is the last message sent before a download is deleted.
 	 * No more messages will be sent after it.
 	 */
 	virtual void on(Complete, Download*) throw() { }
 
-	/** 
+	/**
 	 * This indicates some sort of failure with a particular download.
 	 * No more messages will be sent after it.
 	 *
@@ -166,18 +166,14 @@ public:
  * Singleton. Use its listener interface to update the download list
  * in the user interface.
  */
-class DownloadManager : public Speaker<DownloadManagerListener>, 
-	private UserConnectionListener, private TimerManagerListener, 
+class DownloadManager : public Speaker<DownloadManagerListener>,
+	private UserConnectionListener, private TimerManagerListener,
 	public Singleton<DownloadManager>
 {
 public:
 
 	/** @internal */
-	void addConnection(UserConnection::Ptr conn) {
-		conn->addListener(this);
-		checkDownloads(conn);
-	}
-
+	void addConnection(UserConnection::Ptr conn);
 	void checkIdle(const User::Ptr& user);
 
 	/**
@@ -196,11 +192,14 @@ public:
 		return avg;
 	}
 
-	/** @return Number of downloads. */ 
+	/** @return Number of downloads. */
 	size_t getDownloadCount() {
 		Lock l(cs);
 		return downloads.size();
 	}
+
+	static const string USER_LIST_NAME;
+	static const string USER_LIST_NAME_BZ;
 
 	int64_t getAverageSpeed(const string & path){
 		size_t pos = path.rfind("\\");
@@ -254,7 +253,7 @@ private:
 		FileList files;
 		CriticalSection cs;
 	} mover;
-	
+
 	CriticalSection cs;
 	Download::List downloads;
 	UserConnection::List idlers;
@@ -273,25 +272,13 @@ private:
 	void failDownload(UserConnection* aSource, const string& reason);
 
 	friend class Singleton<DownloadManager>;
-	DownloadManager() { 
-		TimerManager::getInstance()->addListener(this);
-	}
 
-	virtual ~DownloadManager() throw() {
-		TimerManager::getInstance()->removeListener(this);
-		while(true) {
-			{
-				Lock l(cs);
-				if(downloads.empty())
-					break;
-			}
-			Thread::sleep(100);
-		}
-	}
-	
+	DownloadManager();
+	virtual ~DownloadManager() throw();
+
 	void checkDownloads(UserConnection* aConn);
 	void handleEndData(UserConnection* aSource);
-	
+
 	// UserConnectionListener
 	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();

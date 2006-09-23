@@ -71,7 +71,7 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	
+
 protected:
 	static Item items[];
 	static TextItem texts[];

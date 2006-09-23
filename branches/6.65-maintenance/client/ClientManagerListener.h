@@ -26,7 +26,7 @@
 class ClientManagerListener {
 public:
 	virtual ~ClientManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> UserUpdated;
 	typedef X<1> IncomingSearch;

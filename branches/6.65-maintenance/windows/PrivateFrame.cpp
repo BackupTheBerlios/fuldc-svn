@@ -45,11 +45,11 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
-	
+
 	ctrlClient.setFlag(CFulEditCtrl::MENU_CLEAR | CFulEditCtrl::MENU_HISTORY);
 	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
-	
+
 	ctrlClient.LimitText(0);
 	ctrlClient.SetFont(WinUtil::font);
 	ctrlClient.SetBackgroundColor(WinUtil::bgColor);
@@ -57,10 +57,10 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, WS_EX_CLIENTEDGE);
-	
+
 	ctrlClientContainer.SubclassWindow(ctrlClient.m_hWnd);
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
-	
+
 	ctrlMessage.SetFont(WinUtil::font);
 
 	tabMenu.CreatePopupMenu();
@@ -381,7 +381,7 @@ void PrivateFrame::onEnter()
 		}
 		if(resetText)
 			ctrlMessage.SetWindowText(_T(""));
-	} 
+	}
 }
 
 LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -428,7 +428,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientUrl()), user->isClientOp());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, user->getClientUrl());
 	
 	if(IgnoreManager::getInstance()->isUserIgnored(user->getNick())) {
 		tabMenu.EnableMenuItem(IDC_IGNORE, MF_GRAYED);
@@ -495,30 +495,30 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
 		int w[1];
 		ctrlStatus.GetClientRect(sr);
-		
+
 		w[0] = sr.right - 16;
 
 		ctrlStatus.SetParts(1, w);
 	}
-	
+
 	int h = WinUtil::fontHeight + 4;
 
 	CRect rc = rect;
 	rc.bottom -= h + 10;
 	ctrlClient.MoveWindow(rc);
-	
+
 	rc = rect;
 	rc.bottom -= 2;
 	rc.top = rc.bottom - h - 5;
 	rc.left +=2;
 	rc.right -=2;
 	ctrlMessage.MoveWindow(rc);
-	
+
 }
 
 LRESULT PrivateFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -615,7 +615,7 @@ void PrivateFrame::readLog() {
 	try {
 		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
 			File f(path, File::READ, File::OPEN);
-		
+
 			int64_t size = f.getSize();
 
 			if(size > 32*1024) {

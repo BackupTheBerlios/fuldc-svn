@@ -44,26 +44,25 @@ public:
 	typedef Upload* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	
-	Upload() : tth(NULL), file(NULL) { }
-	virtual ~Upload() { 
+
+	Upload() : file(0) { }
+	virtual ~Upload() {
 		delete file;
-		delete tth;
 	}
-	
+
 	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); }
-	
+
 	GETSET(string, fileName, FileName);
 	GETSET(string, localFileName, LocalFileName);
-	GETSET(TTHValue*, tth, TTH);
+	GETSET(TTHValue, tth, TTH);
 	GETSET(InputStream*, file, File);
 };
 
 class UploadManagerListener {
 public:
 	virtual ~UploadManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
-	
+	template<int I>	struct X { enum { TYPE = I }; };
+
 	typedef X<0> Complete;
 	typedef X<1> Failed;
 	typedef X<2> Starting;
@@ -71,20 +70,20 @@ public:
 	typedef X<4> WaitingAddFile;
 	typedef X<5> WaitingRemoveUser;
 
-	virtual void on(Starting, Upload*) throw() { };
-	virtual void on(Tick, const Upload::List&) throw() { };
-	virtual void on(Complete, Upload*) throw() { };
-	virtual void on(Failed, Upload*, const string&) throw() { };
-	virtual void on(WaitingAddFile, const User::Ptr, const string&) throw() { };
-	virtual void on(WaitingRemoveUser, const User::Ptr) throw() { };
+	virtual void on(Starting, Upload*) throw() { }
+	virtual void on(Tick, const Upload::List&) throw() { }
+	virtual void on(Complete, Upload*) throw() { }
+	virtual void on(Failed, Upload*, const string&) throw() { }
+	virtual void on(WaitingAddFile, const User::Ptr, const string&) throw() { }
+	virtual void on(WaitingRemoveUser, const User::Ptr) throw() { }
 
 };
 
 class UploadManager : private ClientManagerListener, private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
 public:
-	
-	/** @return Number of uploads. */ 
+
+	/** @return Number of uploads. */
 	size_t getUploadCount() { Lock l(cs); return uploads.size(); }
 
 	/**
@@ -102,10 +101,10 @@ public:
 		}
 		return avg;
 	}
-	
+
 	/** @return Number of free slots. */
-	int getFreeSlots() {return max((SETTING(SLOTS) - running), 0); }
-	
+	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
+
 	/** @internal */
 	bool getAutoSlot() {
 		/** A 0 in settings means disable */
@@ -120,7 +119,7 @@ public:
 
 	/** @internal */
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); }
-	
+
 	/** @param aUser Reserve an upload slot for this user and connect. */
 	void reserveSlot(const User::Ptr& aUser);
 
@@ -189,7 +188,7 @@ private:
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
-	
+
 	// TimerManagerListener
 	virtual void on(Second, time_t aTick) throw();
 	virtual void on(Minute, time_t aTick) throw();
@@ -200,10 +199,10 @@ private:
 	virtual void on(Send, UserConnection*) throw();
 	virtual void on(GetListLength, UserConnection* conn) throw();
 	virtual void on(TransmitDone, UserConnection*) throw();
-	
+
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
 
-	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes);
+	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
 };
 
 #endif // !defined(UPLOAD_MANAGER_H)

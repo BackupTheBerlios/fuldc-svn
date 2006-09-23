@@ -102,10 +102,10 @@ public:
 
 template<class T>
 struct PointerHash {
-#if _MSC_VER >= 1300 
-	static const size_t bucket_size = 4; 
-	static const size_t min_buckets = 8; 
-#endif 
+#if _MSC_VER >= 1300
+	static const size_t bucket_size = 4;
+	static const size_t min_buckets = 8;
+#endif
 	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); }
 	bool operator()(const T* a, const T* b) { return a < b; }
 };
@@ -114,7 +114,7 @@ struct PointerHash<void> {
 	size_t operator()(const void* a) const { return ((size_t)a)>>2; }
 };
 
-/** 
+/**
  * Compares two values
  * @return -1 if v1 < v2, 0 if v1 == v2 and 1 if v1 > v2
  */
@@ -153,7 +153,7 @@ private:
 	TPtr p;
 };
 
-class Util  
+class Util
 {
 public:
 	static tstring emptyStringT;
@@ -163,31 +163,6 @@ public:
 	static const string ANTI_FRAG_EXT;
 
 	static void initialize();
-
-	/**
-	 * Get the path to the application executable. 
-	 * This is mainly intended for use on Windows.
-	 *
-	 * @return Path to executable file.
-	 */
-	static string getAppPath() { return appPath; }
-
-	static string getAppName() {
-#if defined(_WIN32) || defined(_WIN64)
-		TCHAR buf[MAX_PATH+1];
-		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
-		return Text::wideToUtf8(wstring(buf, x));
-#else // _WIN32
-		char buf[PATH_MAX + 1];
-		int n;
-		n = readlink("/proc/self/exe", buf, PATH_MAX);
-		if (n == -1) {
-				return emptyString;
-			}
-		buf[n] = '\0';
-		return string(buf);
-#endif // _WIN32
-	}	
 
 	/** Path of temporary storage */
 	static string getTempPath() {
@@ -200,34 +175,29 @@ public:
 #endif
 	}
 
-	/** Path of resource directory */
-	static string getDataPath();
-
 	/** Path of configuration files */
-	static string getConfigPath();
+	static const string& getConfigPath() { return configPath; }
+	static const string& getDataPath() { return dataPath; }
+	static const string& getSystemPath() { return systemPath; }
 
 	/** Path of file lists */
-	static string getListPath() {
-		return getConfigPath() + "FileLists" PATH_SEPARATOR_STR;
-	}
+	static string getListPath() { return getConfigPath() + "FileLists" PATH_SEPARATOR_STR; }
 	/** Notepad filename */
-	static string getNotepadFile() {
-		return getConfigPath() + "Notepad.txt";
-	}
+	static string getNotepadFile() { return getConfigPath() + "Notepad.txt"; }
 
 	static string translateError(int aError) {
 #if defined(_WIN32) || defined(_WIN64)
 		LPVOID lpMsgBuf;
-		DWORD chars = FormatMessage( 
-			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-			FORMAT_MESSAGE_FROM_SYSTEM | 
+		DWORD chars = FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER |
+			FORMAT_MESSAGE_FROM_SYSTEM |
 			FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL,
 			aError,
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 			(LPTSTR) &lpMsgBuf,
 			0,
-			NULL 
+			NULL
 			);
 		if(chars == 0) {
 			return string();
@@ -438,55 +408,47 @@ public:
 
 	static string toString(short val) {
 		char buf[8];
-		sprintf(buf, "%d", (int)val);
+		snprintf(buf, sizeof(buf), "%d", (int)val);
 		return buf;
 	}
 	static string toString(unsigned short val) {
 		char buf[8];
-		sprintf(buf, "%u", (unsigned int)val);
+		snprintf(buf, sizeof(buf), "%u", (unsigned int)val);
 		return buf;
 	}
 	static string toString(int val) {
 		char buf[16];
-		sprintf(buf, "%d", val);
+		snprintf(buf, sizeof(buf), "%d", val);
 		return buf;
 	}
 	static string toString(unsigned int val) {
 		char buf[16];
-		sprintf(buf, "%u", val);
+		snprintf(buf, sizeof(buf), "%u", val);
 		return buf;
 	}
 	static string toString(long val) {
 		char buf[32];
-		sprintf(buf, "%ld", val);
+		snprintf(buf, sizeof(buf), "%ld", val);
 		return buf;
 	}
 	static string toString(unsigned long val) {
 		char buf[32];
-		sprintf(buf, "%lu", val);
+		snprintf(buf, sizeof(buf), "%lu", val);
 		return buf;
 	}
 	static string toString(long long val) {
 		char buf[32];
-#ifdef _MSC_VER
-		sprintf(buf, "%I64d", val);
-#else
-		sprintf(buf, "%lld", val);
-#endif
+		snprintf(buf, sizeof(buf), I64_FMT, val);
 		return buf;
 	}
 	static string toString(unsigned long long val) {
 		char buf[32];
-#ifdef _MSC_VER
-		sprintf(buf, "%I64u", val);
-#else
-		sprintf(buf, "%llu", val);
-#endif
+		snprintf(buf, sizeof(buf), U64_FMT, val);
 		return buf;
 	}
 	static string toString(double val) {
 		char buf[16];
-		sprintf(buf, "%0.2f", val);
+		snprintf(buf, sizeof(buf), "%0.2f", val);
 		return buf;
 	}
 
@@ -542,7 +504,7 @@ public:
 
 	static string toHexEscape(char val) {
 		char buf[sizeof(int)*2+1+1];
-		sprintf(buf, "%%%X", val&0x0FF);
+		snprintf(buf, sizeof(buf), "%%%X", val&0x0FF);
 		return buf;
 	}
 	static char fromHexEscape(const string aString) {
@@ -592,7 +554,7 @@ public:
 	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); }
 	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); }
 	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); }
-	
+
 	static string getOsVersion();
 
 	static string getIpCountry (string IP);
@@ -616,8 +578,13 @@ public:
 	static double randd() { return ((double)rand()) / ((double)0xffffffff); }
 
 private:
-	static string appPath;
+	/** Per-user configuration */
+	static string configPath;
+	/** Global configuration */
+	static string systemPath;
+	/** Various resources (help files etc) */
 	static string dataPath;
+
 	static bool away;
 	static bool manualAway;
 	static string awayMsg;
@@ -632,12 +599,12 @@ private:
 
 /** Case insensitive hash function for strings */
 struct noCaseStringHash {
-#if _MSC_VER < 1300 
-	enum {bucket_size = 4}; 
-	enum {min_buckets = 8}; 
-#else 
-	static const size_t bucket_size = 4; 
-	static const size_t min_buckets = 8; 
+#if _MSC_VER < 1300
+	enum {bucket_size = 4};
+	enum {min_buckets = 8};
+#else
+	static const size_t bucket_size = 4;
+	static const size_t min_buckets = 8;
 #endif // _MSC_VER == 1200
 
 	size_t operator()(const string* s) const {

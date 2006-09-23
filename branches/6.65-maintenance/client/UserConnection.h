@@ -36,7 +36,7 @@ class UserConnection;
 class UserConnectionListener {
 public:
 	virtual ~UserConnectionListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> BytesSent;
 	typedef X<1> Connected;
@@ -79,7 +79,6 @@ public:
 
 	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() { }
@@ -91,10 +90,10 @@ class ConnectionQueueItem;
 
 class Transfer {
 public:
-	Transfer() : userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
+	Transfer() : userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0),
 		last(0), actual(0), pos(0), startPos(0), size(-1) { }
 	virtual ~Transfer() { }
-	
+
 	int64_t getPos() const { return pos; }
 	void setPos(int64_t aPos) { pos = aPos; }
 
@@ -109,7 +108,7 @@ public:
 
 	int64_t getTotal() const { return getPos() - getStartPos(); }
 	int64_t getActual() const { return actual; }
-	
+
 	int64_t getSize() const { return size; }
 	void setSize(int64_t aSize) { size = aSize; }
 	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); }
@@ -136,7 +135,7 @@ public:
 private:
 	Transfer(const Transfer&);
 	Transfer& operator=(const Transfer&);
-	
+
 	/** Bytes on last avg update */
 	int64_t last;
 	/** Total actual bytes transfered this session (compression?) */
@@ -154,12 +153,12 @@ class ServerSocket;
 class Upload;
 class Download;
 
-class UserConnection : public Speaker<UserConnectionListener>, 
+class UserConnection : public Speaker<UserConnectionListener>,
 	private BufferedSocketListener, public Flags, private CommandHandler<UserConnection>
 {
 public:
 	friend class ConnectionManager;
-	
+
 	typedef UserConnection* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
@@ -173,8 +172,8 @@ public:
 
 	static const string FILE_NOT_AVAILABLE;
 	static const string COMMAND_NOT_SUPPORTED;
-	
-	enum Modes {	
+
+	enum Modes {
 		MODE_COMMAND = BufferedSocket::MODE_LINE,
 		MODE_DATA = BufferedSocket::MODE_DATA
 	};
@@ -197,7 +196,7 @@ public:
 		FLAG_SUPPORTS_TTHL = FLAG_SUPPORTS_ZLIB_GET << 1,
 		FLAG_SUPPORTS_TTHF = FLAG_SUPPORTS_TTHL << 1
 	};
-	
+
 	enum States {
 		// ConnectionManager
 		STATE_UNCONNECTED,
@@ -241,7 +240,7 @@ public:
 
 	void send(const AdcCommand& c) { send(c.toString(isSet(FLAG_NMDC), isSet(FLAG_SUPPORTS_ADCGET))); }
 
-	void supports(const StringList& feat) { 
+	void supports(const StringList& feat) {
 		string x;
 		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
 			x+= *i + ' ';
@@ -253,7 +252,7 @@ public:
 
 	void connect(const string& aServer, short aPort) throw(SocketException, ThreadException);
 	void accept(const Socket& aServer) throw(SocketException, ThreadException);
-	
+
 	void disconnect(bool graceless = false) { if(socket) socket->disconnect(graceless); }
 	void transmitFile(InputStream* f) { socket->transmitFile(f); }
 
@@ -284,17 +283,17 @@ public:
 private:
 	BufferedSocket* socket;
 	User::Ptr user;
-	
+
 	static const string UPLOAD, DOWNLOAD;
-	
+
 	union {
 		Download* download;
 		Upload* upload;
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection() throw() : /*cqi(NULL),*/ state(STATE_UNCONNECTED), lastActivity(0),
-		socket(0), download(NULL) { 
+	UserConnection() throw() : state(STATE_UNCONNECTED), lastActivity(0),
+		socket(0), download(NULL) {
 	}
 
 	virtual ~UserConnection() throw() {
@@ -310,29 +309,29 @@ private:
 	}
 
 	void onLine(const string& aLine) throw();
-	
+
 	void send(const string& aString) {
 		lastActivity = GET_TICK();
 		socket->write(aString);
 	}
 
 	virtual void on(Connected) throw() {
-        lastActivity = GET_TICK();
-        fire(UserConnectionListener::Connected(), this); 
-    }
+		lastActivity = GET_TICK();
+		fire(UserConnectionListener::Connected(), this);
+	}
 	virtual void on(Line, const string&) throw();
-	virtual void on(Data, u_int8_t* data, size_t len) throw() { 
-        lastActivity = GET_TICK(); 
-        fire(UserConnectionListener::Data(), this, data, len); 
-    }
-	virtual void on(BytesSent, size_t bytes, size_t actual) throw() { 
-        lastActivity = GET_TICK();
-        fire(UserConnectionListener::BytesSent(), this, bytes, actual); 
-    }
-	virtual void on(ModeChange) throw() { 
-        lastActivity = GET_TICK(); 
-        fire(UserConnectionListener::ModeChange(), this); 
-    }
+	virtual void on(Data, u_int8_t* data, size_t len) throw() {
+		lastActivity = GET_TICK();
+		fire(UserConnectionListener::Data(), this, data, len);
+	}
+	virtual void on(BytesSent, size_t bytes, size_t actual) throw() {
+		lastActivity = GET_TICK();
+		fire(UserConnectionListener::BytesSent(), this, bytes, actual);
+	}
+	virtual void on(ModeChange) throw() {
+		lastActivity = GET_TICK();
+		fire(UserConnectionListener::ModeChange(), this);
+	}
 	virtual void on(TransmitDone) throw() { fire(UserConnectionListener::TransmitDone(), this); }
 	virtual void on(Failed, const string&) throw();
 };

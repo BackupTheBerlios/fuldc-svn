@@ -33,12 +33,12 @@
 class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS, IDC_FAVUSERS>,
 	private FavoriteManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
-	
+
 	UsersFrame() : closed(false), startup(true) { }
 	virtual ~UsersFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("UsersFrame"), IDR_USERS, 0, COLOR_3DFACE);
-		
+
 	typedef MDITabChildWindowImpl<UsersFrame> baseClass;
 	typedef UserInfoBaseHandler<UsersFrame> uibBase;
 
@@ -59,7 +59,7 @@ public:
 		CHAIN_MSG_MAP(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
-		
+
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -70,7 +70,7 @@ public:
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		if(wParam == USER_ADDED) {
 			addUser(((UserInfoBase*)lParam)->user);
@@ -143,11 +143,11 @@ private:
 
 	CStatusBarCtrl ctrlStatus;
 	CMenu usersMenu;
-	
+
 	TypedListViewCtrl<UserInfo, IDC_USERS> ctrlUsers;
 
 	bool closed;
-	
+
 	bool startup;
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];

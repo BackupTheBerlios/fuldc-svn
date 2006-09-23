@@ -49,8 +49,12 @@ public:
 		return 0;
 	}
 
-	void prepareMenu(CMenu& menu, int ctx, const tstring& server, bool op) {
-		userCommands = FavoriteManager::getInstance()->getUserCommands(ctx, Text::fromT(server), op);
+	void prepareMenu(CMenu& menu, int ctx, const string& hubUrl) {
+		prepareMenu(menu, ctx, StringList(1, hubUrl));
+	}
+
+	void prepareMenu(CMenu& menu, int ctx, const StringList& hubs) {
+		userCommands = FavoriteManager::getInstance()->getUserCommands(ctx, hubs);
 		int n = 0;
 
 		menuPos = menu.GetMenuItemCount();

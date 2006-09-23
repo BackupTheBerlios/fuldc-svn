@@ -68,7 +68,7 @@ public:
 		active = i;
 		update();
 		calcRows(false);
-		Invalidate();		
+		Invalidate();
 	}
 
 	void removeTab(HWND aWnd) {
@@ -101,7 +101,7 @@ public:
 
 	void endSwitch() {
 		inTab = false;
-		if(active) 
+		if(active)
 		setTop(active->hWnd);
 	}
 
@@ -148,7 +148,7 @@ public:
 		TabInfo* ti = getTabInfo(aWnd);
 		dcassert(ti != NULL);
 		bool inval = ti->update();
-		
+
 		if(active != ti) {
 			if(!ti->dirty) {
 				ti->dirty = true;
@@ -206,8 +206,8 @@ public:
 	END_MSG_MAP()
 
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		int xPos = GET_X_LPARAM(lParam); 
-		int yPos = GET_Y_LPARAM(lParam); 
+		int xPos = GET_X_LPARAM(lParam);
+		int yPos = GET_Y_LPARAM(lParam);
 		int row = getRows() - ((yPos / getTabHeight()) + 1);
 
 		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
@@ -218,7 +218,7 @@ public:
 				if(hWnd) {
 					if(wParam & MK_SHIFT || wParam & MK_XBUTTON1)
 						::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
-					else 
+					else
 						moving = t;
 				}
 				break;
@@ -229,10 +229,10 @@ public:
 
 	LRESULT onLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		if (moving) {
-			int xPos = GET_X_LPARAM(lParam); 
-			int yPos = GET_Y_LPARAM(lParam); 
+			int xPos = GET_X_LPARAM(lParam);
+			int yPos = GET_Y_LPARAM(lParam);
 			int row = getRows() - ((yPos / getTabHeight()) + 1);
-			
+
 			bool moveLast = true;
 
 			for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
@@ -241,10 +241,10 @@ public:
 					// Bingo, this was clicked
 					HWND hWnd = GetParent();
 					if(hWnd) {
-						if(t == moving) 
+						if(t == moving)
 							::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
 						else{
-							//check if the cursor is on the left or right half of the tab
+							//check if the pointer is on the left or right half of the tab
 							//to determine where to insert the tab
 							moveTabs(t, xPos > (t->xpos + (t->getWidth()/2)));
 						}
@@ -280,9 +280,9 @@ public:
 	}
 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };		// location of mouse click
 
-		ScreenToClient(&pt); 
+		ScreenToClient(&pt);
 		int xPos = pt.x;
 		int row = getRows() - ((pt.y / getTabHeight()) + 1);
 
@@ -369,7 +369,7 @@ public:
 					r++;
 					w = 0;
 				}
-			} 
+			}
 			ti->xpos = w;
 			needInval |= (ti->row != (r-1));
 			ti->row = r-1;
@@ -392,7 +392,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
 		chevron.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 			BS_PUSHBUTTON , 0, IDC_CHEVRON);
-		chevron.SetWindowText(_T("»"));
+		chevron.SetWindowText(_T("\u00bb"));
 
 		mnu.CreatePopupMenu();
 
@@ -401,11 +401,11 @@ public:
 		height = WinUtil::getTextHeight(dc) + 7;
 		dc.SelectFont(oldfont);
 		::ReleaseDC(m_hWnd, dc);
-		
+
 		return 0;
 	}
 
-	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) { 
+	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		calcRows();
 		SIZE sz = { LOWORD(lParam), HIWORD(lParam) };
 		chevron.MoveWindow(sz.cx-14, 1, 14, getHeight());
@@ -431,7 +431,7 @@ public:
 
 			for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 				TabInfo* t = *i;
-				
+
 				if(t->row != -1 && t->xpos < rc.right && t->xpos + t->getWidth()  >= rc.left ) {
 					if(t != active) {
 						drawTab(memDC, t, t->xpos, t->row);
@@ -440,7 +440,7 @@ public:
 					}
 				}
 			}
-			
+
 			HPEN oldpen = memDC.SelectPen(::CreatePen(PS_SOLID, 1, SETTING(TAB_INACTIVE_BORDER)));
 			for(int r = 0; r < rows; r++) {
 				memDC.MoveTo(rc.left, r*getTabHeight());
@@ -490,7 +490,7 @@ public:
 		pt.x = rc.right - rc.left;
 		pt.y = 0;
 		chevron.ClientToScreen(&pt);
-		
+
 		mnu.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		return 0;
 	}
@@ -498,13 +498,13 @@ public:
 	LRESULT onSelectWindow(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		CMenuItemInfo mi;
 		mi.fMask = MIIM_DATA;
-		
+
 		mnu.GetMenuItemInfo(wID, FALSE, &mi);
 		HWND hWnd = GetParent();
 		if(hWnd) {
 			SendMessage(hWnd, FTM_SELECTED, (WPARAM)mi.dwItemData, 0);
 		}
-		return 0;		
+		return 0;
 	}
 
 	void update(){
@@ -611,13 +611,13 @@ private:
 				
 		update();
 		calcRows(false);
-		Invalidate();	
+		Invalidate();
 	}
 
 	HWND closing;
 	CButton chevron;
 	CMenu mnu;
-	
+
 	int rows;
 	int height;
 
@@ -646,10 +646,10 @@ private:
 	 * Draws a tab
 	 * @return The width of the tab
 	 */
-	void drawTab(CDC& dc, TabInfo* tab, int pos, int row, bool aActive = false ) {
-				
+	void drawTab(CDC& dc, TabInfo* tab, int pos, int row, bool aActive = false) {
+
 		int ypos = (getRows() - row - 1) * getTabHeight();
-		
+
 		//variables to store the old tools
 		HPEN oldPen;
 		HBRUSH oldBrush;
@@ -774,7 +774,7 @@ public:
 		MESSAGE_HANDLER(WM_NOTIFYFORMAT, onNotifyFormat)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
-	
+
 	HWND Create(HWND hWndParent, ATL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 	DWORD dwStyle = 0, DWORD dwExStyle = 0,
 	UINT nMenuID = 0, LPVOID lpCreateParam = NULL)
@@ -794,7 +794,7 @@ public:
 		dwStyle = T::GetWndStyle(dwStyle);
 		dwExStyle = T::GetWndExStyle(dwExStyle);
 
-		dwExStyle |= WS_EX_MDICHILD;   // force this one
+		dwExStyle |= WS_EX_MDICHILD;	// force this one
 		m_pfnSuperWindowProc = ::DefMDIChildProc;
 		m_hWndMDIClient = hWndParent;
 		ATLASSERT(::IsWindow(m_hWndMDIClient));
@@ -821,7 +821,7 @@ public:
 				MDIMaximize(hWnd);
 			wndParent.SetRedraw(TRUE);
 			wndParent.RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_ALLCHILDREN);
-			::SetFocus(GetMDIFrame());   // focus will be set back to this window
+			::SetFocus(GetMDIFrame());	// focus will be set back to this window
 		}
 		else if(hWnd != NULL && ::IsWindowVisible(m_hWnd) && !::IsChild(hWnd, ::GetFocus()))
 		{
@@ -836,7 +836,7 @@ public:
 		return NFR_UNICODE;
 #else
 		return NFR_ANSI;
-#endif		
+#endif
 	}
 
 	// All MDI windows must have this in wtl it seems to handle ctrl-tab and so on...
@@ -870,14 +870,14 @@ public:
 		created = true;
 		return 0;
 	}
-	
+
 	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM /*wParam */, LPARAM lParam, BOOL& bHandled) {
 		dcassert(getTab());
 		if((m_hWnd == (HWND)lParam))
 			getTab()->setActive(m_hWnd);
 
 		bHandled = FALSE;
-		return 1; 
+		return 1;
 	}
 
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -927,7 +927,7 @@ public:
 		}
 		bHandled = FALSE;
 		return 0;
-		
+
 	}
 
 	void setDirty() {

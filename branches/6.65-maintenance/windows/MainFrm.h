@@ -68,16 +68,19 @@ public:
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
+		if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
+			ctrlLastLines.RelayEvent(pMsg);
+
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
 			return TRUE;
-		
+
 		HWND hWnd = MDIGetActive();
 		if(hWnd != NULL)
 			return (BOOL)::SendMessage(hWnd, WM_FORWARDMSG, 0, (LPARAM)pMsg);
-		
+
 		return FALSE;
 	}
-	
+
 	virtual BOOL OnIdle()
 	{
 		UIUpdateToolBar();
@@ -224,8 +227,8 @@ public:
 		return 0;
 	}
 
-	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
-		updateTray(true); 
+	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		updateTray(true);
 		return 0;
 	}
 
@@ -248,9 +251,9 @@ public:
 			::ShowWindow(hWnd, SW_RESTORE);
 		return 0;
 	}
-	
+
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	
+
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
@@ -259,7 +262,7 @@ public:
 		PostMessage(WM_CLOSE);
 		return 0;
 	}
-	
+
 	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		WinUtil::openFile(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
 		return 0;
@@ -293,7 +296,7 @@ public:
 			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
 		}
 		return 0;
-	}	
+	}
 	 LRESULT onWindowRestoreAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		HWND tmpWnd = GetWindow(GW_CHILD); //getting client window
 		HWND ClientWnd = tmpWnd; //saving client window handle
@@ -302,7 +305,7 @@ public:
 		while (tmpWnd!=NULL) {
 			::ShowWindow(tmpWnd, SW_RESTORE);
 			::SendMessage(ClientWnd,WM_MDIGETACTIVE,NULL,(LPARAM)&bmax);
-			if(bmax)break; //bmax will be true if active child 
+			if(bmax)break; //bmax will be true if active child
 					//window is maximized, so if bmax then break
 			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
 		}
@@ -324,7 +327,7 @@ private:
 		User::Ptr user;
 		string text;
 	};
-	
+
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;
 	tstring lastLines;
@@ -339,7 +342,7 @@ private:
 	CImageList largeImages, largeImagesHot;
 
 	HashProgressDlg hashProgress;
-	
+
 	UINT trayMessage;
 	/** Is the tray icon visible? */
 	bool trayIcon;
@@ -357,7 +360,7 @@ private:
 	int lastUpload;
 
 	int statusSizes[8];
-	
+
 	HANDLE stopperThread;
 
 	bool missedAutoConnect;
@@ -392,10 +395,10 @@ private:
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second type, time_t aTick) throw();
-	
+
 	// HttpConnectionListener
 	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, string const& /*aLine*/) throw();
-	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw();	
+	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw();
 
 	// QueueManagerListener
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi, int64_t) throw();

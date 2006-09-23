@@ -31,7 +31,7 @@
 class LogManagerListener {
 public:
 	virtual ~LogManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Message;
 	virtual void on(Message, time_t, const string&) throw() { }
@@ -46,7 +46,7 @@ public:
 	void log(LogArea area, StringMap& params) throw() {
 		string path = SETTING(LOG_DIRECTORY);
 		string msg;
-	
+
 		path += Util::formatParams(getSetting(area, FILE), params, true);
 		msg = Util::formatParams(getSetting(area, FORMAT), params, false);
 

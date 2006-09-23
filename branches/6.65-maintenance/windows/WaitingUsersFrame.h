@@ -91,11 +91,11 @@ public:
 	void onAddFile(const User::Ptr, const string&);
 
 	// Update colors
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		HWND hWnd = (HWND)lParam;
 		HDC hDC   = (HDC)wParam;
-		if(hWnd == ctrlQueued.m_hWnd) 
+		if(hWnd == ctrlQueued.m_hWnd)
 		{
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);
@@ -131,7 +131,7 @@ private:
 	// Communication with manager
 	void LoadAll();
 	void UpdateSearch(int index, BOOL doDelete = TRUE);
-	
+
 	// UploadManagerListener
 	virtual void on(UploadManagerListener::WaitingRemoveUser, const User::Ptr) throw();
 	virtual void on(UploadManagerListener::WaitingAddFile, const User::Ptr, const string&) throw();

@@ -29,8 +29,8 @@
 
 Client::Counts Client::counts;
 
-Client::Client(const string& hubURL, char separator_, bool secure_) : 
-	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), reconnecting(false), socket(0), 
+Client::Client(const string& hubURL, char separator_, bool secure_) :
+	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), reconnecting(false), socket(0),
 	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
@@ -98,8 +98,8 @@ void Client::connect() {
 }
 
 void Client::on(Connected) throw() {
-	updateActivity(); 
-	ip = socket->getIp(); 
+	updateActivity();
+	ip = socket->getIp();
 	fire(ClientListener::Connected(), this);
 }
 

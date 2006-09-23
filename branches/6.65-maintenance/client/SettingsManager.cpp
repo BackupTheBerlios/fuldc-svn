@@ -34,15 +34,15 @@ const string SettingsManager::settingTags[] =
 {
 	// Strings
 	"Nick", "UploadSpeed", "Description", "DownloadDirectory", "EMail", "ExternalIp",
-	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
-	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
-	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
+	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths",
+	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths",
+	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths",
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
-	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
+	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",
 	"TempDownloadDirectory", "BindAddress", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
-	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
-	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
-	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
+	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths",
+	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat",
+	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem",
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
 	
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
@@ -56,7 +56,7 @@ const string SettingsManager::settingTags[] =
 	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
+	"PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState",
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
@@ -66,15 +66,15 @@ const string SettingsManager::settingTags[] =
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransfersFrame", "PopunderPm", "PopunderFilelist",
-	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
-	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "MaxFilelistSize", 
+	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
+	"OpenNewWindow", "UDPPort", "ShowLastLinesLog", "ConfirmItemRemoval",
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "MaxFilelistSize",
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
-	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
-	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
+	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue",
+	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles",
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
-	"AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches", 
+	"AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
 	"DontDlAlreadyQueued", "MaxCommandLength",
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
@@ -127,7 +127,7 @@ SettingsManager::SettingsManager()
 		int64Defaults[k] = 0;
 		int64Settings[k] = 0;
 	}
-	
+
 	setDefault(DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Downloads" PATH_SEPARATOR_STR);
 	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
@@ -218,7 +218,6 @@ SettingsManager::SettingsManager()
 	setDefault(CONFIRM_HUB_REMOVAL, false);
 	setDefault(USE_CTRL_FOR_LINE_HISTORY, true);
 	setDefault(JOIN_OPEN_NEW_WINDOW, false);
-	setDefault(SEARCH_ONLY_TTH, false);
 	setDefault(SHOW_LAST_LINES_LOG, 0);
 	setDefault(CONFIRM_ITEM_REMOVAL, true);
 	setDefault(ADVANCED_RESUME, true);
@@ -334,13 +333,13 @@ void SettingsManager::load(string const& aFileName)
 {
 	try {
 		SimpleXML xml;
-		
+
 		xml.fromXML(File(aFileName, File::READ, File::OPEN).read());
-		
+
 		xml.resetCurrentChild();
-		
+
 		xml.stepIn();
-		
+
 		if(xml.findChild("Settings"))
 		{
 			xml.stepIn();
@@ -351,7 +350,7 @@ void SettingsManager::load(string const& aFileName)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(StrSetting(i), xml.getChildData());
 				xml.resetCurrentChild();
@@ -360,7 +359,7 @@ void SettingsManager::load(string const& aFileName)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(IntSetting(i), Util::toInt(xml.getChildData()));
 				xml.resetCurrentChild();
@@ -369,17 +368,16 @@ void SettingsManager::load(string const& aFileName)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(Int64Setting(i), Util::toInt64(xml.getChildData()));
 				xml.resetCurrentChild();
 			}
-			
+
 			xml.stepOut();
 		}
 
-		// @todo add version-dependent compatibility hacks here
-		//double v = Util::toDouble(SETTING(CONFIG_VERSION));
+		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
 
 
@@ -424,7 +422,7 @@ void SettingsManager::load(string const& aFileName)
 
 		xml.resetCurrentChild();
 
-		fire(SettingsManagerListener::Load(), &xml);
+		fire(SettingsManagerListener::Load(), xml);
 
 		xml.stepOut();
 
@@ -441,7 +439,7 @@ void SettingsManager::save(string const& aFileName) {
 
 	int i;
 	string type("type"), curType("string");
-	
+
 	for(i=STR_FIRST; i<STR_LAST; i++)
 	{
 		if(i == CONFIG_VERSION) {
@@ -504,7 +502,7 @@ void SettingsManager::save(string const& aFileName) {
 	xml.addChildAttrib("CommandLine", fileEvents[ON_DIR_CREATED].second);
 	xml.stepOut();
 	
-	fire(SettingsManagerListener::Save(), &xml);
+	fire(SettingsManagerListener::Save(), xml);
 
 	try {
 		File out(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
