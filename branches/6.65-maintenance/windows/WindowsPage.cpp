@@ -47,6 +47,7 @@ WindowsPage::ListItem WindowsPage::listItems[] = {
 	{ SettingsManager::OPEN_NETWORK_STATISTICS, ResourceManager::NETWORK_STATISTICS },
 	{ SettingsManager::OPEN_NOTEPAD, ResourceManager::NOTEPAD },
 	{ SettingsManager::OPEN_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
+	{ SettingsManager::OPEN_TRANSFERS, ResourceManager::TRANSFERS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

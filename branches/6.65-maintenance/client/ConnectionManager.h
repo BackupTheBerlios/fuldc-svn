@@ -88,6 +88,7 @@ public:
 	}
 
 	unsigned short getPort() { return port; }
+
 private:
 
 	class Server : public Thread {

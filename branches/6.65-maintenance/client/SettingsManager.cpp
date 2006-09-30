@@ -88,7 +88,7 @@ const string SettingsManager::settingTags[] =
 	"PopupDontShowOnActive", "DupeColor", "NoTTHColor", "DropStupidConnection", "FlashWindowOnPM", "FlashWindowOnNewPM",
 	"RefreshIncomingBetween", "RefreshShareBetween", "RefreshIncomingBegin", "RefreshIncomingEnd",
     "RefreshShareBegin", "RefreshShareEnd", "MuteOnAway", "NotifyUpdates", "NotifyBetaUpdates",
-	"SpyIgnoreTTH",
+	"SpyIgnoreTTH", "OpenTransfers",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -315,6 +315,7 @@ SettingsManager::SettingsManager()
 	setDefault(NOTIFY_UPDATES, true);
 	setDefault(NOTIFY_BETA_UPDATES, false);
 	setDefault(SPY_IGNORE_TTH, true);
+	setDefault(OPEN_TRANSFERS, true);
 
 #if defined(_WIN32) || defined(_WIN64)
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

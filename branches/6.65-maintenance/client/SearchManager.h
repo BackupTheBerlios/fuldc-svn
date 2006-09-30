@@ -56,7 +56,7 @@ public:
 	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue& aTTH);
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
-		int64_t aSize, const string& aFile, const string& aHubName, 
+		int64_t aSize, const string& aFile, 
 		const string& aHubURL, const string& aIp, TTHValue aTTH) :
 	file(aFile), hubName(aUser->getClientName()), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 

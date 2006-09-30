@@ -808,5 +808,6 @@ enum Strings { // @DontAdd
 	RESUME, // "Resume"
 	TRANSFERS, // "Transfers"
 	MENU_TRANSFERS, // "Transfers\tCtrl+T"
+	USERCOMMANDS, // "Usercommands"
 	LAST // @DontAdd
 };

@@ -239,7 +239,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		}
 
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, hubIpPort, remoteIp, TTHValue(tth));
+			file, hubIpPort, remoteIp, TTHValue(tth));
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	}

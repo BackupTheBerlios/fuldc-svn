@@ -33,19 +33,20 @@
 #include "ExListViewCtrl.h"
 #include "WinUtil.h"
 #include "FlatTabCtrl.h"
+#include "TransfersManager.h"
 
 class TransfersFrame : public MDITabChildWindowImpl<TransfersFrame>, 
 	public CSplitterImpl<TransfersFrame, true>,
 	public StaticFrame<TransfersFrame, ResourceManager::TRANSFERS, IDC_TRANSFERS>,
-	private DownloadManagerListener, 
-	private UploadManagerListener, private ConnectionManagerListener, 
-	public UserInfoBaseHandler<TransfersFrame>, public UCHandler<TransfersFrame>
+	public UserInfoBaseHandler<TransfersFrame>, 
+	public UCHandler<TransfersFrame>,
+	private TransfersManagerListener
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("TransfersFrame"), IDR_TRANSFERS, 0, COLOR_3DFACE);
 
 	TransfersFrame() : category(0) { };
-	virtual ~TransfersFrame(void);
+	virtual ~TransfersFrame() { arrows.Destroy(); }
 
 	typedef MDITabChildWindowImpl<TransfersFrame> baseClass;
 	typedef CSplitterImpl<TransfersFrame, true> splitBase;
@@ -97,13 +98,13 @@ public:
 	LRESULT onKeyDownTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
-			ctrlTransfers.forEachSelected(&ItemInfo::disconnect);
+			ctrlTransfers.forEachSelected(&TransferInfo::disconnect);
 		}
 		return 0;
 	}
 
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlTransfers.forEachSelected(&ItemInfo::disconnect);
+		ctrlTransfers.forEachSelected(&TransferInfo::disconnect);
 		return 0;
 	}
 
@@ -111,15 +112,13 @@ public:
 
 private:
 
-	class ItemInfo;
 public:
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
+	TypedListViewCtrl<TransferInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
 private:
 	enum {
 		ADD_ITEM,
 		REMOVE_ITEM,
-		UPDATE_ITEM,
-		UPDATE_ITEMS,
+		UPDATE_ITEM
 	};
 
 	enum {
@@ -149,128 +148,9 @@ private:
 		IMAGE_UPLOAD
 	};
 
-	struct UpdateInfo;
-	class ItemInfo : public UserInfoBase {
-	public:
-		enum Status {
-			STATUS_RUNNING,
-			STATUS_WAITING
-		};
+	void speak(int event, TransferInfo* ti) { PostMessage(WM_SPEAKER, event, reinterpret_cast<LPARAM>(ti)); }
 
-		ItemInfo(const User::Ptr& u, bool aDownload);
-
-		bool download;
-		bool transferFailed;
-		bool filelist;
-		Status status;
-		int64_t pos;
-		int64_t size;
-		int64_t start;
-		int64_t actual;
-		int64_t speed;
-		int64_t timeLeft;
-		int64_t totalTimeLeft;
-
-		tstring columns[COLUMN_LAST];
-		void update(const UpdateInfo& ui);
-
-		void disconnect();
-		void removeAll();
-		void deleteSelf() { delete this; }
-
-		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
-
-		const tstring& getText(int col) const {
-			dcassert(col >= 0 && col < COLUMN_LAST);
-			return columns[col];
-		}
-
-		const tstring& copy(int col) {
-			if(col >= 0 && col < COLUMN_LAST)
-				return getText(col);
-
-			return Util::emptyStringT;
-		}
-
-		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
-			if(a->status == b->status) {
-				if(a->download != b->download) {
-					return a->download ? -1 : 1;
-				}
-			} else {
-				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
-			}
-			switch(col) {
-				case COLUMN_STATUS: return 0;
-				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
-				case COLUMN_TOTALTIMELEFT: return compare(a->totalTimeLeft, b->totalTimeLeft);
-				case COLUMN_SPEED: return compare(a->speed, b->speed);
-				case COLUMN_SIZE: return compare(a->size, b->size);
-				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
-				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
-			}
-		}
-	};
-
-	struct UpdateInfo {
-		enum {
-			MASK_POS = 1 << 0,
-			MASK_SIZE = 1 << 1,
-			MASK_START = 1 << 2,
-			MASK_ACTUAL = 1 << 3,
-			MASK_SPEED = 1 << 4,
-			MASK_FILE = 1 << 5,
-			MASK_STATUS = 1 << 6,
-			MASK_TIMELEFT = 1 << 7,
-			MASK_TOTALTIMELEFT = 1 << 8,
-			MASK_IP = 1 << 9,
-			MASK_STATUS_STRING = 1 << 10,
-			MASK_COUNTRY = 1 << 11,
-			MASK_FILE_LIST = 1 << 12
-		};
-
-		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
-
-		UpdateInfo(const User::Ptr& aUser, bool isDownload, bool isTransferFailed = false) : updateMask(0), user(aUser), download(isDownload), transferFailed(isTransferFailed) { }
-
-		u_int32_t updateMask;
-
-		User::Ptr user;
-		bool download;
-		bool transferFailed;
-		void setFileList(bool aFileList) { filelist = aFileList; updateMask |= MASK_FILE_LIST; }
-		bool filelist;
-		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
-		ItemInfo::Status status;
-		void setPos(int64_t aPos) { pos = aPos; updateMask |= MASK_POS; }
-		int64_t pos;
-		void setSize(int64_t aSize) { size = aSize; updateMask |= MASK_SIZE; }
-		int64_t size;
-		void setStart(int64_t aStart) { start = aStart; updateMask |= MASK_START; }
-		int64_t start;
-		void setActual(int64_t aActual) { actual = aActual; updateMask |= MASK_ACTUAL; }
-		int64_t actual;
-		void setSpeed(int64_t aSpeed) { speed = aSpeed; updateMask |= MASK_SPEED; }
-		int64_t speed;
-		void setTimeLeft(u_int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
-		u_int64_t timeLeft;
-		void setTotalTimeLeft(int64_t aTotalTimeLeft) { totalTimeLeft = aTotalTimeLeft; updateMask |= MASK_TOTALTIMELEFT; }
-		int64_t totalTimeLeft;
-		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
-		tstring statusString;
-		void setFile(const tstring& aFile) { file = Util::getFileName(aFile); path = Util::getFilePath(aFile); updateMask|= MASK_FILE; }
-		tstring file;
-		tstring path;
-		void setIP(const tstring& aIP) { IP = aIP; updateMask |= MASK_IP; }
-		tstring IP;
-	};
-
-	void speak(int type, UpdateInfo* ui) { PostMessage(WM_SPEAKER, type, reinterpret_cast<LPARAM>(ui)); }
-	void speak(int type, vector<UpdateInfo*>* ui) { PostMessage(WM_SPEAKER, type, reinterpret_cast<LPARAM>(ui)); }
-
-	CriticalSection cs;
-
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS> ctrlTransfers;
+	TypedListViewCtrl<TransferInfo, IDC_TRANSFERS> ctrlTransfers;
 	ExListViewCtrl ctrlCategories;
 
 	static int columnIndexes[];
@@ -280,33 +160,21 @@ private:
 	CMenu pmMenu;
 	CMenu openMenu;
 	CMenu copyMenu;
-	CMenu userMenu;
+	CMenu ucMenu;
 
 	CImageList arrows;
 	CImageList categories;
 
 	int category;
 
-	typedef vector<ItemInfo*> Transfers;
+	typedef vector<TransferInfo*> Transfers;
 	typedef Transfers::iterator TransferIter;
 
 	Transfers transfers;
 
-	virtual void on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw();
-	virtual void on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw();
-	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();
-	virtual void on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw();
-
-	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw() { onTransferComplete(aDownload, false);}
-	virtual void on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw();
-	virtual void on(DownloadManagerListener::Starting, Download* aDownload) throw();
-	virtual void on(DownloadManagerListener::Tick, const Download::List& aDownload) throw();
-
-	virtual void on(UploadManagerListener::Starting, Upload* aUpload) throw();
-	virtual void on(UploadManagerListener::Tick, const Upload::List& aUpload) throw();
-	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw() { onTransferComplete(aUpload, true); }
-
-	void onTransferComplete(Transfer* aTransfer, bool isUpload);
+	virtual void on(Added, TransferInfo* ti) { speak(ADD_ITEM, ti); }
+	virtual void on(Updated, TransferInfo* ti) { speak(UPDATE_ITEM, ti); }
+	virtual void on(Removed, TransferInfo* ti) { speak(REMOVE_ITEM, ti); }
 };
 
 #endif // !defined(TRANSFER_VIEW_H)

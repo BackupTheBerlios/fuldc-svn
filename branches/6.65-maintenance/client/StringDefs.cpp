@@ -805,6 +805,7 @@ string ResourceManager::strings[] = {
 "Resume", 
 "Transfers", 
 "Transfers\tCtrl+T", 
+"Usercommands", 
 };
 string ResourceManager::names[] = {
 "Active", 
@@ -1610,4 +1611,5 @@ string ResourceManager::names[] = {
 "Resume", 
 "Transfers", 
 "MenuTransfers", 
+"Usercommands", 
 };

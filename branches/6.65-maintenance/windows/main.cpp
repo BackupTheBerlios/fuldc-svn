@@ -24,6 +24,9 @@
 #include "ExtendedTrace.h"
 #include "WinUtil.h"
 #include "SingleInstance.h"
+#include "PopupManager.h"
+#include "FinishedManager.h"
+#include "TransfersManager.h"
 
 #include "../client/MerkleTree.h"
 
@@ -284,6 +287,10 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		}
 	}
 
+	PopupManager::newInstance();
+	FinishedManager::newInstance();
+	TransfersManager::newInstance();
+
 	int rtl = ResourceManager::getInstance()->isRTL() ? WS_EX_RTLREADING : 0;
 	if(wndMain.CreateEx(NULL, rc, 0, rtl | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) == NULL) {
 		ATLTRACE(_T("Main window creation failed!\n"));
@@ -295,6 +302,10 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	int nRet = theLoop.Run();
 
 	_Module.RemoveMessageLoop();
+
+	PopupManager::deleteInstance();
+	FinishedManager::deleteInstance();
+	TransfersManager::deleteInstance();
 
 	shutdown();
 

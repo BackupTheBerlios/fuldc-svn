@@ -36,10 +36,6 @@
 #include "WebShortcuts.h"
 #include "IgnoreManager.h"
 
-//ugly, but i have no intention on moving the code to *nix so it works =)
-#include "../windows/PopupManager.h"
-#include "../windows/FinishedManager.h"
-
 #include "StringTokenizer.h"
 
 #ifdef _STLP_DEBUG
@@ -92,9 +88,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 	ShareManager::newInstance();
 	FavoriteManager::newInstance();
 	QueueManager::newInstance();
-	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
-	PopupManager::newInstance();
 	WebShortcuts::newInstance();
 	IgnoreManager::newInstance();
 
@@ -134,9 +128,7 @@ void shutdown() {
 
 	IgnoreManager::deleteInstance();
 	WebShortcuts::deleteInstance();
-	PopupManager::deleteInstance();
 	ADLSearchManager::deleteInstance();
-	FinishedManager::deleteInstance();
 	HighlightManager::deleteInstance();
 	ShareManager::deleteInstance();
 	CryptoManager::deleteInstance();

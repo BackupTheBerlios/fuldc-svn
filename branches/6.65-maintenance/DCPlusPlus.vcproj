@@ -1303,6 +1303,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\TransfersManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath="windows\TreePropertySheet.cpp"
 				>
 			</File>
@@ -1588,7 +1592,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\TransferInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\TransfersFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\TransfersManager.h"
 				>
 			</File>
 			<File

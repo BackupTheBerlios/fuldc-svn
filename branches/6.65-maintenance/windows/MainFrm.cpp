@@ -69,6 +69,7 @@ closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConn
 	links.discuss = links.homepage + _T("forum/");
 	links.features = links.homepage + _T("bugzilla/");
 	links.bugs = links.homepage + _T("bugzilla/");
+	
 }
 
 MainFrame::~MainFrame() {
@@ -175,6 +176,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
 	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
 	if(BOOLSETTING(OPEN_NOTEPAD)) PostMessage(WM_COMMAND, IDC_NOTEPAD);
+	if(BOOLSETTING(OPEN_TRANSFERS)) PostMessage(WM_COMMAND, IDC_TRANSFERS);
 
 	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
 	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
@@ -712,6 +714,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
 			case IDC_SYSTEM_LOG: stringId = ResourceManager::MENU_SYSTEM_LOG; break;
+			case IDC_TRANSFERS: stringId = ResourceManager::MENU_TRANSFERS; break;
 			default: dcassert(false); break;
 		}
 		if(stringId != -1) {

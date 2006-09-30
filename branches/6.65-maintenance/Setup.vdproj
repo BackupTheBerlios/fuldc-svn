@@ -165,6 +165,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9832C37C2A6B4378957286A2C29FBF72"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9B91DF4EDA9149C9B5775EBBCE565A10"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -219,6 +225,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D270340F99BE4BB3BBD8014363BB647A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D2F21F58E70843769C380DB415DCEECB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -244,6 +256,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E8A6FE9346FB41C49D5EA3548BD4D6F6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EC61EBF57FCC453FB09C782D3C3641FB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -902,6 +920,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9832C37C2A6B4378957286A2C29FBF72"
+            {
+            "SourcePath" = "8:res\\transfers.ico"
+            "TargetName" = "8:transfers.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B91DF4EDA9149C9B5775EBBCE565A10"
             {
             "SourcePath" = "8:res\\User.ico"
@@ -944,7 +982,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A9B1C3A967EBCD7017507CD1BC0D7118"
             {
-            "SourcePath" = "8:COMDLG32.dll"
+            "SourcePath" = "8:comdlg32.dll"
             "TargetName" = "8:comdlg32.dll"
             "Tag" = "8:"
             "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
@@ -1062,6 +1100,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D270340F99BE4BB3BBD8014363BB647A"
+            {
+            "SourcePath" = "8:res\\32bpp\\transfers.bmp"
+            "TargetName" = "8:transfers.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_B1ABAC0E1D9449A6B97C76EF345A2496"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D2F21F58E70843769C380DB415DCEECB"
             {
             "SourcePath" = "8:res\\ADLSearch.ico"
@@ -1146,6 +1204,26 @@
             {
             "SourcePath" = "8:res\\24bpp\\users.bmp"
             "TargetName" = "8:users.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_0E7B8E0D470E4D24B11F254279B9998C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EC61EBF57FCC453FB09C782D3C3641FB"
+            {
+            "SourcePath" = "8:res\\24bpp\\transfers.bmp"
+            "TargetName" = "8:transfers.bmp"
             "Tag" = "8:"
             "Folder" = "8:_0E7B8E0D470E4D24B11F254279B9998C"
             "Condition" = "8:"
