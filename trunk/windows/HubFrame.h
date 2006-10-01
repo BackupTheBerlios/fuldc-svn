@@ -42,7 +42,7 @@
 
 struct CompareItems;
 
-class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
+class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
 	public UserInfoBaseHandler<HubFrame>
 {
@@ -64,6 +64,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
@@ -97,6 +98,7 @@ public:
 		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
 	END_MSG_MAP()
 
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -117,7 +119,7 @@ public:
 	LRESULT onResolvedIP(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
+
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(tstring aLine, bool bold = true);
 	void addClientLine(const tstring& aLine, bool inChat = true);
@@ -129,7 +131,7 @@ public:
 	static void openWindow(const tstring& server);
 	static void closeDisconnected();
 	static void setClosing();
-	
+
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
 		return 0;
@@ -139,7 +141,7 @@ public:
 		onEnter();
 		return 0;
 	}
-	
+
 	LRESULT onAddAsFavorite(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		addAsFavorite();
 		return 0;
@@ -169,23 +171,23 @@ public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
 	enum Speakers { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
-		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, 
+		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
 	};
 
 	enum {
 		IMAGE_USER = 0, IMAGE_OP
 	};
-	
+
 	enum {
-		COLUMN_FIRST, 
-		COLUMN_NICK = COLUMN_FIRST, 
-		COLUMN_SHARED, 
-		COLUMN_DESCRIPTION, 
+		COLUMN_FIRST,
+		COLUMN_NICK = COLUMN_FIRST,
+		COLUMN_SHARED,
+		COLUMN_DESCRIPTION,
 		COLUMN_TAG,
 		COLUMN_IP,
-		COLUMN_CONNECTION, 
-		COLUMN_EMAIL, 
+		COLUMN_CONNECTION,
+		COLUMN_EMAIL,
 		COLUMN_CID,
 		COLUMN_LAST
 	};
@@ -219,7 +221,7 @@ private:
 	};
 
 	struct PMTask : public StringTask {
-		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m), 
+		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m),
 			from(from_.getUser()), to(to_.getUser()), replyTo(replyTo_.getUser()), hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) { }
 
 		User::Ptr from;
@@ -233,8 +235,8 @@ private:
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const UserTask& u) : UserInfoBase(u.user) { 
-			update(u.identity, -1); 
+		UserInfo(const UserTask& u) : UserInfoBase(u.user) {
+			update(u.identity, -1);
 		}
 
 		const tstring& getText(int col) const {
@@ -260,23 +262,23 @@ private:
 			if(col == COLUMN_SHARED) {
 				return compare(a->identity.getBytesShared(), b->identity.getBytesShared());;
 			}
-			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
+			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 		}
 
 		bool update(const Identity& identity, int sortCol);
 
 		const string& getNick() const { return identity.getNick(); }
 		bool isHidden() const { return identity.isHidden(); }
-		
+
 		tstring columns[COLUMN_LAST];
 		GETSET(Identity, identity, Identity);
 	};
 
 
-	HubFrame(const tstring& aServer) : 
-	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
+	HubFrame(const tstring& aServer) :
+	waitingForPW(false), extraSort(false), server(aServer), closed(false),
 		updateUsers(true), curCommandPosition(0),
-		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP), 
+		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
@@ -364,7 +366,6 @@ private:
 
 	bool waitingForPW;
 	bool extraSort;
-	bool showUsers;
 
 	TStringList prevCommands;
 	tstring currentCommand;
@@ -399,7 +400,7 @@ private:
 	CContainedWindow showUsersContainer;
 	CContainedWindow ctrlFilterContainer;
 	CContainedWindow ctrlFilterSelContainer;
-	
+
 	CMenu userMenu;
 	CMenu tabMenu;
 	CMenu mcMenu;
@@ -420,6 +421,7 @@ private:
 	tstring filter;
 
 	bool closed;
+	bool showUsers;
 	static bool closing;
 	bool logMainChat;
 
@@ -438,7 +440,7 @@ private:
 	TStringList lastLinesList;
 	tstring lastLines;
 	CToolTipCtrl ctrlLastLines;
-	
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -465,7 +467,6 @@ private:
 
 	void openLinksInTopic();
 	bool resolve(const wstring& aDns);
-
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw();

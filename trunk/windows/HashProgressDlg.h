@@ -58,7 +58,7 @@ public:
 		progress.Attach(GetDlgItem(IDC_HASH_PROGRESS));
 		progress.SetRange(0, 10000);
 		updateStats();
-		
+
 		SetTimer(1, 1000);
 		return TRUE;
 	}
@@ -133,14 +133,13 @@ public:
 	}
 
 private:
-	
-	
+
 	bool autoClose;
 	int64_t startBytes;
 	size_t startFiles;
 	u_int32_t startTime;
 	CProgressBarCtrl progress;
-	
+
 };
 
 #endif // !defined(HASH_PROGRESS_DLG_H)

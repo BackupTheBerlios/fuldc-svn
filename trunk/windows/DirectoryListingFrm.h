@@ -102,9 +102,9 @@ public:
 		STATUS_DUMMY,
 		STATUS_LAST
 	};
-	
+
 	DirectoryListingFrame(const User::Ptr& aUser);
-	virtual ~DirectoryListingFrame() { 
+	virtual ~DirectoryListingFrame() {
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
 	
@@ -319,13 +319,13 @@ private:
 			FILE,
 			DIRECTORY
 		} type;
-		
+
 		union {
 			DirectoryListing::File* file;
 			DirectoryListing::Directory* dir;
 		};
 
-		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) { 
+		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) {
 			columns[COLUMN_FILENAME] = Text::toT(f->getName());
 			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
 			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
@@ -333,20 +333,19 @@ private:
 
 			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(f->getSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
-			if(f->getTTH() != NULL)
-				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
-		};
+			columns[COLUMN_TTH] = Text::toT(f->getTTH().toBase32());
+		}
 		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) { 
 			columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			columns[COLUMN_EXACTSIZE] = Util::formatExactSize(d->getTotalSize());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
-		};
+		}
 
 		const tstring& getText(int col) const {
 			dcassert(col >= 0 && col < COLUMN_LAST);
 			return columns[col];
 		}
-		
+
 		struct TotalSize {
 			TotalSize() : total(0) { }
 			void operator()(ItemInfo* a) { total += a->type == DIRECTORY ? a->dir->getTotalSize() : a->file->getSize(); }
@@ -398,7 +397,7 @@ private:
 	private:
 		tstring columns[COLUMN_LAST];
 	};
-	
+
 	CMenu targetMenu;
 	CMenu targetDirMenu;
 	CMenu fileMenu;
@@ -410,15 +409,15 @@ private:
 	CContainedWindow listContainer;
 
 	StringList targets;
-	
+
 	deque<string> history;
 	size_t historyIndex;
-	
+
 	CTreeViewCtrl ctrlTree;
 	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;
 	CStatusBarCtrl ctrlStatus;
 	HTREEITEM treeRoot;
-	
+
 	CButton ctrlFind, ctrlFindNext;
 	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
@@ -438,12 +437,12 @@ private:
 	bool loading;
 
 	int statusSizes[10];
-	
+
 	DirectoryListing* dl;
 
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
-	
+
 	static UserMap lists;
 
 	static int columnIndexes[COLUMN_LAST];

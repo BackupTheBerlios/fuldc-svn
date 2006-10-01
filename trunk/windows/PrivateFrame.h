@@ -35,7 +35,7 @@
 
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
-class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>, 
+class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>,
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
@@ -101,12 +101,12 @@ public:
 	void addLine(const tstring& aLine, bool bold = true);
 	void addStatus(const tstring& aLine);
 	void onEnter();
-	void UpdateLayout(BOOL bResizeBars = TRUE);	
+	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
 	void readLog();
-	
+
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	
+
 	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
 		return 0;
@@ -121,7 +121,7 @@ public:
 		updateTitle();
 		return 0;
 	}
-	
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -138,29 +138,29 @@ public:
 		ctrlMessage.SetFocus();
 		return 0;
 	}
-	
+
 	void addClientLine(const tstring& aLine) {
 		if(!created) {
 			CreateEx(WinUtil::mdiClient);
 		}
 		ctrlStatus.SetText(0, (_T("[") + Util::getShortTimeString() + _T("] ") + aLine).c_str());
 	}
-	
+
 	void sendMessage(const tstring& msg);
-	
+
 	User::Ptr& getUser() { return replyTo; }
 
 	bool muted;
-	
+
 private:
-	PrivateFrame(const User::Ptr& replyTo_) : replyTo(replyTo_), 
+	PrivateFrame(const User::Ptr& replyTo_) : replyTo(replyTo_),
 		created(false), closed(false), muted(false), doPopups(true), offline(false),
 		ctrlMessageContainer(WC_EDIT, this, PM_MESSAGE_MAP),
 		ctrlClientContainer(WC_EDIT, this, PM_MESSAGE_MAP) {
 	}
-	
+
 	virtual ~PrivateFrame() { }
-	
+
 	bool doPopups;
 	bool created;
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
@@ -187,10 +187,9 @@ private:
 	tstring currentCommand;
 	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
-	
+
 	void updateTitle();
 
-	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw() {
 		if(aUser.getUser() == replyTo)

@@ -81,12 +81,12 @@ void DirectoryListing::loadFile(const string& name) {
 
 	// For now, we detect type by ending...
 	string ext = Util::getFileExt(name);
-		
+
 	if(Util::stricmp(ext, ".bz2") == 0) {
 		::File ff(name, ::File::READ, ::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
-		char buf[BUF_SIZE];
+		AutoArray<char> buf(BUF_SIZE);
 		size_t len;
 		size_t bytesRead = 0;
 		for(;;) {
@@ -101,7 +101,7 @@ void DirectoryListing::loadFile(const string& name) {
 		}
 	} else if(Util::stricmp(ext, ".xml") == 0) {
 		int64_t sz = ::File::getSize(name);
-		if(sz == -1 || sz >= txt.max_size())
+		if(sz == -1 || sz >= static_cast<int64_t>(txt.max_size()))
 			throw(FileException(CSTRING(FILE_NOT_AVAILABLE)));
 		txt.resize((size_t) sz);
 		size_t n = txt.length();
@@ -113,8 +113,8 @@ void DirectoryListing::loadFile(const string& name) {
 
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
-	ListLoader(DirectoryListing* aList, DirectoryListing::Directory* root, bool aUpdating) : list(aList), cur(root), base("/"), inListing(false), updating(aUpdating) { 
-	};
+	ListLoader(DirectoryListing* aList, DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) {
+	}
 
 	virtual ~ListLoader() { }
 
@@ -161,7 +161,10 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			if(s.empty())
 				return;
 			const string& h = getAttrib(attribs, sTTH, 2);
-			DirectoryListing::File* f = h.empty() ? new DirectoryListing::File(cur, n, Util::toInt64(s)) : new DirectoryListing::File(cur, n, Util::toInt64(s), h);
+			if(h.empty()) {
+				return;
+			}
+			DirectoryListing::File* f = new DirectoryListing::File(cur, n, Util::toInt64(s), h);
 			cur->files.push_back(f);
 		} else if(name == sDirectory) {
 			const string& n = getAttrib(attribs, sName, 0);
@@ -171,7 +174,7 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			bool incomp = getAttrib(attribs, sIncomplete, 1) == "1";
 			DirectoryListing::Directory* d = NULL;
 			if(updating) {
-				for(DirectoryListing::Directory::Iter i  = cur->directories.begin(); i != cur->directories.end(); ++i) {
+				for(DirectoryListing::Directory::Iter i = cur->directories.begin(); i != cur->directories.end(); ++i) {
 					if((*i)->getName() == n) {
 						d = *i;
 						if(!d->getComplete())
@@ -275,7 +278,7 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget, bool hig
 
 void DirectoryListing::download(const string& aDir, const string& aTarget, bool highPrio) {
 	dcassert(aDir.size() > 2);
-	dcassert(aDir[aDir.size() - 1] == PATH_SEPARATOR);
+	dcassert(aDir[aDir.size() - 1] == '\\'); // This should not be PATH_SEPARATOR
 	Directory* d = find(aDir, getRoot());
 	if(d != NULL)
 		download(d, aTarget, highPrio);
@@ -284,8 +287,7 @@ void DirectoryListing::download(const string& aDir, const string& aTarget, bool 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view, bool highPrio) {
 	int flags = (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
-	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), 
-		getPath(aFile) + aFile->getName(), flags);
+	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), flags);
 
 	if(highPrio)
 		QueueManager::getInstance()->setPriority(aTarget, QueueItem::HIGHEST);
@@ -310,7 +312,7 @@ struct HashContained {
 	HashContained(const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) : tl(l) { }
 	const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& tl;
 	bool operator()(const DirectoryListing::File::Ptr i) const {
-		return tl.count(*(i->getTTH())) && (DeleteFunction()(i), true);
+		return tl.count((i->getTTH())) && (DeleteFunction()(i), true);
 	}
 private:
 	HashContained& operator=(HashContained&);
@@ -340,7 +342,7 @@ void DirectoryListing::Directory::filterList(HASH_SET_X(TTHValue, TTHValue::Hash
 
 void DirectoryListing::Directory::getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->getHashList(l);
-	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert(*(*i)->getTTH());
+	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert((*i)->getTTH());
 }
 
 int64_t DirectoryListing::Directory::getTotalSize(bool adl) {
@@ -374,7 +376,7 @@ u_int8_t DirectoryListing::Directory::checkDupes() {
 		//don't count 0 byte files since it'll give lots of partial dupes
 		//of no interest
 		if((*i)->getSize() > 0) {
-			(*i)->setDupe((*i)->getTTH() != NULL ? ShareManager::getInstance()->isTTHShared(*(*i)->getTTH()) : false);
+			(*i)->setDupe(ShareManager::getInstance()->isTTHShared((*i)->getTTH()));
 			if(getDupe() == Directory::NONE && (*i)->getDupe())
 				setDupe(Directory::DUPE);
 			else if(getDupe() == Directory::DUPE && !(*i)->getDupe())

@@ -34,7 +34,7 @@ public:
 
 	NotepadFrame() : dirty(false) { }
 	virtual ~NotepadFrame() { }
-	
+
 	typedef MDITabChildWindowImpl<NotepadFrame> baseClass;
 	BEGIN_MSG_MAP(NotepadFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
@@ -65,15 +65,15 @@ public:
 		bHandled = FALSE;
 		return FALSE;
 	}
-	
-	
+
+
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
 		return 0;
 	}
-	
+
 private:
-	
+
 	bool dirty;
 	CFulEditCtrl ctrlPad;
 };

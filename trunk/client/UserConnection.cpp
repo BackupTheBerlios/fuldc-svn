@@ -33,6 +33,7 @@ const string UserConnection::FEATURE_ZLIB_GET = "ZLIG";
 const string UserConnection::FEATURE_TTHL = "TTHL";
 const string UserConnection::FEATURE_TTHF = "TTHF";
 const string UserConnection::FEATURE_ADC_BASE = "BAS0";
+const string UserConnection::FEATURE_ADC_BZIP = "BZIP";
 
 const string UserConnection::FILE_NOT_AVAILABLE = "File Not Available";
 
@@ -78,7 +79,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	}
 }
 
-void UserConnection::connect(const string& aServer, short aPort) throw(SocketException, ThreadException) { 
+void UserConnection::connect(const string& aServer, short aPort) throw(SocketException, ThreadException) {
 	dcassert(!socket);
 
 	socket = BufferedSocket::getSocket(0);
@@ -93,7 +94,7 @@ void UserConnection::accept(const Socket& aServer) throw(SocketException, Thread
 	socket->accept(aServer, secure, BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS));
 }
 
-void UserConnection::inf(bool withToken) { 
+void UserConnection::inf(bool withToken) {
 	AdcCommand c(AdcCommand::CMD_INF);
 	c.addParam("ID", ClientManager::getInstance()->getMyCID().toBase32());
 	if(withToken) {

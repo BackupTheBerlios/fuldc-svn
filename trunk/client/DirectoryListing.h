@@ -32,7 +32,7 @@ class ListLoader;
 
 STANDARD_EXCEPTION(AbortException);
 
-class DirectoryListing  
+class DirectoryListing
 {
 public:
 	class Directory;
@@ -47,28 +47,22 @@ public:
 		};
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
-		
-		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)), adls(false), dupe(false)
-		{ 
+
+		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() :
+			name(aName), size(aSize), parent(aDir), tthRoot(aTTH), adls(false)
+		{
 		}
-		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(NULL), adls(false), dupe(false)
-		{ 
-		}
-			
-		File(const File& rhs, bool _adls = false) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot)), adls(_adls), dupe(rhs.dupe)
+
+		File(const File& rhs, bool _adls = false) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot), adls(_adls)
 		{
 		}
 
 		File& operator=(const File& rhs) {
-			name = rhs.name; size = rhs.size; parent = rhs.parent; tthRoot = rhs.tthRoot ? new TTHValue(*rhs.tthRoot) : NULL; dupe = rhs.dupe;
+			name = rhs.name; size = rhs.size; parent = rhs.parent; tthRoot = rhs.tthRoot;
 			return *this;
 		}
 
-		~File() {
-			delete tthRoot;
-		}
+		~File() { }
 
 		string getPath() {
 			return getParent()->getPath();
@@ -77,7 +71,7 @@ public:
 		GETSET(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
-		GETSET(TTHValue*, tthRoot, TTH);
+		GETSET(TTHValue, tthRoot, TTH);
 		GETSET(bool, adls, Adls);
 		GETSET(bool, dupe, Dupe)
 	};
@@ -92,28 +86,28 @@ public:
 		};
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
-		
+
 		List directories;
 		File::List files;
 
 		enum { NONE, PARTIAL_DUPE, DUPE };
-		
-		Directory(Directory* aParent, const string& aName, bool _adls, bool aComplete) 
-			: name(aName), parent(aParent), adls(_adls), complete(aComplete), dupe(0) { };
-		
+
+		Directory(Directory* aParent, const string& aName, bool _adls, bool aComplete)
+			: name(aName), parent(aParent), adls(_adls), complete(aComplete), dupe(0) { }
+
 		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction());
 			for_each(files.begin(), files.end(), DeleteFunction());
 		}
 
-		size_t getTotalFileCount(bool adls = false);		
+		size_t getTotalFileCount(bool adls = false);
 		int64_t getTotalSize(bool adls = false);
 		void filterList(DirectoryListing& dirList);
 		void filterList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l);
 		void getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l);
-		
+
 		size_t getFileCount() { return files.size(); }
-		
+
 		int64_t getSize() {
 			int64_t x = 0;
 			for(File::Iter i = files.begin(); i != files.end(); ++i) {
@@ -133,7 +127,7 @@ public:
 		u_int8_t checkDupes();
 
 		GETSET(string, name, Name);
-		GETSET(Directory*, parent, Parent);		
+		GETSET(Directory*, parent, Parent);
 		GETSET(bool, adls, Adls);
 		GETSET(bool, complete, Complete);
 		GETSET(u_int8_t, dupe, Dupe)
@@ -164,7 +158,7 @@ public:
 	void download(const string& aDir, const string& aTarget, bool highPrio);
 	void download(Directory* aDir, const string& aTarget, bool highPrio);
 	void download(File* aFile, const string& aTarget, bool view, bool highPrio);
-	
+
 	string getPath(const Directory* d) const;
 	string getPath(const File* f) const { return getPath(f->getParent()); }
 
@@ -186,10 +180,10 @@ private:
 	DirectoryListing(const DirectoryListing&);
 	DirectoryListing& operator=(const DirectoryListing&);
 
-	Directory* root;	
-		
+	Directory* root;
+
 	Directory* find(const string& aName, Directory* current);
-	
+
 };
 
 inline bool operator==(DirectoryListing::Directory::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }

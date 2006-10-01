@@ -130,7 +130,7 @@ void shutdown() {
 	BufferedSocket::waitShutdown();
 
 	SettingsManager::getInstance()->save();
-	
+
 	IgnoreManager::deleteInstance();
 	WebShortcuts::deleteInstance();
 	PopupManager::deleteInstance();

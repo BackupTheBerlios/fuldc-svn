@@ -43,15 +43,15 @@ class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("QueueFrame"), IDR_QUEUE, 0, COLOR_3DFACE);
 
-	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false), 
-		usingDirMenu(false),  readdItems(0), fileLists(NULL), showTree(true), closed(false),
+	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false),
+		usingDirMenu(false), readdItems(0), fileLists(NULL), showTree(true), closed(false),
 		showTreeContainer(WC_BUTTON, this, SHOWTREE_MESSAGE_MAP),
 		statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP)
-	{ 
+	{
 	}
 
 	virtual ~QueueFrame() { }
-	
+
 	typedef MDITabChildWindowImpl<QueueFrame> baseClass;
 	typedef CSplitterImpl<QueueFrame> splitBase;
 
@@ -106,8 +106,7 @@ public:
 	LRESULT onSearchReleaseAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
-		
+
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void removeDir(HTREEITEM ht);
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
@@ -141,7 +140,7 @@ public:
 			removeSelectedDir();
 		} else if(kd->wVKey == VK_TAB) {
 			onTab();
-		} 
+		}
 		return 0;
 	}
 
@@ -162,7 +161,7 @@ public:
 		UpdateLayout(FALSE);
 		return 0;
 	}
-	
+
 private:
 
 	enum {
@@ -186,10 +185,10 @@ private:
 		REMOVE_ITEM,
 		UPDATE_ITEM
 	};
-	
+
 	class QueueItemInfo;
 	friend class QueueItemInfo;
-	
+
 	class QueueItemInfo : public Flags, public FastAlloc<QueueItemInfo> {
 	public:
 
@@ -212,12 +211,26 @@ private:
 		typedef vector<SourceInfo> SourceList;
 		typedef SourceList::iterator SourceIter;
 
+		enum {
+			MASK_TARGET = 1 << COLUMN_TARGET,
+			MASK_STATUS = 1 << COLUMN_STATUS,
+			MASK_SIZE = 1 << COLUMN_SIZE,
+			MASK_DOWNLOADED = 1 << COLUMN_DOWNLOADED,
+			MASK_PRIORITY = 1 << COLUMN_PRIORITY,
+			MASK_USERS = 1 << COLUMN_USERS,
+			MASK_PATH = 1 << COLUMN_PATH,
+			MASK_ERRORS = 1 << COLUMN_ERRORS,
+			MASK_ADDED = 1 << COLUMN_ADDED,
+			MASK_TTH = 1 << COLUMN_TTH,
+			MASK_TYPE = 1 << COLUMN_TYPE
+		};
+
 		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(Text::toT(aQI->getTarget())),
 			path(Text::toT(Util::getFilePath(aQI->getTarget()))),
-			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
+			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()),
 			added(aQI->getAdded()), tth(aQI->getTTH()), priority(aQI->getPriority()), status(aQI->getStatus()),
-			display(NULL), online(0)
-		{ 
+			updateMask((u_int32_t)-1), display(NULL), online(0)
+		{
 			for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
 				sources.push_back(SourceInfo(*(*i)));
 			}
@@ -283,26 +296,6 @@ private:
 			return false;
 		}
 
-		QueueItemInfo& operator=(const QueueItemInfo& rhs) {
-			delete display;
-			display = rhs.display;
-			added = rhs.added;
-			sources = rhs.sources;
-			badSources = rhs.badSources;
-			downloadedBytes = rhs.downloadedBytes;
-			online = rhs.online;
-			path = rhs.path;
-			priority = rhs.priority;
-			size = rhs.size;
-			status = rhs.status;
-			target = rhs.target;
-			tth = rhs.tth;
-			type = rhs.type;
-			users = rhs.users;
-
-			return *this;
-		}
-		
 		GETSET(tstring, target, Target);
 		GETSET(tstring, path, Path);
 		GETSET(tstring, users, Users);
@@ -312,15 +305,17 @@ private:
 		GETSET(u_int32_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
 		GETSET(QueueItem::Status, status, Status);
-		GETSET(TTHValue*, tth, TTH);
+		GETSET(TTHValue, tth, TTH);
 		GETSET(tstring, type, Type);
-	
+		u_int32_t updateMask;
+
 	private:
 
 		Display* display;
 
 		QueueItemInfo(const QueueItemInfo&);
-				
+		QueueItemInfo& operator=(const QueueItemInfo&);
+
 		SourceList sources;
 		SourceList badSources;
 
@@ -329,7 +324,7 @@ private:
 	typedef pair<Tasks, void*> Task;
 	typedef list<Task> TaskList;
 	typedef TaskList::iterator TaskIter;
-	
+
 	TaskList tasks;
 	bool spoken;
 
@@ -364,25 +359,28 @@ private:
 
 	HTREEITEM fileLists;
 
+	typedef hash_map<QueueItem*, QueueItemInfo*, PointerHash<QueueItem> > QueueMap;
+	typedef QueueMap::iterator QueueIter;
+	QueueMap queue;
 
 	typedef HASH_MULTIMAP_X(tstring, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;
 	tstring curDir;
-	
+
 	CriticalSection cs;
 	TypedListViewCtrl<QueueItemInfo, IDC_QUEUE> ctrlQueue;
 	CTreeViewCtrl ctrlDirs;
-	
+
 	CStatusBarCtrl ctrlStatus;
 	int statusSizes[7];
-	
+
 	int64_t queueSize;
 	int queueItems;
 
 	bool closed;
-	
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -394,7 +392,7 @@ private:
 
 	void updateQueue();
 	void updateStatus();
-	
+
 	/**
 	 * This one is different from the others because when a lot of files are removed
 	 * at the same time, the WM_SPEAKER messages seem to get lost in the handling or
@@ -411,7 +409,7 @@ private:
 
 	bool isCurDir(const tstring& aDir) const { return Util::stricmp(curDir, aDir) == 0; }
 
-	void moveSelected();	
+	void moveSelected();
 	void moveSelectedDir();
 	void moveDir(HTREEITEM ht, const tstring& target);
 
@@ -466,21 +464,21 @@ private:
 		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			ctrlQueue.forEachSelected(&QueueItemInfo::remove);
 	}
-	
-	void removeSelectedDir() { 
-		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)	
-			removeDir(ctrlDirs.GetSelectedItem()); 
+
+	void removeSelectedDir() {
+		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+			removeDir(ctrlDirs.GetSelectedItem());
 	}
-	
-	const tstring& getSelectedDir() { 
+
+	const tstring& getSelectedDir() {
 		HTREEITEM ht = ctrlDirs.GetSelectedItem();
 		return ht == NULL ? Util::emptyStringT : getDir(ctrlDirs.GetSelectedItem());
 	}
-	
+
 	const tstring& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((tstring*)ctrlDirs.GetItemData(ht)); }
 
 	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
-	virtual void on(QueueManagerListener::Moved, QueueItem* aQI, string aSource) throw();
+	virtual void on(QueueManagerListener::Moved, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
@@ -489,8 +487,3 @@ private:
 };
 
 #endif // !defined(QUEUE_FRAME_H)
-
-/**
- * @file
- * $Id: QueueFrame.h,v 1.9 2004/02/14 13:55:21 trem Exp $
- */

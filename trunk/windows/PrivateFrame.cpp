@@ -46,10 +46,10 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
-	
-	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+
+	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
-	
+
 	ctrlClient.LimitText(0);
 	ctrlClient.SetFont(WinUtil::font);
 	ctrlClient.SetBackgroundColor(WinUtil::bgColor);
@@ -57,11 +57,11 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, WS_EX_CLIENTEDGE);
-	
+
 	// koppla containern till ctrlClient så vi kan snappa upp WM_CONTEXTMENU
 	ctrlClientContainer.SubclassWindow(ctrlClient.m_hWnd);
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
-	
+
 	ctrlMessage.SetFont(WinUtil::font);
 
 	tabMenu.CreatePopupMenu();
@@ -97,7 +97,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
 	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
-	
+
 	FrameIter i = frames.find(user);
 	if(i == frames.end()) {
 		if(!IgnoreManager::getInstance()->isIgnored(from->getFirstNick())) {
@@ -350,7 +350,7 @@ void PrivateFrame::onEnter()
 		}
 		if(resetText)
 			ctrlMessage.SetWindowText(_T(""));
-	} 
+	}
 }
 
 void PrivateFrame::sendMessage(const tstring& msg) {
@@ -385,7 +385,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 		params["message"] = Text::fromT(aLine);
 		params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 		params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-		params["userCID"] = replyTo->getCID().toBase32(); 
+		params["userCID"] = replyTo->getCID().toBase32();
 		params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 		params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 		LOG(LogManager::PM, params);
@@ -428,7 +428,7 @@ void PrivateFrame::addStatus(const tstring& aLine) {
 }
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };		// location of mouse click
 	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	
 	if(IgnoreManager::getInstance()->isUserIgnored(replyTo->getFirstNick())) {
@@ -489,30 +489,30 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
 		int w[1];
 		ctrlStatus.GetClientRect(sr);
-		
+
 		w[0] = sr.right - 16;
 
 		ctrlStatus.SetParts(1, w);
 	}
-	
+
 	int h = WinUtil::fontHeight + 4;
 
 	CRect rc = rect;
 	rc.bottom -= h + 10;
 	ctrlClient.MoveWindow(rc);
-	
+
 	rc = rect;
 	rc.bottom -= 2;
 	rc.top = rc.bottom - h - 5;
 	rc.left +=2;
 	rc.right -=2;
 	ctrlMessage.MoveWindow(rc);
-	
+
 }
 
 LRESULT PrivateFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -586,7 +586,7 @@ LRESULT PrivateFrame::onViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())
-		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return 0;
 }
 
@@ -608,11 +608,11 @@ LRESULT PrivateFrame::onremoveUserFromFile(WORD /*wNotifyCode*/, WORD /*wID*/, H
 }
 
 void PrivateFrame::readLog() {
-	StringMap params;	
+	StringMap params;
 
 	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-	params["userCID"] = replyTo->getCID().toBase32(); 
+	params["userCID"] = replyTo->getCID().toBase32();
 	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 
@@ -621,7 +621,7 @@ void PrivateFrame::readLog() {
 	try {
 		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
 			File f(path, File::READ, File::OPEN);
-		
+
 			int64_t size = f.getSize();
 
 			if(size > 32*1024) {

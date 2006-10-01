@@ -41,8 +41,8 @@ _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppï¿
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
-_T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, steven, ")
-_T("steven sheehy, tobias nygren. ")
+_T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, ")
+_T("steven sheehy, tobias nygren, poy, dorian. ")
 _T("Keep it coming!");
 
 static const TCHAR fulthanks[] = 
@@ -109,7 +109,7 @@ public:
 		delete x;
 		return 0;
 	}
-		
+
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		EndDialog(wID);
 		return 0;
@@ -119,7 +119,7 @@ private:
 	HttpConnection c;
 
 	AboutDlg(const AboutDlg&) { dcassert(0); }
-	
+
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 		downBuf.append((char*)buf, len);
 	}

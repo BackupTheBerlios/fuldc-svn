@@ -49,7 +49,7 @@ class ADLSearch
 public:
 
 	// Constructor
-	ADLSearch() : searchString("<Enter string>"), isActive(true), isAutoQueue(false), sourceType(OnlyFile), 
+	ADLSearch() : searchString("<Enter string>"), isActive(true), isAutoQueue(false), sourceType(OnlyFile),
 		minFileSize(-1), maxFileSize(-1), typeFileSize(SizeBytes), destDir("ADLSearch"), ddIndex(0),
 		bUseRegexp(false){}
 
@@ -77,7 +77,7 @@ public:
 	}
 
 	// The search string
-	string searchString;									 
+	string searchString;
 
 	// Active search
 	bool isActive;
@@ -124,12 +124,12 @@ public:
 		}
 	}
 
-	// Maximum & minimum file sizes (in bytes). 
+	// Maximum & minimum file sizes (in bytes).
 	// Negative values means do not check.
 	int64_t minFileSize;
 	int64_t maxFileSize;
 	enum SizeType {
-		SizeBytes     = TypeFirst,
+		SizeBytes	= TypeFirst,
 		SizeKibiBytes,
 		SizeMebiBytes,
 		SizeGibiBytes
@@ -180,7 +180,7 @@ public:
 	string destDir;
 	unsigned long ddIndex;
 
-	// Search for file match 
+	// Search for file match
 	bool MatchesFile(const string& f, const string& fp, int64_t size) {
 		// Check status
 		if(!isActive) {
@@ -208,7 +208,7 @@ public:
 		}
 	}
 
-	// Search for directory match 
+	// Search for directory match
 	bool MatchesDirectory(const string& d) {
 		// Check status
 		if(!isActive) {

@@ -32,12 +32,13 @@
 #include "HashManager.h"
 #include "AdcCommand.h"
 #include "FavoriteManager.h"
+#include "CryptoManager.h"
 
 #include <functional>
 
 static const string UPLOAD_AREA = "Uploads";
 
-UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) { 
+UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) {
 	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 }
@@ -60,7 +61,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 		dcdebug("UM:prepFile Wrong state, ignoring\n");
 		return false;
 	}
-	
+
 	dcassert(aFile.size() > 0);
 
 	InputStream* is = NULL;
@@ -75,35 +76,48 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	try {
 		if(aType == "file") {
 			file = ShareManager::getInstance()->translateFileName(aFile);
-			userlist = (aFile == "files.xml.bz2");
+			userlist = (aFile == DownloadManager::USER_LIST_NAME_BZ || aFile == DownloadManager::USER_LIST_NAME);
 
 			try {
-				File* f = new File(file, File::READ, File::OPEN);
+				if(aFile == DownloadManager::USER_LIST_NAME) {
+					// Unpack before sending...
+					string bz2 = File(file, File::READ, File::OPEN).read();
+					string xml;
+					CryptoManager::getInstance()->decodeBZ2(reinterpret_cast<const u_int8_t*>(bz2.data()), bz2.size(), xml);
+					// Clear to save some memory...
+					bz2 = string();
+					is = new MemoryInputStream(xml);
+					aBytes = size = xml.size();
+					aStartPos = 0;
+					free = true;
+			
+				} else {
+					File* f = new File(file, File::READ, File::OPEN);
 
-				size = f->getSize();
+					size = f->getSize();
 
-				free = userlist || (size <= (int64_t)(SETTING(FREE_SLOTS_SIZE) * 1024) );
-				if(!free)
-					free = Wildcard::patternMatch(file, SETTING(FREE_SLOTS_EXTENSIONS), '|');
+					free = userlist || (size <= (int64_t)(SETTING(FREE_SLOTS_SIZE) * 1024) );
+					if(!free)
+						free = Wildcard::patternMatch(file, SETTING(FREE_SLOTS_EXTENSIONS), '|');
 
-				if(aBytes == -1) {
-					aBytes = size - aStartPos;
+					if(aBytes == -1) {
+						aBytes = size - aStartPos;
+					}
+
+					if((aBytes < 0) || ((aStartPos + aBytes) > size)) {
+						aSource->fileNotAvail();
+						delete f;
+						return false;
+					}
+
+					f->setPos(aStartPos);
+
+					is = f;
+
+					if((aStartPos + aBytes) < size) {
+						is = new LimitedInputStream<true>(is, aBytes);
+					}
 				}
-
-				if((aBytes < 0) || ((aStartPos + aBytes) > size)) {
-					aSource->fileNotAvail();
-					delete f;
-					return false;
-				}
-
-				f->setPos(aStartPos);
-
-				is = f;
-
-				if((aStartPos + aBytes) < size) {
-					is = new LimitedInputStream<true>(is, aBytes);
-				}
-
 			} catch(const Exception&) {
 				aSource->fileNotAvail();
 				return false;
@@ -155,7 +169,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 		bool isFavorite = FavoriteManager::getInstance()->hasSlot(aSource->getUser());
 
 		if(!(hasReserved || isFavorite || getFreeSlots() > 0 || getAutoSlot())) {
-			bool supportsFree = aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS) || !aSource->isSet(UserConnection::FLAG_NMDC);
+			bool supportsFree = aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS);
 			bool allowedFree = aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || aSource->isSet(UserConnection::FLAG_OP) || getFreeExtraSlots() > 0;
 			if(free && supportsFree && allowedFree) {
 				extraSlot = true;
@@ -291,10 +305,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		params["fileSIactualshort"] = Util::formatBytes(u->getActual());
 		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
-
-		if(u->getTTH() != NULL) {
-			params["tth"] = u->getTTH()->toBase32();
-		}
+		params["tth"] = u->getTTH().toBase32();
 		LOG(LogManager::UPLOAD, params);
 	}
 
@@ -344,7 +355,7 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn) {
 	if(aConn->isSet(UserConnection::FLAG_HASSLOT)) {
 		running--;
 		aConn->unsetFlag(UserConnection::FLAG_HASSLOT);
-	} 
+	}
 	if(aConn->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
 		extra--;
 		aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
@@ -454,11 +465,11 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 	Lock l(cs);
 	Upload::List ticks;
-	
+
 	for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
 		ticks.push_back(*i);
 	}
-	
+
 	if(ticks.size() > 0)
 		fire(UploadManagerListener::Tick(), ticks);
 }

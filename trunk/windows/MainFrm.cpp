@@ -59,18 +59,18 @@ MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), last
 lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
 closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL),
  hashProgress(false), timerTime(0)
-{ 
+{
 	memset(statusSizes, 0, sizeof(statusSizes));
-	
-	links.homepage = _T("http://dcplusplus.sourceforge.net/");
+
+	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
 	//links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
 	links.translations = _T("http://sourceforge.net/tracker/?atid=460289&group_id=40287");
-	links.faq = links.homepage + _T("faq/faq.php?list=all&prog=1&lang=en");
+	links.faq = links.homepage + _T("faq/");
 	links.help = links.homepage + _T("forum/");
 	links.discuss = links.homepage + _T("forum/");
-	links.features = links.homepage + _T("bugs/");
-	links.bugs = links.homepage + _T("bugs/");
+	links.features = links.homepage + _T("bugzilla/");
+	links.bugs = links.homepage + _T("bugzilla/");
 }
 
 MainFrame::~MainFrame() {
@@ -88,15 +88,15 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	HWND wnd, wnd2 = NULL;
 
 	while( (wnd=::GetWindow(mf->m_hWndMDIClient, GW_CHILD)) != NULL) {
-		if(wnd == wnd2) 
+		if(wnd == wnd2)
 			Sleep(100);
-		else { 
+		else {
 			::PostMessage(wnd, WM_CLOSE, 0, 0);
 			wnd2 = wnd;
 		}
 	}
 
-	mf->PostMessage(WM_CLOSE);	
+	mf->PostMessage(WM_CLOSE);
 	return 0;
 }
 
@@ -250,7 +250,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
 	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
 	if(BOOLSETTING(OPEN_NOTEPAD)) PostMessage(WM_COMMAND, IDC_NOTEPAD);
-	
+
 	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
 	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
 	if(!BOOLSETTING(SHOW_TRANSFERVIEW)) PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
@@ -265,7 +265,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	} catch (const FileException) {	}
 
 	startSocket();
-	
+
 	if(SETTING(NICK).empty()) {
 		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
@@ -324,7 +324,7 @@ void MainFrame::startUPnP() {
 					// woohoo, we got the external IP from the UPnP framework
 					SettingsManager::getInstance()->set(SettingsManager::EXTERNAL_IP, ExternalIP );
 				} else {
-					//:-(  Looks like we have to rely on the user setting the external IP manually
+					//:-( Looks like we have to rely on the user setting the external IP manually
 					// no need to do cleanup here because the mappings work
 					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
 					MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
@@ -503,7 +503,7 @@ HWND MainFrame::createToolbar() {
 }
 
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		
+
 	if(wParam == DOWNLOAD_LISTING) {
 		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
 		DirectoryListingFrame::openWindow(i->file, i->user, i->speed);
@@ -523,7 +523,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			ctrlStatus.SetText(1, str[0].c_str());
 			for(int i = 1; i < 8; i++) {
 				int w = WinUtil::getTextWidth(str[i], dc);
-				
+
 				if(statusSizes[i] < w) {
 					statusSizes[i] = w;
 					u = true;
@@ -585,7 +585,7 @@ void MainFrame::parseCommandLine(const tstring& cmdLine)
 
 LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	tstring cmdLine = (LPCTSTR) (((COPYDATASTRUCT *)lParam)->lpData);
-	parseCommandLine(Text::toT(Util::getAppName() + " ") + cmdLine);
+	parseCommandLine(Text::toT(WinUtil::getAppName() + " ") + cmdLine);
 	return true;
 }
 
@@ -597,7 +597,6 @@ LRESULT MainFrame::onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	
 	return 0;
 }
-
 
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	AboutDlg dlg;
@@ -615,7 +614,7 @@ LRESULT MainFrame::onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		case IDC_QUEUE: QueueFrame::openWindow(); break;
 		case IDC_SEARCH_SPY: SpyFrame::openWindow(); break;
 		case IDC_FILE_ADL_SEARCH: ADLSearchFrame::openWindow(); break;
-		case IDC_NET_STATS: StatsFrame::openWindow(); break; 
+		case IDC_NET_STATS: StatsFrame::openWindow(); break;
 		case IDC_FINISHED_DL: FinishedDLFrame::openWindow(); break;
 		case IDC_FINISHED_UL: FinishedULFrame::openWindow(); break;
 		case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
@@ -748,14 +747,14 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 LRESULT MainFrame::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_DISPLAY_TOC, NULL);
 	bHandled = TRUE;
-	return 0;	
+	return 0;
 }
 
 LRESULT MainFrame::onMenuHelp(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled) {
 	UINT action = (wID == IDC_HELP_CONTENTS) ? HH_DISPLAY_TOC : HH_HELP_CONTEXT;
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), action, wID);
 	bHandled = TRUE;
-	return 0;	
+	return 0;
 }
 
 LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -839,7 +838,7 @@ void MainFrame::updateTray(bool add /* = true */) {
 		nid.uFlags = 0;
 		::Shell_NotifyIcon(NIM_DELETE, &nid);
 		ShowWindow(SW_SHOW);
-		trayIcon = false;		
+		trayIcon = false;
 	}
 }
 
@@ -866,7 +865,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 
 		PopupManager::getInstance()->Minimized(false);
 	}
-	
+
 	bHandled = FALSE;
 	return 0;
 }
@@ -881,10 +880,10 @@ LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	WINDOWPLACEMENT wp;
 	wp.length = sizeof(wp);
 	GetWindowPlacement(&wp);
-	
+
 	CRect rc;
 	GetWindowRect(rc);
-	
+
 	if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
 		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, rc.left);
 		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, rc.top);
@@ -893,21 +892,20 @@ LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	}
 	if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
 		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
-	
+
 	QueueManager::getInstance()->saveQueue();
 	SettingsManager::getInstance()->save();
-	
+
 	return 0;
 }
 
 LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	
 	if(c != NULL) {
 		c->removeListener(this);
 		delete c;
 		c = NULL;
 	}
-	
+
 	if(!closing) {
 		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CTSTRING(REALLY_EXIT), _T(FULDC) _T(" ") _T(FULVERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) ) {
 			string tmp1;
@@ -970,7 +968,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_DISCUSS: site = links.discuss; break;
 	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
 	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
-	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/xclick/business=arnetheduck%40gmail.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
+	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8"); break;
 	case IDC_HELP_FULPAGE: site = _T("http://www.fuldc.net"); break;
 	default: dcassert(0);
 	}
@@ -986,7 +984,7 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
 	if(ctrlStatus.IsWindow() && ctrlLastLines.IsWindow()) {
 		CRect sr;
 		int w[9];
@@ -1002,7 +1000,7 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	rc.top = rc.bottom - ctrlTab.getHeight();
 	if(ctrlTab.IsWindow())
 		ctrlTab.MoveWindow(rc);
-	
+
 	CRect rc2 = rect;
 	rc2.bottom = rc.top;
 	SetSplitterRect(rc2);
@@ -1042,7 +1040,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	if (lParam == WM_LBUTTONUP) {
 		ShowWindow(SW_SHOW);
 		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
-	}else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU){ 		
+	}else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU){ 
 		CPoint pt;
 		CMenu mnuTrayMenu;
 		mnuTrayMenu.CreatePopupMenu();
@@ -1050,7 +1048,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_QUIT, CTSTRING(MENU_EXIT));
 		mnuTrayMenu.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
 		GetCursorPos(&pt);
-		SetForegroundWindow(m_hWnd); 
+		SetForegroundWindow(m_hWnd);
 		mnuTrayMenu.TrackPopupMenu(TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON,pt.x,pt.y,m_hWnd);
 		PostMessage(WM_NULL, 0, 0);
 		mnuTrayMenu.SetMenuDefaultItem(0,TRUE);
@@ -1060,11 +1058,11 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		nid.hWnd = m_hWnd;
 		nid.uID = 0;
 		nid.uFlags = NIF_TIP;
-		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" + 
+		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" +
 			Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")\r\nU: " +
-			Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()) + "/s (" + 
+			Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()) + "/s (" +
 			Util::toString(UploadManager::getInstance()->getUploadCount()) + ")").c_str(), 64);
-		
+
 		::Shell_NotifyIcon(NIM_MODIFY, &nid);
 		lastMove = GET_TICK();
 	}
@@ -1097,10 +1095,10 @@ LRESULT MainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	BOOL bVisible = !transferView.IsWindowVisible();
-	if(!bVisible) {	
+	if(!bVisible) {
 		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
 			SetSinglePaneMode(SPLIT_PANE_TOP);
-	} else { 
+	} else {
 		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
 			SetSinglePaneMode(SPLIT_PANE_NONE);
 	}
@@ -1188,7 +1186,6 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t speed)
 	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 			// This is a file listing, show it...
-
 			DirectoryListInfo* i = new DirectoryListInfo(qi->getCurrent()->getUser(), Text::toT(qi->getListName()), speed);
 
 			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);

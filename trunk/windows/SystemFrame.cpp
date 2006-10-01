@@ -86,18 +86,18 @@ void SystemFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	CRect rc;
 
 	GetClientRect(rc);
-	
+
 	rc.bottom -= 1;
 	rc.top += 1;
 	rc.left +=1;
 	rc.right -=1;
 	ctrlPad.MoveWindow(rc);
-	
+
 }
 
 LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)wParam);
-	
+
 	addLine(msg->first, msg->second);
 	if(BOOLSETTING(BOLD_SYSTEM_LOG))
 		setDirty();

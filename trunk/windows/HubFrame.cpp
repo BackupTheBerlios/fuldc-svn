@@ -54,7 +54,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 
-	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 
 	ctrlClient.LimitText(0);
@@ -62,26 +62,26 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.SetBackgroundColor(WinUtil::bgColor);
 	ctrlClient.SetTextColor(WinUtil::textColor);
 	clientContainer.SubclassWindow(ctrlClient.m_hWnd);
-	
+
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VSCROLL |
 		ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
-	
+
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	ctrlMessage.SetFont(WinUtil::font);
 
-	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
-	
+
 	ctrlFilterContainer.SubclassWindow(ctrlFilter.m_hWnd);
 	ctrlFilter.SetFont(WinUtil::font);
-	
+
 	ctrlFilterSel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL |
 		WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE);
-	
+
 	ctrlFilterSelContainer.SubclassWindow(ctrlFilterSel.m_hWnd);
 	ctrlFilterSel.SetFont(WinUtil::font);
 
-	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
 	ctrlUsers.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
@@ -104,7 +104,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
 		WinUtil::splitTokens(columnSizes, SETTING(HUBFRAME_WIDTHS), COLUMN_LAST);
 	}
-	
+
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_SHARED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 		ctrlUsers.InsertColumn(j, TSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
@@ -121,13 +121,13 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextColor(WinUtil::textColor);
-	
+
 	ctrlUsers.setSortColumn(COLUMN_NICK);
-				
+
 	ctrlUsers.SetImageList(WinUtil::userImages, LVSIL_SMALL);
 
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
-	
+
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
@@ -148,7 +148,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
 
-
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
 
 	for(int j=0; j<COLUMN_LAST; j++) {
@@ -168,7 +167,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	if(fhe != NULL){
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
-		
+
 		//check that we have a window position stored
 		if(! (rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0) )
 			MoveWindow(rc, TRUE);
@@ -190,6 +189,13 @@ void HubFrame::openWindow(const tstring& aServer) {
 			::ShowWindow(i->second->m_hWnd, SW_RESTORE);
 		i->second->MDIActivate(i->second->m_hWnd);
 	}
+}
+
+LRESULT HubFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LPMSG pMsg = (LPMSG)lParam;
+	if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
+		ctrlLastLines.RelayEvent(pMsg);
+	return 0;
 }
 
 void HubFrame::onEnter() {
@@ -274,9 +280,9 @@ void HubFrame::onEnter() {
 					ctrlShowUsers.SetCheck(BST_CHECKED);
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + 
-					STRING(PORT) + 
-					Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + 
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
+					STRING(PORT) +
+					Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
 					Util::toString(SearchManager::getInstance()->getPort()) + "/" +
 					Util::toString(ConnectionManager::getInstance()->getSecurePort())
 					)));
@@ -443,7 +449,7 @@ int HubFrame::getImage(const Identity& u) {
 		// Users we can't connect to...
 		image+=4;
 	}
-	return image;	
+	return image;
 }
 
 LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -472,7 +478,7 @@ bool HubFrame::updateUser(const UserTask& u) {
 		if(!ui->isHidden() && u.identity.isHidden() && showUsers) {
 			ctrlUsers.deleteItem(ui);
 		}
-		
+
 		resort = ui->update(u.identity, ctrlUsers.getSortColumn()) || resort;
 		int pos = ctrlUsers.findItem(ui);
 		if(pos != -1) {
@@ -550,7 +556,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 			if(updateUser(u)) {
 				if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
 					addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
-				} 
+				}
 			}
 		} else if(task->speaker == REMOVE_USER) {
 			UserTask& u = *static_cast<UserTask*>(task);
@@ -644,20 +650,20 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
 		int w[5];
 		ctrlStatus.GetClientRect(sr);
 
 		int tmp = (sr.Width()) > 332 ? 232 : ((sr.Width() > 132) ? sr.Width()-100 : 32);
-		
+
 		w[0] = sr.right - tmp -80;
 		w[1] = w[0] + (tmp-50)/2;
 		w[2] = w[0] + (tmp-50);
 		w[3] = w[2] + 96;
 		w[4] = w[3] + 16;
-		
+
 		ctrlStatus.SetParts(5, w);
 
 		ctrlLastLines.SetMaxTipWidth(w[0]);
@@ -680,7 +686,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 			SetSinglePaneMode(SPLIT_PANE_NONE);
 	}
 	SetSplitterRect(rc);
-	
+
 	rc = rect;
 	rc.bottom -= 2;
 	rc.top = rc.bottom - h - 5;
@@ -730,14 +736,14 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 		if(fhe != NULL && !IsIconic()){
 			CRect rc;
-			
+
 			//Get position of window
 			GetWindowRect(&rc);
-			
+
 			//convert the position so it's relative to main window
 			::ScreenToClient(GetParent(), &rc.TopLeft());
 			::ScreenToClient(GetParent(), &rc.BottomRight());
-			
+
 			//save the position
 			fhe->setBottom((u_int16_t)(rc.bottom > 0 ? rc.bottom : 0));
 			fhe->setTop((u_int16_t)(rc.top > 0 ? rc.top : 0));
@@ -790,7 +796,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 
 		if(end == tstring::npos)
 			end = x.length();
-		
+
 		if( (Util::strnicmp(x.c_str() + start, _T("http://"), 7) == 0) || 
 			(Util::strnicmp(x.c_str() + start, _T("www."), 4) == 0) ||
 			(Util::strnicmp(x.c_str() + start, _T("ftp://"), 6) == 0) ||
@@ -855,7 +861,7 @@ void HubFrame::addLine(tstring aLine, bool bold) {
 }
 
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };		// location of mouse click
 	tabMenuShown = true;
 	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, client->getHubUrl());
 	tabMenu.AppendMenu(MF_SEPARATOR);
@@ -881,8 +887,8 @@ LRESULT HubFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) }; 
-	
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
 	bool doMenu = false;
 	bool doMcMenu = false;
 
@@ -927,7 +933,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			ctrlUsers.SetRedraw(TRUE);
 			ctrlUsers.EnsureVisible(pos, FALSE);
 
-			doMenu = true; 
+			doMenu = true;
 			ctrlClient.ClientToScreen(&pt);
 		} else {
 			doMcMenu = true;
@@ -995,7 +1001,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 
 			u->getIdentity().getParams(tmp, "user", true);
 			client->escapeParams(tmp);
-			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false)); 
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false));
 		}
 	}
 }
@@ -1007,7 +1013,7 @@ void HubFrame::onTab() {
 	}
 
 	HWND focus = GetFocus();
-	if( (focus == ctrlMessage.m_hWnd) && !WinUtil::isShift() ) 
+	if( (focus == ctrlMessage.m_hWnd) && !WinUtil::isShift() )
 	{
 		int n = ctrlMessage.GetWindowTextLength();
 		AutoArray<TCHAR> buf(n+1);
@@ -1115,7 +1121,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				onTab();
 			break;
 		case VK_RETURN:
-			if( (GetKeyState(VK_CONTROL) & 0x8000) || 
+			if( (GetKeyState(VK_CONTROL) & 0x8000) ||
 				(GetKeyState(VK_MENU) & 0x8000) ) {
 					bHandled = FALSE;
 				} else {
@@ -1177,7 +1183,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 		case VK_HOME:
 			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				curCommandPosition = 0;
-				
+
 				TCHAR *messageContents = new TCHAR[ctrlMessage.GetWindowTextLength()+2];
 				ctrlMessage.GetWindowText(messageContents, ctrlMessage.GetWindowTextLength()+1);
 				currentCommand = tstring(messageContents);
@@ -1225,7 +1231,7 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
 			return 0;
 		}
-		
+
 		dcassert(frames.find(server) != frames.end());
 		dcassert(frames[server] == this);
 		frames.erase(server);
@@ -1281,7 +1287,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	if (BOOLSETTING(BOLD_HUB)) {
 		setDirty();
 	}
-	
+
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 		addLine(_T("*** ") + aLine, BOOLSETTING(HUB_BOLD_TABS));
 	}
@@ -1321,14 +1327,14 @@ void HubFrame::on(Second, DWORD /*aTick*/) throw() {
 	}
 }
 
-void HubFrame::on(Connecting, Client*) throw() { 
+void HubFrame::on(Connecting, Client*) throw() {
 	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getHubUrl() + "...");
 	speak(SET_WINDOW_TITLE, client->getHubUrl());
 }
-void HubFrame::on(Connected, Client*) throw() { 
+void HubFrame::on(Connected, Client*) throw() {
 	speak(CONNECTED);
 }
-void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() { 
+void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() {
 	speak(UPDATE_USER_JOIN, user);
 }
 void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
@@ -1344,7 +1350,7 @@ void HubFrame::on(UserRemoved, Client*, const OnlineUser& user) throw() {
 	speak(REMOVE_USER, user);
 }
 
-void HubFrame::on(Redirect, Client*, const string& line) throw() { 
+void HubFrame::on(Redirect, Client*, const string& line) throw() {
 	if(ClientManager::getInstance()->isConnected(line)) {
 		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
 		return;
@@ -1357,14 +1363,14 @@ void HubFrame::on(Redirect, Client*, const string& line) throw() {
 		speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
 	}
 }
-void HubFrame::on(Failed, Client*, const string& line) throw() { 
-	speak(ADD_STATUS_LINE, line); 
-	speak(DISCONNECTED); 
+void HubFrame::on(Failed, Client*, const string& line) throw() {
+	speak(ADD_STATUS_LINE, line);
+	speak(DISCONNECTED);
 }
-void HubFrame::on(GetPassword, Client*) throw() { 
+void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
-void HubFrame::on(HubUpdated, Client*) throw() { 
+void HubFrame::on(HubUpdated, Client*) throw() {
 	string hubName = client->getHubName();
 	if(!client->getHubDescription().empty()) {
 		hubName += " - " + client->getHubDescription();
@@ -1372,7 +1378,7 @@ void HubFrame::on(HubUpdated, Client*) throw() {
 	hubName += " (" + client->getHubUrl() + ")";
 	speak(SET_WINDOW_TITLE, hubName);
 }
-void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() { 
+void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() {
 	speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg));
 }
 
@@ -1390,10 +1396,10 @@ void HubFrame::on(StatusMessage, Client*, const string& line) {
 	}
 }
 
-void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() { 
+void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() {
 	speak(from, to, replyTo, Util::formatMessage(from.getIdentity().getNick(), line));
 }
-void HubFrame::on(NickTaken, Client*) throw() { 
+void HubFrame::on(NickTaken, Client*) throw() {
 	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
 }
 void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
@@ -1463,7 +1469,7 @@ LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL
 	ctrlFilter.GetWindowText(buf, ctrlFilter.GetWindowTextLength()+1);
 	filter = buf;
 	delete[] buf;
-	
+
 	updateUserList();
 
 	bHandled = FALSE;
@@ -1476,9 +1482,9 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	ctrlFilter.GetWindowText(buf, ctrlFilter.GetWindowTextLength()+1);
 	filter = buf;
 	delete[] buf;
-	
+
 	updateUserList();
-	
+
 	bHandled = FALSE;
 
 	return 0;
@@ -1488,7 +1494,7 @@ bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 	tstring::size_type start = static_cast<tstring::size_type>(tstring::npos);
 	tstring::size_type end = static_cast<tstring::size_type>(tstring::npos);
 	int64_t multiplier = 1;
-	
+
 	if(filter.empty()) {
 		return false;
 	}
@@ -1543,10 +1549,10 @@ bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 	if(end == tstring::npos) {
 		end = filter.length();
 	}
-	
+
 	tstring tmpSize = filter.substr(start, end-start);
 	size = static_cast<int64_t>(Util::toDouble(Text::fromT(tmpSize)) * multiplier);
-	
+
 	return true;
 }
 
@@ -1583,18 +1589,18 @@ void HubFrame::updateUserList(UserInfo* ui) {
 	} else {
 		ctrlUsers.SetRedraw(FALSE);
 		ctrlUsers.DeleteAllItems();
-		
+
 		if(filter.empty()) {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
 				UserInfo* ui = i->second;
 				if(!ui->isHidden())
-					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
+					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));
 			}
 		} else {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 				UserInfo* ui = i->second;
 				if(!ui->isHidden() && matchFilter(*ui, sel, doSizeCompare, mode, size)) {
-					ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));	
+					ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
 				}
 			}
 		}
@@ -1613,7 +1619,7 @@ LRESULT HubFrame::onShowHubLog(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 		if(wID == IDC_OPEN_LOG_DIR) {
 			path = Util::getFilePath(path);	
 		}
-		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 	return 0;
 }
@@ -1712,8 +1718,8 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	if(doSizeCompare) {
 		switch(mode) {
 			case EQUAL: insert = (size == ui.getIdentity().getBytesShared()); break;
-			case GREATER_EQUAL: insert = (size <=  ui.getIdentity().getBytesShared()); break;
-			case LESS_EQUAL: insert = (size >=  ui.getIdentity().getBytesShared()); break;
+			case GREATER_EQUAL: insert = (size <= ui.getIdentity().getBytesShared()); break;
+			case LESS_EQUAL: insert = (size >= ui.getIdentity().getBytesShared()); break;
 			case GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
 			case LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
 			case NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;

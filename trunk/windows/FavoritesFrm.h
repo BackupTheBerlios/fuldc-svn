@@ -36,7 +36,7 @@ public:
 	virtual ~FavoriteHubsFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FavoriteHubsFrame"), IDR_FAVORITES, 0, COLOR_3DFACE);
-		
+
 	BEGIN_MSG_MAP(FavoriteHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -54,7 +54,7 @@ public:
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, onItemChanged)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<FavoriteHubsFrame>)
 	END_MSG_MAP()
-		
+
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -69,7 +69,7 @@ public:
 
 	bool checkNick();
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+
 	LRESULT onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
 		openSelected();
 		return 0;
@@ -79,8 +79,8 @@ public:
 		openSelected();
 		return 0;
 	}
-	
-	
+
+
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlHubs.SetFocus();
 		return 0;
@@ -98,7 +98,7 @@ private:
 		COLUMN_USERDESCRIPTION,
 		COLUMN_LAST
 	};
-	
+
 	CButton ctrlConnect;
 	CButton ctrlRemove;
 	CButton ctrlNew;
@@ -106,16 +106,16 @@ private:
 	CButton ctrlUp;
 	CButton ctrlDown;
 	CMenu hubsMenu;
-	
+
 	ExListViewCtrl ctrlHubs;
 
 	bool nosave;
-	
+
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
 	void openSelected();
-	
+
 	void updateList(const FavoriteHubEntry::List& fl) {
 		ctrlHubs.SetRedraw(FALSE);
 		for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
@@ -126,7 +126,7 @@ private:
 	}
 
 	void addEntry(const FavoriteHubEntry* entry, int pos);
-	virtual void on(FavoriteAdded, const FavoriteHubEntry* e)  throw() { addEntry(e, ctrlHubs.GetItemCount()); }
+	virtual void on(FavoriteAdded, const FavoriteHubEntry* e) throw() { addEntry(e, ctrlHubs.GetItemCount()); }
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry* e) throw() { ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)e)); }
 };
 

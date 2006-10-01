@@ -50,18 +50,18 @@ public:
 	typedef HASH_MULTIMAP<User::Ptr, Ptr, User::HashFunction> DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
-	
+
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
 	DirectoryItem() : priority(QueueItem::DEFAULT) { }
-	DirectoryItem(const User::Ptr& aUser, const string& aName, const string& aTarget, 
+	DirectoryItem(const User::Ptr& aUser, const string& aName, const string& aTarget,
 		QueueItem::Priority p) : name(aName), target(aTarget), priority(p), user(aUser) { }
 	~DirectoryItem() { }
-	
+
 	User::Ptr& getUser() { return user; }
 	void setUser(const User::Ptr& aUser) { user = aUser; }
-	
+
 	GETSET(string, name, Name);
 	GETSET(string, target, Target);
 	GETSET(QueueItem::Priority, priority, Priority);
@@ -72,12 +72,12 @@ private:
 class ConnectionQueueItem;
 class QueueLoader;
 
-class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, 
+class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener,
 	private SearchManagerListener, private ClientManagerListener
 {
 public:
 	/** Add a file to the queue. */
-	void add(const string& aTarget, int64_t aSize, const TTHValue* root, User::Ptr aUser, const string& aSourceFile, 
+	void add(const string& aTarget, int64_t aSize, const TTHValue& root, User::Ptr aUser, 
 		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
@@ -91,8 +91,10 @@ public:
 
 	/** Add a directory to the queue (downloads filelist and matches the directory). */
 	void addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
-	
+
 	int matchListing(const DirectoryListing& dl) throw();
+
+	bool getTTH(const string& name, TTHValue& tth) throw();
 
 	/** Move the target location of a queued item. Running items are silently ignored */
 	void move(const string& aSource, const string& aTarget) throw();
@@ -102,8 +104,8 @@ public:
 	void removeUserFromQueue(User::Ptr aUser, int reason) throw();
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
-	
-	void getTargetsByRoot(StringList& sl, const TTHValue& tth);
+
+	void getTargets(const TTHValue& tth, StringList& sl);
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
 	void unlockQueue() throw() { cs.leave(); }
 
@@ -114,12 +116,12 @@ public:
 		Lock l(cs);
 		return (pfsQueue.find(aUser->getCID()) != pfsQueue.end()) || (userQueue.getNext(aUser, minPrio) != NULL);
 	}
-	
+
 	int countOnlineSources(const string& aTarget);
-	
+
 	void loadQueue() throw();
 	void saveQueue() throw();
-	
+
 	GETSET(u_int32_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
 
@@ -181,9 +183,9 @@ private:
 				delete i->second;
 		}
 		void add(QueueItem* qi);
-		QueueItem* add(const string& aTarget, int64_t aSize, 
+		QueueItem* add(const string& aTarget, int64_t aSize,
 			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
-			u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException);
+			u_int32_t aAdded, const TTHValue& root) throw(QueueException, FileException);
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& ql, const TTHValue& tth);
@@ -219,7 +221,7 @@ private:
 		void remove(QueueItem* qi, const User::Ptr& aUser);
 
 		QueueItem::UserMap& getRunning() { return running; }
-		bool isRunning(const User::Ptr& aUser) const { 
+		bool isRunning(const User::Ptr& aUser) const {
 			return (running.find(aUser) != running.end());
 		}
 	private:
@@ -231,12 +233,12 @@ private:
 
 	friend class QueueLoader;
 	friend class Singleton<QueueManager>;
-	
+
 	QueueManager();
 	virtual ~QueueManager() throw();
-	
-	CriticalSection cs;
-	
+
+	mutable CriticalSection cs;
+
 	/** Partial file list queue */
 	PfsQueue pfsQueue;
 	/** QueueItems by target */
@@ -251,8 +253,6 @@ private:
 	bool dirty;
 	/** Next search */
 	u_int32_t nextSearch;
-	
-	static const string USER_LIST_NAME;
 
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
@@ -274,7 +274,7 @@ private:
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
-	
+
 	// SearchManagerListener
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 

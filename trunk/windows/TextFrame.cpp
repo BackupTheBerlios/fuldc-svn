@@ -40,7 +40,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 {
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
-	
+
 	ctrlPad.LimitText(0);
 	
 	string tmp;
@@ -89,7 +89,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	} catch(const FileException& e) {
 		SetWindowText(Text::toT(Util::getFileName(Text::fromT(file)) + ": " + e.getError()).c_str());
 	}
-	
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -105,7 +105,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	CRect rc;
 
 	GetClientRect(rc);
-	
+
 	rc.bottom -= 1;
 	rc.top += 1;
 	rc.left +=1;

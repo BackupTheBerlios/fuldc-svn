@@ -138,9 +138,9 @@ LRESULT TransferView::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if (reinterpret_cast<HWND>(wParam) == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) { 
+	if (reinterpret_cast<HWND>(wParam) == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		
+
 		if(pt.x == -1 && pt.y == -1) {
 			WinUtil::getContextMenuPos(ctrlTransfers, pt);
 		}
@@ -189,10 +189,10 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			userMenu.DeleteMenu(userMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 			cleanMenu(userMenu);
 		}
-		return TRUE; 
+		return TRUE;
 	}
 	bHandled = FALSE;
-	return FALSE; 
+	return FALSE;
 }
 
 void TransferView::runUserCommand(UserCommand& uc) {
@@ -250,7 +250,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 		if(ctrlTransfers.findColumn(cd->iSubItem) == COLUMN_STATUS) {
 			ItemInfo* ii = reinterpret_cast<ItemInfo*>(cd->nmcd.lItemlParam);
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
-				// draw something nice...	
+				// draw something nice...
 				COLORREF barBase = ii->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR);
 				COLORREF bgBase = WinUtil::bgColor;
 				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
@@ -271,11 +271,11 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				
 				rc2 = rc;
 				rc2.left += 6;
-				
+
 				// draw background
 				HGDIOBJ oldpen = ::SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,bgPal[0]));
 				HGDIOBJ oldbr = ::SelectObject(cd->nmcd.hdc, CreateSolidBrush(bgPal[1]));
-				::Rectangle(cd->nmcd.hdc, rc.left, rc.top - 1, rc.right, rc.bottom);			
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top - 1, rc.right, rc.bottom);
 				rc.DeflateRect(1, 0, 1, 1);
 
 				LONG left = rc.left;
@@ -286,9 +286,9 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				rc.right = left + (int) (w * ii->start / ii->size);
 				DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[0])));
 				DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,barPal[0])));
-				
+
 				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
-				
+
 				// Draw actual part
 				rc.left = rc.right;
 				rc.right = left + (int) (w * ii->actual / ii->size);
@@ -314,7 +314,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 					::MoveToEx(cd->nmcd.hdc,rc.left+1,rc.top,(LPPOINT)NULL);
 					::LineTo(cd->nmcd.hdc,rc.right-2,rc.top);
 				}
-				
+
 				// draw status text
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldbr));
@@ -396,7 +396,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
 	} else if(wParam == REMOVE_ITEM) {
 		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
-		int ic = ctrlTransfers.GetItemCount(); 
+		int ic = ctrlTransfers.GetItemCount();
 		for(int i = 0; i < ic; ++i) {
 			ItemInfo* ii = ctrlTransfers.getItemData(i);
 			if(*ui == *ii) {
@@ -407,7 +407,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		}
 	} else if(wParam == UPDATE_ITEM) {
 		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
-		int ic = ctrlTransfers.GetItemCount(); 
+		int ic = ctrlTransfers.GetItemCount();
 		for(int i = 0; i < ic; ++i) {
 			ItemInfo* ii = ctrlTransfers.getItemData(i);
 			if(ii->download == ui->download && ii->user == ui->user) {
@@ -419,7 +419,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	} else if(wParam == UPDATE_ITEMS) {
 		auto_ptr<vector<UpdateInfo*> > v(reinterpret_cast<vector<UpdateInfo*>* >(lParam));
 		ctrlTransfers.SetRedraw(FALSE);
-		int ic = ctrlTransfers.GetItemCount(); 
+		int ic = ctrlTransfers.GetItemCount();
 		for(int i = 0; i < ic; ++i) {
 			ItemInfo* ii = ctrlTransfers.getItemData(i);
 			for(vector<UpdateInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
@@ -434,7 +434,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		if(ctrlTransfers.getSortColumn() != COLUMN_STATUS)
 			ctrlTransfers.resort();
 		ctrlTransfers.SetRedraw(TRUE);
-		
+
 		for_each(v->begin(), v->end(), DeleteFunction());
 	}
 
@@ -447,39 +447,27 @@ LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	if(i != -1) {
 		ItemInfo *ii = ctrlTransfers.getItemData(i);
 
-		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
+		string target = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
 
-		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
-		QueueItem::StringIter qi = queue.find(&tmp);
-
-		//create a copy of the tth to avoid holding the filequeue lock while calling
-		//into searchframe, searchmanager and all of that
-		TTHValue *val = NULL;
-		if(qi != queue.end() && qi->second->getTTH()) {
-			val = new TTHValue(*qi->second->getTTH());
+		TTHValue tth;
+		if(QueueManager::getInstance()->getTTH(target, tth)) {
+			WinUtil::searchHash(tth);
 		}
-
-		QueueManager::getInstance()->unlockQueue();
-
-		if(val) {
-			WinUtil::searchHash(val);
-			delete val;
-		} 
 	}
 
 	return 0;
 }
 
 TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
-	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0) 
-{ 
+	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0)
+{
 	columns[COLUMN_USER] = WinUtil::getNicks(u);
 	columns[COLUMN_HUB] = WinUtil::getHubNames(u).first;
 	columns[COLUMN_CID] = Text::toT(u->getCID().toBase32());
 }
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
-	
+
 	if(ui.updateMask & UpdateInfo::MASK_FILE_LIST) {
 		filelist = ui.filelist;
 	}
@@ -561,7 +549,11 @@ void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* a
 
 void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
-	ui->setStatusString(Text::toT(aReason));
+	if(aCqi->getUser()->isSet(User::OLD_CLIENT)) {
+		ui->setStatusString(TSTRING(SOURCE_TOO_OLD));
+	} else {
+		ui->setStatusString(Text::toT(aReason));
+	}
 	speak(UPDATE_ITEM, ui);
 }
 
@@ -605,7 +597,7 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		ui->setTotalTimeLeft(d->getTotalSecondsLeft());
 		ui->setSpeed(d->getRunningAverage());
 
-		_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(d->getPos())).c_str(), 
+		_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(d->getPos())).c_str(),
 			(double)d->getPos()*100.0/(double)d->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - d->getStart())/1000)).c_str());
 
 		tstring statusString;
@@ -622,7 +614,7 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		}
 		if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
 			statusString += _T("[Z]");
-		} 
+		}
 		if(d->isSet(Download::FLAG_ROLLBACK)) {
 			statusString += _T("[R]");
 		}
@@ -691,11 +683,11 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 		ui->setTimeLeft(u->getSecondsLeft());
 		ui->setSpeed(u->getRunningAverage());
 
-		_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
+		_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(),
 			(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
 
 		tstring statusString;
-		
+
 		if(u->getUserConnection()->isSecure()) {
 			statusString += _T("[S]");
 		}
@@ -721,7 +713,7 @@ void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setPos(0);
 	ui->setStatusString(isUpload ? TSTRING(UPLOAD_FINISHED_IDLE) : TSTRING(DOWNLOAD_FINISHED_IDLE));
-	
+
 	speak(UPDATE_ITEM, ui);
 }
 

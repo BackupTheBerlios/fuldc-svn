@@ -35,7 +35,7 @@ LRESULT WaitingUsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlStatus.Attach(m_hWndStatusBar);
 
 	// Create tree control
-	ctrlQueued.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlQueued.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, 0U);
 
 	ctrlQueued.SetBkColor(WinUtil::bgColor);
@@ -64,7 +64,7 @@ LRESULT WaitingUsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return TRUE;
 }
 
-LRESULT WaitingUsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) 
+LRESULT WaitingUsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if (!closed) {
 		UploadManager::getInstance()->removeListener(this);
@@ -89,7 +89,8 @@ LRESULT WaitingUsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 }
 
 // Recalculate frame control layout
-void WaitingUsersFrame::UpdateLayout(BOOL bResizeBars) {
+void WaitingUsersFrame::UpdateLayout(BOOL bResizeBars)
+{
 	RECT rect;
 	GetClientRect(&rect);
 
@@ -122,7 +123,7 @@ void WaitingUsersFrame::updateStatus() {
 // Keyboard shortcuts
 LRESULT WaitingUsersFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	switch(wParam) 
+	switch(wParam)
 	{
 	case VK_DELETE:
 		onRemove(0, 0, 0, bHandled);
@@ -133,7 +134,7 @@ LRESULT WaitingUsersFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
 	return 0;
 }
 
-LRESULT WaitingUsersFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT WaitingUsersFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	User::Ptr user = getSelectedUser();
 	if (user) {
@@ -145,7 +146,7 @@ LRESULT WaitingUsersFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 LRESULT WaitingUsersFrame::onCopyFilename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	HTREEITEM selectedItem = ctrlQueued.GetSelectedItem(), parentItem = ctrlQueued.GetParentItem(selectedItem);
 
-	if (!selectedItem || !parentItem || selectedItem == parentItem) 
+	if (!selectedItem || !parentItem || selectedItem == parentItem)
 		return 0;
 	TCHAR filenameBuf[256];
 	ctrlQueued.GetItemText(selectedItem, filenameBuf, 255);
@@ -160,7 +161,7 @@ LRESULT WaitingUsersFrame::onCopyFilename(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 }
 
 // Remove queued item
-LRESULT WaitingUsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT WaitingUsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	User::Ptr user = getSelectedUser();
 	if (user) {
@@ -169,13 +170,13 @@ LRESULT WaitingUsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
-LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	// Get the bounding rectangle of the client area. 
+	// Get the bounding rectangle of the client area.
 	RECT rc;
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	ctrlQueued.GetClientRect(&rc);
-	ctrlQueued.ScreenToClient(&pt); 
+	ctrlQueued.ScreenToClient(&pt);
 
 	// Change selected item
 	HTREEITEM item = ctrlQueued.HitTest(pt, NULL);
@@ -183,14 +184,14 @@ LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	ctrlQueued.SelectItem(item);
 
 	// Hit-test
-	if(PtInRect(&rc, pt)) 
+	if(PtInRect(&rc, pt))
 	{
 		ctrlQueued.ClientToScreen(&pt);
 		contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		return TRUE; 
+		return TRUE;
 	}
 
-	return FALSE; 
+	return FALSE;
 }
 
 LRESULT WaitingUsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -201,12 +202,12 @@ LRESULT WaitingUsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	return 0;
 }
 
-LRESULT WaitingUsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+LRESULT WaitingUsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();
 	if (user) {
 		UploadManager::getInstance()->reserveSlot(user);
 	}
-	return 0; 
+	return 0;
 }
 
 LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -285,7 +286,7 @@ void WaitingUsersFrame::onAddFile(const User::Ptr aUser, const string& aFile) {
 		userNode = ctrlQueued.GetNextSiblingItem(userNode);
 	}
 
-	userNode = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT, (WinUtil::getNicks(aUser) + _T(" - ") + WinUtil::getHubNames(aUser).first).c_str(), 
+	userNode = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT, (WinUtil::getNicks(aUser) + _T(" - ") + WinUtil::getHubNames(aUser).first).c_str(),
 		0, 0, 0, 0, (LPARAM)new UserPtr(aUser),	TVI_ROOT, TVI_LAST);
 	ctrlQueued.InsertItem(Text::toT(aFile).c_str(), userNode, TVI_LAST);
 	ctrlQueued.Expand(userNode);

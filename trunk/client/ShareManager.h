@@ -54,8 +54,8 @@ public:
 	 * @param aName Virtual name
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
-	void removeDirectory(const string& aName, bool duringRefresh = false);	
-	void renameDirectory(const string& path, const string& nName) throw(ShareException);
+	void removeDirectory(const string& aName, bool duringRefresh = false);
+	void renameDirectory(const string& oName, const string& nName) throw(ShareException);
 	string translateTTH(const string& TTH) throw(ShareException);
 	string translateFileName(const string& aFile) throw(ShareException);
 	bool getTTH(const string& aFile, TTHValue& tth) throw();
@@ -63,7 +63,7 @@ public:
 	int refresh(const string& aDir);
 	void setDirty() { shareXmlDirty = xmlDirty = true; };
 
-	string getPhysicalPath(TTHValue& tth);
+	string getPhysicalPath(const TTHValue& tth);
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults);
@@ -82,10 +82,10 @@ public:
 
 	string getShareSizeString() { return Util::toString(getShareSize()); }
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); }
-	
+
 	int64_t getListLen() { return 0; };
 	string getListLenString() { return Util::toString(getListLen()); };
-	
+
 	SearchManager::TypeModes getType(const string& fileName);
 
 	string validateVirtual(const string& /*aVirt*/);
@@ -100,7 +100,7 @@ public:
 	}
 
 	bool isTTHShared(const TTHValue& tth){
-		HashFileIter i = tthIndex.find(const_cast<TTHValue*>(&tth));
+		HashFileIter i = tthIndex.find(tth);
 		return (i != tthIndex.end());
 	}
 
@@ -136,9 +136,9 @@ private:
 			typedef Set::iterator Iter;
 
 			File() : size(0), parent(NULL) { }
-			File(const string& aName, int64_t aSize, Directory* aParent, const TTHValue& aRoot) : 
+			File(const string& aName, int64_t aSize, Directory* aParent, const TTHValue& aRoot) :
 			name(aName), tth(aRoot), size(aSize), parent(aParent) { }
-			File(const File& rhs) : 
+			File(const File& rhs) :
 			name(rhs.getName()), tth(rhs.getTTH()), size(rhs.getSize()), parent(rhs.getParent()) { }
 
 			~File() { }
@@ -177,8 +177,8 @@ private:
 		Map directories;
 		File::Set files;
 
-		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : 
-		size(0), name(aName), parent(aParent), fileTypes(0) { 
+		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) :
+		size(0), name(aName), parent(aParent), fileTypes(0) {
 		}
 
 		~Directory();
@@ -189,7 +189,7 @@ private:
 		void addType(u_int32_t type) throw();
 
 		string getADCPath() const throw();
-		string getFullName() const throw(); 
+		string getFullName() const throw();
 
 		int64_t getSize() {
 			int64_t tmp = size;
@@ -202,7 +202,7 @@ private:
 			size_t tmp = files.size();
 			for(MapIter i = directories.begin(); i != directories.end(); ++i)
 				tmp+=i->second->countFiles();
-			return tmp;			
+			return tmp;
 		}
 
 		void search(SearchResult::List& aResults, StringSearchList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
@@ -229,9 +229,9 @@ private:
 
 	friend class Singleton<ShareManager>;
 	ShareManager();
-	
+
 	virtual ~ShareManager();
-	
+
 	struct AdcSearch {
 		AdcSearch(const StringList& params);
 
@@ -267,7 +267,7 @@ private:
 		bool isDirectory;
 	};
 
-	typedef HASH_MULTIMAP_X(TTHValue*, Directory::File::Iter, TTHValue::PtrHash, TTHValue::PtrHash, TTHValue::PtrLess) HashFileMap;
+	typedef HASH_MULTIMAP_X(TTHValue, Directory::File::Iter, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;
@@ -283,12 +283,12 @@ private:
 	bool update;
 	bool refreshIncoming;
 	bool refreshDir;
-	
+
+	int listN;
+
 	volatile long refreshing;
 
 	StringList refreshPaths;
-	
-	int listN;
 
 	File* xFile;
 
@@ -309,7 +309,7 @@ private:
 	StringBoolMap incomingMap;
 
 	BloomFilter<5> bloom;
-	
+
 	/** Find virtual name from real name */
 	StringPairIter findVirtual(const string& name);
 	/** Find real name from virtual name */
@@ -327,6 +327,10 @@ private:
 
 	virtual int run();
 
+	void saveXmlList();
+
+	Directory* ShareManager::addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName, string & aPath);
+
 	// DownloadManagerListener
 	virtual void on(DownloadManagerListener::Complete, Download* d) throw();
 
@@ -334,29 +338,22 @@ private:
 	virtual void on(HashManagerListener::TTHDone, const string& fname, const TTHValue& root) throw();
 
 	// SettingsManagerListener
-	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw() {
+	virtual void on(SettingsManagerListener::Save, SimpleXML& xml) throw() {
 		save(xml);
 		if(shareXmlDirty) {
 			saveXmlList();
 			shareXmlDirty = false;
 		}
 	}
-	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw() {
 		load(xml);
 	}
-	
+
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, u_int32_t tick) throw();
-	void load(SimpleXML* aXml);
-	void save(SimpleXML* aXml);
-	
-	void saveXmlList();
-	Directory* addDirectoryFromXml(SimpleXML *xml, Directory *aParent, string & aName, string & aPath);
+	void load(SimpleXML& aXml);
+	void save(SimpleXML& aXml);
+
 };
 
 #endif // !defined(SHARE_MANAGER_H)
-
-/**
- * @file
- * $Id: ShareManager.h,v 1.6 2004/02/21 10:47:46 trem Exp $
- */

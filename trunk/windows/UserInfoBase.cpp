@@ -87,5 +87,5 @@ void UserInfoBase::showLog() {
 
 	tstring path = Text::toT(LogManager::getInstance()->getLogFilename(LogManager::PM, params));
 	if(!path.empty())
-		ShellExecute(NULL, _T("open"), Util::validateFileName(path).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(NULL, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }

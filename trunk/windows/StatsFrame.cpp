@@ -28,7 +28,7 @@
 LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	timerId = SetTimer(1, 1000);
-	
+
 	SetFont(WinUtil::font);
 
 	WinUtil::SetIcon(m_hWnd, _T("netstats.ico"));
@@ -40,16 +40,16 @@ LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(timerId != 0)
 		KillTimer(timerId);
-	
+
 	checkButton(false);	
-	
+
 	bHandled = FALSE;
 	return 0;
 }
 
 void StatsFrame::drawLine(CDC& dc, StatIter begin, StatIter end, CRect& rc, CRect& crc) {
 	int x = crc.right;
-	
+
 	StatIter i;
 	for(i = begin; i != end; ++i) {
 		if((x - (int)i->scroll) < rc.right)
@@ -83,10 +83,10 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 		CRect clientRC;
 		GetClientRect(clientRC);
-		
+
 		dc.SetTextColor(WinUtil::textColor);
 		dc.SetBkColor(WinUtil::bgColor);
-	
+
 		dc.SelectPen(foregr);
 		dc.SelectFont(WinUtil::font);
 		int lines = height / (WinUtil::fontHeight * LINE_HEIGHT);
@@ -98,9 +98,9 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 				dc.MoveTo(rc.left, ypos);
 				dc.LineTo(rc.right, ypos);
 			}
-			
+
 			if(rc.left <= twidth) {
-				
+
 				ypos -= WinUtil::fontHeight + 2;
 				if(ypos < 0)
 					ypos = 0;
@@ -211,5 +211,5 @@ LRESULT StatsFrame::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 }
 
 void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
-	
+
 }
