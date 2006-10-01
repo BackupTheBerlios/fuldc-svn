@@ -25,7 +25,8 @@
 
 #include "../client/HashManager.h"
 
-class HashProgressDlg : public CDialogImpl<HashProgressDlg>, private HashManagerListener
+class HashProgressDlg : public CDialogImpl<HashProgressDlg>, 
+	private HashManagerListener
 {
 public:
 	enum { IDD = IDD_HASH_PROGRESS };
@@ -59,6 +60,8 @@ public:
 
 		string tmp;
 		startTime = GET_TICK();
+
+		HashManager::getInstance()->addListener(this);
 		HashManager::getInstance()->getStats(tmp, startBytes, startFiles);
 
 		progress.Attach(GetDlgItem(IDC_HASH_PROGRESS));
@@ -134,6 +137,7 @@ public:
 	}
 
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		HashManager::getInstance()->removeListener(this);
 		if( IsWindow() )
 			DestroyWindow();
 		return 0;
@@ -154,11 +158,11 @@ public:
 	}
 
 	LRESULT onPaused(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_PAUSE, CTSTRING(PAUSE));
+		SetDlgItemText(IDC_PAUSE, CTSTRING(RESUME));
 		return 0;
 	}
 	LRESULT onResumed(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_PAUSE, CTSTRING(RESUME));
+		SetDlgItemText(IDC_PAUSE, CTSTRING(PAUSE));
 		return 0;
 	}
 private:

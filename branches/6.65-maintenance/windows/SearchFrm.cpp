@@ -935,7 +935,7 @@ LRESULT SearchFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
 
-		WinUtil::searchHash(&sr->getTTH());
+		WinUtil::searchHash(sr->getTTH());
 	}
 
 	return 0;

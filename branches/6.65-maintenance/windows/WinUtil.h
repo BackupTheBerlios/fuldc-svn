@@ -163,7 +163,7 @@ public:
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
-	static void searchHash(const TTHValue* /*aHash*/);
+	static void searchHash(const TTHValue& /*aHash*/);
 	static void registerDchubHandler();
 	static void registerADChubHandler();
 	static void unRegisterDchubHandler();

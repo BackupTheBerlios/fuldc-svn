@@ -29,6 +29,9 @@
 #include "MerkleTree.h"
 
 class ListLoader;
+class SimpleXML;
+class SimpleXMLException;
+class FileException;
 
 STANDARD_EXCEPTION(AbortException);
 
@@ -48,7 +51,7 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 
-		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
+		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() :
 			name(aName), size(aSize), parent(aDir), tthRoot(aTTH), adls(false), dupe(false)
 		{
 		}
@@ -92,8 +95,8 @@ public:
 
 		enum { NONE, PARTIAL_DUPE, DUPE };
 
-		Directory(Directory* aParent, const string& aName, bool _adls, bool aComplete) 
-			: name(aName), parent(aParent), adls(_adls), complete(aComplete), dupe(0) { };
+		Directory(Directory* aParent, const string& aName, bool _adls, bool aComplete)
+			: name(aName), parent(aParent), adls(_adls), complete(aComplete), dupe(0) { }
 
 		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction());
@@ -151,7 +154,7 @@ public:
 		delete root;
 	}
 
-	void loadFile(const string& name);
+	void loadFile(const string& name) throw(FileException, SimpleXMLException);
 
 	string loadXML(const string& xml, bool updating);
 
@@ -169,6 +172,7 @@ public:
 	Directory* getRoot() { return root; }
 
 	void checkDupes();
+	static User::Ptr getUserFromFilename(const string& fileName);
 
 	GETSET(User::Ptr, user, User);
 	GETSET(bool, abort, Abort);

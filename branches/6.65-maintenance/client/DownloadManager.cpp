@@ -533,6 +533,9 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 	} catch(const FileException& e) {
 		d->resetPos();
 		failDownload(aSource, e.getError());
+	} catch(const TTHException& e) {
+		d->setPos(reinterpret_cast<MerkleCheckOutputStream<TigerTree, true>*>(d->getFile())->verifiedBytes());
+		failDownload(aSource, e.getError());
 	} catch(const Exception& e) {
 		// Nuke the bytes we have written, this is probably a compression error
 		d->resetPos();
@@ -599,6 +602,10 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 				}
 			}
 		} catch(const FileException& e) {
+			failDownload(aSource, e.getError());
+			return;
+		} catch(const TTHException& e) {
+			d->setPos(reinterpret_cast<MerkleCheckOutputStream<TigerTree, true>*>(d->getFile())->verifiedBytes());
 			failDownload(aSource, e.getError());
 			return;
 		}

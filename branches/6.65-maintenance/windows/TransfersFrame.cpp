@@ -501,23 +501,14 @@ LRESULT TransfersFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
 
 	if(i != -1) {
-		TransferInfo *ii = ctrlTransfers.getItemData(i);
+		TransferInfo *ti = ctrlTransfers.getItemData(i);
 
-		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
+		string target = Text::fromT(ti->getText(COLUMN_PATH) + ti->getText(COLUMN_FILE));
 
-		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
-		QueueItem::StringIter qi = queue.find(&tmp);
-
-		//create a copy of the tth to avoid holding the filequeue lock while calling
-		//into searchframe, searchmanager and all of that
-		TTHValue val;
-		if(qi != queue.end()) {
-			val = qi->second->getTTH();
+		TTHValue tth;
+		if(QueueManager::getInstance()->getTTH(target, tth)) {
+			WinUtil::searchHash(tth);
 		}
-
-		QueueManager::getInstance()->unlockQueue();
-
-		WinUtil::searchHash(&val);
 	}
 
 	return 0;

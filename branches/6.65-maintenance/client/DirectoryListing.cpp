@@ -36,7 +36,7 @@
 #undef ff
 #endif
 
-void DirectoryListing::loadFile(const string& name) {
+void DirectoryListing::loadFile(const string& name) throw(FileException, SimpleXMLException) {
 	string txt;
 
 	// For now, we detect type by ending...

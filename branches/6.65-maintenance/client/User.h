@@ -149,7 +149,7 @@ public:
 	//don't trust ip's received in c-c connections.
 	GETSET(bool, userIp, UserIp);
 private:
-	mutable RWLock<> cs;
+	mutable CriticalSection cs;
 
 	User(const User&);
 	User& operator=(const User&);

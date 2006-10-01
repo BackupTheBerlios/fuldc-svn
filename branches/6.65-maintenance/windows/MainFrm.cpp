@@ -559,8 +559,9 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	PropertiesDlg dlg(m_hWnd, SettingsManager::getInstance());
 
-	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
-	unsigned short lastUDP = (unsigned short)SETTING(UDP_PORT);
+	unsigned short lastTCP = static_cast<unsigned short>(SETTING(TCP_PORT));
+	unsigned short lastUDP = static_cast<unsigned short>(SETTING(UDP_PORT));
+
 	int lastConn = SETTING(INCOMING_CONNECTIONS);
 
 	if(dlg.DoModal(m_hWnd) == IDOK)
@@ -569,7 +570,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		if(missedAutoConnect && !SETTING(NICK).empty()) {
 			PostMessage(WM_SPEAKER, AUTO_CONNECT);
 		}
-		if(SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastPort || SETTING(UDP_PORT) != lastUDP) {
+		if(SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastTCP || SETTING(UDP_PORT) != lastUDP) {
 			startSocket();
 		}
 		ClientManager::getInstance()->infoUpdated();
@@ -1114,7 +1115,7 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t) throw
 
 			DirectoryListInfo* i = new DirectoryListInfo();
 			i->file = Text::toT(qi->getListName());
-			i->user = qi->getCurrent()->getUser();
+			i->user = qi->getCurrent();
 
 			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 		} else if(qi->isSet(QueueItem::FLAG_TEXT)) {

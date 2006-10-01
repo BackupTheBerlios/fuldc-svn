@@ -45,7 +45,7 @@
 # define _REENTRANT 1
 #endif
 
-#ifdef HAVE_STLPORT
+//#ifdef HAVE_STLPORT
 # define _STLP_DONT_USE_SHORT_STRING_OPTIM 1	// Lots of memory issues with this undefined...wonder what's up with that..
 //# define _STLP_USE_PTR_SPECIALIZATIONS 1
 # define _STLP_USE_TEMPLATE_EXPRESSION 1
@@ -55,7 +55,7 @@
 # ifndef _DEBUG
 #  define _STLP_DONT_USE_EXCEPTIONS 1
 # endif
-#endif
+//#endif
 
 #ifdef _MSC_VER
 # pragma warning(disable: 4711) // function 'xxx' selected for automatic inline expansion

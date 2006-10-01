@@ -159,7 +159,7 @@ public:
 	bool muted;
 
 private:
-	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
+	PrivateFrame(const User::Ptr& aUser) : user(aUser),
 		created(false), closed(false), muted(false), doPopups(true), offline(false),
 		ctrlMessageContainer(WC_EDIT, this, PM_MESSAGE_MAP),
 		ctrlClientContainer(WC_EDIT, this, PM_MESSAGE_MAP) {

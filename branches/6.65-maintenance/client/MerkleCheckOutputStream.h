@@ -26,6 +26,8 @@
 #include "Streams.h"
 #include "MerkleTree.h"
 
+STANDARD_EXCEPTION(TTHException);
+
 template<class TreeType, bool managed>
 class MerkleCheckOutputStream : public OutputStream {
 public:
@@ -44,7 +46,7 @@ public:
 
 	virtual ~MerkleCheckOutputStream() throw() { if(managed) delete s; }
 
-	virtual size_t flush() throw(FileException) {
+	virtual size_t flush() throw(TTHException) {
 		if (bufPos != 0)
 			cur.update(buf, bufPos);
 		bufPos = 0;
@@ -52,14 +54,14 @@ public:
 		cur.finalize();
 		if(cur.getLeaves().size() == real.getLeaves().size()) {
 			if (cur.getRoot() != real.getRoot())
-				throw FileException(STRING(TTH_INCONSISTENCY));
+				throw TTHException(STRING(TTH_INCONSISTENCY));
 		} else {
 			checkTrees();
 		}
 		return s->flush();
 	}
 
-	virtual size_t write(const void* b, size_t len) throw(FileException) {
+	virtual size_t write(const void* b, size_t len) throw(TTHException) {
 		u_int8_t* xb = (u_int8_t*)b;
 		size_t pos = 0;
 
@@ -109,7 +111,7 @@ private:
 			if(cur.getLeaves().size() > real.getLeaves().size() ||
 				!(cur.getLeaves()[verified] == real.getLeaves()[verified]))
 			{
-				throw FileException(STRING(TTH_INCONSISTENCY));
+				throw TTHException(STRING(TTH_INCONSISTENCY));
 			}
 			verified++;
 		}

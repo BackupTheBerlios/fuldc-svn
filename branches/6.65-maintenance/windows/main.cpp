@@ -44,7 +44,7 @@ static char buf[DEBUG_BUFSIZE];
 
 #ifndef _DEBUG
 
-FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
+FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo /* pdli */) {
 	MessageBox(WinUtil::mainWnd, _T("fulDC just encountered an unhandled exception and will terminate. Please do not report this as a bug, as fulDC was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("fulDC Has Crashed"), MB_OK | MB_ICONERROR);
 	exit(-1);
 
@@ -244,9 +244,9 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	rc.left = rc.right / 2 - 200;
 	rc.right = rc.left + 400;
 
-	dummy.Create(NULL, rc, _T(FULDC) _T(" ") _T(FULVERSIONSTRING), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	dummy.Create(NULL, rc, _T(FULDC) _T(" ") _T(FULVERSIONSTRING), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
-	splash.Create(NULL, rc, _T(FULDC) _T(" ") _T(FULVERSIONSTRING), WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	splash.Create(NULL, rc, _T(FULDC) _T(" ") _T(FULVERSIONSTRING), WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		ES_CENTER | ES_READONLY | ES_MULTILINE, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 

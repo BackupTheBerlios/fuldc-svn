@@ -31,6 +31,14 @@
 #include <bzlib.h>
 #endif
 
+CryptoManager::CryptoManager()
+:
+	lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"),
+	pk("DCPLUSPLUS" VERSIONSTRING "ABCABC")
+{ }
+
+CryptoManager::~CryptoManager() { }
+
 void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (CryptoException) {
 	bz_stream bs = { 0 };
 
@@ -127,3 +135,4 @@ string CryptoManager::makeKey(const string& aLock) {
 
 	return keySubst(temp, aLock.length(), extra);
 }
+

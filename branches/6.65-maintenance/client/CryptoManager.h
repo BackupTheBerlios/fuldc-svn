@@ -81,17 +81,12 @@ public:
 private:
 
 	friend class Singleton<CryptoManager>;
-	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { }
-	virtual ~CryptoManager() { }
+
+	CryptoManager();
+	virtual ~CryptoManager();
 
 	const string lock;
 	const string pk;
-
-	int countChars(const string& aString, int* c, u_int8_t& csum);
-	void walkTree(list<Node*>& aTree);
-	void recurseLookup(vector<u_int8_t>* b, Node* node, vector<u_int8_t>& bytes);
-	void buildLookup(vector<u_int8_t>* b, Node* root);
 
 	string keySubst(const u_int8_t* aKey, size_t len, size_t n);
 	bool isExtra(u_int8_t b) {
