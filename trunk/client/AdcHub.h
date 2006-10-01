@@ -48,7 +48,7 @@ public:
 	virtual size_t getUserCount() const { Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
-	virtual string escape(string const& str) const { return AdcCommand::escape(str); }
+	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); }
 	virtual void send(const AdcCommand& cmd);
 
 	string getMySID() { return AdcCommand::fromSID(sid); }

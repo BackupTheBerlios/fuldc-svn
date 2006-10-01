@@ -1,6 +1,6 @@
-from xml.dom import minidom
 import os
 import sys
+import re
 
 #make sure relative paths work from the vc7.1 dir too
 os.chdir(sys.argv[0][0: sys.argv[0].rfind("\\")])
@@ -34,19 +34,11 @@ class SVNReport:
 		itempath = os.path.join(itempath,"entries")
 		if not os.path.exists(itempath):
 			return
-		xmldom = minidom.parse(itempath)
-		xmlEntries = xmldom.firstChild
-		for node in xmlEntries.childNodes:
-			if node.nodeType == node.TEXT_NODE:
-				continue
-			elif node.nodeType == node.ELEMENT_NODE and node.attributes.has_key('revision'):
-				if self.revision > int(node.attributes["revision"].value): continue
-				self.revision = int(node.attributes["revision"].value)
-				d = {}
-				for key in node.attributes.keys():
-					d[key] = node.attributes[key].value
-				self.data = d
-		xmldom.unlink()
+		entries = open(itempath, "r").read()
+		revisions = re.compile("^\d{1,5}$", re.MULTILINE).findall(entries)
+		for rev in revisions:
+                    if self.revision < int(rev):
+                        self.revision = int(rev)
 
 
 if __name__ == "__main__":
@@ -56,7 +48,7 @@ if __name__ == "__main__":
 	print "Getting SVN Information:"
 	for key,value in s.data.iteritems():
 		versiontemplate = versiontemplate.replace("$%s" % key, value)
-	print "Revision %s, checked in by %s" % (s.data.get("revision",0),s.data.get("last-author","Unknown"))
+	print "Revision %s" % (s.revision)
 	print "Checking if update of version.h is needed"
 	if not os.path.exists(TARGET):
 		open(TARGET,'w').write(versiontemplate)

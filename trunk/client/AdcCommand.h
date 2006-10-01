@@ -55,10 +55,11 @@ public:
 		ERROR_TEMP_BANNED = 32,
 		ERROR_PROTOCOL_GENERIC = 40,
 		ERROR_PROTOCOL_UNSUPPORTED = 41,
-		ERROR_INF_MISSING = 42,
-		ERROR_BAD_STATE = 43,
-		ERROR_FEATURE_MISSING = 44,
-		ERROR_BAD_IP = 45,
+		ERROR_CONNECT_FAILED = 42,
+		ERROR_INF_MISSING = 43,
+		ERROR_BAD_STATE = 44,
+		ERROR_FEATURE_MISSING = 45,
+		ERROR_BAD_IP = 46,
 		ERROR_TRANSFER_GENERIC = 50,
 		ERROR_FILE_NOT_AVAILABLE = 51,
 		ERROR_FILE_PART_NOT_AVAILABLE = 52,
@@ -74,6 +75,7 @@ public:
 	static const char TYPE_BROADCAST = 'B';
 	static const char TYPE_CLIENT = 'C';
 	static const char TYPE_DIRECT = 'D';
+	static const char TYPE_ECHO = 'E';
 	static const char TYPE_FEATURE = 'F';
 	static const char TYPE_INFO = 'I';
 	static const char TYPE_HUB = 'H';
@@ -108,22 +110,22 @@ public:
 	static const u_int32_t HUB_SID = 0x41414141;		// AAAA in base32
 
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT);
-	explicit AdcCommand(u_int32_t aCmd, const u_int32_t aTarget);
+	explicit AdcCommand(u_int32_t aCmd, const u_int32_t aTarget, char aType);
 	explicit AdcCommand(Severity sev, Error err, const string& desc, char aType = TYPE_CLIENT);
-	explicit AdcCommand(const string& aLine) throw(ParseException);
-	void parse(const string& aLineB) throw(ParseException);
+	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException);
+	void parse(const string& aLine, bool nmdc = false) throw(ParseException);
 
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
 	void setType(char t) { type = t; }
-	
+
 	AdcCommand& setFeatures(const string& feat) { features = feat; return *this; }
 
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
 
 	string toString(const CID& aCID) const;
-	string toString(u_int32_t sid) const;
+	string toString(u_int32_t sid, bool nmdc = false) const;
 
 	AdcCommand& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
@@ -144,7 +146,7 @@ public:
 
 	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
 
-	static string escape(const string& str);
+	static string escape(const string& str, bool old);
 	u_int32_t getTo() const { return to; }
 	AdcCommand& setTo(const u_int32_t sid) { to = sid; return *this; }
 	u_int32_t getFrom() const { return from; }
@@ -153,8 +155,8 @@ public:
 	static string fromSID(const u_int32_t aSID) { return string(reinterpret_cast<const char*>(&aSID), sizeof(aSID)); }
 private:
 	string getHeaderString(const CID& cid) const;
-	string getHeaderString(u_int32_t sid) const;
-	string getParamString() const;
+	string getHeaderString(u_int32_t sid, bool nmdc) const;
+	string getParamString(bool nmdc) const;
 	StringList parameters;
 	string features;
 	union {
@@ -171,9 +173,9 @@ private:
 template<class T>
 class CommandHandler {
 public:
-	void dispatch(const string& aLine) {
+	void dispatch(const string& aLine, bool nmdc = false) {
 		try {
-			AdcCommand c(aLine);
+			AdcCommand c(aLine, nmdc);
 
 #define C(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
 			switch(c.getCommand()) {

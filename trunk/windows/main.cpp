@@ -335,7 +335,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
 
 	// For SHBrowseForFolder, UPnP
-	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
+	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
 	//File::deleteFile(Util::getDataPath() + "exceptioninfo.txt");

@@ -633,6 +633,7 @@
 #define IDC_TLS_OPTIONS                 1386
 #define IDC_SETTINGS_PORT_TLS           1387
 #define IDC_PORT_TLS                    1388
+#define IDC_MATCH_ALL                   1389
 #define IDC_DOWNLOAD_FAVORITE_DIRS      2000
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 2200
 #define IDC_BROWSELIST                  3000

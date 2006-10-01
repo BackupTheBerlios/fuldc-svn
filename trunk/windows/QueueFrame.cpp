@@ -31,6 +31,8 @@
 #include "../client/ClientManager.h"
 #include "../client/version.h"
 
+#include <memory>
+
 #define FILE_LIST_NAME _T("File Lists")
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
@@ -186,14 +188,13 @@ void QueueFrame::QueueItemInfo::update() {
 		updateMask = 0;
 
 		if(colMask & MASK_TARGET) {
-			display->columns[COLUMN_TARGET] = Util::getFileName(getTarget());
+			display->columns[COLUMN_TARGET] = Text::toT(Util::getFileName(getTarget()));
 		}
 		int online = 0;
 		if(colMask & MASK_USERS || colMask & MASK_STATUS) {
 			tstring tmp;
 
-			SourceIter j;
-			for(j = getSources().begin(); j != getSources().end(); ++j) {
+			for(QueueItem::SourceIter j = getSources().begin(); j != getSources().end(); ++j) {
 				if(tmp.size() > 0)
 					tmp += _T(", ");
 
@@ -258,13 +259,12 @@ void QueueFrame::QueueItemInfo::update() {
 		}
 
 		if(colMask & MASK_PATH) {
-			display->columns[COLUMN_PATH] = Util::getFilePath(getTarget());
+			display->columns[COLUMN_PATH] = Text::toT(getPath());
 		}
 
 		if(colMask & MASK_ERRORS) {
 			tstring tmp;
-			SourceIter j;
-			for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
+			for(QueueItem::SourceIter j = getBadSources().begin(); j != getBadSources().end(); ++j) {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");
@@ -298,7 +298,7 @@ void QueueFrame::QueueItemInfo::update() {
 			display->columns[COLUMN_TTH] = Text::toT(getTTH().toBase32());
 		}
 		if(colMask & MASK_TYPE) {
-			display->columns[COLUMN_TYPE] = Util::getFileExt(getTarget());
+			display->columns[COLUMN_TYPE] = Text::toT(Util::getFileExt(getTarget()));
 			if(display->columns[COLUMN_TYPE].size() > 0 && display->columns[COLUMN_TYPE][0] == '.')
 				display->columns[COLUMN_TYPE].erase(0, 1);
 		}
@@ -306,14 +306,9 @@ void QueueFrame::QueueItemInfo::update() {
 }
 
 void QueueFrame::on(QueueManagerListener::Added, QueueItem* aQI) {
-	QueueItemInfo* ii = new QueueItemInfo(aQI);
-	{
-		Lock l(cs);
-		dcassert(queue.find(aQI) == queue.end());
-		queue[aQI] = ii;
-	}
+	QueueItemInfo* ii = new QueueItemInfo(*aQI);
 
-	speak(ADD_ITEM,	ii);
+	speak(ADD_ITEM,	new QueueItemInfoTask(ii));
 }
 
 void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
@@ -323,7 +318,7 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	queueItems++;
 	dirty = true;
 
-	const tstring& dir = ii->getPath();
+	const string& dir = ii->getPath();
 
 	bool updateDir = (directories.find(dir) == directories.end());
 	directories.insert(make_pair(dir, ii));
@@ -334,10 +329,21 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	if(!showTree || isCurDir(dir)) {
 		ii->update();
 		if(noSort)
-			ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(ii->getTarget()));
+			ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
 		else
-			ctrlQueue.insertItem(ii, WinUtil::getIconIndex(ii->getTarget()));
+			ctrlQueue.insertItem(ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
 	}
+}
+
+QueueFrame::QueueItemInfo* QueueFrame::getItemInfo(const string& target) {
+	string path = Util::getFilePath(target);
+	DirectoryPair items = directories.equal_range(path);
+	for(DirectoryIter i = items.first; i != items.second; ++i) {
+		if(i->second->getTarget() == target) {
+			return i->second;
+		}
+	}
+	return 0;
 }
 
 void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
@@ -345,9 +351,7 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 	ctrlDirs.SetRedraw(FALSE);
 	for(QueueItem::StringMap::const_iterator j = li.begin(); j != li.end(); ++j) {
 		QueueItem* aQI = j->second;
-		QueueItemInfo* ii = new QueueItemInfo(aQI);
-		dcassert(queue.find(aQI) == queue.end());
-		queue[aQI] = ii;
+		QueueItemInfo* ii = new QueueItemInfo(*aQI);
 		addQueueItem(ii, true);
 	}
 	ctrlQueue.resort();
@@ -373,7 +377,7 @@ LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 }
 
 
-HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = false */, HTREEITEM startAt /* = NULL */) {
+HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, HTREEITEM startAt /* = NULL */) {
 	TVINSERTSTRUCT tvi;
 	tvi.hInsertAfter = TVI_SORT;
 	tvi.item.mask = TVIF_IMAGE | TVIF_PARAM | TVIF_SELECTEDIMAGE | TVIF_TEXT;
@@ -385,7 +389,7 @@ HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = fals
 		dcassert(fileLists == NULL);
 		tvi.hParent = NULL;
 		tvi.item.pszText = FILE_LIST_NAME;
-		tvi.item.lParam = (LPARAM) new tstring(dir);
+		tvi.item.lParam = (LPARAM) new string(dir);
 		fileLists = ctrlDirs.InsertItem(&tvi);
 		return fileLists;
 	}
@@ -406,7 +410,7 @@ HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = fals
 
 		while(next != NULL) {
 			if(next != fileLists) {
-				tstring* stmp = (tstring*)ctrlDirs.GetItemData(next);
+				string* stmp = reinterpret_cast<string*>(ctrlDirs.GetItemData(next));
 				if(Util::strnicmp(*stmp, dir, 3) == 0)
 					break;
 			}
@@ -416,24 +420,25 @@ HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = fals
 		if(next == NULL) {
 			// First addition, set commonStart to the dir minus the last part...
 			i = dir.rfind('\\', dir.length()-2);
-			if(i != tstring::npos) {
-				tstring name = dir.substr(0, i);
+			if(i != string::npos) {
+				tstring name = Text::toT(dir.substr(0, i));
 				tvi.hParent = NULL;
 				tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
-				tvi.item.lParam = (LPARAM)new tstring(dir.substr(0, i+1));
+				tvi.item.lParam = (LPARAM)new string(dir.substr(0, i+1));
 				next = ctrlDirs.InsertItem(&tvi);
 			} else {
 				dcassert(dir.length() == 3);
+				tstring name = Text::toT(dir);
 				tvi.hParent = NULL;
-				tvi.item.pszText = const_cast<TCHAR*>(dir.c_str());
-				tvi.item.lParam = (LPARAM)new tstring(dir);
+				tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
+				tvi.item.lParam = (LPARAM)new string(dir);
 				next = ctrlDirs.InsertItem(&tvi);
 			}
 		}
 
 		// Ok, next now points to x:\... find how much is common
 
-		tstring* rootStr = (tstring*)ctrlDirs.GetItemData(next);
+		string* rootStr = (string*)ctrlDirs.GetItemData(next);
 
 		i = 0;
 
@@ -450,10 +455,10 @@ HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = fals
 			HTREEITEM oldRoot = next;
 
 			// Create a new root
-			tstring name = rootStr->substr(0, i-1);
+			tstring name = Text::toT(rootStr->substr(0, i-1));
 			tvi.hParent = NULL;
 			tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
-			tvi.item.lParam = (LPARAM)new tstring(rootStr->substr(0, i));
+			tvi.item.lParam = (LPARAM)new string(rootStr->substr(0, i));
 			HTREEITEM newRoot = ctrlDirs.InsertItem(&tvi);
 
 			parent = addDirectory(*rootStr, false, newRoot);
@@ -483,7 +488,7 @@ HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = fals
 	while( i < dir.length() ) {
 		while(next != NULL) {
 			if(next != fileLists) {
-				const tstring& n = getDir(next);
+				const string& n = getDir(next);
 				if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
 					// Found a part, we assume it's the best one we can find...
 					i = n.length();
@@ -500,10 +505,10 @@ HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = fals
 			// We didn't find it, add...
 			j = dir.find('\\', i);
 			dcassert(j != string::npos);
-			tstring name = dir.substr(i, j-i);
+			tstring name = Text::toT(dir.substr(i, j-i));
 			tvi.hParent = parent;
 			tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
-			tvi.item.lParam = (LPARAM) new tstring(dir.substr(0, j+1));
+			tvi.item.lParam = (LPARAM) new string(dir.substr(0, j+1));
 
 			parent = ctrlDirs.InsertItem(&tvi);
 
@@ -517,7 +522,7 @@ HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = fals
 	return parent;
 }
 
-void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false */) {
+void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false */) {
 
 	// First, find the last name available
 	string::size_type i = 0;
@@ -527,7 +532,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 
 	if(isFileList) {
 		dcassert(fileLists != NULL);
-		delete (tstring*)ctrlDirs.GetItemData(fileLists);
+		delete (string*)ctrlDirs.GetItemData(fileLists);
 		ctrlDirs.DeleteItem(fileLists);
 		fileLists = NULL;
 		return;
@@ -535,7 +540,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 		while(i < dir.length()) {
 			while(next != NULL) {
 				if(next != fileLists) {
-					const tstring& n = getDir(next);
+					const string& n = getDir(next);
 					if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
 						// Match!
 						parent = next;
@@ -554,7 +559,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	next = parent;
 
 	while((ctrlDirs.GetChildItem(next) == NULL) && (directories.find(getDir(next)) == directories.end())) {
-		delete (tstring*)ctrlDirs.GetItemData(next);
+		delete (string*)ctrlDirs.GetItemData(next);
 		parent = ctrlDirs.GetParentItem(next);
 
 		ctrlDirs.DeleteItem(next);
@@ -570,98 +575,43 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 		removeDirectories(next);
 		next = ctrlDirs.GetNextSiblingItem(ht);
 	}
-	delete (tstring*)ctrlDirs.GetItemData(ht);
+	delete (string*)ctrlDirs.GetItemData(ht);
 	ctrlDirs.DeleteItem(ht);
 }
 
 void QueueFrame::on(QueueManagerListener::Removed, QueueItem* aQI) {
-	QueueItemInfo* qi = NULL;
-	{
-		Lock l(cs);
-		QueueIter i = queue.find(aQI);
-		dcassert(i != queue.end());
-		qi = i->second;
-		queue.erase(i);
-
-		dirty = true;
-	}
-
-	speak(REMOVE_ITEM, qi);
+	speak(REMOVE_ITEM, new StringTask(aQI->getTarget()));
 }
 
-void QueueFrame::on(QueueManagerListener::Moved, QueueItem* aQI) {
-	QueueItemInfo* qi = NULL;
-	QueueItemInfo* qi2 = new QueueItemInfo(aQI);
-	{
-		Lock l(cs);
-		dcassert(queue.find(aQI) != queue.end());
-		QueueIter i = queue.find(aQI);
-		qi = i->second;
-		i->second = qi2;
-	}
-
-	speak(REMOVE_ITEM, qi);
-	speak(ADD_ITEM,	qi2);
+void QueueFrame::on(QueueManagerListener::Moved, QueueItem* aQI, const string& oldTarget) {
+	speak(REMOVE_ITEM, new StringTask(oldTarget));
+	speak(ADD_ITEM,	new QueueItemInfoTask(new QueueItemInfo(*aQI)));
 }
 
 void QueueFrame::on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) {
-	QueueItemInfo* ii = NULL;
-	{
-		Lock l(cs);
-		dcassert(queue.find(aQI) != queue.end());
-		ii = queue[aQI];
-
-		ii->setPriority(aQI->getPriority());
-		ii->setStatus(aQI->getStatus());
-		ii->setDownloadedBytes(aQI->getDownloadedBytes());
-		ii->setTTH(aQI->getTTH());
-
-		{
-			for(QueueItemInfo::SourceIter i = ii->getSources().begin(); i != ii->getSources().end(); ) {
-				if(!aQI->isSource(i->getUser())) {
-					i = ii->getSources().erase(i);
-				} else {
-					++i;
-				}
-			}
-			for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
-				if(!ii->isSource((*j)->getUser())) {
-					ii->getSources().push_back(QueueItemInfo::SourceInfo(*(*j)));
-				}
-			}
-		}
-		{
-			for(QueueItemInfo::SourceIter i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ) {
-				if(!aQI->isBadSource(i->getUser())) {
-					i = ii->getBadSources().erase(i);
-				} else {
-					++i;
-				}
-			}
-			for(QueueItem::Source::Iter j = aQI->getBadSources().begin(); j != aQI->getBadSources().end(); ++j) {
-				if(!ii->isBadSource((*j)->getUser())) {
-					ii->getBadSources().push_back(QueueItemInfo::SourceInfo(*(*j)));
-				}
-			}
-		}
-		ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED | QueueItemInfo::MASK_TTH;
-	}
-
-	speak(UPDATE_ITEM, ii);
+	speak(UPDATE_ITEM, new UpdateTask(*aQI));
 }
 
 LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	Lock l(cs);
+	TaskQueue::List t;
+
+	tasks.get(t);
 	spoken = false;
 
-	for(TaskIter ti = tasks.begin(); ti != tasks.end(); ++ti) {
+	for(TaskQueue::Iter ti = t.begin(); ti != t.end(); ++ti) {
 		if(ti->first == ADD_ITEM) {
-			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
-			dcassert(ctrlQueue.findItem(ii) == -1);
-			addQueueItem(ii, false);
+			auto_ptr<QueueItemInfoTask> iit(static_cast<QueueItemInfoTask*>(ti->second));
+			
+			dcassert(ctrlQueue.findItem(iit->ii) == -1);
+			addQueueItem(iit->ii, false);
 			updateStatus();
 		} else if(ti->first == REMOVE_ITEM) {
-			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
+			auto_ptr<StringTask> target(static_cast<StringTask*>(ti->second));
+			QueueItemInfo* ii = getItemInfo(target->str);
+			if(!ii) {
+				dcassert(ii);
+				continue;
+			}
 
 			if(!showTree || isCurDir(ii->getPath()) ) {
 				dcassert(ctrlQueue.findItem(ii) != -1);
@@ -686,7 +636,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			if(directories.count(ii->getPath()) == 0) {
 				removeDirectory(ii->getPath(), ii->isSet(QueueItem::FLAG_USER_LIST));
 				if(isCurDir(ii->getPath()))
-					curDir = Util::emptyStringT;
+					curDir.clear();
 			}
 
 			delete ii;
@@ -696,7 +646,17 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			}
 			dirty = true;
 		} else if(ti->first == UPDATE_ITEM) {
-			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
+			auto_ptr<UpdateTask> ui(reinterpret_cast<UpdateTask*>(ti->second));
+            QueueItemInfo* ii = getItemInfo(ui->target);
+
+			ii->setPriority(ui->priority);
+			ii->setStatus(ui->status);
+			ii->setDownloadedBytes(ui->downloadedBytes);
+			ii->setSources(ui->sources);
+			ii->setBadSources(ui->badSources);
+
+			ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED;
+
 			if(!showTree || isCurDir(ii->getPath())) {
 				dcassert(ctrlQueue.findItem(ii) != -1);
 				ii->update();
@@ -704,11 +664,18 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			}
 		}
 	}
-	if(tasks.size() > 0) {
-		tasks.clear();
-	}
 
 	return 0;
+}
+
+void QueueFrame::removeSelected() {
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+		ctrlQueue.forEachSelected(&QueueItemInfo::remove);
+}
+
+void QueueFrame::removeSelectedDir() {
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+		removeDir(ctrlDirs.GetSelectedItem());
 }
 
 void QueueFrame::moveSelected() {
@@ -717,35 +684,36 @@ void QueueFrame::moveSelected() {
 	if(n == 1) {
 		// Single file, get the full filename and move...
 		QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
-		tstring name = ii->getTarget();
-		tstring ext = Util::getFileExt(name);
+		tstring target = Text::toT(ii->getTarget());
+		tstring ext = Util::getFileExt(target);
 		tstring ext2;
 		if (!ext.empty())
 		{
 			ext = ext.substr(1); // remove leading dot so default extension works when browsing for file
 			ext2 = _T("*.") + ext;
-		ext2 += (TCHAR)0;
-		ext2 += _T("*.") + ext;
+			ext2 += (TCHAR)0;
+			ext2 += _T("*.") + ext;
 		}
 		ext2 += _T("*.*");
 		ext2 += (TCHAR)0;
 		ext2 += _T("*.*");
 		ext2 += (TCHAR)0;
 
-		if(WinUtil::browseFile(name, m_hWnd, true, ii->getPath(), ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
-			QueueManager::getInstance()->move(Text::fromT(ii->getTarget()), Text::fromT(name));
+		tstring path = Text::toT(ii->getPath());
+		if(WinUtil::browseFile(target, m_hWnd, true, path, ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
+			QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(target));
 		}
 	} else if(n > 1) {
 		tstring name;
 		if(showTree) {
-			name = curDir;
+			name = Text::toT(curDir);
 		}
 
 		if(WinUtil::browseDirectory(name, m_hWnd)) {
 			int i = -1;
 			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				QueueItemInfo* ii = ctrlQueue.getItemData(i);
-				QueueManager::getInstance()->move(Text::fromT(ii->getTarget()), Text::fromT(name + ii->getTargetFileName()));
+				QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(name) + Util::getFileName(ii->getTarget()));
 			}
 		}
 	}
@@ -756,26 +724,26 @@ void QueueFrame::moveSelectedDir() {
 		return;
 
 	dcassert(!curDir.empty());
-	tstring name = curDir;
+	tstring name = Text::toT(curDir);
 
 	if(WinUtil::browseDirectory(name, m_hWnd)) {
-		moveDir(ctrlDirs.GetSelectedItem(), name);
+		moveDir(ctrlDirs.GetSelectedItem(), Text::fromT(name));
 	}
 }
 
-void QueueFrame::moveDir(HTREEITEM ht, const tstring& target) {
+void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 	HTREEITEM next = ctrlDirs.GetChildItem(ht);
 	while(next != NULL) {
-		moveDir(next, target + Util::getLastDir(getDir(next)) + _T(PATH_SEPARATOR_STR));
+		moveDir(next, target + Util::getLastDir(getDir(next)));
 		next = ctrlDirs.GetNextSiblingItem(next);
 	}
-	tstring* s = (tstring*)ctrlDirs.GetItemData(ht);
+	string* s = (string*)ctrlDirs.GetItemData(ht);
 
 	DirectoryPair p = directories.equal_range(*s);
 
 	for(DirectoryIter i = p.first; i != p.second; ++i) {
-		QueueItemInfo* qi = i->second;
-		QueueManager::getInstance()->move(Text::fromT(qi->getTarget()), Text::fromT(target + qi->getTargetFileName()));
+		QueueItemInfo* ii = i->second;
+		QueueManager::getInstance()->move(ii->getTarget(), target + Util::getFileName(ii->getTarget()));
 	}
 }
 
@@ -811,45 +779,36 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 			menuItems = 0;
 			int pmItems = 0;
-			if(ii) {
-				QueueItemInfo::SourceIter i;
-				for(i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
-					if(!i->getUser()) {
-						continue;
-					}
-					tstring nick = Text::toT(i->getUser()->getFirstNick());
-					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-					mi.fType = MFT_STRING;
-					mi.dwTypeData = (LPTSTR)nick.c_str();
-					mi.wID = IDC_BROWSELIST + menuItems;
-					browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
-					mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
-					removeMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
-					mi.wID = IDC_REMOVE_SOURCES + 1 + menuItems; // "All" is before sources
-					removeQueueMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
-					if(i->getUser()->isOnline()) {
-						mi.wID = IDC_PM + menuItems;
-						pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
-						pmItems++;
-					}
-					menuItems++;
+
+			for(QueueItem::SourceIter i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
+				tstring nick = WinUtil::escapeMenu(WinUtil::getNicks(i->getUser()));
+				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = (LPTSTR)nick.c_str();
+				mi.dwItemData = (ULONG_PTR)&(*i);
+				mi.wID = IDC_BROWSELIST + menuItems;
+				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
+				mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
+				removeMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
+				mi.wID = IDC_REMOVE_SOURCES + menuItems;
+				removeQueueMenu.InsertMenuItem(menuItems + 2, TRUE, &mi);
+				if(i->getUser()->isOnline()) {
+					mi.wID = IDC_PM + menuItems;
+					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
+					pmItems++;
 				}
-			
-				readdItems = 0;
-				for(i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
-					if(!i->getUser()) {
-						continue;
-					}
-					tstring nick = Text::toT(i->getUser()->getFirstNick());
-					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-					mi.fType = MFT_STRING;
-					mi.dwTypeData = (LPTSTR)nick.c_str();
-					mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
-					readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
-					mi.wID = IDC_READD_QUEUE + 1 + readdItems; // "All" is before sources
-					readdQueueMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);
-					readdItems++;
-				}
+				menuItems++;
+			}
+			readdItems = 0;
+			for(QueueItem::SourceIter i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
+				tstring nick = WinUtil::getNicks(i->getUser());
+				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = (LPTSTR)nick.c_str();
+				mi.dwItemData = (ULONG_PTR)&(*i);
+				mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
+				readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
+				readdItems++;
 			}
 
 			if(menuItems == 0) {
@@ -897,7 +856,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
 			if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
 				ctrlDirs.SelectItem(ht);
-			if(ht != NULL && QueueManager::getInstance()->hasNotification(Text::fromT(getDir(ht))))
+			if(ht != NULL && QueueManager::getInstance()->hasNotification(getDir(ht)))
 				dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_CHECKED);
 			else
 				dirMenu.CheckMenuItem(IDC_NOTIFY, MF_BYCOMMAND | MF_UNCHECKED);
@@ -926,12 +885,14 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 
 	if(ctrlQueue.GetSelectedCount() == 1) {
-		QueueItemInfo::SourceInfo *si = getSourceInfo(browseMenu, wID);
-		if(si) {
-			try {
-				QueueManager::getInstance()->addList(si->getUser(), QueueItem::FLAG_CLIENT_VIEW);
-			} catch(const Exception&) {
-			}
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+
+		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		try {
+			QueueManager::getInstance()->addList(s->getUser(), QueueItem::FLAG_CLIENT_VIEW);
+		} catch(const Exception&) {
 		}
 	}
 	return 0;
@@ -943,96 +904,65 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+
+		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		if(wID == IDC_READD) {
 			// re-add all sources
-			try {
-				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
-					QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
-					//reset the iterator since it won't be valid after the call to readd
-					s = ii->getBadSources().begin();
-				} 
-			} catch (const QueueException& e) {
-				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
-			}
-
-		} else if(wID == IDC_READD_QUEUE) {
-			// re-add all sources
-			try {
-				for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
-					QueueManager::getInstance()->readdUser(s->getUser());
-					//reset the iterator since it won't be valid after the call to readdUser
-					s = ii->getBadSources().begin();
-				} 
-			} catch (const QueueException& e) {
-				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
+			for(QueueItem::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
 			}
 		} else {
-			QueueItemInfo::SourceInfo* si = NULL;
-			if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
-				si = getBadSourceInfo(readdMenu, wID);
-			} else {
-				si = getBadSourceInfo(readdQueueMenu, wID);
-			}
-			if(si) {
-				try {
-					if(wID >= IDC_READD && wID <= IDC_READD + 1 + readdItems) {
-						QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), si->getUser());
-					} else {
-						QueueManager::getInstance()->readdUser(si->getUser());
-					}
-				} catch(const QueueException& e) {
-					ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
-				}
+			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+			try {
+				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
+			} catch(const Exception& e) {
+				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 			}
 		}
 	}
 	return 0;
 }
 
-LRESULT QueueFrame::onremoveUserFromFile(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT QueueFrame::onRemoveUserFromFile(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 		if(wID == IDC_REMOVE_SOURCE) {
-			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
-				QueueManager::getInstance()->removeUserFromFile(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			for(QueueItem::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
+				QueueManager::getInstance()->removeUserFromFile(ii->getTarget(), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
-			QueueItemInfo::SourceInfo* si = getSourceInfo(removeMenu, wID);
-			if(si) {
-				QueueManager::getInstance()->removeUserFromFile(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
-			}
+			CMenuItemInfo mi;
+			mi.fMask = MIIM_DATA;
+
+			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
+			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+			QueueManager::getInstance()->removeUserFromFile(ii->getTarget(), s->getUser(), QueueItem::Source::FLAG_REMOVED);
 		}
 	}
 	return 0;
 }
 
-LRESULT QueueFrame::onremoveUserFromQueue(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-
-		if(wID == IDC_REMOVE_SOURCES) {
-			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
-				QueueManager::getInstance()->removeUserFromQueue(si->getUser(), QueueItem::Source::FLAG_REMOVED);
-			}
-		} else {
-			QueueItemInfo::SourceInfo* si = getSourceInfo(removeQueueMenu, wID);
-			if(si) {
-				QueueManager::getInstance()->removeUserFromQueue(si->getUser(), QueueItem::Source::FLAG_REMOVED);
-			}
-		}
-	}	
+LRESULT QueueFrame::onRemoveUserFromQueue(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CMenuItemInfo mi;
+	mi.fMask = MIIM_DATA;
+	removeQueueMenu.GetMenuItemInfo(wID, FALSE, &mi);
+	QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+	QueueManager::getInstance()->removeUserFromQueue(s->getUser(), QueueItem::Source::FLAG_REMOVED);
 	return 0;
 }
 
 LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlQueue.GetSelectedCount() == 1) {
-		QueueItemInfo::SourceInfo* si = getSourceInfo(pmMenu, wID);
-		if(si) {
-			PrivateFrame::openWindow(si->getUser());
-		}
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+
+		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		PrivateFrame::openWindow(s->getUser());
 	}
 	return 0;
 }
@@ -1054,7 +984,7 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 	} else {
 		int i = -1;
 		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->setPriority(Text::fromT(ctrlQueue.getItemData(i)->getTarget()), p);
+			QueueManager::getInstance()->setPriority(ctrlQueue.getItemData(i)->getTarget(), p);
 		}
 	}
 
@@ -1069,10 +999,10 @@ void QueueFrame::removeDir(HTREEITEM ht) {
 		removeDir(child);
 		child = ctrlDirs.GetNextSiblingItem(child);
 	}
-	const tstring& name = getDir(ht);
+	const string& name = getDir(ht);
 	DirectoryPair dp = directories.equal_range(name);
 	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
-		QueueManager::getInstance()->remove(Text::fromT(i->second->getTarget()));
+		QueueManager::getInstance()->remove(i->second->getTarget());
 	}
 }
 
@@ -1099,7 +1029,7 @@ void QueueFrame::changePriority(bool inc){
 			case QueueItem::PAUSED:  p = QueueItem::LOWEST; break;
 		}
 
-		QueueManager::getInstance()->setPriority(Text::fromT(ctrlQueue.getItemData(i)->getTarget()), p);
+		QueueManager::getInstance()->setPriority(ctrlQueue.getItemData(i)->getTarget(), p);
 	}
 }
 
@@ -1111,10 +1041,10 @@ void QueueFrame::setPriority(HTREEITEM ht, const QueueItem::Priority& p) {
 		setPriority(child, p);
 		child = ctrlDirs.GetNextSiblingItem(child);
 	}
-	const tstring& name = getDir(ht);
+	const string& name = getDir(ht);
 	DirectoryPair dp = directories.equal_range(name);
 	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
-		QueueManager::getInstance()->setPriority(Text::fromT(i->second->getTarget()), p);
+		QueueManager::getInstance()->setPriority(i->second->getTarget(), p);
 	}
 }
 
@@ -1241,11 +1171,10 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		}
 
 		SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_SHOW_TREE, ctrlShowTree.GetCheck() == BST_CHECKED);
-		{
-			for(DirectoryIter i = directories.begin(); i != directories.end(); ++i) {
-				delete i->second;
-			}
+		for(DirectoryIter i = directories.begin(); i != directories.end(); ++i) {
+			delete i->second;
 		}
+		directories.clear();
 		ctrlQueue.DeleteAllItems();
 
 		ctrlQueue.saveHeaderOrder(SettingsManager::QUEUEFRAME_ORDER, 
@@ -1262,6 +1191,17 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bH
 	return 0;
 }
 
+void QueueFrame::onTab() {
+	if(showTree) {
+		HWND focus = ::GetFocus();
+		if(focus == ctrlDirs.m_hWnd) {
+			ctrlQueue.SetFocus();
+		} else if(focus == ctrlQueue.m_hWnd) {
+			ctrlDirs.SetFocus();
+		}
+	}
+}
+
 void QueueFrame::updateQueue() {
 	ctrlQueue.DeleteAllItems();
 	pair<DirectoryIter, DirectoryIter> i;
@@ -1276,12 +1216,21 @@ void QueueFrame::updateQueue() {
 	for(DirectoryIter j = i.first; j != i.second; ++j) {
 		QueueItemInfo* ii = j->second;
 		ii->update();
-		ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(ii->getTarget()));
+		ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
 	}
 	ctrlQueue.resort();
 	ctrlQueue.SetRedraw(TRUE);
 	curDir = getSelectedDir();
 	updateStatus();
+}
+
+void QueueFrame::clearTree(HTREEITEM item) {
+	HTREEITEM next = ctrlDirs.GetChildItem(item);
+	while(next != NULL) {
+		clearTree(next);
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+	delete (string*)ctrlDirs.GetItemData(item);
 }
 
 // Put it here to avoid a copy for each recursion...
@@ -1370,7 +1319,7 @@ LRESULT QueueFrame::onCopy(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 
 LRESULT QueueFrame::onNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	HTREEITEM ht = ctrlDirs.GetSelectedItem();
-	string name = Text::fromT(getDir(ht));
+	string name = getDir(ht);
 	if(QueueManager::getInstance()->hasNotification(name))
 		QueueManager::getInstance()->removeNotification(name);
 	else

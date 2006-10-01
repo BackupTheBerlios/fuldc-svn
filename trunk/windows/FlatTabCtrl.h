@@ -49,7 +49,7 @@ public:
 
 	enum { FT_EXTRA_SPACE = 30 };
 
-	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), moving(NULL), inTab(false) { 
+	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), moving(NULL), inTab(false) {
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
 	}
 	virtual ~FlatTabCtrlImpl() { }
@@ -608,7 +608,7 @@ private:
 			dc.GetTextExtent(name.c_str(), len, &size);
 			dc.SelectFont(WinUtil::boldFont);
 			dc.GetTextExtent(name.c_str(), len, &boldSize);
-			dc.SelectFont(f);		
+			dc.SelectFont(f);
 			::ReleaseDC(hWnd, dc);
 			return true;
 		}
@@ -764,7 +764,7 @@ private:
 		if( tab->dirty && !BOOLSETTING(BLEND_TABS) ) {
 			HFONT f = dc.SelectFont(WinUtil::boldFont);
 			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->name.length());
-			dc.SelectFont(f);		
+			dc.SelectFont(f);
 		} else {
 			dc.TextOut(pos + spacing, ypos + 3, tab->name.c_str(), tab->name.length());
 		}

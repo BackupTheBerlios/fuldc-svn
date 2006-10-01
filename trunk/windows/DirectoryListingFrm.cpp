@@ -690,7 +690,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 				fileMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
 				fileMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
 			}
-			if(ii->type == ItemInfo::DIRECTORY && ii->type == ItemInfo::DIRECTORY && 
+			if(ii->type == ItemInfo::DIRECTORY && ii->type == ItemInfo::DIRECTORY &&
 			   ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
 			    fileMenu.AppendMenu(MF_SEPARATOR);
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
