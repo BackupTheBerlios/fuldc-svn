@@ -14,29 +14,31 @@ type="win32"
 
 /> 
 
-<description>The ultimate Direct Connect client.</description>
-  <dependency>
-    <dependentAssembly>
+<description>The ultimate Direct Connect client.</description> 
 
-      <assemblyIdentity 
+<dependency> 
 
-    type="win32" 
+<dependentAssembly> 
 
-    name="Microsoft.Windows.Common-Controls" 
+<assemblyIdentity 
 
-    version="6.0.0.0" 
+type="win32" 
 
-    processorArchitecture="X86" 
+name="Microsoft.Windows.Common-Controls" 
 
-    publicKeyToken="6595b64144ccf1df" 
+version="6.0.0.0" 
 
-    language="*" 
+processorArchitecture="X86" 
 
-/>
+publicKeyToken="6595b64144ccf1df" 
 
-    </dependentAssembly>
+language="*" 
 
-  </dependency> 
+/> 
+
+</dependentAssembly> 
+
+</dependency> 
 
 </assembly> 
 

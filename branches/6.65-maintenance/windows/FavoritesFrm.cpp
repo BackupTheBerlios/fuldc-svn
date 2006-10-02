@@ -364,3 +364,11 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	ctrlConnect.MoveWindow(rc);
 
 }
+
+void FavoriteHubsFrame::on(FavoriteAdded, const FavoriteHubEntry* e) throw() { 
+	addEntry(e, ctrlHubs.GetItemCount()); 
+	for(int i = 0; i < ctrlHubs.GetItemCount(); ++i) {
+		ctrlHubs.SetItemState(i, 0, LVIS_SELECTED | LVIS_FOCUSED);  
+	}
+	ctrlHubs.SetItemState(ctrlHubs.GetItemCount()-1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);  
+}

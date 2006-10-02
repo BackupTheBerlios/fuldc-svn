@@ -42,23 +42,23 @@ WebShortcuts::~WebShortcuts() {
 	SettingsManager::getInstance()->removeListener(this);
 }
 
-void WebShortcuts::load(SimpleXML* xml) {
-	xml->resetCurrentChild();
+void WebShortcuts::load(SimpleXML& xml) {
+	xml.resetCurrentChild();
 
-	if(xml->findChild("WebShortcuts")){
-		xml->stepIn();
+	if(xml.findChild("WebShortcuts")){
+		xml.stepIn();
 		WebShortcut* tmp = NULL;
 
 		clear();
 
-		while(xml->findChild("WebShortcut")){
+		while(xml.findChild("WebShortcut")){
 			tmp = new WebShortcut();
 
-			tmp->name  = Text::toT(xml->getChildAttrib("Name"));
-			tmp->key   = Text::toT(xml->getChildAttrib("Key"));
-			tmp->url   = Text::toT(xml->getChildAttrib("URL"));
+			tmp->name  = Text::toT(xml.getChildAttrib("Name"));
+			tmp->key   = Text::toT(xml.getChildAttrib("Key"));
+			tmp->url   = Text::toT(xml.getChildAttrib("URL"));
 
-			tmp->clean = xml->getBoolChildAttrib("Clean");
+			tmp->clean = xml.getBoolChildAttrib("Clean");
 
 			//upgrade old tvtome shortcuts to new www.tv.com
 			if(Util::stricmp(tmp->url, _T("http://www.tvtome.com/tvtome/servlet/Search?searchType=all&searchString=%s")) == 0 && tmp->key == _T("t")) {
@@ -69,23 +69,23 @@ void WebShortcuts::load(SimpleXML* xml) {
 			list.push_back(tmp);
 		}
 		
-		xml->stepOut();
+		xml.stepOut();
 	}
 }
 
-void WebShortcuts::save(SimpleXML* xml) {
-	xml->addTag("WebShortcuts");
-	xml->stepIn();
+void WebShortcuts::save(SimpleXML& xml) {
+	xml.addTag("WebShortcuts");
+	xml.stepIn();
 	for(WebShortcut::Iter i = list.begin(); i != list.end(); ++i){
-		xml->addTag("WebShortcut");
+		xml.addTag("WebShortcut");
 
-		xml->addChildAttrib("Name", Text::fromT((*i)->name));
-		xml->addChildAttrib("Key",	Text::fromT((*i)->key));
-		xml->addChildAttrib("URL",	Text::fromT((*i)->url));
+		xml.addChildAttrib("Name", Text::fromT((*i)->name));
+		xml.addChildAttrib("Key",	Text::fromT((*i)->key));
+		xml.addChildAttrib("URL",	Text::fromT((*i)->url));
 
-		xml->addChildAttrib("Clean", (*i)->clean);
+		xml.addChildAttrib("Clean", (*i)->clean);
 	}
-	xml->stepOut();
+	xml.stepOut();
 }
 
 WebShortcut* WebShortcuts::getShortcutByName(const tstring& name) {
@@ -132,9 +132,9 @@ void WebShortcuts::clear() {
 	list.clear();
 }
 
-void WebShortcuts::on(SettingsManagerListener::Save, SimpleXML* xml) {
+void WebShortcuts::on(SettingsManagerListener::Save, SimpleXML& xml) {
 	save(xml);
 }
-void WebShortcuts::on(SettingsManagerListener::Load, SimpleXML* xml) {
+void WebShortcuts::on(SettingsManagerListener::Load, SimpleXML& xml) {
 	load(xml);
 }

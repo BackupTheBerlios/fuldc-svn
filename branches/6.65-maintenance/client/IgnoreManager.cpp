@@ -87,38 +87,38 @@ void IgnoreManager::replacePatterns(const StringSet& patterns) {
 }
 
 
-void IgnoreManager::save(SimpleXML *aXml) {
+void IgnoreManager::save(SimpleXML& aXml) {
 	Lock l(cs);
 
-	aXml->addTag("IgnorePatterns");
-	aXml->stepIn();
+	aXml.addTag("IgnorePatterns");
+	aXml.stepIn();
 
 	for(StringSetIter i = patterns.begin(); i != patterns.end(); ++i) {
-		aXml->addTag("Pattern");
-		aXml->addChildAttrib("Match", *i);
+		aXml.addTag("Pattern");
+		aXml.addChildAttrib("Match", *i);
 	}
 
-	aXml->stepOut();
+	aXml.stepOut();
 }
 
-void IgnoreManager::load(SimpleXML* aXml) {
+void IgnoreManager::load(SimpleXML& aXml) {
 	Lock l(cs);
 
-	if(aXml->findChild("IgnorePatterns")) {
-		aXml->stepIn();
+	if(aXml.findChild("IgnorePatterns")) {
+		aXml.stepIn();
 		
-		while(aXml->findChild("Pattern")) {
-			ignore(aXml->getChildAttrib("Match"));
+		while(aXml.findChild("Pattern")) {
+			ignore(aXml.getChildAttrib("Match"));
 		}
 		
-		aXml->stepOut();
+		aXml.stepOut();
 	}
 }
 
-void IgnoreManager::on(SettingsManagerListener::Load, SimpleXML* aXml) {
+void IgnoreManager::on(SettingsManagerListener::Load, SimpleXML& aXml) {
 	load(aXml);
 }
 
-void IgnoreManager::on(SettingsManagerListener::Save, SimpleXML* aXml) {
+void IgnoreManager::on(SettingsManagerListener::Save, SimpleXML& aXml) {
 	save(aXml);
 }

@@ -126,7 +126,7 @@ private:
 	}
 
 	void addEntry(const FavoriteHubEntry* entry, int pos);
-	virtual void on(FavoriteAdded, const FavoriteHubEntry* e) throw() { addEntry(e, ctrlHubs.GetItemCount()); }
+	virtual void on(FavoriteAdded, const FavoriteHubEntry* e) throw();
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry* e) throw() { ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)e)); }
 };
 

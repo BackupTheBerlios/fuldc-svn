@@ -53,11 +53,11 @@ private:
 	StringSet patterns;
 	CriticalSection cs;
 
-	void load(SimpleXML *aXml);
-	void save(SimpleXML *aXml);
+	void load(SimpleXML& aXml);
+	void save(SimpleXML& aXml);
 
-	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw();
-	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw();
+	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw();
+	virtual void on(SettingsManagerListener::Save, SimpleXML& xml) throw();
 };
 
 #endif // IGNOREMANAGER_H

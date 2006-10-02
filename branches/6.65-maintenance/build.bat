@@ -6,7 +6,13 @@ set NET="devenv.exe"
 set OPTS=dcplusplus.sln /build release
 set CLEAN=dcplusplus.sln /clean release
 
-set RAR="%ProgramFiles%\Winrar\rar.exe"
+if exist "%ProgramFiles%\Winrar\rar.exe" (
+	set RAR="%ProgramFiles%\Winrar\rar.exe"
+)
+if exist "C:\Program Files (x86)\Winrar\rar.exe" (
+	set RAR="C:\Program Files (x86)\Winrar\rar.exe"
+)
+
 set RAROPS=a -r -idp -inul -m3 ..\fulDC.rar *.*
 set RARSRCOPS=a -r -idp -inul -m3 -x@exclude.txt fulDC-src.rar *.*
 
@@ -36,10 +42,12 @@ xcopy /Q /Y res\32bpp\*.* Temp\icons\32bpp\
 xcopy /Q /Y res\24bpp\*.* Temp\icons\24bpp\
 xcopy /Q /Y changelog.txt Temp\
 xcopy /Q /Y example.xml Temp\
+xcopy /Q /Y dcppboot.xml Temp\
 xcopy /Q /Y App\Dcplusplus.exe Temp\
 xcopy /Q /Y App\DCPlusPlus.pdb Temp\
 xcopy /Q /Y App\DCPlusPlus.chm Temp\
 xcopy /Q /Y GeoIPCountryWhois.csv Temp\
+xcopy /Q /Y "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\dbghelp.dll" Temp\
 xcopy /Q /Y "C:\Program Files\Microsoft Visual Studio 8\Common7\IDE\dbghelp.dll" Temp\
 
 del Temp\icons\dcplusplus.manifest

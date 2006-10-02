@@ -114,10 +114,12 @@ void TransfersManager::on(DownloadManagerListener::Starting, Download* aDownload
 			i->status = TransferInfo::STATUS_RUNNING;
 			i->pos = aDownload->getPos();
 			i->start = aDownload->getStartPos();
-			i->actual = aDownload->getActual();
+			i->actual = i->start + aDownload->getActual();
 			i->size = aDownload->getSize();
 			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(aDownload->getTarget());
 			i->columns[TransferInfo::COLUMN_STATUS] = TSTRING(DOWNLOAD_STARTING);
+			i->columns[TransferInfo::COLUMN_SIZE] = Text::toT(Util::formatBytes(i->size));
+			i->columns[TransferInfo::COLUMN_RATIO] = Text::toT(Util::toString(i->getRatio()));
 
 			tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
 			tstring ip = Text::toT(aDownload->getUserConnection()->getRemoteIp());
@@ -129,6 +131,8 @@ void TransfersManager::on(DownloadManagerListener::Starting, Download* aDownload
 			if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 				i->columns[TransferInfo::COLUMN_FILE] = _T("TTH: ") + i->columns[TransferInfo::COLUMN_FILE];
 			}
+
+			
 
 			ti = new TransferInfo(*i);
 		}
@@ -149,7 +153,7 @@ void TransfersManager::on(DownloadManagerListener::Tick, const Download::List& d
 		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(d->getUserConnection()->getUser(), true));
 		if(i != transfers.end()) {
 
-			i->actual = d->getActual();
+			i->actual = i->start + d->getActual();
 			i->pos = i->start + d->getTotal();
 			i->timeLeft = d->getSecondsLeft();
 			i->totalTimeLeft = d->getTotalSecondsLeft();
@@ -170,7 +174,18 @@ void TransfersManager::on(DownloadManagerListener::Tick, const Download::List& d
 				statusString += _T(" ");
 			}
 			statusString += buf;
+
 			i->columns[TransferInfo::COLUMN_STATUS] = statusString;
+			
+			if (i->status == TransferInfo::STATUS_RUNNING) {
+				i->columns[TransferInfo::COLUMN_SPEED] = Text::toT(Util::formatBytes(i->speed) + "/s");
+				i->columns[TransferInfo::COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(i->timeLeft));
+				i->columns[TransferInfo::COLUMN_TOTALTIMELEFT] = Text::toT(Util::formatSeconds(i->totalTimeLeft));
+			} else {
+				i->columns[TransferInfo::COLUMN_SPEED] = Util::emptyStringT;
+				i->columns[TransferInfo::COLUMN_TIMELEFT] = Util::emptyStringT;
+				i->columns[TransferInfo::COLUMN_TOTALTIMELEFT] = Util::emptyStringT;
+			}
 
 			//hopefully this won't cause any problems even though it's fired inside the lock
 			fire(TransfersManagerListener::Updated(), new TransferInfo(*i));
@@ -186,7 +201,7 @@ void TransfersManager::on(DownloadManagerListener::Failed, Download* aDownload, 
 		if(i != transfers.end()) {
 			i->columns[TransferInfo::COLUMN_STATUS] = TransferInfo::STATUS_WAITING;
 			i->pos = i->start;
-			i->columns[TransferInfo::COLUMN_STATUS] = Text::toT(aReason);
+			//i->columns[TransferInfo::COLUMN_STATUS] = Text::toT(aReason);
 			i->size = aDownload->getSize();
 			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(aDownload->getTarget());
 			if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
@@ -208,9 +223,9 @@ void TransfersManager::on(UploadManagerListener::Starting, Upload* aUpload) {
 		if(i != transfers.end()) {
 			i->filelist = aUpload->isSet(Download::FLAG_USER_LIST);
 			i->status = TransferInfo::STATUS_RUNNING;
-			i->pos = aUpload->getPos();
 			i->start = aUpload->getStartPos();
-			i->actual = aUpload->getActual();
+			i->actual = i->start + aUpload->getActual();
+			i->pos = i->start + aUpload->getPos();
 			i->size = aUpload->getSize();
 			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(aUpload->getLocalFileName());
 			i->columns[TransferInfo::COLUMN_STATUS] = TSTRING(DOWNLOAD_STARTING);
@@ -244,7 +259,7 @@ void TransfersManager::on(UploadManagerListener::Tick, const Upload::List& ul) {
 		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(u->getUserConnection()->getUser(), false));
 		if(i != transfers.end()) {
 
-			i->actual = u->getActual();
+			i->actual = i->start + u->getActual();
 			i->pos = i->start + u->getTotal();
 			i->timeLeft = u->getSecondsLeft();
 			i->speed = u->getRunningAverage();
@@ -262,6 +277,14 @@ void TransfersManager::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			}
 			statusString += buf;
 			i->columns[TransferInfo::COLUMN_STATUS] = statusString;
+
+			if (i->status == TransferInfo::STATUS_RUNNING) {
+				i->columns[TransferInfo::COLUMN_SPEED] = Text::toT(Util::formatBytes(i->speed) + "/s");
+				i->columns[TransferInfo::COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(i->timeLeft));
+			} else {
+				i->columns[TransferInfo::COLUMN_SPEED] = Util::emptyStringT;
+				i->columns[TransferInfo::COLUMN_TIMELEFT] = Util::emptyStringT;
+			}
 
 			//hopefully this won't cause any problems even though it's fired inside the lock
 			fire(TransfersManagerListener::Updated(), new TransferInfo(*i));

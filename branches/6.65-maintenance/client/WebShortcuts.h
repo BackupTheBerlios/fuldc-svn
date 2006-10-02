@@ -55,11 +55,11 @@ public:
 private:
 	void clear();
 
-	void load(SimpleXML* xml);
-	void save(SimpleXML* xml);
+	void load(SimpleXML& xml);
+	void save(SimpleXML& xml);
 
-	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw();
-	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw();
+	virtual void on(SettingsManagerListener::Save, SimpleXML& xml) throw();
+	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw();
 };
 
 #endif // _WEBSHORTCUTS_H

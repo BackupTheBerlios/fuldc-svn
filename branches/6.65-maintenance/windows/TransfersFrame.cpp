@@ -59,6 +59,9 @@ LRESULT TransfersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	
 	ctrlCategories.SetImageList(categories, LVSIL_SMALL);
+	ctrlCategories.SetBkColor(WinUtil::bgColor);
+	ctrlCategories.SetTextBkColor(WinUtil::bgColor);
+	ctrlCategories.SetTextColor(WinUtil::textColor);
 
 	CRect rc;
 	ctrlCategories.GetViewRect(&rc);
@@ -86,7 +89,7 @@ LRESULT TransfersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ctrlTransfers.setOwnerDraw(true);
 
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
-	ctrlTransfers.setSortColumn(COLUMN_USER);
+	ctrlTransfers.setSortColumn(COLUMN_STATUS);
 
 	openMenu.CreatePopupMenu();
 	openMenu.AppendMenu(MF_STRING, IDC_OPEN, CTSTRING(OPEN));
@@ -493,6 +496,9 @@ LRESULT TransfersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			}
 		}
 	}
+
+	ctrlTransfers.resort();
+	setDirty();
 
 	return 0;
 }

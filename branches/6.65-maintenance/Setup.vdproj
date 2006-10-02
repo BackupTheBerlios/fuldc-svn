@@ -183,6 +183,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A7FDD63ED7284040B71558F86D888AAB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A9B1C3A967EBCD7017507CD1BC0D7118"
         "OwnerKey" = "8:_C2E054C30D7E4DD6A9B3B3E846A63748"
         "MsmSig" = "8:_UNDEFINED"
@@ -966,6 +972,26 @@
             "TargetName" = "8:Search.ico"
             "Tag" = "8:"
             "Folder" = "8:_F4EDDF9F986D47728FE88A15AEAE5C98"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A7FDD63ED7284040B71558F86D888AAB"
+            {
+            "SourcePath" = "8:dcppboot.xml"
+            "TargetName" = "8:dcppboot.xml"
+            "Tag" = "8:"
+            "Folder" = "8:_759FDD88ECDA4CD38E5633B20B4E3458"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"

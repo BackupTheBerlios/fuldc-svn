@@ -72,11 +72,12 @@ extern "C" void bz_internal_error(int errcode) {
 #if defined(_WIN32) && _MSC_VER == 1400
 void WINAPI invalidParameterHandler(const wchar_t*, const wchar_t*, const wchar_t*, unsigned int, uintptr_t) {
 	//do nothing, this exist because vs2k5 crt needs it not to crash on errors.
+	dcassert(false);
 }
 #endif
 
 void Util::initialize() {
-	setlocale(LC_ALL, "");
+	//setlocale(LC_ALL, "");
 
 	Text::initialize();
 
@@ -745,7 +746,7 @@ wstring Util::formatTime(const wstring& msg, const time_t t){
 		if(!wcsftime(buf, 255, msg.c_str(), loc)) {
 			return Util::emptyStringW;
 		}
-
+		
 		return wstring(buf);
 	}
 
