@@ -63,9 +63,7 @@ LRESULT TransfersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ctrlCategories.SetTextBkColor(WinUtil::bgColor);
 	ctrlCategories.SetTextColor(WinUtil::textColor);
 
-	CRect rc;
-	ctrlCategories.GetViewRect(&rc);
-	ctrlCategories.InsertColumn(0, _T("dummy"), LVCFMT_LEFT, rc.Width());
+	ctrlCategories.InsertColumn(0, _T("dummy"), LVCFMT_LEFT, 100);
 	ctrlCategories.insert(0, TSTRING(ALL), 0);
 	ctrlCategories.insert(1, TSTRING(DOWNLOADS), 1);
 	ctrlCategories.insert(2, TSTRING(UPLOADS), 2);

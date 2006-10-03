@@ -95,8 +95,10 @@ void TransfersManager::on(ConnectionManagerListener::Failed, ConnectionQueueItem
 		Lock l(cs);
 		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aCqi->getUser(), aCqi->getDownload()));
 		if(i != transfers.end()) {
-			i->columns[TransferInfo::COLUMN_STATUS] = Text::toT(aReason);
-			ti = new TransferInfo(*i);
+			if(!i->transferFailed) {
+				i->columns[TransferInfo::COLUMN_STATUS] = Text::toT(aReason);
+				ti = new TransferInfo(*i);
+			}
 		}
 	}
 
@@ -110,6 +112,7 @@ void TransfersManager::on(DownloadManagerListener::Starting, Download* aDownload
 		Lock l(cs);
 		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aDownload->getUserConnection()->getUser(), true));
 		if(i != transfers.end()) {
+			i->transferFailed = false;
 			i->filelist = aDownload->isSet(Download::FLAG_USER_LIST);
 			i->status = TransferInfo::STATUS_RUNNING;
 			i->pos = aDownload->getPos();
@@ -199,9 +202,10 @@ void TransfersManager::on(DownloadManagerListener::Failed, Download* aDownload, 
 		Lock l(cs);
 		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aDownload->getUserConnection()->getUser(), true));
 		if(i != transfers.end()) {
-			i->columns[TransferInfo::COLUMN_STATUS] = TransferInfo::STATUS_WAITING;
+			i->status = TransferInfo::STATUS_WAITING;
+			i->transferFailed = true;
 			i->pos = i->start;
-			//i->columns[TransferInfo::COLUMN_STATUS] = Text::toT(aReason);
+			i->columns[TransferInfo::COLUMN_STATUS] = Text::toT(aReason);
 			i->size = aDownload->getSize();
 			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(aDownload->getTarget());
 			if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {

@@ -41,7 +41,7 @@ string SearchResult::toSR(const Client& c) const {
 	string tmp;
 	tmp.reserve(128);
 	tmp.append("$SR ", 4);
-	tmp.append(Text::utf8ToAcp(user->getNick()));
+	tmp.append(Text::utf8ToAcp(c.getMe()->getNick()));
 	tmp.append(1, ' ');
 	string acpFile = Text::utf8ToAcp(file);
 	if(type == TYPE_FILE) {

@@ -125,6 +125,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(state != STATE_CONNECTED) {
 			return;
 		}
+		//there's a race condition between searches and when me gets set
+		if(!me) {
+			return;
+		}
 		string::size_type i = 0;
 		string::size_type j = param.find(' ', i);
 		if(j == string::npos || i == j)
