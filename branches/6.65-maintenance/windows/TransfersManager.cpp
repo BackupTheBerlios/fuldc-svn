@@ -110,22 +110,26 @@ void TransfersManager::on(DownloadManagerListener::Starting, Download* aDownload
 	TransferInfo* ti = NULL;
 	{
 		Lock l(cs);
-		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aDownload->getUserConnection()->getUser(), true));
+		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aDownload->getUserConnection().getUser(), true));
 		if(i != transfers.end()) {
 			i->transferFailed = false;
 			i->filelist = aDownload->isSet(Download::FLAG_USER_LIST);
 			i->status = TransferInfo::STATUS_RUNNING;
-			i->pos = aDownload->getPos();
 			i->start = aDownload->getStartPos();
+			i->pos = i->start + aDownload->getPos();
 			i->actual = i->start + aDownload->getActual();
 			i->size = aDownload->getSize();
-			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(aDownload->getTarget());
+			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(aDownload->getTargetFileName());
+			i->columns[TransferInfo::COLUMN_PATH] = Text::toT(Util::getFilePath(aDownload->getTarget()));
 			i->columns[TransferInfo::COLUMN_STATUS] = TSTRING(DOWNLOAD_STARTING);
 			i->columns[TransferInfo::COLUMN_SIZE] = Text::toT(Util::formatBytes(i->size));
 			i->columns[TransferInfo::COLUMN_RATIO] = Text::toT(Util::toString(i->getRatio()));
+			i->columns[TransferInfo::COLUMN_SIZE] = Text::toT(Util::formatBytes(i->size));
+			if(i->actual > 0)
+				i->columns[TransferInfo::COLUMN_RATIO] = Util::toStringW((double)i->actual / i->pos);
 
-			tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
-			tstring ip = Text::toT(aDownload->getUserConnection()->getRemoteIp());
+			tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection().getRemoteIp()));
+			tstring ip = Text::toT(aDownload->getUserConnection().getRemoteIp());
 			if(country.empty()) {
 				i->columns[TransferInfo::COLUMN_IP] = ip;
 			} else {
@@ -153,11 +157,11 @@ void TransfersManager::on(DownloadManagerListener::Tick, const Download::List& d
 	for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
 		Download* d = *j;
 
-		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(d->getUserConnection()->getUser(), true));
+		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(d->getUserConnection().getUser(), true));
 		if(i != transfers.end()) {
 
 			i->actual = i->start + d->getActual();
-			i->pos = i->start + d->getTotal();
+			i->pos = i->start + d->getPos();
 			i->timeLeft = d->getSecondsLeft();
 			i->totalTimeLeft = d->getTotalSecondsLeft();
 			i->speed = d->getRunningAverage();
@@ -184,10 +188,13 @@ void TransfersManager::on(DownloadManagerListener::Tick, const Download::List& d
 				i->columns[TransferInfo::COLUMN_SPEED] = Text::toT(Util::formatBytes(i->speed) + "/s");
 				i->columns[TransferInfo::COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(i->timeLeft));
 				i->columns[TransferInfo::COLUMN_TOTALTIMELEFT] = Text::toT(Util::formatSeconds(i->totalTimeLeft));
+				if(i->actual > 0)
+					i->columns[TransferInfo::COLUMN_RATIO] = Util::toStringW((double)i->actual / i->pos);
 			} else {
 				i->columns[TransferInfo::COLUMN_SPEED] = Util::emptyStringT;
 				i->columns[TransferInfo::COLUMN_TIMELEFT] = Util::emptyStringT;
 				i->columns[TransferInfo::COLUMN_TOTALTIMELEFT] = Util::emptyStringT;
+				i->columns[TransferInfo::COLUMN_RATIO] = Util::emptyStringT;
 			}
 
 			//hopefully this won't cause any problems even though it's fired inside the lock
@@ -200,7 +207,7 @@ void TransfersManager::on(DownloadManagerListener::Failed, Download* aDownload, 
 	TransferInfo* ti = NULL;
 	{
 		Lock l(cs);
-		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aDownload->getUserConnection()->getUser(), true));
+		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aDownload->getUserConnection().getUser(), true));
 		if(i != transfers.end()) {
 			i->status = TransferInfo::STATUS_WAITING;
 			i->transferFailed = true;
@@ -223,7 +230,7 @@ void TransfersManager::on(UploadManagerListener::Starting, Upload* aUpload) {
 	TransferInfo* ti = NULL;
 	{
 		Lock l(cs);
-		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aUpload->getUserConnection()->getUser(), false));
+		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aUpload->getUserConnection().getUser(), false));
 		if(i != transfers.end()) {
 			i->filelist = aUpload->isSet(Download::FLAG_USER_LIST);
 			i->status = TransferInfo::STATUS_RUNNING;
@@ -231,11 +238,15 @@ void TransfersManager::on(UploadManagerListener::Starting, Upload* aUpload) {
 			i->actual = i->start + aUpload->getActual();
 			i->pos = i->start + aUpload->getPos();
 			i->size = aUpload->getSize();
-			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(aUpload->getLocalFileName());
-			i->columns[TransferInfo::COLUMN_STATUS] = TSTRING(DOWNLOAD_STARTING);
+			i->columns[TransferInfo::COLUMN_FILE] = Text::toT(Util::getFileName(aUpload->getSourceFile()));
+			i->columns[TransferInfo::COLUMN_PATH] = Text::toT(Util::getFilePath(aUpload->getSourceFile()));
+			i->columns[TransferInfo::COLUMN_STATUS] = TSTRING(UPLOAD_STARTING);
+			i->columns[TransferInfo::COLUMN_SIZE] = Text::toT(Util::formatBytes(i->size));
+			if(i->actual > 0)
+				i->columns[TransferInfo::COLUMN_RATIO] = Util::toStringW((double)i->actual / i->pos);
 
-			tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp()));
-			tstring ip = Text::toT(aUpload->getUserConnection()->getRemoteIp());
+			tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection().getRemoteIp()));
+			tstring ip = Text::toT(aUpload->getUserConnection().getRemoteIp());
 			if(country.empty()) {
 				i->columns[TransferInfo::COLUMN_IP] = ip;
 			} else {
@@ -254,13 +265,13 @@ void TransfersManager::on(UploadManagerListener::Starting, Upload* aUpload) {
 }
 
 void TransfersManager::on(UploadManagerListener::Tick, const Upload::List& ul) {
-	AutoArray<TCHAR> buf(TSTRING(DOWNLOADED_BYTES).size() + 64);
+	AutoArray<TCHAR> buf(TSTRING(UPLOADED_BYTES).size() + 64);
 	Lock l(cs);
 
 	for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
 		Upload* u = *j;
 
-		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(u->getUserConnection()->getUser(), false));
+		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(u->getUserConnection().getUser(), false));
 		if(i != transfers.end()) {
 
 			i->actual = i->start + u->getActual();
@@ -268,7 +279,7 @@ void TransfersManager::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			i->timeLeft = u->getSecondsLeft();
 			i->speed = u->getRunningAverage();
 
-			_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
+			_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
 				(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
 
 			tstring statusString;
@@ -285,9 +296,12 @@ void TransfersManager::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			if (i->status == TransferInfo::STATUS_RUNNING) {
 				i->columns[TransferInfo::COLUMN_SPEED] = Text::toT(Util::formatBytes(i->speed) + "/s");
 				i->columns[TransferInfo::COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(i->timeLeft));
+				if(i->actual)
+					i->columns[TransferInfo::COLUMN_RATIO] = Util::toStringW((double)i->actual / i->pos);
 			} else {
 				i->columns[TransferInfo::COLUMN_SPEED] = Util::emptyStringT;
 				i->columns[TransferInfo::COLUMN_TIMELEFT] = Util::emptyStringT;
+				i->columns[TransferInfo::COLUMN_RATIO] = Util::emptyStringT;
 			}
 
 			//hopefully this won't cause any problems even though it's fired inside the lock
@@ -300,7 +314,7 @@ void TransfersManager::onTransferComplete(Transfer* aTransfer, bool isDownload) 
 	TransferInfo* ti = NULL;
 	{
 		Lock l(cs);
-		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aTransfer->getUserConnection()->getUser(), isDownload));
+		TransferIter i = find_if(transfers.begin(), transfers.end(), CompareTransferInfo(aTransfer->getUserConnection().getUser(), isDownload));
 		if(i != transfers.end()) {
 			i->status = TransferInfo::STATUS_WAITING;
 			i->pos = 0;

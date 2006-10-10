@@ -107,13 +107,11 @@ public:
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
 	void unlockQueue() throw() { cs.leave(); }
 
-	Download* getDownload(User::Ptr& aUser, bool supportsTrees) throw();
+	Download* getDownload(UserConnection& aSource, bool supportsTrees) throw();
 	void putDownload(Download* aDownload, bool finished) throw();
 
-	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {
-		Lock l(cs);
-		return (userQueue.getNext(aUser, minPrio) != NULL);
-	}
+	/** @return The highest priority download the user has, PAUSED may also mean no downloads */
+	QueueItem::Priority hasDownload(const User::Ptr& aUser) throw();
 
 	int countOnlineSources(const string& aTarget);
 
@@ -149,7 +147,7 @@ public:
 
 	int changePriority(const string& /*search*/, int /*priority*/);
 	void SearchAlternates(const string /*path*/);
-	u_int64_t getTotalSize(const string & path);
+	uint64_t getTotalSize(const string & path);
 	int64_t getQueueSize();
 
 private:
@@ -161,11 +159,11 @@ private:
 	void onTimerSearch();
 	void checkNotify();
 
-	typedef map<string, u_int64_t> StringInt64Map;
+	typedef map<string, uint64_t> StringInt64Map;
 	typedef StringInt64Map::iterator StringInt64Iter;
 	StringInt64Map totalSizeMap;
 
-	void updateTotalSize(const string & path, const u_int64_t& size, bool add = true);
+	void updateTotalSize(const string & path, const uint64_t& size, bool add = true);
 	
 	time_t lastSearchAlternates;
 	
@@ -252,7 +250,6 @@ private:
 	/** Add a source to an existing queue item */
 	bool addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType addBad) throw(QueueException, FileException);
 
-	int matchFiles(const DirectoryListing::Directory* dir) throw();
 	void processList(const string& name, User::Ptr& user, int flags);
 
 	void load(const SimpleXML& aXml);

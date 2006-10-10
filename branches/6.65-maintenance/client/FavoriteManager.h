@@ -115,10 +115,10 @@ public:
 	GETSET(bool, showUserlist, ShowUserlist);
 	GETSET(bool, logMainChat, LogMainChat);
 
-	GETSET(u_int16_t, bottom, Bottom);
-	GETSET(u_int16_t, top, Top);
-	GETSET(u_int16_t, left, Left);
-	GETSET(u_int16_t, right, Right);
+	GETSET(uint16_t, bottom, Bottom);
+	GETSET(uint16_t, top, Top);
+	GETSET(uint16_t, left, Left);
+	GETSET(uint16_t, right, Right);
 
 
 private:
@@ -263,7 +263,7 @@ private:
 	void loadXmlList(const string& xml);
 
 	// HttpConnectionListener
-	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw();
+	virtual void on(Data, HttpConnection*, const uint8_t*, size_t) throw();
 	virtual void on(Failed, HttpConnection*, const string&) throw();
 	virtual void on(Complete, HttpConnection*, const string&) throw();
 	virtual void on(Redirected, HttpConnection*, const string&) throw();

@@ -552,8 +552,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug64|x64"
-			OutputDirectory="vc7\$(ConfigurationName)"
-			IntermediateDirectory="vc7\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -616,8 +616,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="ws2_32.lib htmlhelp.lib pdh.lib winmm.lib uxtheme.lib"
-				OutputFile=".\App/DCPlusPlus.exe"
+				AdditionalDependencies="libcpmt.lib ws2_32.lib htmlhelp.lib pdh.lib winmm.lib uxtheme.lib"
+				OutputFile=".\App64/DCPlusPlus64.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateManifest="false"

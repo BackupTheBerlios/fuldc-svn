@@ -132,16 +132,18 @@ private:
 
 	string cachedIp;
 
-	Socket s;
+	Socket udp;
 
 	friend class Singleton<ClientManager>;
-	ClientManager() { 
-		TimerManager::getInstance()->addListener(this); 
-	};
+	ClientManager() {
+		TimerManager::getInstance()->addListener(this);
+	}
 
 	void updateCachedIp();
 
-	virtual ~ClientManager() throw() { TimerManager::getInstance()->removeListener(this); };
+	virtual ~ClientManager() throw() {
+		TimerManager::getInstance()->removeListener(this);
+	}
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
@@ -149,9 +151,9 @@ private:
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
-	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
+	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize,
 		int aFileType, const string& aString) throw();
-	
+
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, time_t aTick) throw();
 };

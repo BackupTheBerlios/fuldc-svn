@@ -489,7 +489,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == REMOVE_POPUP){
 		PopupManager::getInstance()->AutoRemove();
 	} else if(wParam == START_TIMER) {
-		auto_ptr<pair<u_int32_t, tstring> > msg(reinterpret_cast<pair<u_int32_t, tstring>* > (lParam));
+		auto_ptr<pair<uint32_t, tstring> > msg(reinterpret_cast<pair<uint32_t, tstring>* > (lParam));
 		timerTime = msg->first;
 		timerMsg = msg->second;
 	} else if(wParam == STOP_TIMER) {
@@ -1000,9 +1000,9 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		nid.hWnd = m_hWnd;
 		nid.uID = 0;
 		nid.uFlags = NIF_TIP;
-		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" +
+		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getRunningAverage()) + "/s (" +
 			Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")\r\nU: " +
-			Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()) + "/s (" +
+			Util::formatBytes(UploadManager::getInstance()->getRunningAverage()) + "/s (" +
 			Util::toString(UploadManager::getInstance()->getUploadCount()) + ")").c_str(), 64);
 
 		::Shell_NotifyIcon(NIM_MODIFY, &nid);
@@ -1100,7 +1100,7 @@ void MainFrame::on(TimerManagerListener::Second, time_t aTick) throw() {
 	}
 }
 
-void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
+void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw() {
 	versionInfo += string((const char*)buf, len);
 }
 

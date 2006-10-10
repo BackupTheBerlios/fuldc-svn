@@ -70,10 +70,11 @@
 
 // Use maps if hash_maps aren't available
 #ifdef HAVE_HASH
-# ifdef HAVE_STLPORT
+# ifdef _STLPORT_VERSION
 #  define HASH_SET_X(key, hfunc, eq, order) hash_set<key, hfunc, eq >
 #  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
-#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
+// STLPort 4.6.2 hash_multimap buggy
+#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) multimap<key, type, order > 
 # elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #  define HASH_SET_X(key, hfunc, eq, order) hash_set<key, hfunc, eq >
 #  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
@@ -88,11 +89,11 @@
 
 # define HASH_SET hash_set
 # define HASH_MAP hash_map
-# define HASH_MULTIMAP hash_multimap
+# define HASH_MULTIMAP multimap
 
 #else // HAVE_HASH
 
-#define HASH_SET_X(key, hfunc, eq, order)
+# define HASH_SET_X(key, hfunc, eq, order)
 # define HASH_SET set
 # define HASH_MAP map
 # define HASH_MAP_X(key, type, hfunc, eq, order) map<key, type, order >
@@ -101,9 +102,36 @@
 
 #endif // HAVE_HASH
 
-
-using namespace _STL;
+#ifdef _STLPORT_VERSION
+using namespace std;
 #include <hash_map>
 #include <hash_set>
+
+#elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
+#include <ext/hash_map>
+#include <ext/hash_set>
+#include <ext/functional>
+using namespace std;
+using namespace __gnu_cxx;
+
+// GNU C++ library doesn't have hash(std::string) or hash(long long int)
+namespace __gnu_cxx {
+	template<> struct hash<std::string> {
+		size_t operator()(const std::string& x) const
+			{ return hash<const char*>()(x.c_str()); }
+	};
+	template<> struct hash<long long int> {
+		size_t operator()(long long int x) const { return x; }
+	};
+}
+#else // __GLIBCPP__
+
+#include <hash_map>
+#include <hash_set>
+
+using namespace std;
+using namespace stdext;
+
+#endif // __GLIBCPP__
 
 #endif // !defined(STDINC_H)

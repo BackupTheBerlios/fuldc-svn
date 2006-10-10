@@ -45,7 +45,7 @@ SocketException::SocketException(int aError) throw() : Exception(errorToString(a
 
 Socket::Stats Socket::stats = { 0, 0 };
 
-static const u_int32_t SOCKS_TIMEOUT = 30000;
+static const uint32_t SOCKS_TIMEOUT = 30000;
 
 string SocketException::errorToString(int aError) throw() {
 	string msg = Util::translateError(aError);
@@ -141,7 +141,7 @@ namespace {
 	inline time_t timeLeft(time_t start, time_t timeout) {
 		if(timeout == 0) {
 			return 0;
-		}			
+		}
 		time_t now = GET_TICK();
 		if(start + timeout < now)
 			throw SocketException(STRING(CONNECTION_TIMEOUT));
@@ -149,7 +149,7 @@ namespace {
 	}
 }
 
-void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) throw(SocketException) {
+void Socket::socksConnect(const string& aAddr, short aPort, uint32_t timeout) throw(SocketException) {
 
 	if(SETTING(SOCKS_SERVER).empty() || SETTING(SOCKS_PORT) == 0) {
 		throw SocketException(STRING(SOCKS_FAILED));
@@ -168,7 +168,7 @@ void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) t
 
 	socksAuth(timeLeft(start, timeout));
 
-	vector<u_int8_t> connStr;
+	vector<uint8_t> connStr;
 
 	// Authenticated, let's get on with it...
 	connStr.push_back(5);			// SOCKSv5
@@ -177,17 +177,17 @@ void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) t
 
 	if(BOOLSETTING(SOCKS_RESOLVE)) {
 		connStr.push_back(3);		// Address type: domain name
-		connStr.push_back((u_int8_t)aAddr.size());
+		connStr.push_back((uint8_t)aAddr.size());
 		connStr.insert(connStr.end(), aAddr.begin(), aAddr.end());
 	} else {
 		connStr.push_back(1);		// Address type: IPv4;
 		unsigned long addr = inet_addr(resolve(aAddr).c_str());
-		u_int8_t* paddr = (u_int8_t*)&addr;
+		uint8_t* paddr = (uint8_t*)&addr;
 		connStr.insert(connStr.end(), paddr, paddr+4);
 	}
 
-	u_int16_t port = htons(aPort);
-	u_int8_t* pport = (u_int8_t*)&port;
+	uint16_t port = htons(aPort);
+	uint8_t* pport = (uint8_t*)&port;
 	connStr.push_back(pport[0]);
 	connStr.push_back(pport[1]);
 
@@ -214,7 +214,7 @@ void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) t
 }
 
 void Socket::socksAuth(time_t timeout) throw(SocketException) {
-	vector<u_int8_t> connStr;
+	vector<uint8_t> connStr;
 
 	time_t start = GET_TICK();
 
@@ -251,9 +251,9 @@ void Socket::socksAuth(time_t timeout) throw(SocketException) {
 		connStr.clear();
 		// Now we send the username / pw...
 		connStr.push_back(1);
-		connStr.push_back((u_int8_t)SETTING(SOCKS_USER).length());
+		connStr.push_back((uint8_t)SETTING(SOCKS_USER).length());
 		connStr.insert(connStr.end(), SETTING(SOCKS_USER).begin(), SETTING(SOCKS_USER).end());
-		connStr.push_back((u_int8_t)SETTING(SOCKS_PASSWORD).length());
+		connStr.push_back((uint8_t)SETTING(SOCKS_PASSWORD).length());
 		connStr.insert(connStr.end(), SETTING(SOCKS_PASSWORD).begin(), SETTING(SOCKS_PASSWORD).end());
 
 		writeAll(&connStr[0], connStr.size(), timeLeft(start, timeout));
@@ -313,7 +313,7 @@ int Socket::read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException)
 }
 
 int Socket::readAll(void* aBuffer, int aBufLen, time_t timeout) throw(SocketException) {
-	u_int8_t* buf = (u_int8_t*)aBuffer;
+	uint8_t* buf = (uint8_t*)aBuffer;
 	int i = 0;
 	while(i < aBufLen) {
 		int j = read(buf + i, aBufLen - i);
@@ -332,7 +332,7 @@ int Socket::readAll(void* aBuffer, int aBufLen, time_t timeout) throw(SocketExce
 }
 
 void Socket::writeAll(const void* aBuffer, int aLen, time_t timeout) throw(SocketException) {
-	const u_int8_t* buf = (const u_int8_t*)aBuffer;
+	const uint8_t* buf = (const uint8_t*)aBuffer;
 	int pos = 0;
 	// No use sending more than this at a time...
 	int sendSize = getSocketOptInt(SO_SNDBUF);
@@ -367,7 +367,7 @@ void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int 
 	if(aLen <= 0)
 		return;
 
-	u_int8_t* buf = (u_int8_t*)aBuffer;
+	uint8_t* buf = (uint8_t*)aBuffer;
 	if(sock == INVALID_SOCKET) {
 		create(TYPE_UDP);
 		setSocketOpt(SO_SNDTIMEO, 250);
@@ -394,7 +394,7 @@ void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int 
 
 		string s = BOOLSETTING(SOCKS_RESOLVE) ? resolve(ip) : ip;
 
-		vector<u_int8_t> connStr;
+		vector<uint8_t> connStr;
 
 		connStr.push_back(0);		// Reserved
 		connStr.push_back(0);		// Reserved
@@ -402,12 +402,12 @@ void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int 
 
 		if(BOOLSETTING(SOCKS_RESOLVE)) {
 			connStr.push_back(3);
-			connStr.push_back((u_int8_t)s.size());
+			connStr.push_back((uint8_t)s.size());
 			connStr.insert(connStr.end(), aAddr.begin(), aAddr.end());
 		} else {
 			connStr.push_back(1);		// Address type: IPv4;
 			unsigned long addr = inet_addr(resolve(aAddr).c_str());
-			u_int8_t* paddr = (u_int8_t*)&addr;
+			uint8_t* paddr = (uint8_t*)&addr;
 			connStr.insert(connStr.end(), paddr, paddr+4);
 		}
 
@@ -504,7 +504,7 @@ string Socket::resolve(const string& aDns) {
 		if (host == NULL) {
 			return Util::emptyString;
 		}
-		sock_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
+		sock_addr.sin_addr.s_addr = *((uint32_t*)host->h_addr);
 		return inet_ntoa(sock_addr.sin_addr);
 	} else {
 		return aDns;
@@ -540,7 +540,7 @@ void Socket::socksUpdated() {
 			connStr[2] = 0;			// Reserved
 			connStr[3] = 1;			// Address type: IPv4;
 			*((long*)(&connStr[4])) = 0;		// No specific outgoing UDP address
-			*((u_int16_t*)(&connStr[8])) = 0;	// No specific port...
+			*((uint16_t*)(&connStr[8])) = 0;	// No specific port...
 
 			s.writeAll(connStr, 10, SOCKS_TIMEOUT);
 
@@ -554,7 +554,7 @@ void Socket::socksUpdated() {
 				return;
 			}
 
-			udpPort = (short)ntohs(*((u_int16_t*)(&connStr[8])));
+			udpPort = (short)ntohs(*((uint16_t*)(&connStr[8])));
 
 			in_addr serv_addr;
 

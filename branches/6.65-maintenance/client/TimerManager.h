@@ -57,27 +57,24 @@ public:
 		return (time_t)time(NULL);
 	}
 	static time_t getTick() { 
-#if defined(_WIN32) || defined(_WIN64)
-		FILETIME ft;
-		GetSystemTimeAsFileTime(&ft);
-		//convert to millisecond resolution, don't care about nanoseconds but don't want
-		//the overflow with GetTickCount
-		return ( ((time_t)ft.dwHighDateTime) << 32 | (time_t)ft.dwLowDateTime ) / 10000; 
-#else
-		timeval tv2;
-		gettimeofday(&tv2, NULL);
-		return (u_int32_t)((tv2.tv_sec - tv.tv_sec) * 1000 ) + ( (tv2.tv_usec - tv.tv_usec) / 1000);
-#endif
+		DWORD d = GetTickCount();
+
+		if(d < lastTick) {
+			overflow += ((time_t)1<<32);
+		}
+
+		lastTick = d;
+
+		return overflow | d;
 	}
 private:
 
 	Semaphore s;
+	static time_t overflow;
+	static DWORD lastTick;
 
 	friend class Singleton<TimerManager>;
 	TimerManager() {
-#if !(defined(_WIN32) || defined(_WIN64))
-		gettimeofday(&tv, NULL);
-#endif
 	}
 
 	virtual ~TimerManager() throw() {
@@ -85,10 +82,6 @@ private:
 	}
 
 	virtual int run();
-
-#if !(defined(_WIN32) || defined(_WIN64))
-	static timeval tv;
-#endif
 };
 
 #define GET_TICK() TimerManager::getTick()

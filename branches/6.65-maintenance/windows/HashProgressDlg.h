@@ -101,7 +101,7 @@ public:
 		}
 		double diff = static_cast<double>(tick - startTime);
 		if(diff < 1000 || files == 0 || bytes == 0 || HashManager::getInstance()->isPaused()) {
-			SetDlgItemText(IDC_FILES_PER_HOUR, Text::toT("-.-- " + STRING(FILES_PER_HOUR) + ", " + Util::toString((u_int32_t)files) + " " + STRING(FILES_LEFT)).c_str());
+			SetDlgItemText(IDC_FILES_PER_HOUR, Text::toT("-.-- " + STRING(FILES_PER_HOUR) + ", " + Util::toString((uint32_t)files) + " " + STRING(FILES_LEFT)).c_str());
 			SetDlgItemText(IDC_HASH_SPEED, Text::toT("-.-- B/s, " + Util::formatBytes(bytes) + " " + STRING(LEFT)).c_str());
 			SetDlgItemText(IDC_TIME_LEFT, Text::toT("-:--:-- " + STRING(LEFT)).c_str());
 			if(!HashManager::getInstance()->isPaused())
@@ -110,7 +110,7 @@ public:
 			double filestat = (((double)(startFiles - files)) * 60 * 60 * 1000) / diff;
 			double speedStat = (((double)(startBytes - bytes)) * 1000) / diff;
 
-			SetDlgItemText(IDC_FILES_PER_HOUR, Text::toT(Util::toString(filestat) + " " + STRING(FILES_PER_HOUR) + ", " + Util::toString((u_int32_t)files) + " " + STRING(FILES_LEFT)).c_str());
+			SetDlgItemText(IDC_FILES_PER_HOUR, Text::toT(Util::toString(filestat) + " " + STRING(FILES_PER_HOUR) + ", " + Util::toString((uint32_t)files) + " " + STRING(FILES_LEFT)).c_str());
 			SetDlgItemText(IDC_HASH_SPEED, Text::toT(Util::formatBytes((int64_t)speedStat) + "/s, " + Util::formatBytes(bytes) + " " + STRING(LEFT)).c_str());
 
 			if(filestat == 0 || speedStat == 0) {

@@ -231,7 +231,7 @@ void FavoriteManager::onHttpFinished() throw() {
 
 	if(listType == TYPE_BZIP2) {
 		try {
-			CryptoManager::getInstance()->decodeBZ2((u_int8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
+			CryptoManager::getInstance()->decodeBZ2((uint8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
 		} catch(const CryptoException&) {
 			bzlist.clear();
 		}
@@ -477,10 +477,10 @@ void FavoriteManager::load(SimpleXML& aXml) {
 			e->setShowJoins(		aXml.getBoolChildAttrib("ShowJoins"));
 			e->setShowUserlist(		aXml.getBoolChildAttrib("ShowUserlist", BOOLSETTING(GET_USER_INFO)));
 			e->setLogMainChat(		aXml.getBoolChildAttrib("LogMainchat", BOOLSETTING(LOG_MAIN_CHAT)));
-			e->setBottom((u_int16_t)aXml.getIntChildAttrib("Bottom") );
-			e->setTop((u_int16_t)	aXml.getIntChildAttrib("Top"));
-			e->setRight((u_int16_t)	aXml.getIntChildAttrib("Right"));
-			e->setLeft((u_int16_t)	aXml.getIntChildAttrib("Left"));
+			e->setBottom((uint16_t)aXml.getIntChildAttrib("Bottom") );
+			e->setTop((uint16_t)	aXml.getIntChildAttrib("Top"));
+			e->setRight((uint16_t)	aXml.getIntChildAttrib("Right"));
+			e->setLeft((uint16_t)	aXml.getIntChildAttrib("Left"));
 			e->setHeaderOrder(		aXml.getChildAttrib("HeaderOrder", SETTING(HUBFRAME_ORDER)));
 			e->setHeaderWidths(		aXml.getChildAttrib("HeaderWidths", SETTING(HUBFRAME_WIDTHS)));
 			e->setHeaderVisible(	aXml.getChildAttrib("HeaderVisible", SETTING(HUBFRAME_VISIBLE)));
@@ -499,7 +499,7 @@ void FavoriteManager::load(SimpleXML& aXml) {
 			}
 			addFavoriteUser(u);
 			u->setFavoriteGrantSlot(aXml.getBoolChildAttrib("GrantSlot"));
-			u->setFavoriteLastSeen((u_int32_t)aXml.getIntChildAttrib("LastSeen"));
+			u->setFavoriteLastSeen((uint32_t)aXml.getIntChildAttrib("LastSeen"));
 			u->setUserDescription(aXml.getChildAttrib("UserDescription"));
 		}
 		aXml.stepOut();
@@ -637,7 +637,7 @@ UserCommandList FavoriteManager::getUserCommands(int ctx, const StringList& hubs
 }
 
 // HttpConnectionListener
-void FavoriteManager::on(Data, HttpConnection*, const u_int8_t* buf, size_t len) throw() {
+void FavoriteManager::on(Data, HttpConnection*, const uint8_t* buf, size_t len) throw() {
 	downloadBuf.append((const char*)buf, len);
 }
 

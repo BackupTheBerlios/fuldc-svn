@@ -95,7 +95,7 @@ public:
 	/**
 	 * Same as connect(), but through the SOCKS5 server
 	 */
-	void socksConnect(const string& aIp, short aPort, u_int32_t timeout = 0) throw(SocketException);
+	void socksConnect(const string& aIp, short aPort, uint32_t timeout = 0) throw(SocketException);
 
 	/**
 	 * Sends data, will block until all data has been sent or an exception occurs

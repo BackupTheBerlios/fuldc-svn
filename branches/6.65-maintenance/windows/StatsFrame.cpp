@@ -132,7 +132,7 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 0;
 }
 
-void StatsFrame::addTick(int64_t bdiff, int64_t tdiff, StatList& lst, AvgList& avg, int scroll) {
+void StatsFrame::addTick(int64_t bdiff, time_t tdiff, StatList& lst, AvgList& avg, int scroll) {
 	while((int)lst.size() > ((width / PIX_PER_SEC) + 1) ) {
 		lst.pop_back();
 	}

@@ -21,9 +21,8 @@
 
 #include "TimerManager.h"
 
-#if !(defined(_WIN32) || defined(_WIN64))
-timeval TimerManager::tv;
-#endif
+time_t TimerManager::overflow = 0;
+DWORD TimerManager::lastTick = 0;
 
 int TimerManager::run() {
 	int nextMin = 0;
@@ -31,7 +30,7 @@ int TimerManager::run() {
 	time_t x = getTick();
 	time_t nextTick = x + 1000;
 
-	while(!s.wait(nextTick > x ? static_cast<u_int32_t>(nextTick - x) : 0)) {
+	while(!s.wait(nextTick > x ? static_cast<uint32_t>(nextTick - x) : 0)) {
 		time_t z = getTick();
 		nextTick = z + 1000;
 		fire(TimerManagerListener::Second(), z);

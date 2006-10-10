@@ -23,6 +23,7 @@
 #include "UserConnection.h"
 #include "ClientManager.h"
 #include "LogManager.h"
+#include "ResourceManager.h"
 
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
@@ -37,17 +38,26 @@ const string UserConnection::FEATURE_TTHF = "TTHF";
 const string UserConnection::FILE_NOT_AVAILABLE = "File Not Available";
 const string UserConnection::COMMAND_NOT_SUPPORTED = "Client too old, not supported";
 
+const string Transfer::TYPE_FILE = "file";
+const string Transfer::TYPE_LIST = "list";
+const string Transfer::TYPE_TTHL = "tthl";
+
+const string Transfer::USER_LIST_NAME = "files.xml";
+const string Transfer::USER_LIST_NAME_BZ = "files.xml.bz2";
+
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
 
+Transfer::Transfer(UserConnection& conn) : start(0), lastTick(GET_TICK()), runningAverage(0),
+last(0), actual(0), pos(0), startPos(0), size(-1), userConnection(conn) { }
+
 void Transfer::updateRunningAverage() {
 	time_t tick = GET_TICK();
-	if(tick > lastTick) {
+	// Update 4 times/sec at most
+	if(tick > (lastTick + 250)) {
 		time_t diff = tick - lastTick;
 		int64_t tot = getTotal();
-		if(diff == 0) {
-			// No time passed, don't update runningAverage;
-		} else if( ((tick - getStart()) < AVG_PERIOD) ) {
+		if( ((tick - getStart()) < AVG_PERIOD) ) {
 			runningAverage = getAverageSpeed();
 		} else {
 			int64_t bdiff = tot - last;
@@ -62,6 +72,26 @@ void Transfer::updateRunningAverage() {
 		last = tot;
 	}
 	lastTick = tick;
+}
+
+void Transfer::getParams(const UserConnection& aSource, StringMap& params) {
+	params["userNI"] = aSource.getUser()->getNick();
+	params["userI4"] = aSource.getRemoteIp();
+	params["hub"] = aSource.getUser()->getClientName();
+	params["hubURL"] = aSource.getUser()->getClientUrl();
+	params["fileSI"] = Util::toString(getSize());
+	params["fileSIshort"] = Util::formatBytes(getSize());
+	params["fileSIchunk"] = Util::toString(getTotal());
+	params["fileSIchunkshort"] = Util::formatBytes(getTotal());
+	params["fileSIactual"] = Util::toString(getActual());
+	params["fileSIactualshort"] = Util::formatBytes(getActual());
+	params["speed"] = Util::formatBytes(getAverageSpeed()) + "/s";
+	params["time"] = Util::formatSeconds((GET_TICK() - getStart()) / 1000);
+	params["fileTR"] = getTTH().toBase32();
+}
+
+User::Ptr Transfer::getUser() {
+	return getUserConnection().getUser();
 }
 
 void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw () {

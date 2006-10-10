@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "QueueManager.h"
 #include "TimerManager.h"
 
 #include "UserConnection.h"
@@ -31,10 +30,9 @@
 #include "FilteredFile.h"
 #include "ZUtils.h"
 #include "MerkleTree.h"
+#include "QueueItem.h"
 
-class QueueItem;
 class ConnectionQueueItem;
-class DownloadManager;
 
 /**
  * Comes as an argument in the DownloadManagerListener functions.
@@ -59,24 +57,16 @@ public:
 		FLAG_TTH_CHECK = 0x100
 	};
 
-	Download() throw();
-	Download(QueueItem* qi) throw();
+	Download(UserConnection& conn) throw();
+	Download(UserConnection& conn, QueueItem& qi) throw();
 
-	virtual ~Download() { }
+	virtual void getParams(const UserConnection& aSource, StringMap& params);
 
-	/**
-	 * @remarks This function is only used from DownloadManager but its
-	 * functionality could be useful in TransfersFrame.
-	 *
-	 * @return Target filename without path.
-	 */
+	virtual ~Download();
+
+	/** @return Target filename without path. */
 	string getTargetFileName() {
-		string::size_type i = getTarget().rfind('\\');
-		if(i != string::npos) {
-			return getTarget().substr(i + 1);
-		} else {
-			return getTarget();
-		}
+		return Util::getFileName(getTarget());
 	}
 
 	/** @internal */
@@ -99,17 +89,14 @@ public:
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-	GETSET(TTHValue, tth, TTH);
 	GETSET(bool, treeValid, TreeValid);
 
 private:
 	Download(const Download&);
-
 	Download& operator=(const Download&);
 
 	TigerTree tt;
 };
-
 
 /**
  * Use this listener interface to get progress information for downloads.
@@ -176,21 +163,8 @@ public:
 	void addConnection(UserConnection::Ptr conn);
 	void checkIdle(const User::Ptr& user);
 
-	/**
-	 * @remarks This is only used in the tray icons. In MainFrame this is
-	 * calculated instead so there seems to be a little duplication of code.
-	 *
-	 * @return Average download speed in Bytes/s
-	 */
-	int getAverageSpeed() {
-		Lock l(cs);
-		int avg = 0;
-		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
-			Download* d = *i;
-			avg += (int)d->getRunningAverage();
-		}
-		return avg;
-	}
+	/** @return Running average download speed in Bytes/s */
+	int64_t getRunningAverage();
 
 	/** @return Number of downloads. */
 	size_t getDownloadCount() {
@@ -198,8 +172,7 @@ public:
 		return downloads.size();
 	}
 
-	static const string USER_LIST_NAME;
-	static const string USER_LIST_NAME_BZ;
+	bool startDownload(QueueItem::Priority prio);
 
 	int64_t getAverageSpeed(const string & path){
 		size_t pos = path.rfind("\\");
@@ -208,7 +181,7 @@ public:
 		return averageSpeedMap.find(tmp)->second;
 	}
 
-	u_int64_t getAveragePos(const string & path) {
+	uint64_t getAveragePos(const string & path) {
 		size_t pos = path.rfind("\\");
 		string tmp = path.substr(0, pos);
 
@@ -265,8 +238,8 @@ private:
 
 	void moveFile(const string& source, const string&target);
 	void logDownload(UserConnection* aSource, Download* d);
-	u_int32_t calcCrc32(const string& file) throw(FileException);
-	bool checkSfv(UserConnection* aSource, Download* d, u_int32_t crc);
+	uint32_t calcCrc32(const string& file) throw(FileException);
+	bool checkSfv(UserConnection* aSource, Download* d, uint32_t crc);
 	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
 
 	void failDownload(UserConnection* aSource, const string& reason);
@@ -280,7 +253,8 @@ private:
 	void handleEndData(UserConnection* aSource);
 
 	// UserConnectionListener
-	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
+	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw();
+	virtual void on(Error, UserConnection*, const string&) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
 	virtual void on(Sending, UserConnection*, int64_t) throw();
 	virtual void on(FileLength, UserConnection*, int64_t) throw();

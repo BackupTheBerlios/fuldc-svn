@@ -127,13 +127,13 @@ public:
 			
 			return getName() + '\\';
 		}
-		u_int8_t checkDupes();
+		uint8_t checkDupes();
 
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
 		GETSET(bool, adls, Adls);
 		GETSET(bool, complete, Complete);
-		GETSET(u_int8_t, dupe, Dupe)
+		GETSET(uint8_t, dupe, Dupe)
 
 	private:
 		Directory(const Directory&);

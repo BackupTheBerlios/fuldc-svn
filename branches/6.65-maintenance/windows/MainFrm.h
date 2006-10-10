@@ -366,7 +366,7 @@ private:
 
 	bool missedAutoConnect;
 
-	u_int32_t timerTime;
+	uint32_t timerTime;
 	tstring timerMsg;
 
 	struct {
@@ -399,7 +399,7 @@ private:
 
 	// HttpConnectionListener
 	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, string const& /*aLine*/) throw();
-	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw();
+	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw();
 
 	// QueueManagerListener
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi, int64_t) throw();

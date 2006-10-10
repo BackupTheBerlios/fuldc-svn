@@ -138,9 +138,6 @@ void ConnectionManager::on(TimerManagerListener::Second, time_t aTick) throw() {
 	ConnectionQueueItem::List removed;
 	User::List idlers;
 
-	bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
-	bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
-
 	{
 		Lock l(cs);
 
@@ -168,19 +165,15 @@ void ConnectionManager::on(TimerManagerListener::Second, time_t aTick) throw() {
 				if( ((cqi->getLastAttempt() + 60*1000) < aTick) && !attemptDone ) {
 					cqi->setLastAttempt(aTick);
 
-					if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
+					QueueItem::Priority prio = QueueManager::getInstance()->hasDownload(cqi->getUser());
+
+					if(prio == QueueItem::PAUSED) {
 						removed.push_back(cqi);
 						continue;
 					}
 
-					// Always start high-priority downloads unless we have 3 more than maxdownslots already...
-					bool startDown = !tooMany && !tooFast;
-
-					if(!startDown) {
-						bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (DownloadManager::getInstance()->getDownloadCount() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
-						startDown = !extraFull && QueueManager::getInstance()->hasDownload(cqi->getUser(), QueueItem::HIGHEST);
-					}
-
+					bool startDown = DownloadManager::getInstance()->startDownload(prio);
+                    
 					if(cqi->getState() == ConnectionQueueItem::WAITING) {
 						if(startDown) {
 							cqi->setState(ConnectionQueueItem::CONNECTING);
@@ -226,8 +219,8 @@ void ConnectionManager::on(TimerManagerListener::Minute, time_t aTick) throw() {
 	}
 }
 
-static const u_int32_t FLOOD_TRIGGER = 20000;
-static const u_int32_t FLOOD_ADD = 2000;
+static const uint32_t FLOOD_TRIGGER = 20000;
+static const uint32_t FLOOD_ADD = 2000;
 
 ConnectionManager::Server::Server(short port, const string& ip /* = "0.0.0.0" */) : die(false) {
 	sock.create();
@@ -237,7 +230,7 @@ ConnectionManager::Server::Server(short port, const string& ip /* = "0.0.0.0" */
 	start();
 }
 
-static const u_int32_t POLL_TIMEOUT = 250;
+static const uint32_t POLL_TIMEOUT = 250;
 
 int ConnectionManager::Server::run() throw() {
 	try {
@@ -292,7 +285,6 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 		return;
 
 	UserConnection* uc = getConnection(true);
-	uc->setNick(aNick);
 	uc->setHubUrl(hubUrl);
 	uc->setState(UserConnection::STATE_CONNECT);
 	uc->setFlag(UserConnection::FLAG_NMDC);
@@ -307,7 +299,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
-		aSource->myNick(aSource->getNick());
+		aSource->myNick(aSource->getUser()->getNick());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} 
 	aSource->setState(UserConnection::STATE_SUPNICK);
@@ -404,7 +396,7 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		dcdebug("CM::onLock %p received lock twice, ignoring\n", aSource);
 		return;
 	}
-	
+
 	if( CryptoManager::getInstance()->isExtended(aLock) ) {
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser() && !aSource->getUser()->isSet(User::DCPLUSPLUS)) {
@@ -459,7 +451,6 @@ void ConnectionManager::on(UserConnectionListener::Direction, UserConnection* aS
 }
 
 void ConnectionManager::addDownloadConnection(UserConnection* uc) {
-
 	dcassert(uc->isSet(UserConnection::FLAG_DOWNLOAD));
 	bool addConn = false;
 	{
@@ -473,7 +464,7 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc) {
 				uc->setFlag(UserConnection::FLAG_ASSOCIATED);
 
 				fire(ConnectionManagerListener::Connected(), cqi);
-				
+
 				dcdebug("ConnectionManager::addDownloadConnection, leaving to downloadmanager\n");
 				addConn = true;
 			}

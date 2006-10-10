@@ -178,7 +178,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 					const int BufSize = 1024;
 					// Special to autodetect nmdc connections...
 					string::size_type pos = 0;
-					AutoArray<u_int8_t> buffer (BufSize);
+					AutoArray<uint8_t> buffer (BufSize);
 					size_t in;
 					l = line;
 					// decompress all input data and store in l.
@@ -267,8 +267,8 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize = max(sockSize, (size_t)64*1024);
 
-	vector<u_int8_t> readBuf(bufSize);
-	vector<u_int8_t> writeBuf(bufSize);
+	vector<uint8_t> readBuf(bufSize);
+	vector<uint8_t> writeBuf(bufSize);
 
 	size_t readPos = 0;
 

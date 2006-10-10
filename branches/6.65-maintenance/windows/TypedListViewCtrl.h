@@ -580,7 +580,7 @@ private:
 			lvcl.pszText = buf;
 			lvcl.cchTextMax = 100;
 			GetColumn(i, &lvcl);
-			for(u_int32_t j = 0; j < columnList.size(); ++j) {
+			for(uint32_t j = 0; j < columnList.size(); ++j) {
 				if(Util::stricmp(columnList[j]->name.c_str(), lvcl.pszText) == 0) {
 					columnIndexes.push_back(static_cast<int>(j));
 					break;

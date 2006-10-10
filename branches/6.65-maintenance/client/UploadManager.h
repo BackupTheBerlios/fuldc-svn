@@ -27,8 +27,9 @@
 #include "Singleton.h"
 
 #include "ClientManagerListener.h"
-#include "File.h"
 #include "MerkleTree.h"
+
+class InputStream;
 
 class Upload : public Transfer, public Flags {
 public:
@@ -44,17 +45,13 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	Upload() : file(0) { }
-	virtual ~Upload() {
-		delete file;
-	}
+	Upload(UserConnection& conn);
+	virtual ~Upload();
 
-	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); }
+	virtual void getParams(const UserConnection& aSource, StringMap& params);
 
-	GETSET(string, fileName, FileName);
-	GETSET(string, localFileName, LocalFileName);
-	GETSET(TTHValue, tth, TTH);
-	GETSET(InputStream*, file, File);
+	GETSET(string, sourceFile, SourceFile);
+	GETSET(InputStream*, stream, Stream);
 };
 
 class UploadManagerListener {
@@ -89,32 +86,12 @@ public:
 	 * @remarks This is only used in the tray icons. Could be used in
 	 * MainFrame too.
 	 *
-	 * @return Average download speed in Bytes/s
+	 * @return Running average download speed in Bytes/s
 	 */
-	int getAverageSpeed() {
-		Lock l(cs);
-		int avg = 0;
-		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
-			Upload* u = *i;
-			avg += (int)u->getRunningAverage();
-		}
-		return avg;
-	}
+	int64_t getRunningAverage();
 
 	/** @return Number of free slots. */
 	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
-
-	/** @internal */
-	bool getAutoSlot() {
-		/** A 0 in settings means disable */
-		if(SETTING(MIN_UPLOAD_SPEED) == 0)
-			return false;
-		/** Only grant one slot per 30 sec */
-		if(GET_TICK() < getLastGrant() + 30*1000)
-			return false;
-		/** Grant if upload speed is less than the threshold speed */
-		return getAverageSpeed() < (SETTING(MIN_UPLOAD_SPEED)*1024);
-	}
 
 	/** @internal */
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); }
@@ -123,7 +100,7 @@ public:
 	void reserveSlot(const User::Ptr& aUser);
 
 	typedef set<string> FileSet;
-	typedef hash_map<User::Ptr, FileSet, User::HashFunction> FilesMap;
+	typedef HASH_MAP_X(User::Ptr, FileSet, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) FilesMap;
 	void clearUserFiles(const User::Ptr&);
 	User::List getWaitingUsers();
 	const FileSet& getWaitingUserFiles(const User::Ptr &);
@@ -163,14 +140,6 @@ private:
 	typedef pair<User::Ptr, time_t> WaitingUser;
 	typedef list<WaitingUser> UserList;
 
-	struct UserMatch {
-		UserMatch(const User::Ptr& u) : u(u) { }
-		const User::Ptr& u;
-		bool operator()(const WaitingUser& wu) { return wu.first == u; }
-	private:
-		UserMatch& operator=(const UserMatch&);
-	};
-
 	struct WaitingUserFresh {
 		bool operator()(const WaitingUser& wu) { return wu.second > GET_TICK() - 5*60*1000; }
 	};
@@ -178,13 +147,14 @@ private:
 	//functions for manipulating waitingFiles and waitingUsers
 	UserList waitingUsers;		//this one merely lists the users waiting for slots
 	FilesMap waitingFiles;		//set of files which this user has asked for
-	void addFailedUpload(UserConnection::Ptr source, string filename);
+	void addFailedUpload(const UserConnection& source, string filename);
 
 	friend class Singleton<UploadManager>;
 	UploadManager() throw();
 	virtual ~UploadManager() throw();
 
-	void removeConnection(UserConnection::Ptr aConn);
+	bool getAutoSlot();
+	void removeConnection(UserConnection* aConn);
 	void removeUpload(Upload* aUpload);
 
 	// ClientManagerListener
@@ -203,7 +173,7 @@ private:
 
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
 
-	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
+	bool prepareFile(UserConnection& aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
 };
 
 #endif // !defined(UPLOAD_MANAGER_H)

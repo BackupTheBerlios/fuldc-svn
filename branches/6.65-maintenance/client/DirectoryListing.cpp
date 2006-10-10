@@ -317,8 +317,8 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 	return x;
 }
 
-u_int8_t DirectoryListing::Directory::checkDupes() {
-	u_int8_t result = Directory::NONE;
+uint8_t DirectoryListing::Directory::checkDupes() {
+	uint8_t result = Directory::NONE;
 	bool first = true;
 	for(Directory::Iter i = directories.begin(); i != directories.end(); ++i) {
 		result = (*i)->checkDupes();

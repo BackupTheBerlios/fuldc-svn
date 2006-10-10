@@ -151,7 +151,7 @@ public:
 	void listen() throw(SocketException);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
-		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
+		onData((const uint8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
 
 	int32_t timeToSearch() {
@@ -187,7 +187,7 @@ private:
 		}
 	}
 
-	void onData(const u_int8_t* buf, size_t aLen, const string& address);
+	void onData(const uint8_t* buf, size_t aLen, const string& address);
 };
 
 #endif // !defined(SEARCH_MANAGER_H)

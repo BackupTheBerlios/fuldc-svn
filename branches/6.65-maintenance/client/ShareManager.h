@@ -56,9 +56,9 @@ public:
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
 	void removeDirectory(const string& aName, bool duringRefresh = false);
 	void renameDirectory(const string& oName, const string& nName) throw(ShareException);
-	string translateTTH(const string& TTH) throw(ShareException);
-	string translateFileName(const string& aFile) throw(ShareException);
-	bool getTTH(const string& aFile, TTHValue& tth) throw();
+	string toVirtual(const TTHValue& tth) throw(ShareException);
+	string toReal(const string& virtualFile) throw(ShareException);
+	TTHValue getTTH(const string& virtualFile) throw(ShareException);
 	int refresh(bool dirs = false, bool aUpdate = true, bool block = false, bool incoming = false, bool dir = false) throw(ShareException);
 	int refresh(const string& aDir);
 	void setDirty() { shareXmlDirty = xmlDirty = true; }
@@ -70,7 +70,7 @@ public:
 
 	StringPairList getDirectories() const { Lock l(cs); return virtualMap; }
 
-	MemoryInputStream* getTree(const string& aFile);
+	MemoryInputStream* getTree(const string& virtualFile);
 
 	AdcCommand getFileInfo(const string& aFile) throw(ShareException);
 
@@ -86,7 +86,7 @@ public:
 
 	string validateVirtual(const string& /*aVirt*/);
 
-	void addHits(u_int32_t aHits) {
+	void addHits(uint32_t aHits) {
 		hits += aHits;
 	}
 
@@ -96,16 +96,15 @@ public:
 	}
 
 	bool isTTHShared(const TTHValue& tth){
-		HashFileIter i = tthIndex.find(tth);
-		return (i != tthIndex.end());
+		Lock l(cs);
+		return tthIndex.find(tth) != tthIndex.end();
 	}
 
-	GETSET(u_int32_t, hits, Hits);
+	GETSET(uint32_t, hits, Hits);
 	GETSET(string, bzXmlFile, BZXmlFile);
 
 	bool loadXmlList();
-	void generateXmlList(bool force = false);
-
+	
 	bool isIncoming(const string& aDir);
 	void setIncoming(const string& aDir, bool incoming = true);
 
@@ -179,33 +178,22 @@ private:
 
 		~Directory();
 
-		bool hasType(u_int32_t type) const throw() {
+		bool hasType(uint32_t type) const throw() {
 			return ( (type == SearchManager::TYPE_ANY) || (fileTypes & (1 << type)) );
 		}
-		void addType(u_int32_t type) throw();
+		void addType(uint32_t type) throw();
 
 		string getADCPath() const throw();
 		string getFullName() const throw();
 
-		int64_t getSize() {
-			int64_t tmp = size;
-			for(MapIter i = directories.begin(); i != directories.end(); ++i)
-				tmp+=i->second->getSize();
-			return tmp;
-		}
-
-		size_t countFiles() {
-			size_t tmp = files.size();
-			for(MapIter i = directories.begin(); i != directories.end(); ++i)
-				tmp+=i->second->countFiles();
-			return tmp;
-		}
+		int64_t getSize();
+		size_t countFiles();
 
 		void search(SearchResult::List& aResults, StringSearchList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
 		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw();
 
-		void toXml(SimpleXML* xml, bool recurse);
-		void filesToXml(SimpleXML* xml);
+		void toXml(SimpleXML& aXml, bool recurse);
+		void filesToXml(SimpleXML& aXml);
 		void toXmlList(OutputStream* xmlFile, string& indent, const string& path);
 
 		File::Iter findFile(const string& aFile) { return find_if(files.begin(), files.end(), Directory::File::StringComp(aFile)); }
@@ -217,7 +205,7 @@ private:
 		Directory& operator=(const Directory&);
 
 		/** Set of flags that say which SearchManager::TYPE_* a directory contains */
-		u_int32_t fileTypes;
+		uint32_t fileTypes;
 
 	};
 
@@ -263,12 +251,16 @@ private:
 		bool isDirectory;
 	};
 
-	typedef HASH_MULTIMAP_X(TTHValue, Directory::File::Iter, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) HashFileMap;
+	typedef HASH_MAP_X(TTHValue, Directory::File::Set::const_iterator, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;
 
+	int64_t xmlListLen;
+	TTHValue xmlRoot;
 	int64_t bzXmlListLen;
+	TTHValue bzXmlRoot;
+	auto_ptr<File> bzXmlRef;
 	bool xmlDirty;
 	bool shareXmlDirty;
 
@@ -304,17 +296,20 @@ private:
 	BloomFilter<5> bloom;
 	
 	/** Find virtual name from real name */
-	StringPairIter findVirtual(const string& name);
+	StringPairIter findVirtual(const string& realName);
 	/** Find real name from virtual name */
-	StringPairIter lookupVirtual(const string& name);
+	StringPairIter findReal(const string& virtualName);
 
-	bool checkFile(const string& aDir, const string& aFile, Directory::File::Iter& it);
+	bool checkFile(const string& virtualFile, string& realFile, Directory::File::Iter& it);
 
 	Directory* buildTree(const string& aName, Directory* aParent);
-	void addTree(Directory* aDirectory);
-	void addFile(Directory* dir, Directory::File::Iter i);
-		
-	void removeTTH(const TTHValue& tth, const Directory::File& file);
+
+	void rebuildIndices();
+
+	void addTree(Directory& aDirectory);
+	void addFile(Directory& dir, Directory::File::Iter i);
+	void generateXmlList(bool force = false);
+	bool loadCache();
 
 	Directory* getDirectory(const string& fname);
 

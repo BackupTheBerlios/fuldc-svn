@@ -30,7 +30,7 @@ STANDARD_EXCEPTION(ParseException);
 
 class AdcCommand {
 public:
-	template<u_int32_t T>
+	template<uint32_t T>
 	struct Type {
 		enum { CMD = T };
 	};
@@ -75,7 +75,7 @@ public:
 	static const char TYPE_PASSIVE = 'P';
 	static const char TYPE_UDP = 'U';
 
-#define CMD(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
+#define CMD(n, a, b, c) static const uint32_t CMD_##n = (((uint32_t)a) | (((uint32_t)b)<<8) | (((uint32_t)c)<<16)); typedef Type<CMD_##n> n
 	CMD(SUP, 'S','U','P');
 	CMD(STA, 'S','T','A');
 	CMD(INF, 'I','N','F');
@@ -94,7 +94,7 @@ public:
 	CMD(NTD, 'N','T','D');
 #undef CMD
 
-	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), type(aType) { }
+	explicit AdcCommand(uint32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), type(aType) { }
 
 	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
 		parse(aLine, nmdc);
@@ -102,7 +102,7 @@ public:
 
 	void parse(const string& aLine, bool nmdc = false) throw(ParseException);
 
-	u_int32_t getCommand() const { return cmdInt; }
+	uint32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
 	void setType(char t) { type = t; }
 
@@ -126,9 +126,9 @@ public:
 	/** Return a named parameter where the name is a two-letter code */
 	bool getParam(const char* name, size_t start, string& ret) const;
 	bool hasFlag(const char* name, size_t start) const;
-	static u_int16_t toCode(const char* x) { return *((u_int16_t*)x); }
+	static uint16_t toCode(const char* x) { return *((uint16_t*)x); }
 
-	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
+	bool operator==(uint32_t aCmd) { return cmdInt == aCmd; }
 
 	static string escape(const string& str, bool old) {
 		string tmp = str;
@@ -152,8 +152,8 @@ private:
 	StringList parameters;
 	union {
 		char cmdChar[4];
-		u_int8_t cmd[4];
-		u_int32_t cmdInt;
+		uint8_t cmd[4];
+		uint32_t cmdInt;
 	};
 	char type;
 

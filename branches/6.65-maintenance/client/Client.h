@@ -204,7 +204,7 @@ private:
 	string hubUrl;
 	string address;
 	string ip;
-	u_int16_t port;
+	uint16_t port;
 	char separator;
 	bool secure;
 	CountType countType;

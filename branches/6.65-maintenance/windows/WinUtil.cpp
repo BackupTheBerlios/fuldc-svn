@@ -227,7 +227,6 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_SEPARATOR);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
-	view.AppendMenu(MF_STRING, ID_VIEW_TRANSFER_VIEW, CTSTRING(MENU_TRANSFER_VIEW));
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)view, CTSTRING(MENU_VIEW));
 
@@ -864,7 +863,7 @@ void WinUtil::openLink(const tstring& url) {
 
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
-	u_int16_t port = 411;
+	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
 		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
@@ -882,7 +881,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 
 void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	string server, file;
-	u_int16_t port = 0; //make sure we get a port since adc doesn't have a standard one
+	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
 		HubFrame::openWindow(Text::toT("adc://" + server + ":" + Util::toString(port)));
@@ -1282,7 +1281,7 @@ tstring WinUtil::Help(const tstring& cmd) {
 	string xmlString;
 	const size_t BUF_SIZE = 64*1024;
 	char *buf = new char[BUF_SIZE];
-	u_int32_t pos = 0;
+	uint32_t pos = 0;
 	SimpleXML xml;
 
 	//try to read the xml from the file

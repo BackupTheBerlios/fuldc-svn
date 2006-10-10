@@ -674,10 +674,10 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 				::ScreenToClient(GetParent(), &rc.BottomRight());
 				
 				//save the position
-				fhe->setBottom((u_int16_t)(rc.bottom > 0 ? rc.bottom : 0));
-				fhe->setTop((u_int16_t)(rc.top > 0 ? rc.top : 0));
-				fhe->setLeft((u_int16_t)(rc.left > 0 ? rc.left : 0));
-				fhe->setRight((u_int16_t)(rc.right > 0 ? rc.right : 0));
+				fhe->setBottom((uint16_t)(rc.bottom > 0 ? rc.bottom : 0));
+				fhe->setTop((uint16_t)(rc.top > 0 ? rc.top : 0));
+				fhe->setLeft((uint16_t)(rc.left > 0 ? rc.left : 0));
+				fhe->setRight((uint16_t)(rc.right > 0 ? rc.right : 0));
 			}
 
 			fhe->setShowJoins(showJoins);
@@ -1182,7 +1182,7 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	
 	if(!redirect.empty()) {
 		string s, f;
-		u_int16_t p = 411;
+		uint16_t p = 411;
 		Util::decodeUrl(Text::fromT(redirect), s, p, f);
 		if(ClientManager::getInstance()->isConnected(s, p)) {
 			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
@@ -1326,7 +1326,7 @@ void HubFrame::on(UserRemoved, Client*, const User::Ptr& user) throw() {
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() { 
 	string s, f;
-	u_int16_t p = 411;
+	uint16_t p = 411;
 	Util::decodeUrl(line, s, p, f);
 	if(ClientManager::getInstance()->isConnected(s, p)) {
 		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));

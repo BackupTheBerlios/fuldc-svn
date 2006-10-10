@@ -540,12 +540,7 @@ void SearchFrame::SearchInfo::CheckTTH::operator()(SearchInfo* si) {
 		}
 	}
 
-	/*if(firstHubs && hubs.empty()) {
-		hubs = ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID());
-		firstHubs = false;
-	} else if(!hubs.empty()) {
-		Util::intersect(hubs, ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID()));
-	}*/
+	hubs.push_back(si->sr->getUser()->getClientUrl());
 }
 
 // Layout
@@ -558,7 +553,7 @@ void SearchFrame::SearchInfo::CheckTTH::operator()(SearchInfo* si) {
 // target files.
 
 LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	u_int32_t pos = wID - IDC_DOWNLOADTO - 1; //remember the extra one
+	uint32_t pos = wID - IDC_DOWNLOADTO - 1; //remember the extra one
 	
 	StringPairList favorites = FavoriteManager::getInstance()->getFavoriteDirs();
 
@@ -629,7 +624,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 // target files.
 
 LRESULT SearchFrame::onDownloadWholeTo(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	u_int32_t pos = wID - IDC_DOWNLOAD_WHOLE_TO - 1;
+	uint32_t pos = wID - IDC_DOWNLOAD_WHOLE_TO - 1;
 	StringPairList favorites = FavoriteManager::getInstance()->getFavoriteDirs();
 
 	//favorites
@@ -1043,7 +1038,6 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 			}
 		}
 
-		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		if (ctrlResults.GetSelectedCount() == 1) {
 			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_ENABLED);
 		} else {

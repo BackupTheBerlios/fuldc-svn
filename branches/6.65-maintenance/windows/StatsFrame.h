@@ -85,8 +85,8 @@ private:
 
 	struct Stat {
 		Stat() : scroll(0), speed(0) { }
-		Stat(u_int32_t aScroll, int64_t aSpeed) : scroll(aScroll), speed(aSpeed) { }
-		u_int32_t scroll;
+		Stat(uint32_t aScroll, int64_t aSpeed) : scroll(aScroll), speed(aSpeed) { }
+		uint32_t scroll;
 		int64_t speed;
 	};
 	typedef deque<Stat> StatList;
@@ -112,7 +112,7 @@ private:
 	int64_t max;
 
 	void drawLine(CDC& dc, StatIter begin, StatIter end, CRect& rc, CRect& crc);
-	void addTick(int64_t bdiff, int64_t tdiff, StatList& lst, AvgList& avg, int scroll);
+	void addTick(int64_t bdiff, time_t tdiff, StatList& lst, AvgList& avg, int scroll);
 };
 
 #endif // !defined(STATS_FRAME_H)

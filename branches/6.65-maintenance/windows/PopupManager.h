@@ -45,8 +45,8 @@ public:
 		if(hBitmap != NULL){
 			BITMAP bm;
 			GetObject(hBitmap,sizeof(bm),&bm);
-			height = (u_int16_t)bm.bmHeight;
-			width = (u_int16_t)bm.bmWidth;
+			height = (uint16_t)bm.bmHeight;
+			width = (uint16_t)bm.bmWidth;
 		}
 	}
 	~PopupManager() {
@@ -103,12 +103,12 @@ private:
 	PopupList popups;
 	
 	//size of the popup window
-	u_int16_t height;
-	u_int16_t width;
+	uint16_t height;
+	uint16_t width;
 
 	//if we have multiple windows displayed, 
 	//keep track of where the new one will be displayed
-	u_int16_t offset;
+	uint16_t offset;
 	
 	//turn on/off popups completely
 	bool activated;
@@ -120,7 +120,7 @@ private:
 	HBITMAP hBitmap;
 
 	//id of the popup to keep track of them
-	u_int32_t id;
+	uint32_t id;
     	
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, time_t tick) throw();

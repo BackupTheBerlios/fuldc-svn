@@ -168,7 +168,7 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 
 QueueItem* QueueManager::FileQueue::findAutoSearch(StringList& recent) {
 	// We pick a start position at random, hoping that we will find something to search for...
-	QueueItem::StringMap::size_type start = (QueueItem::StringMap::size_type)Util::rand((u_int32_t)queue.size());
+	QueueItem::StringMap::size_type start = (QueueItem::StringMap::size_type)Util::rand((uint32_t)queue.size());
 
 	QueueItem::StringIter i = queue.begin();
 	advance(i, start);
@@ -653,79 +653,49 @@ void QueueManager::addDirectory(const string& aDir, const User::Ptr& aUser, cons
 	}
 }
 
-#define isnum(c) (((c) >= '0') && ((c) <= '9'))
-
-static inline u_int32_t adjustSize(u_int32_t sz, const string& name) {
-	if(name.length() > 2) {
-		// filename.r32
-		u_int8_t c1 = (u_int8_t)name[name.length()-2];
-		u_int8_t c2 = (u_int8_t)name[name.length()-1];
-		if(isnum(c1) && isnum(c2)) {
-			return sz + (c1-'0')*10 + (c2-'0');
-		} else if(name.length() > 6) {
-			// filename.part32.rar
-			c1 = name[name.length() - 6];
-			c2 = name[name.length() - 5];
-			if(isnum(c1) && isnum(c2)) {
-				return sz + (c1-'0')*10 + (c2-'0');
-			}
-		}
+QueueItem::Priority QueueManager::hasDownload(const User::Ptr& aUser) throw() {
+	Lock l(cs);
+	QueueItem* qi = userQueue.getNext(aUser, QueueItem::LOWEST);
+	if(!qi) {
+		return QueueItem::PAUSED;
 	}
-
-	return sz;
+	return qi->getPriority();
 }
-
-typedef HASH_MULTIMAP<u_int32_t, QueueItem*> SizeMap;
-typedef SizeMap::iterator SizeIter;
-typedef pair<SizeIter, SizeIter> SizePair;
+namespace {
+typedef HASH_MAP_X(TTHValue, const DirectoryListing::File*, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) TTHMap;
 
 // *** WARNING ***
-// Lock(cs) makes sure that there's only one thread accessing these,
-// I put them here to avoid growing a huge stack...
+// Lock(cs) makes sure that there's only one thread accessing this
+static TTHMap tthMap;
 
-static const DirectoryListing* curDl = NULL;
-static SizeMap sizeMap;
-
-int QueueManager::matchFiles(const DirectoryListing::Directory* dir) throw() {
-	int matches = 0;
+void buildMap(const DirectoryListing::Directory* dir) throw() {
 	for(DirectoryListing::Directory::List::const_iterator j = dir->directories.begin(); j != dir->directories.end(); ++j) {
 		if(!(*j)->getAdls())
-			matches += matchFiles(*j);
+			buildMap(*j);
 	}
 
 	for(DirectoryListing::File::List::const_iterator i = dir->files.begin(); i != dir->files.end(); ++i) {
 		const DirectoryListing::File* df = *i;
-
-		SizePair files = sizeMap.equal_range(adjustSize((u_int32_t)df->getSize(), df->getName()));
-		for(SizeIter j = files.first; j != files.second; ++j) {
-			QueueItem* qi = j->second;
-			if((qi->getTTH() == df->getTTH()) && (qi->getSize() == df->getSize())) {
-				try {
-					addSource(qi, curDl->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE);
-					matches++;
-				} catch(const Exception&) {
-				}
-			}
-		}
+		tthMap.insert(make_pair(df->getTTH(), df));
 	}
-	return matches;
 }
-
+}
 int QueueManager::matchListing(const DirectoryListing& dl) throw() {
 	int matches = 0;
 	{
 		Lock l(cs);
-		sizeMap.clear();
-		matches = 0;
-		curDl = &dl;
-		for(QueueItem::StringIter i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
+		buildMap(dl.getRoot());
+
+		for(QueueItem::StringMap::const_iterator i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
 			QueueItem* qi = i->second;
-			if(qi->getSize() != -1) {
-				sizeMap.insert(make_pair(adjustSize((u_int32_t)qi->getSize(), qi->getTarget()), qi));
+			if(qi->isSet(QueueItem::FLAG_USER_LIST))
+				continue;
+			TTHMap::iterator j = tthMap.find(qi->getTTH());
+			if(j != tthMap.end() && i->second->getSize() == qi->getSize()) {
+				addSource(qi, dl.getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE);
+				matches++;
 			}
 		}
-
-		matches = matchFiles(dl.getRoot());
 	}
 	if(matches > 0)
 		ConnectionManager::getInstance()->getDownloadConnection(dl.getUser());
@@ -789,35 +759,19 @@ void QueueManager::getTargets(const TTHValue& tth, StringList& sl) {
 	}
 }
 
-Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw() {
+Download* QueueManager::getDownload(UserConnection& aSource, bool supportsTrees) throw() {
 	Lock l(cs);
 
-	QueueItem* q = NULL;
-	while((q = userQueue.getNext(aUser)) != NULL) {
-		if(q->isSet(QueueItem::FLAG_USER_LIST)) {
-			break;
-		}
-		
-		int64_t size = File::getSize(q->getTarget());
-		
-		//the file does not exist or it's not complete so try to download it
-		if(size < q->getSize()) {
-			break;
-		}
-        	
-		//remove the file since it already exists (probably downloaded outside of dc)
-		//otherwise it'll be downloaded to a temp-file before it
-		//gets discarded.
-		remove(q->getTarget());
-		q = NULL;
-	}
+	User::Ptr& aUser = aSource.getUser();
+
+	QueueItem* q = userQueue.getNext(aUser);
 
 	if(!q)
 		return 0;
 
 	userQueue.setRunning(q, aUser);
 
-	Download* d = new Download(q);
+	Download* d = new Download(aSource, *q);
 
 	q->setCurrentDownload(d);
 
@@ -861,7 +815,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 
 			if(q) {
 				if(aDownload->isSet(Download::FLAG_USER_LIST)) {
-					if(aDownload->getSource() == DownloadManager::USER_LIST_NAME_BZ) {
+					if(aDownload->getSource() == Transfer::USER_LIST_NAME_BZ) {
 						q->setFlag(QueueItem::FLAG_XML_BZLIST);
 					} else {
 						q->unsetFlag(QueueItem::FLAG_XML_BZLIST);
@@ -930,7 +884,6 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 				}
 			}
 		}
-		aDownload->setUserConnection(0);
 		delete aDownload;
 	}
 
@@ -980,7 +933,7 @@ void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
 void QueueManager::remove(const string& aTarget) throw() {
 	User::Ptr x;
 	string name;
-	u_int64_t size;
+	uint64_t size;
 	{
 		Lock l(cs);
 
@@ -1544,7 +1497,7 @@ void QueueManager::onTimerSearch() {
 	fire(QueueManagerListener::SearchAlternates(), searchString, nr);
 }
 
-void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, bool add /* = true */){
+void QueueManager::updateTotalSize(const string & path, const uint64_t& size, bool add /* = true */){
 	if(path.find("FileLists") != string::npos)
 		return;
 
@@ -1556,7 +1509,7 @@ void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, b
 
 	if(add){
 		if( i == totalSizeMap.end() ) 
-			totalSizeMap.insert(pair<string, u_int64_t>(tmp, size));
+			totalSizeMap.insert(pair<string, uint64_t>(tmp, size));
 		else
 			i->second += size;
 	} else {
@@ -1569,7 +1522,7 @@ void QueueManager::updateTotalSize(const string & path, const u_int64_t& size, b
 	}
 }
 
-u_int64_t QueueManager::getTotalSize(const string & path){
+uint64_t QueueManager::getTotalSize(const string & path){
 	if(path.find("FileLists") != string::npos)
 		return 0;
 

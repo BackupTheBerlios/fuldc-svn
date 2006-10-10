@@ -24,13 +24,11 @@
 #include "ShareManager.h"
 #include "SearchManager.h"
 #include "CryptoManager.h"
-#include "ConnectionManager.h"
 #include "FavoriteManager.h"
 #include "LogManager.h"
 
 //#include "AdcHub.h"
 #include "NmdcHub.h"
-
 
 Client* ClientManager::getClient(const string& aHubURL) {
 	Client* c;
@@ -104,7 +102,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 		} else {
 			try {
 				string ip, file;
-				u_int16_t port = 0;
+				uint16_t port = 0;
 				Util::decodeUrl(aSeeker, ip, port, file);
 				ip = Socket::resolve(ip);
 
@@ -118,11 +116,11 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 					port = 412;
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					s.writeTo(ip, port, sr->toSR(*aClient));
+					udp.writeTo(ip, port, sr->toSR(*aClient));
 					sr->decRef();
 				}
 			} catch(const SocketException& /* e */) {
-				s.disconnect();
+				udp.disconnect();
 				dcdebug("Search caught error\n");
 			}
 		}

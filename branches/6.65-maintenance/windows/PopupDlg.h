@@ -42,7 +42,7 @@ public:
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, onRButtonDown)
 	END_MSG_MAP()
 
-	PopupWnd(const tstring& aMsg, CRect rc, HBITMAP hBmp, u_int32_t aId): visible(GET_TICK()), id(aId) {
+	PopupWnd(const tstring& aMsg, CRect rc, HBITMAP hBmp, uint32_t aId): visible(GET_TICK()), id(aId) {
 		if(int(aMsg.length()) > SETTING(MAX_MSG_LENGTH)){
 			msg = aMsg.substr(0, SETTING(MAX_MSG_LENGTH)-3);
 			msg += _T("...");
@@ -157,7 +157,7 @@ public:
 
 	}
 
-	u_int32_t id;
+	uint32_t id;
 	time_t visible;
 	HWND owner;
 
