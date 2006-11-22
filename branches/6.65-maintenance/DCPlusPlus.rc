@@ -655,6 +655,18 @@ BEGIN
     PUSHBUTTON      "Clear filter history",IDC_FILTER_HISTORY,123,184,90,14
 END
 
+IDD_TABSPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+EXSTYLE WS_EX_STATICEDGE
+CAPTION "Tabs"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    RTEXT           "Max tab rows",IDC_SETTINGS_MAX_TAB_ROWS,8,117,44,8
+    EDITTEXT        IDC_MAX_TAB_ROWS,56,115,41,14,ES_AUTOHSCROLL
+    GROUPBOX        "Bold options",IDC_SETTINGS_BOLD_CONTENTS,5,8,263,98
+    CONTROL         "",IDC_BOLD_BOOLEANS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,10,19,254,81
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -971,6 +983,16 @@ BEGIN
         BOTTOMMARGIN, 218
         HORZGUIDE, 50
     END
+
+    IDD_TABSPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        VERTGUIDE, 13
+        VERTGUIDE, 261
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -981,8 +1003,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,9,7
- PRODUCTVERSION 0,6,9,7
+ FILEVERSION 0,6,9,8
+ PRODUCTVERSION 0,6,9,8
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -999,12 +1021,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 6, 9, 7"
+            VALUE "FileVersion", "0, 6, 9, 8"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2006 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 6, 9, 7"
+            VALUE "ProductVersion", "0, 6, 9, 8"
         END
     END
     BLOCK "VarFileInfo"

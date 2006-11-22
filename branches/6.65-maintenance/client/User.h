@@ -62,7 +62,7 @@ public:
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	typedef HASH_MAP_X(string,Ptr,noCaseStringHash,noCaseStringEq,noCaseStringLess) NickMap;
+	typedef HASH_MAP_X(string,Ptr,noCaseStringHashComp<string>,noCaseStringEq,noCaseStringLess) NickMap;
 	typedef NickMap::iterator NickIter;
 
 	struct HashFunction {

@@ -65,13 +65,12 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ctrlDirectories.InsertColumn(0, CTSTRING(VIRTUAL_NAME), LVCFMT_LEFT, 80, 0);
 	ctrlDirectories.InsertColumn(1, CTSTRING(DIRECTORY), LVCFMT_LEFT, 197, 1);
 	ctrlDirectories.InsertColumn(2, CTSTRING(SIZE), LVCFMT_RIGHT, 90, 2);
-	StringPairList directories = ShareManager::getInstance()->getDirectories();
-	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
-	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->first));
-		ctrlDirectories.SetItemText(i, 1, Text::toT(j->second).c_str() );
-		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
-		ctrlDirectories.SetCheckState(i, ShareManager::getInstance()->isIncoming(j->second) );
+	ShareManager::DirectoryInfoList directories = ShareManager::getInstance()->getDirectories(ShareManager::REFRESH_ALL);
+	for(ShareManager::DirectoryInfoList::const_iterator i = directories.begin(); i != directories.end(); ++i) {
+		int index = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(i->virtualName));
+		ctrlDirectories.SetItemText(index, 1, Text::toT(i->realPath).c_str() );
+		ctrlDirectories.SetItemText(index, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(i->realPath))).c_str());
+		ctrlDirectories.SetCheckState(index, i->incoming);
 	}
 
 	ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
@@ -214,12 +213,15 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		item.iItem = i;
 		item.iSubItem = 0;
 		ctrlDirectories.GetItem(&item);
-
+		tstring vName = buf;
+		item.iSubItem = 1;
+		ctrlDirectories.GetItem(&item);
+		tstring rPath = buf;
 		try {
 			LineDlg virt;
 			virt.title = TSTRING(VIRTUAL_NAME);
 			virt.description = TSTRING(VIRTUAL_NAME_LONG);
-			virt.line = tstring(buf);
+			virt.line = vName;
 			if(virt.DoModal(m_hWnd) == IDOK) {
 				if (Util::stricmp(buf, virt.line) != 0) {
 					item.iSubItem = 1;
@@ -257,16 +259,16 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	// Refresh the share. This is a blocking refresh. Might cause problems?
 	// Hopefully people won't click the checkbox enough for it to be an issue. :-)
 	ShareManager::getInstance()->setDirty();
-	ShareManager::getInstance()->refresh(true, false, true);
+	ShareManager::getInstance()->refresh(ShareManager::REFRESH_ALL | ShareManager::REFRESH_BLOCKING | ShareManager::REFRESH_UPDATE);
 
 	// Clear the GUI list, for insertion of updated shares
 	ctrlDirectories.DeleteAllItems();
-	StringPairList directories = ShareManager::getInstance()->getDirectories();
-	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
-	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->first));
-		ctrlDirectories.SetItemText(i, 1, Text::toT(j->second).c_str() );
-		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
+	ShareManager::DirectoryInfoList directories = ShareManager::getInstance()->getDirectories(ShareManager::REFRESH_ALL);
+	for(ShareManager::DirectoryInfoList::const_iterator i = directories.begin(); i != directories.end(); ++i) {
+		int index = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(i->virtualName));
+		ctrlDirectories.SetItemText(index, 1, Text::toT(i->realPath).c_str() );
+		ctrlDirectories.SetItemText(index, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(i->realPath))).c_str());
+		ctrlDirectories.SetCheckState(index, i->incoming);
 	}
 
 	// Display the new total share size

@@ -80,14 +80,9 @@ public:
 
 	/** Find a suitable port to listen on, and start doing it */
 	void listen() throw(SocketException);
-	void disconnect() throw() {
-		delete server;
+	void disconnect() throw();
 
-		server = 0;
-		port = 0;
-	}
-
-	unsigned short getPort() { return port; }
+	unsigned short getPort() { return server ? static_cast<unsigned short>(server->getPort()) : 0; }
 
 private:
 
@@ -95,17 +90,20 @@ private:
 	public:
 		Server(short port, const string& ip = "0.0.0.0");
 		virtual ~Server() { die = true; join(); }
+
+		short getPort() const { return port; }
 	private:
 		virtual int run() throw();
 
 		Socket sock;
+		short port;
+		bool secure;
 		bool die;
 	};
 
 	friend class Server;
 
 	CriticalSection cs;
-	unsigned short port;
 
 	/** All ConnectionQueueItems */
 	ConnectionQueueItem::List downloads;

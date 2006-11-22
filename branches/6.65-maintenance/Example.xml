@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.697" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.698" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -430,12 +430,14 @@
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNetwork">DC++\Connection settings</String>
+		<String Name="SettingsNotificationSound">Notification sound</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
 		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
 		<String Name="SettingsOpenUserCmdHelp">Always open help file with this dialog</String>
 		<String Name="SettingsOptions">Options</String>
+		<String Name="SettingsOtherQueueOptions">Other queue options</String>
 		<String Name="SettingsOutgoing">Outgoing connection settings</String>
 		<String Name="SettingsOverride">Don't allow hub/UPnP to override</String>
 		<String Name="SettingsPersonalInformation">Personal Information</String>
@@ -447,6 +449,7 @@
 		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
 		<String Name="SettingsPopupPms">Open private messages in their own window</String>
 		<String Name="SettingsPorts">Ports</String>
+		<String Name="SettingsPromptPassword">Popup box to input password for hubs</String>
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
@@ -481,6 +484,7 @@
 		<String Name="SettingsPrioNormal">Normal prio max size</String>
 		<String Name="SettingsPrioLow">Low prio max size</String>
 		<String Name="SettingsPrioLowest">Set lowest prio for newly added files larger than Low prio size</String>
+		<String Name="SettingsTabs">DC++\Appearance\Tabs</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>

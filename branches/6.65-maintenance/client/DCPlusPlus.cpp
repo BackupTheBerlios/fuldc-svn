@@ -108,7 +108,7 @@ void startup(void (*f)(void*, const tstring&, const tstring&), void* p) {
 		(*f)(p, tku[index], TSTRING(SHARED_FILES));
 
 	if( !ShareManager::getInstance()->loadXmlList() ){
-		ShareManager::getInstance()->refresh(true, false, true);
+		ShareManager::getInstance()->refresh(ShareManager::REFRESH_ALL | ShareManager::REFRESH_BLOCKING);
 	}
 
 	if(f != NULL)

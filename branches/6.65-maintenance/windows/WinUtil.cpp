@@ -399,8 +399,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 		SHGetPathFromIDList(pidl, buf);
 		target = buf;
 
-		if(target.size() > 0 && target[target.size()-1] != L'\\')
-			target+=L'\\';
+		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
+			target+=_T('\\');
 
 		if(SHGetMalloc(&ma) != E_FAIL) {
 			ma->Free(pidl);
@@ -593,7 +593,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("refreshi")) == 0) {
 		try {
-			ShareManager::getInstance()->refresh(false, true, false, true);
+			ShareManager::getInstance()->refresh(ShareManager::REFRESH_INCOMING | ShareManager::REFRESH_UPDATE);
 		} catch( const ShareException& e) {
 			status = Text::toT(e.getError());
 		}

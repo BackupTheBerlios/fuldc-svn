@@ -17,6 +17,7 @@
  */
 
 #include "stdafx.h"
+#include <mmsystem.h>
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
@@ -36,8 +37,6 @@
 #include "../client/File.h"
 #include "../client/StringTokenizer.h"
 #include "../client/IgnoreManager.h"
-
-#include <MMSystem.h>
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 

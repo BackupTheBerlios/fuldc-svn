@@ -31,7 +31,7 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : port(0), floodCounter(0), server(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : floodCounter(0), server(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
@@ -43,28 +43,10 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), server(0), sh
 }
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
-	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
-	
-	if(lastPort == 0)
-		lastPort = (unsigned short)Util::rand(1025, 32000);
-
-	unsigned short firstPort = lastPort;
-
 	disconnect();
+	unsigned short port = static_cast<unsigned short>(SETTING(TCP_PORT));
 
-	while(true) {
-		try {
-			server = new Server(lastPort, SETTING(BIND_ADDRESS));
-			port = lastPort;
-			break;
-		} catch(const Exception&) {
-			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
-				throw Exception("Could not find a suitable free port");
-			}
-			lastPort = newPort;
-		}
-	}
+	server = new Server(port, SETTING(BIND_ADDRESS));
 }
 
 /**
@@ -294,6 +276,12 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 		putConnection(uc);
 		delete uc;
 	}
+}
+
+void ConnectionManager::disconnect() throw() {
+	delete server;
+
+	server = 0;
 }
 
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {

@@ -44,6 +44,7 @@ const string SettingsManager::settingTags[] =
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat",
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem",
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
+	"BeepFile",
 	
 	"DownloadSkiplist", "ShareSkiplist", "PopupFont", "FreeSlotsExtentions",
 	"HubFrameVisible", "MainFrameVisible", "SearchFrameVisible",
@@ -238,7 +239,6 @@ SettingsManager::SettingsManager()
 	setDefault(LAST_SEARCH_TYPE, 0);
 	setDefault(SOCKET_IN_BUFFER, 64*1024);
 	setDefault(SOCKET_OUT_BUFFER, 64*1024);
-	setDefault(ONLY_DL_TTH_FILES, false);
 	setDefault(OPEN_WAITING_USERS, false);
 	setDefault(OPEN_SYSTEM_LOG, true);
 	setDefault(BOLD_FINISHED_DOWNLOADS, true);
@@ -346,7 +346,7 @@ void SettingsManager::load(string const& aFileName)
 			xml.stepIn();
 
 			int i;
-			
+
 			for(i=STR_FIRST; i<STR_LAST; i++)
 			{
 				const string& attr = settingTags[i];

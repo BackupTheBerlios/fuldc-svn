@@ -50,7 +50,6 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
-				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="true"
 				MinimalRebuild="true"
 				ExceptionHandling="1"

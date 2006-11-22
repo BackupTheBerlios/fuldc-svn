@@ -31,6 +31,7 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::AUTO_SEARCH_AUTO_MATCH, ResourceManager::SETTINGS_AUTO_SEARCH_AUTO_MATCH },
 	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_SKIP_ZERO_BYTE },
 	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::SETTINGS_DONT_DL_ALREADY_SHARED },
+	{ SettingsManager::DONT_DL_ALREADY_QUEUED, ResourceManager::SETTINGS_DONT_DL_ALREADY_QUEUED },
 	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ANTI_FRAG },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };

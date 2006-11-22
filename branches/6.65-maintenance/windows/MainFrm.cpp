@@ -1171,7 +1171,7 @@ LRESULT MainFrame::onRefreshMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/
 	{
 		ShareManager::getInstance()->setDirty();
 		if(wParam == 0){
-			ShareManager::getInstance()->refresh( false, true, false, true );
+			ShareManager::getInstance()->refresh( ShareManager::REFRESH_INCOMING | ShareManager::REFRESH_UPDATE );
 		} else if(wParam > 1){
 			int id = wParam - 2;
 			StringList l = ShareManager::getInstance()->getVirtualDirectories();

@@ -114,6 +114,8 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 					return false;
 				}
 
+				free = free || (size <= (int64_t)(SETTING(FREE_SLOTS_SIZE) * 1024) );
+
 				f->setPos(start);
 
 				is = f;
@@ -367,7 +369,9 @@ void UploadManager::clearUserFiles(const User::Ptr& source) {
 User::List UploadManager::getWaitingUsers() {
 	Lock l(cs);
 	User::List u;
-	transform(waitingUsers.begin(), waitingUsers.end(), back_inserter(u), select1st<WaitingUser>());
+	for(UserList::const_iterator i = waitingUsers.begin(); i != waitingUsers.end(); ++i) {
+		u.push_back(i->first);
+	}
 	return u;
 }
 

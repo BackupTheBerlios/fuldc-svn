@@ -1242,7 +1242,7 @@ LRESULT DirectoryListingFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /
 		tstring path;
 		
 		if(ii->type == ItemInfo::FILE) {
-			path = Text::toT(ShareManager::getInstance()->getPhysicalPath(ii->file->getTTH()));
+			path = Text::toT(ShareManager::getInstance()->getRealPath(ii->file->getTTH()));
 		} else {
 			if(ii->dir->getFileCount() > 0) {
 				DirectoryListing::File::Iter i = ii->dir->files.begin();
@@ -1251,7 +1251,7 @@ LRESULT DirectoryListingFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /
 						break;
 				}
 				if(i != ii->dir->files.end()) {
-					path = Text::toT(ShareManager::getInstance()->getPhysicalPath(((*i)->getTTH())));
+					path = Text::toT(ShareManager::getInstance()->getRealPath(((*i)->getTTH())));
 					wstring::size_type end = path.find_last_of(_T("\\"));
 					if(end != wstring::npos) {
 						path = path.substr(0, end);

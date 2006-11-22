@@ -35,6 +35,7 @@
 #include "NetworkPage.h"
 #include "WindowsPage.h"
 #include "QueuePage.h"
+//#include "TabsPage.h"
 #include "FulHighlightPage.h"
 #include "FulSharePage.h"
 #include "FulDownloadPage.h"
@@ -56,6 +57,7 @@ TreePropertySheet(WinUtil::getIconPath(_T("settings_tree.bmp")), CTSTRING(SETTIN
 	pages[n++] = new UploadPage(s);
 	pages[n++] = new AppearancePage(s);
 	pages[n++] = new Appearance2Page(s);
+// @todo	pages[n++] = new TabsPage(s);
 	pages[n++] = new WindowsPage(s);
 	pages[n++] = new AdvancedPage(s);
 	pages[n++] = new LogPage(s);

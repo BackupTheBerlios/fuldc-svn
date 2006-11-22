@@ -1225,7 +1225,7 @@ LRESULT SearchFrame::onOpenDupe(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 		tstring path;
 
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			path = Text::toT(ShareManager::getInstance()->getPhysicalPath(si->sr->getTTH()));
+			path = Text::toT(ShareManager::getInstance()->getRealPath(si->sr->getTTH()));
 		} 
 
 		if(wID == IDC_OPEN) {

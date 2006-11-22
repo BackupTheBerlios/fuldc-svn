@@ -27,6 +27,10 @@
 #include "ZUtils.h"
 #include "SFVReader.h"
 
+#ifndef _WIN32
+#include <sys/mman.h> // mmap, munmap, madvise
+#endif
+
 #define HASH_FILE_VERSION_STRING "2"
 static const uint32_t HASH_FILE_VERSION=2;
 const int64_t HashManager::MIN_BLOCK_SIZE = 64*1024;
@@ -476,6 +480,8 @@ void HashManager::Hasher::getStats(string& curFile, int64_t& bytesLeft, size_t& 
 }
 
 #if defined(_WIN32) || defined(_WIN64)
+#define BUF_SIZE (256*1024)
+
 bool HashManager::Hasher::fastHash(const string& fname, uint8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
 	HANDLE h = INVALID_HANDLE_VALUE;
 	DWORD x, y;
@@ -584,7 +590,69 @@ cleanup:
 	::CloseHandle(h);
 	return ok;
 }
-#endif
+
+#else // !_WIN32
+
+static const int64_t BUF_SIZE = 0x1000000 - (0x1000000 % getpagesize());
+
+bool HashManager::Hasher::fastHash(const string& filename, u_int8_t* , TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
+	int fd = open(filename.c_str(), O_RDONLY);
+	if(fd == -1)
+		return false;
+
+	int64_t size_left = size;
+	int64_t pos = 0;
+	int64_t size_read = 0;
+	void *buf = 0;
+
+	u_int32_t lastRead = GET_TICK();
+	while(pos <= size) {
+		if(size_left > 0) {
+			size_read = std::min(size_left, BUF_SIZE);
+			buf = mmap(0, size_read, PROT_READ, MAP_SHARED, fd, pos);
+			if(buf == MAP_FAILED) {
+				close(fd);
+				return false;
+			}
+
+			madvise(buf, size_read, MADV_SEQUENTIAL | MADV_WILLNEED);
+
+			if(SETTING(MAX_HASH_SPEED) > 0) {
+				u_int32_t now = GET_TICK();
+				u_int32_t minTime = size_read * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
+				if(lastRead + minTime > now) {
+					u_int32_t diff = now - lastRead;
+					Thread::sleep(minTime - diff);
+				} 
+				lastRead = lastRead + minTime;
+			} else {
+				lastRead = GET_TICK();
+			}
+		} else {
+			size_read = 0;
+		}
+
+		tth.update(buf, size_read);
+		if(xcrc32)
+			(*xcrc32)(buf, size_read);
+		{
+			Lock l(cs);
+			currentSize = max(static_cast<u_int64_t>(currentSize - size_read), static_cast<u_int64_t>(0));
+		}
+
+		if(size_left <= 0) {
+			break;
+		}
+
+		munmap(buf, size_read);
+		pos += size_read;
+		size_left -= size_read;
+	}
+	close(fd);
+	return true;
+}
+
+#endif // !_WIN32
 
 int HashManager::Hasher::run() {
 	setThreadPriority(Thread::IDLE);
@@ -650,9 +718,9 @@ int HashManager::Hasher::run() {
 					xcrc32 = &crc32;
 
 				size_t n = 0;
-#if defined(_WIN32) || defined(_WIN64)
 				TigerTree fastTTH(bs);
 				tth = &fastTTH;
+#ifdef _WIN32
 				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size, xcrc32)) {
 					tth = &slowTTH;
 					crc32 = CRC32Filter();
@@ -681,11 +749,10 @@ int HashManager::Hasher::run() {
 						}
 						sizeLeft -= n;
 					} while (n > 0 && !stop);
-#if defined(_WIN32) || defined(_WIN64)
 				} else {
 					sizeLeft = 0;
 				}
-#endif
+
 				f.close();
 				tth->finalize();
 				time_t end = GET_TICK();
@@ -714,7 +781,7 @@ int HashManager::Hasher::run() {
 				VirtualFree(buf, 0, MEM_RELEASE);
 #endif
 			} else {
-				delete buf;
+				delete [] buf;
 			}
 			buf = NULL;
 		}

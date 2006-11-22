@@ -331,7 +331,7 @@ private:
 	HTREEITEM fileLists;
 
 
-	typedef HASH_MULTIMAP_X(tstring, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
+	typedef HASH_MULTIMAP_X(tstring, QueueItemInfo*, noCaseStringHashComp<tstring>, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;
