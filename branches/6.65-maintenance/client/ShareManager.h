@@ -301,6 +301,8 @@ private:
 	// Map real name to directory structure
 	Directory::Map directories;
 
+	hash_map<Directory*, string> virtualMap;
+
 	typedef HASH_MAP_X(TTHValue, Directory::File::Set::const_iterator, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
@@ -317,8 +319,6 @@ private:
 	void addTree(Directory& aDirectory);
 	void addFile(Directory& dir, Directory::File::Iter i);
 	bool loadCache() throw();
-	bool hasVirtual(const string& name) const throw();
-	Directory::Map::const_iterator getByVirtual(const string& virtualName) const throw();
 
 	Directory* getDirectory(const string& fname);
 

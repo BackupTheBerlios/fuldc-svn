@@ -267,6 +267,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 		return;
 
 	UserConnection* uc = getConnection(true);
+	uc->setToken(aNick);
 	uc->setHubUrl(hubUrl);
 	uc->setState(UserConnection::STATE_CONNECT);
 	uc->setFlag(UserConnection::FLAG_NMDC);
@@ -287,9 +288,9 @@ void ConnectionManager::disconnect() throw() {
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
-		aSource->myNick(aSource->getUser()->getNick());
+		aSource->myNick(aSource->getToken());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-	} 
+	}
 	aSource->setState(UserConnection::STATE_SUPNICK);
 }
 
