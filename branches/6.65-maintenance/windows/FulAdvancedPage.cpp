@@ -43,7 +43,6 @@ FulAdvancedPage::ListItem FulAdvancedPage::listItems[] = {
 	{ SettingsManager::STRIP_ISP,						ResourceManager::STRIP_ISP					},
 	{ SettingsManager::STRIP_ISP_PM,					ResourceManager::STRIP_ISP_PM				},
 	{ SettingsManager::HUBFRAME_CONFIRMATION,			ResourceManager::HUBFRAME_CONFIRMATION		},
-	{ SettingsManager::CUSTOM_SOUND,					ResourceManager::CUSTOM_SOUND				},
 	{ SettingsManager::REMOVE_TOPIC,					ResourceManager::REMOVE_TOPIC				}, 
 	{ SettingsManager::DROP_STUPID_CONNECTION,			ResourceManager::DROP_STUPID_CONNECTION		},
 	{ SettingsManager::FLASH_WINDOW_ON_PM,				ResourceManager::FLASH_WINDOW_ON_PM			},

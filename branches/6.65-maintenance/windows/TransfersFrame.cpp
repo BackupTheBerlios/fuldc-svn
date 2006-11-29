@@ -496,7 +496,9 @@ LRESULT TransfersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	}
 
 	ctrlTransfers.resort();
-	setDirty();
+
+	if(BOOLSETTING(BOLD_TRANSFERS))
+		setDirty();
 
 	return 0;
 }

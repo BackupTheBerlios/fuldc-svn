@@ -110,10 +110,10 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 				p->addLine(aMessage);
 				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) && !p->muted) {
 					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
-						if(BOOLSETTING(CUSTOM_SOUND))
-							PlaySound(_T("PM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-						else
+						if (SETTING(BEEPFILE).empty())
 							MessageBeep(MB_OK);
+						else
+							::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
 					}
 				}
 				if(BOOLSETTING(POPUP_ON_PM) && !BOOLSETTING(POPUP_ON_NEW_PM) && p->doPopups) {
@@ -140,10 +140,10 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 
 				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
 					if(!(BOOLSETTING(MUTE_ON_AWAY) && Util::getAway())) {
-						if(BOOLSETTING(CUSTOM_SOUND))
-							PlaySound(_T("newPM.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
-						else
+						if (SETTING(BEEPFILE).empty())
 							MessageBeep(MB_OK);
+						else
+							::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
 					}
 				}
 
@@ -406,7 +406,7 @@ void PrivateFrame::addLine(const tstring& aLine, bool bold) {
 			CreateEx(WinUtil::mdiClient);
 	}
 
-	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
+	if(BOOLSETTING(LOG_PRIVATE_CHAT) && user->isOnline()) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
 		params["user"] = user->getNick();

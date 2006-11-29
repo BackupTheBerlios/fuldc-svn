@@ -1249,14 +1249,14 @@ int WinUtil::getTextSpacing(HWND wnd, HFONT fnt) {
 
 tstring WinUtil::DiskSpaceInfo(bool onlyTotal /* = false */) {
 	ULONG drives = _getdrives();
-	TCHAR drive[3] = { _T('C'), _T(':'), _T('\0') };
+	TCHAR drive[3] = { _T('A'), _T(':'), _T('\0') };
 	tstring ret = Util::emptyStringT;
 	int64_t free = 0, totalFree = 0, size = 0, totalSize = 0;
 
-	drives = ( drives >> 2);
+	//drives = ( drives >> 2);
 	
 	while(drives != 0) {
-		if(drives & 1 && GetDriveType(drive) != DRIVE_CDROM){
+		if(drives & 1 && ( GetDriveType(drive) != DRIVE_CDROM && GetDriveType(drive) != DRIVE_REMOVABLE) ){
 			if(GetDiskFreeSpaceEx(drive, NULL, (PULARGE_INTEGER)&size, (PULARGE_INTEGER)&free)){
 				totalFree += free;
 				totalSize += size;

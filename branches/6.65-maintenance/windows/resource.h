@@ -626,6 +626,7 @@
 #define IDC_MATCH_ALL                   1379
 #define IDC_BEEP_NOTIFICATION           1380
 #define IDC_BEEPFILE                    1381
+#define IDD_TABSPAGE                    1382
 #define IDC_DOWNLOAD_FAVORITE_DIRS      2000
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 2200
 #define IDC_BROWSELIST                  3000

@@ -163,7 +163,7 @@ private:
 	typedef StringInt64Map::iterator StringInt64Iter;
 	StringInt64Map totalSizeMap;
 
-	void updateTotalSize(const string & path, const uint64_t& size, bool add = true);
+	void updateTotalSize(const string & path, const uint64_t& size, bool add);
 	
 	time_t lastSearchAlternates;
 	

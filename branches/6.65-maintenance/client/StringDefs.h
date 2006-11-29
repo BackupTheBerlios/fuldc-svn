@@ -815,5 +815,6 @@ enum Strings { // @DontAdd
 	TRANSFERS, // "Transfers"
 	MENU_TRANSFERS, // "Transfers\tCtrl+T"
 	USERCOMMANDS, // "Usercommands"
+	BOLD_TRANSFERS, // "Transfers"
 	LAST // @DontAdd
 };

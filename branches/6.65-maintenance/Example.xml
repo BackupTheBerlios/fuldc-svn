@@ -811,5 +811,6 @@
 		<String Name="Transfers">Transfers</String>
 		<String Name="MenuTransfers">Transfers	Ctrl+T</String>
 		<String Name="Usercommands">Usercommands</String>
+		<String Name="BoldTransfers">Transfers</String>
 	</Strings>
 </Language>

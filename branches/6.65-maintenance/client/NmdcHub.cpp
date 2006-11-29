@@ -583,7 +583,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 string NmdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
 	for(size_t i = 0; i < aNick.size(); ++i) {
-		if(tmp[i] <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
+		if(static_cast<unsigned char>(tmp[i]) <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
 			tmp[i] = '_';
 		}
 	}
@@ -659,13 +659,11 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 
 // TimerManagerListener
 void NmdcHub::on(Second, time_t aTick) throw() {
+	Client::on(Second(), aTick);
+
 	if(state == STATE_CONNECTED && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Try to send something for the fun of it...
-		dcdebug("Testing writing...\n");
+		
 		send("|", 1);
-	} else if(getAutoReconnect() && state == STATE_CONNECT && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Try to reconnect...
-		connect();
 	}
 
 	{
@@ -679,20 +677,12 @@ void NmdcHub::on(Second, time_t aTick) throw() {
 			flooders.pop_front();
 		}
 	}
-
-	Client::on(Second(), aTick);
 }
 
 // BufferedSocketListener
 void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	clearUsers();
-
-	socket->removeListener(this);
-
-	if(state == STATE_CONNECTED)
-		state = STATE_CONNECT;
-
-	fire(ClientListener::Failed(), this, aLine); 
+	Client::on(Failed(), aLine);
 }
 
 string NmdcHub::validateMessage(string tmp, bool reverse, bool checkNewLines) {

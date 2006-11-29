@@ -851,7 +851,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 
 						fire(QueueManagerListener::Finished(), q, aDownload->getAverageSpeed());
 						fire(QueueManagerListener::Removed(), q);
-						updateTotalSize(q->getTarget(), false);
+						updateTotalSize(q->getTarget(), q->getSize(), false);
 
 						userQueue.remove(q);
 						fileQueue.remove(q);
@@ -1502,7 +1502,7 @@ void QueueManager::onTimerSearch() {
 	fire(QueueManagerListener::SearchAlternates(), searchString, nr);
 }
 
-void QueueManager::updateTotalSize(const string & path, const uint64_t& size, bool add /* = true */){
+void QueueManager::updateTotalSize(const string & path, const uint64_t& size, bool add){
 	if(path.find("FileLists") != string::npos)
 		return;
 
