@@ -69,6 +69,8 @@ ECHO packing source...
 del fulDc-src.rar
 %RAR% %RARSRCOPS%
 
+tthsum.exe App\DCPlusPlus.exe
+
 ECHO ------------------------------
 ECHO finished!
 pause

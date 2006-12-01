@@ -204,9 +204,9 @@ void ConnectionManager::on(TimerManagerListener::Minute, time_t aTick) throw() {
 static const uint32_t FLOOD_TRIGGER = 20000;
 static const uint32_t FLOOD_ADD = 2000;
 
-ConnectionManager::Server::Server(short port, const string& ip /* = "0.0.0.0" */) : die(false) {
+ConnectionManager::Server::Server(short aPort, const string& aIp /* = "0.0.0.0" */) : die(false), port(aPort) {
 	sock.create();
-	sock.bind(port, ip);
+	sock.bind(aPort, aIp);
 	sock.listen();
 
 	start();
