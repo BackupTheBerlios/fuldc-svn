@@ -563,6 +563,9 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 void ShareManager::addTree(Directory& dir) {
 	bloom.add(Text::toLower(dir.getName()));
+	//reset the size to avoid increasing the share size
+	//on every refresh.
+	dir.size = 0;
 
 	for(Directory::MapIter i = dir.directories.begin(); i != dir.directories.end(); ++i) {
 		addTree(*i->second);
@@ -658,6 +661,7 @@ int ShareManager::run() {
 		for(DirectoryInfoList::const_iterator i = dirs.begin(); i != dirs.end(); ++i) {
 			Directory* dp = buildTree(i->realPath, 0);
 			dp->setName(i->virtualName);
+			dp->setIncoming(i->incoming);
 			newDirs.insert(make_pair(i->realPath, dp));
 		}
 

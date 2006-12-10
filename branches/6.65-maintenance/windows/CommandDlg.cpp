@@ -135,6 +135,8 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 LRESULT CommandDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	updateContext();
+	updateCommand();
+	updateType();
 	if(wID == IDOK) {
 		TCHAR buf[256];
 
@@ -152,9 +154,9 @@ LRESULT CommandDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 		GET_TEXT(IDC_NAME, name);
 		GET_TEXT(IDC_HUB, hub);
 
-		if(type != 0) {
-			type = (ctrlOnce.GetCheck() == BST_CHECKED) ? 2 : 1;
-		}
+		//if(type != 0) {
+		//	type = (ctrlOnce.GetCheck() == BST_CHECKED) ? 2 : 1;
+		//}
 		SettingsManager::getInstance()->set(SettingsManager::OPEN_USER_CMD_HELP, IsDlgButtonChecked(IDC_USER_CMD_OPEN_HELP) == BST_CHECKED);
 	}
 	EndDialog(wID);
