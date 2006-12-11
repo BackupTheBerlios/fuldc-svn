@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>How to use an external sfv tool with fulDC</title>
+		<meta content="text/html; charset=us-ascii" http-equiv="content-type">
+		<link type="text/css" rel="stylesheet" href="office11.css">
+	</head>
+	<body>
+	    <h1>How to use an external sfv tool with fulDC</h1><br />
+	    <h2>Instructions</h2>
+	    <dl style="margin-left: 40px;">
+	        There is no setting in the GUI for this option, the xml file has to be edited by hand. 
+	        The easiest way to do this is to start fulDC once and then close it again, this creates 
+	        the necessary options in the file. Open DCPlusPlus.xml and find the tag named &lt;FileEvents&gt;. 
+	        Below this tag you'll find at least two tags &lt;OnFileComplete&gt; and &lt;OnDirCreated&gt;. To 
+	        enable fulDC to launch external programs on these events fill in the Command and CommandLine attributes. 
+	        An example using ftplogger from <a href="http://ftpservertools.tripod.com/">http://ftpservertools.tripod.com/</a> 
+	        could look like this.<br /><br />
+	        &lt;FileEvents&gt;<br />
+		        &lt;OnFileComplete Command="C:\Program Files\ftp server tools\ftplogger.exe" CommandLine="FILE=%[file]"/&gt;<br />
+		        &lt;OnDirCreated Command="c:\Program Files\ftp server tools\OnDirCreated.exe" CommandLine="Dir=%[dir]"/&gt;<br />
+	        &lt;/FileEvents&gt;<br />
+	    </dl>
+	    
+	    <h2>Cookies</h2>
+	    <dl style="margin-left: 40px;">
+	        <dt>OnFileComplete</dt>
+	        <dd>%[file] - the full path of the file downloaded.</dd>
+	        <dt>OnDirCreated</dt>
+	        <dd>%[dir] - the full path of the directory being created.</dd>
+	    </dl>
+	    <h2>Return values</h2>
+	    <div style="margin-left: 40px;">
+	        <p>This is how fulDC handles the return values of the sfv tool used, read the manual for
+	        your tool to find out if it's compatible with fulDC.</p>
+	        <dl>
+	            <dt>OnDirCreated</dt>
+	            <dd>OnDirCreated use the return value to signal if the folder should be downloaded. 0 means
+	            that the folder is good to go. Anything but 0 means that the folder should not be downloaded
+	            and it's not added to the download queue.</dd>
+	            <dt>OnFileComplete</dt>
+	            <dd>Return value is ignored</dd>
+	        </dl>
+	    </div>
+	</body>
+</html>

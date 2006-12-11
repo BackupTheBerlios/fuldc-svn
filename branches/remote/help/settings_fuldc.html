@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>fulDC</title>
+		<meta content="text/html; charset=us-ascii" http-equiv="content-type" />
+		<link type="text/css" rel="stylesheet" href="office11.css" />
+	</head>
+	<body>
+		<h1>fulDC</h1>
+		<h2>Boolean Options</h2>
+		<div style="margin-left: 40px;">
+			<dl>
+				<dt>Expand Queue</dt>
+				<dd>
+					This controls how the download queue should look when the windows is opened. If 
+					enabled the queue will show all folders expanded otherwise only the root folders 
+					will be expanded.</dd>
+				<dt>Strip ISP(public hubs only, see favorite hub settings)</dt>
+				<dd>
+					Controls how nicks should be displayed, if enabled leading brackets will be 
+					removed from the nick. e.g [ISP]nick will be displayed as nick</dd>
+				<dt>Strip ISP in private messages.</dt>
+				<dd>
+					Strip ISP tag in private messages.</dd>
+				<dt>Confirm hub exit</dt>
+				<dd>
+					If enabled a dialog box will pop up asking if you really want to close the hub window.</dd>
+				<dt>confirm removal of files from queue</dt>
+				<dd>
+					If enabled a dialog box will pop up asking if you really want to remove the files.</dd>
+				<dt>play custom sounds on PM</dt>
+				<dd>
+					With this enabled add PM.wav and newPM.wav to your fuldc directory to have fuldc 
+					play those sounds when receiving private messages instead of the default sounds.</dd>
+				<dt>Remove topic (everywhere except hub window title)</dt>
+				<dd>
+					Removes everything after the last - found in the hub name. Enable this to get a 
+					cleaner look everywhere except hub window title.</dd>
+				<dt>Drop connections from own nick(stupid clients)</dt>
+				<dd>
+					If you're seeing connection attempts from your own nick and it bothers you, 
+					activate this function to drop those connections. If logging of system messages 
+					is enabled, a log entry will be created in system.log.</dd>
+				<dt>Flash window on PM</dt>
+				<dd>
+					Flash window when a private message is received.</dd>
+				<dt>Flash window on PM only if it's from a new user</dt>
+				<dd>
+					Only flash the window when the PM window is created for that user. </dd>
+			</dl>
+		</div>
+		
+		<h2>Web Shortcuts</h2>
+		<p>
+			Web shortcuts are used to get easy access to websites, usually sites where you can search 
+			for information about a specific subject.</p>
+		<div style="margin-left: 40px;">
+			<dl>
+				<dt>Add</dt>
+				<dd>
+					Used to add a new web shortcut to the list. This brings up a dialog with a few fields. 
+					Name is what is displayed in menus where web shortcuts can be used. Key is used in 
+					hub and pm windows, /&lt;key&gt; &lt;search term&gt; to open the specified url. Url 
+					is the url that should be opened when a web shortcut is used, specify %s in the url
+					where the search term should be inserted. Clean search string is used to remove 
+					info from the search string that's not necessary, for example 
+					"Movie.Name.2003.DVDRip.XviD-ABC" will become "Movie Name"</dd>
+				<dt>Properties</dt>
+				<dd>
+					Opens the same dialog as Add with the values for the selected web shortcut
+					filled in.</dd>
+				<dt>Remove</dt>
+				<dd>
+					Removes the selected web shortcut.</dd>
+					
+			</dl>
+			<h2>Web shortcuts dialog</h2>
+			<div style="margin-left: 30px;">
+				<dl>
+					<dt>Name</dt>
+					<dd>
+						The name that's used in context menus</dd>
+					<dt>Key</dt>
+					<dd>
+						This is used in hub and PM windows to provide access to the web shortcut, it is invoked by
+						writing /key &lt;text&gt; so for example /g fulDC will search for fulDC on google</dd>
+					<dt>Url</dt>
+					<dd>
+						The url used when the shortcut is invoked. %s specifies where your text will be inserted.</dd>
+					<dt>Clean search string</dt>
+					<dd>
+						This is mostly used for the imdb shortcut, it is used to remove things such as date, release group and format
+						from the string to make it possible to find on imdb.</dd>
+				</dl>
+			</div>
+		</div>
+	</body>
+</html>
