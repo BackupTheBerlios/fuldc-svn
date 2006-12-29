@@ -56,12 +56,15 @@ no_backup:
   ; Put file there
   File "/oname=DCPlusPlus.exe" "App\DCPlusPlus.exe"
   File "/oname=DCPlusPlus.chm" "App\DCPlusPlus.chm"
-  File "/oname=unicows.dll" "app\unicows.dll"
+  File "unicows.dll"
   File "ChangeLog.txt"
   File "Example.xml"
   File "License.txt"
   File "License-GeoIP.txt"
   File "Magnet.exe"
+  File "dcppboot.xml"
+  ; Remove opencow just in case we're upgrading
+  Delete "$INSTDIR\opencow.dll"
   
   ; Get DCPlusplus version we just installed and store in $1
   Push "DCPlusPlus.exe"
@@ -94,7 +97,7 @@ SectionEnd
 Section "Debug Information (recommended, helps finding bugs)"
   SetOutPath $INSTDIR
   File "/oname=DCPlusPlus.pdb" "App\DCPlusPlus.pdb"
-  File "Unicows.pdb"
+  File "unicows.pdb"
   File "dbghelp.dll"
 SectionEnd
 
@@ -123,10 +126,10 @@ Section "un.Uninstall"
   Delete "$INSTDIR\dbghelp.dll"
   Delete "$INSTDIR\DCPlusPlus.pdb"
   Delete "$INSTDIR\License-GeoIP.txt"
-  Delete "$INSTDIR\Unicows.pdb"
   Delete "$INSTDIR\License.txt"
   Delete "$INSTDIR\ChangeLog.txt"
   Delete "$INSTDIR\unicows.dll"
+  Delete "$INSTDIR\unicows.pdb"
   Delete "$INSTDIR\Example.xml"
   Delete "$INSTDIR\Magnet.exe"
   Delete "$INSTDIR\GeoIPCountryWhois.csv"

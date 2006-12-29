@@ -44,7 +44,7 @@ ConnectionManager::ConnectionManager() : floodCounter(0), server(0), shuttingDow
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
 	disconnect();
-	unsigned short port = static_cast<unsigned short>(SETTING(TCP_PORT));
+	uint16_t port = static_cast<uint16_t>(SETTING(TCP_PORT));
 
 	server = new Server(port, SETTING(BIND_ADDRESS));
 }
@@ -204,9 +204,9 @@ void ConnectionManager::on(TimerManagerListener::Minute, time_t aTick) throw() {
 static const uint32_t FLOOD_TRIGGER = 20000;
 static const uint32_t FLOOD_ADD = 2000;
 
-ConnectionManager::Server::Server(short aPort, const string& aIp /* = "0.0.0.0" */) : die(false), port(aPort) {
+ConnectionManager::Server::Server(uint16_t aPort, const string& aIp /* = "0.0.0.0" */) : port(0), die(false) {
 	sock.create();
-	sock.bind(aPort, aIp);
+	port = sock.bind(aPort, aIp);
 	sock.listen();
 
 	start();
@@ -262,7 +262,7 @@ void ConnectionManager::accept(const Socket& sock) throw() {
 	}
 }
 
-void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick, const string& hubUrl) {
+void ConnectionManager::nmdcConnect(const string& aServer, uint16_t aPort, const string& aNick, const string& hubUrl) {
 	if(shuttingDown)
 		return;
 

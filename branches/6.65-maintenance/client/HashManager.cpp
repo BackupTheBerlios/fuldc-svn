@@ -446,8 +446,6 @@ void HashManager::HashStore::createDataFile(const string& name) {
 	}
 }
 
-#define BUF_SIZE (256*1024)
-
 void HashManager::Hasher::hashFile(const string& fileName, int64_t size) {
 	Lock l(cs);
 	if(w.insert(make_pair(fileName, size)).second) {

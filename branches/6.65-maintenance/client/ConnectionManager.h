@@ -56,6 +56,7 @@ public:
 	GETSET(State, state, State);
 	GETSET(time_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
+	GETSET(string, token, Token);
 private:
 	ConnectionQueueItem(const ConnectionQueueItem&);
 	ConnectionQueueItem& operator=(const ConnectionQueueItem&);
@@ -70,7 +71,7 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 	public Singleton<ConnectionManager>
 {
 public:
-	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
+	void nmdcConnect(const string& aServer, uint16_t aPort, const string& aMyNick, const string& hubUrl);
 
 	void getDownloadConnection(const User::Ptr& aUser);
 
@@ -82,21 +83,19 @@ public:
 	void listen() throw(SocketException);
 	void disconnect() throw();
 
-	unsigned short getPort() { return server ? static_cast<unsigned short>(server->getPort()) : 0; }
-
+	uint16_t getPort() { return server ? static_cast<uint16_t>(server->getPort()) : 0; }
 private:
 
 	class Server : public Thread {
 	public:
-		Server(short port, const string& ip = "0.0.0.0");
+		Server(uint16_t port, const string& ip = "0.0.0.0");
+		uint16_t getPort() { return port; }
 		virtual ~Server() { die = true; join(); }
-
-		short getPort() const { return port; }
 	private:
 		virtual int run() throw();
 
 		Socket sock;
-		short port;
+		uint16_t port;
 		bool secure;
 		bool die;
 	};

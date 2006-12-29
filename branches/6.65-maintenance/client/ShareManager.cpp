@@ -947,7 +947,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearchL
 	}
 
 	if(aFileType != SearchManager::TYPE_DIRECTORY) {
-		for(File::Iter i = files.begin(); i != files.end(); ++i) {
+		for(File::Set::const_iterator i = files.begin(); i != files.end(); ++i) {
 
 			if(aSearchType == SearchManager::SIZE_ATLEAST && aSize > i->getSize()) {
 				continue;
@@ -973,12 +973,12 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearchL
 		}
 	}
 
-	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < maxResults); ++l) {
+	for(Directory::Map::const_iterator l = directories.begin(); (l != directories.end()) && (aResults.size() < maxResults); ++l) {
 		l->second->search(aResults, *cur, aSearchType, aSize, aFileType, aClient, maxResults);
 	}
 }
 
-void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
+void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw() {
 	Lock l(cs);
 	if(aFileType == SearchManager::TYPE_TTH) {
 		if(aString.compare(0, 4, "TTH:") == 0) {

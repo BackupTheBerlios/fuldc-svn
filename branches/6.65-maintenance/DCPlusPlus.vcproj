@@ -1213,6 +1213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\ShellContextMenu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\SpyFrame.cpp"
 				>
 			</File>
@@ -1563,6 +1567,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\SearchFrm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\ShellContextMenu.h"
 				>
 			</File>
 			<File

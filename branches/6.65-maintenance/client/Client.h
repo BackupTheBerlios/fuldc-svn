@@ -106,7 +106,7 @@ public:
 	virtual User::NickMap& lockUserList() = 0;
 	virtual void unlockUserList() = 0;
 
-	short getPort() const { return port; }
+	uint16_t getPort() const { return port; }
 	const string& getAddress() const { return address; }
 
 	const string& getIp() const { return ip; }
@@ -117,7 +117,7 @@ public:
 
 	static string getCounts() {
 		char buf[128];
-		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
+		return string(buf, snprintf(buf, sizeof(buf), "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
 	const User::Ptr& getMe() const { return me; };

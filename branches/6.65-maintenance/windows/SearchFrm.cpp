@@ -354,7 +354,6 @@ void SearchFrame::onEnter() {
 		ctrlFilterBox.InsertString(0, f.c_str());
 	}
 
-	
 	ctrlStatus.SetText(1, (TSTRING(SEARCHING_FOR) + s + _T("...")).c_str());
 	{
 		Lock l(cs);

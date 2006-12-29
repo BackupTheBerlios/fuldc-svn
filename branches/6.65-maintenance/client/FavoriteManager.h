@@ -137,7 +137,8 @@ public:
 	typedef X<4> FavoriteRemoved;
 	typedef X<5> UserAdded;
 	typedef X<6> UserRemoved;
-	typedef X<7> PublicHubsUpdated;
+	typedef X<7> LoadedFromCache;
+	typedef X<8> PublicHubsUpdated;
 
 	virtual void on(DownloadStarting, const string&) throw() { }
 	virtual void on(DownloadFailed, const string&) throw() { }
@@ -147,6 +148,7 @@ public:
 	virtual void on(UserAdded, const User::Ptr&) throw() { }
 	virtual void on(UserRemoved, const User::Ptr&) throw() { }
 	virtual void on(PublicHubsUpdated) throw() { }
+	virtual void on(LoadedFromCache, const string&) throw() { }
 };
 
 class SimpleXML;
@@ -164,16 +166,16 @@ public:
 		TYPE_BZIP2
 	};
 	StringList getHubLists();
-	bool setHubList(int /*aHubList*/);
+	void setHubList(int aHubList);
 	void setHubList(const string& hubs);
 	int getSelectedHubList() { return lastServer; }
-	void refresh();
+	void refresh(bool forceDownload = false);
 	HubTypes getHubListType() { return listType; }
 	HubEntryList getPublicHubs() {
 		Lock l(cs);
 		return publicListMatrix[publicListServer];
 	}
-	bool isDownloading() { return running; }
+	bool isDownloading() { return (useHttp && running); }
 
 // Favorite Users
 	User::List& getFavoriteUsers() { return users; }
@@ -225,7 +227,7 @@ private:
 	typedef map<string, HubEntryList> PubListMap;
 	PubListMap publicListMatrix;
 	string publicListServer;
-	bool running;
+	bool useHttp, running;
 	HttpConnection* c;
 	int lastServer;
 	HubTypes listType;
@@ -236,20 +238,8 @@ private:
 
 	friend class Singleton<FavoriteManager>;
 
-	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
-		SettingsManager::getInstance()->addListener(this);
-	}
-
-	virtual ~FavoriteManager() throw() {
-		SettingsManager::getInstance()->removeListener(this);
-		if(c) {
-			c->removeListener(this);
-			delete c;
-			c = NULL;
-		}
-
-		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction());
-	}
+	FavoriteManager();
+	virtual ~FavoriteManager() throw();
 
 	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
@@ -270,7 +260,7 @@ private:
 	virtual void on(TypeNormal, HttpConnection*) throw();
 	virtual void on(TypeBZ2, HttpConnection*) throw();
 
-	void onHttpFinished() throw();
+	void onHttpFinished(bool fromHttp) throw();
 
 	// SettingsManagerListener
 	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw() {

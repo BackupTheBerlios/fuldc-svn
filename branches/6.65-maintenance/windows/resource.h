@@ -644,6 +644,8 @@
 #define IDC_READD_QUEUE                 9000
 #define IDC_DOWNLOAD_TARGET             10000
 #define IDC_DOWNLOAD_TARGET_DIR         10500
+#define ID_SHELLCONTEXTMENU_MIN         11000
+#define ID_SHELLCONTEXTMENU_MAX         11500
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

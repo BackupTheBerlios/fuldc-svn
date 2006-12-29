@@ -227,7 +227,7 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 					item.iSubItem = 1;
 					ctrlDirectories.GetItem(&item);
 
-					ShareManager::getInstance()->renameDirectory(Text::fromT(buf), Text::fromT(virt.line));
+					ShareManager::getInstance()->renameDirectory(Text::fromT(rPath), Text::fromT(virt.line));
 					ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
 
 					setDirty = true;

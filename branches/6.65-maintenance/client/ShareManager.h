@@ -233,6 +233,7 @@ private:
 
 		/** Set of flags that say which SearchManager::TYPE_* a directory contains */
 		uint32_t fileTypes;
+
 	};
 
 	friend class Directory;

@@ -76,7 +76,7 @@ const string SettingsManager::settingTags[] =
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles",
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
 	"AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
-	"DontDlAlreadyQueued", "MaxCommandLength",
+	"DontDlAlreadyQueued", "MaxCommandLength","ShowShellMenu",
 
 	"IncomingRefreshTime", "ShareRefreshTime", "ChatBuffersize", "AutoUpdateIncoming", 
 	"ExpandQueue", "StripIsp", "StripIspPm", "HubBoldTabs",
@@ -256,7 +256,7 @@ SettingsManager::SettingsManager()
 	setDefault(SPY_FRAME_IGNORE_TTH_SEARCHES, false);
 	setDefault(DONT_DL_ALREADY_QUEUED, false);
 	setDefault(MAX_COMMAND_LENGTH, 16*1024*1024);
-
+	setDefault(SHOW_SHELL_MENU, false);
 	setDefault(INCOMING_REFRESH_TIME, 60);
 	setDefault(SHARE_REFRESH_TIME, 360);
 	setDefault(CHATBUFFERSIZE, 25000);

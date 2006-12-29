@@ -146,7 +146,10 @@ public:
 	}
 	static string clean(const string& aSearchString);
 
-	unsigned short getPort()	{ return port; }
+	uint16_t getPort()
+	{
+		return port;
+	}
 
 	void listen() throw(SocketException);
 	void disconnect() throw();
@@ -167,7 +170,7 @@ public:
 private:
 
 	Socket* socket;
-	unsigned short port;
+	uint16_t port;
 	bool stop;
 	time_t lastSearch;
 	friend class Singleton<SearchManager>;

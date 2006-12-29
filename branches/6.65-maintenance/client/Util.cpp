@@ -95,7 +95,7 @@ void Util::initialize() {
 	systemPath = "/etc/";
 	char* home = getenv("HOME");
 	configPath = home ? home + string("/.dc++/") : "/tmp/";
-#error dataPath = wherever linux should fetch data
+	dataPath = configPath; // dataPath in linux is usually prefix + /share/app_name, so we can't represent it here
 #endif
 
 	// Load boot settings
@@ -112,8 +112,6 @@ void Util::initialize() {
 			params["APPDATA"] = Text::fromT((::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path), path));
 			params["PERSONAL"] = Text::fromT((::SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path), path));
 			configPath = Util::formatParams(boot.getChildData(), params, false);
-#else
-#error TODO - make env vars available perhaps?
 #endif
 		}
 	} catch(const Exception& ) {
@@ -353,9 +351,9 @@ void Util::decodeUrl(const string& url, string& aServer, uint16_t& aPort, string
 	if( (k=url.find(':', i)) != string::npos) {
 		// Port
 		if(j == string::npos) {
-			aPort = (short)Util::toInt(url.substr(k+1));
+			aPort = static_cast<uint16_t>(Util::toInt(url.substr(k+1)));
 		} else if(k < j) {
-			aPort = (short)Util::toInt(url.substr(k+1, j-k-1));
+			aPort = static_cast<uint16_t>(Util::toInt(url.substr(k+1, j-k-1)));
 		}
 	} else {
 		k = j;

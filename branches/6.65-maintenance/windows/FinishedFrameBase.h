@@ -29,6 +29,7 @@
 
 #include "FlatTabCtrl.h"
 #include "TypedListViewCtrl.h"
+#include "ShellContextMenu.h"
 #include "WinUtil.h"
 #include "TextFrame.h"
 #include "FinishedManager.h"
@@ -47,6 +48,7 @@ public:
 	virtual ~FinishedFrameBase() { }
 
 	BEGIN_MSG_MAP(T)
+
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
@@ -229,12 +231,42 @@ public:
 				WinUtil::getContextMenuPos(ctrlList, pt);
 			}
 
-			ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);			
-			return TRUE; 
-		}
+			bool bShellMenuShown = false;
 
+			if(BOOLSETTING(SHOW_SHELL_MENU) && (ctrlList.GetSelectedCount() == 1)) {
+				FinishedItem *fi = ctrlList.getSelectedItem();
+				tstring path = fi->getText(COLUMN_PATH) + fi->getText(COLUMN_FILE);
+				if(GetFileAttributes(path.c_str()) != 0xFFFFFFFF) { // Check that the file still exists
+					CShellContextMenu shellMenu;
+
+					CMenu* pShellMenu = shellMenu.GetMenu();
+					if(pShellMenu) {
+						CMenu copy;
+						copy.CreatePopupMenu();
+						ctrlList.buildCopyMenu(copy);
+
+						pShellMenu->AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
+						pShellMenu->AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
+						pShellMenu->AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
+						pShellMenu->AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
+						pShellMenu->AppendMenu(MF_POPUP, copy, CTSTRING(COPY));
+						pShellMenu->AppendMenu(MF_SEPARATOR);
+						pShellMenu->AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
+						pShellMenu->AppendMenu(MF_STRING, IDC_TOTAL, CTSTRING(REMOVE_ALL));
+						pShellMenu->AppendMenu(MF_SEPARATOR);
+					}
+
+					bShellMenuShown = shellMenu.ShowContextMenu(m_hWnd, pt, path, true);
+				}
+			}
+
+			if(!bShellMenuShown)
+				ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
+			return TRUE;
+		}
 		bHandled = FALSE;
-		return FALSE; 
+		return FALSE;
 	}
 
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {

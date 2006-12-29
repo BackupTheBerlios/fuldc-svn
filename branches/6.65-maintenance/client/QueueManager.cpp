@@ -1221,7 +1221,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				return;
 			}
 			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority, 3));
-			time_t added = (time_t)Util::toInt(getAttrib(attribs, sAdded, 4));
+			time_t added = static_cast<time_t>(Util::toInt(getAttrib(attribs, sAdded, 4)));
 			const string& tthRoot = getAttrib(attribs, sTTH, 5);
 			if(tthRoot.empty())
 				return;
