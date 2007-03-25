@@ -34,7 +34,7 @@ class ListLoader;
 
 STANDARD_EXCEPTION(AbortException);
 
-class DirectoryListing 
+class DirectoryListing
 {
 public:
 	class Directory;
@@ -153,7 +153,7 @@ public:
 		delete root;
 	}
 
-	void loadFile(const string& name) throw(FileException, SimpleXMLException);
+	void loadFile(const string& name) throw(Exception);
 
 	string loadXML(const string& xml, bool updating);
 

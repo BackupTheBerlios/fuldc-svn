@@ -80,7 +80,7 @@ public:
 	void add(const string& aTarget, int64_t aSize, const TTHValue& root, User::Ptr aUser, 
 		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
+	void addList(const User::Ptr& aUser, int aFlags, const string& aInitialDir = Util::emptyString) throw(QueueException, FileException);
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 

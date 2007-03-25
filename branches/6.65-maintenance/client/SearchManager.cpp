@@ -116,9 +116,9 @@ void SearchManager::disconnect() throw() {
 		stop = true;
 		socket->disconnect();
 		port = 0;
-#if defined(_WIN32) || defined(_WIN64)
+
 		join();
-#endif
+
 		stop = false;
 	}
 }

@@ -537,11 +537,15 @@ LRESULT DirectoryListingFrame::onListDiff(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	tstring file;
 	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), _T("File Lists\0*.xml.bz2\0All Files\0*.*\0"))) {
 		DirectoryListing dirList(dl->getUser());
-		dirList.loadFile(Text::fromT(file));
-		dl->getRoot()->filterList(dirList);
-		refreshTree(Util::emptyStringT);
-		initStatus();
-		updateStatus();
+		try {
+			dirList.loadFile(Text::fromT(file));
+			dl->getRoot()->filterList(dirList);
+			refreshTree(Util::emptyStringT);
+			initStatus();
+			updateStatus();
+		} catch(const Exception&) {
+			/// @todo report to user?
+		}
 	}
 	return 0;
 }

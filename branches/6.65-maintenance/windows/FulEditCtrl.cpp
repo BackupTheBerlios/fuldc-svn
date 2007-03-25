@@ -701,8 +701,10 @@ LRESULT CFulEditCtrl::onMenuCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		searchTerm = Util::emptyStringT;
 	} else if( menu.m_hMenu == m ){
 		UINT id = menu.GetMenuItemID( wParam );
-		if( searchTerm[ searchTerm.length()-1] == _T('\r') )
-			searchTerm = searchTerm.erase( searchTerm.length() -1, 1 );
+		if(searchTerm.length() > 1) {
+			if( searchTerm[ searchTerm.length()-1] == _T('\r') )
+				searchTerm = searchTerm.erase( searchTerm.length() -1, 1 );
+		}
 		switch( id ) {
 			case IDC_COPY: 
 				if(searchTerm.empty())

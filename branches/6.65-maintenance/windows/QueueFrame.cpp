@@ -726,7 +726,8 @@ void QueueFrame::moveSelectedDir() {
 void QueueFrame::moveDir(HTREEITEM ht, const tstring& target) {
 	HTREEITEM next = ctrlDirs.GetChildItem(ht);
 	while(next != NULL) {
-		moveDir(next, target + Util::getLastDir(getDir(next)));
+		// must add path separator since getLastDir only give us the name
+		moveDir(next, target + Util::getLastDir(getDir(next)) + _T(PATH_SEPARATOR));
 		next = ctrlDirs.GetNextSiblingItem(next);
 	}
 	tstring* s = (tstring*)ctrlDirs.GetItemData(ht);

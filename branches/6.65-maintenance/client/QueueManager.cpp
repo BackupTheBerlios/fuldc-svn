@@ -398,8 +398,9 @@ void QueueManager::on(TimerManagerListener::Minute, time_t aTick) throw() {
 	}
 }
 
-void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
-	string target = Util::getListPath() + Util::validateFileName(aUser->getNick());
+void QueueManager::addList(const User::Ptr& aUser, int aFlags, const string& aInitialDir /* = Util::emptyString */) throw(QueueException, FileException) {
+	// complete target is checked later, just remove path separators from the nick here
+	string target = Util::getListPath() + Util::cleanPathChars(aUser->getNick());
 
 	add(target, -1, TTHValue(), aUser, QueueItem::FLAG_USER_LIST | aFlags);
 }
