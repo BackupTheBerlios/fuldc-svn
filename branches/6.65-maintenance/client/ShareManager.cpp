@@ -668,7 +668,7 @@ int ShareManager::run() {
 		{
 			Lock l(cs);
 			for(DirectoryInfoList::const_iterator i = dirs.begin(); i != dirs.end(); ++i) {
-				delete directories[i->realPath];
+				delete &directories[i->realPath];
 				directories.erase(i->realPath);
 			}
 			directories.insert(newDirs.begin(), newDirs.end());
